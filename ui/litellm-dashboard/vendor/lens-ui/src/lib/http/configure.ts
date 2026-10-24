@@ -5,6 +5,7 @@ import {
   registerErrorHandler,
 } from "./runtime";
 import { setServerRootPath } from "../serverRootPath";
+import { lensTranslate } from "../../host/lensTranslate";
 
 export interface LensHttpConfig {
   readonly getBaseUrl: () => string;
@@ -19,7 +20,7 @@ export function configureLensHttp(config: LensHttpConfig): void {
   registerBaseUrlGetter(config.getBaseUrl);
   registerAuthTokenGetter(config.getAuthToken);
   registerAuthHeaderNameGetter(
-    config.getAuthHeaderName ?? (() => "Authorization"),
+    config.getAuthHeaderName ?? (() => lensTranslate("investigations.authorization")),
   );
   registerErrorHandler(config.onError ?? (() => {}));
   setServerRootPath(config.getServerRootPath ?? config.serverRootPath ?? "/");

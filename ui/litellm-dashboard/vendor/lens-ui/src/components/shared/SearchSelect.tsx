@@ -9,6 +9,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
+import { lensTranslate } from "../../host/lensTranslate";
 
 export interface SearchSelectOption {
   label: string;
@@ -42,8 +43,8 @@ export function SearchSelect({
   options,
   value,
   onValueChange,
-  placeholder = "Select…",
-  emptyText = "No results",
+  placeholder = lensTranslate("shared.select"),
+  emptyText = lensTranslate("shared.results"),
   disabled = false,
   className,
   inputId,

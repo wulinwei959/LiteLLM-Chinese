@@ -15,6 +15,7 @@ import { LensTabs } from "./LensTabs";
 import type { InvestigationActivity } from "./model/status";
 import type { LensList } from "./model/types";
 import type { LensTab } from "./route";
+import { useLensTranslate } from "../../host/useLensTranslate";
 
 interface LensSidebarProps {
   readonly agents: LensAgents;
@@ -24,6 +25,7 @@ interface LensSidebarProps {
 }
 
 export function LensSidebar(props: LensSidebarProps) {
+  const t = useLensTranslate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobile = useMediaQuery("(max-width: 767px)", {
@@ -49,7 +51,7 @@ export function LensSidebar(props: LensSidebarProps) {
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger
           render={<Button variant="ghost" size="icon-sm" className="absolute top-3 left-3 z-raised" />}
-          aria-label="Open navigation"
+          aria-label={t("sidebar.openNavigation")}
         >
           <PanelLeftOpen aria-hidden="true" className="size-4" />
         </SheetTrigger>
@@ -58,12 +60,12 @@ export function LensSidebar(props: LensSidebarProps) {
           className="lens-shell-overlay lens-sidebar w-72! gap-0 overflow-y-auto bg-sidebar p-3"
           aria-describedby={undefined}
         >
-          <SheetTitle className="sr-only">Lens navigation</SheetTitle>
-          <SheetDescription className="sr-only">Browse agents and your Lens workspace</SheetDescription>
+          <SheetTitle className="sr-only">{t("sidebar.lensNavigation")}</SheetTitle>
+          <SheetDescription className="sr-only">{t("sidebar.browseAgentsLensWorkspace")}</SheetDescription>
           <Button
             variant="ghost"
             className="mb-5 h-12 w-fit px-2 hover:bg-transparent dark:hover:bg-transparent"
-            aria-label="Lens home"
+            aria-label={t("sidebar.lensHome")}
             onClick={() => navigate("home")}
           >
             <LensBrand />
@@ -74,7 +76,7 @@ export function LensSidebar(props: LensSidebarProps) {
     );
   return (
     <aside
-      aria-label="Lens navigation"
+      aria-label={t("sidebar.lensNavigation")}
       className={cn(
         "lens-sidebar flex shrink-0 flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar px-3 py-4 text-sidebar-foreground transition-[width] duration-200 motion-reduce:transition-none",
         collapsed ? "w-16 px-2" : "w-60",
@@ -85,7 +87,7 @@ export function LensSidebar(props: LensSidebarProps) {
           <Button
             variant="ghost"
             className="h-auto min-w-0 p-0 hover:bg-transparent dark:hover:bg-transparent"
-            aria-label="Lens home"
+            aria-label={t("sidebar.lensHome")}
             onClick={() => navigate("home")}
           >
             <LensBrand />
@@ -95,8 +97,8 @@ export function LensSidebar(props: LensSidebarProps) {
           variant="ghost"
           size="icon-sm"
           className="text-muted-foreground"
-          aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-          title={collapsed ? "Expand navigation" : "Collapse navigation"}
+          aria-label={collapsed ? t("sidebar.expandNavigation") : t("sidebar.collapseNavigation")}
+          title={collapsed ? t("sidebar.expandNavigation") : t("sidebar.collapseNavigation")}
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? <PanelLeftOpen aria-hidden="true" /> : <PanelLeftClose aria-hidden="true" />}
@@ -118,6 +120,7 @@ function SidebarNavigation({
   readonly collapsed: boolean;
   readonly onSelectAgent: (agent: string) => void;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   return (
     <>
@@ -128,8 +131,7 @@ function SidebarNavigation({
       )}
       {!collapsed && (
         <p className="mb-3 px-2.5 font-mono text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
-          Workspace
-        </p>
+          {t("sidebar.workspace")}</p>
       )}
       <LensTabs
         orientation="vertical"
@@ -145,14 +147,14 @@ function SidebarNavigation({
         href={standalone ? STANDALONE_DOCS_URL : "https://docs.litellm.ai/docs/proxy/lens"}
         target="_blank"
         rel="noopener noreferrer"
-        title={collapsed ? "Documentation" : undefined}
+        title={collapsed ? t("sidebar.documentation") : undefined}
         className={cn(
           "mt-1 flex h-9 shrink-0 items-center gap-2.5 rounded-md px-2.5 text-[13px] text-muted-foreground outline-none hover:bg-sidebar-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
           collapsed && "justify-center px-0",
         )}
       >
         <BookOpen aria-hidden="true" className="size-4" />
-        <span className={cn(collapsed && "sr-only")}>Documentation</span>
+        <span className={cn(collapsed && "sr-only")}>{t("sidebar.documentation")}</span>
         {!collapsed && <ArrowUpRight aria-hidden="true" className="ml-auto size-3.5" />}
       </a>
     </>
@@ -160,14 +162,15 @@ function SidebarNavigation({
 }
 
 function ThemeToggle({ collapsed }: { readonly collapsed: boolean }) {
+  const t = useLensTranslate();
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useIsClient();
   if (collapsed)
     return (
       <Button
         variant="ghost"
-        aria-label="Toggle color theme"
-        title="Toggle color theme"
+        aria-label={t("sidebar.toggleColorTheme")}
+        title={t("sidebar.toggleColorTheme")}
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         className="h-9 w-full px-0 text-muted-foreground hover:bg-sidebar-accent"
       >
@@ -178,31 +181,29 @@ function ThemeToggle({ collapsed }: { readonly collapsed: boolean }) {
   return (
     <div
       role="group"
-      aria-label="Color theme"
+      aria-label={t("sidebar.colorTheme")}
       className="flex gap-1 rounded-lg border border-sidebar-border bg-muted/50 p-1"
     >
       <Button
         variant="ghost"
         size="sm"
-        aria-label="Light mode"
+        aria-label={t("sidebar.lightMode")}
         aria-pressed={mounted ? resolvedTheme === "light" : undefined}
         onClick={() => setTheme("light")}
         className="flex-1 gap-2 bg-background text-xs text-foreground shadow-xs hover:bg-background dark:bg-transparent dark:text-muted-foreground dark:shadow-none dark:hover:bg-sidebar-accent"
       >
         <Sun aria-hidden="true" className="size-3.5" />
-        Light
-      </Button>
+        {t("sidebar.light")}</Button>
       <Button
         variant="ghost"
         size="sm"
-        aria-label="Dark mode"
+        aria-label={t("sidebar.darkMode")}
         aria-pressed={mounted ? resolvedTheme === "dark" : undefined}
         onClick={() => setTheme("dark")}
         className="flex-1 gap-2 text-xs text-muted-foreground hover:bg-sidebar-accent dark:bg-background dark:text-foreground dark:shadow-xs dark:hover:bg-background"
       >
         <Moon aria-hidden="true" className="size-3.5" />
-        Dark
-      </Button>
+        {t("sidebar.dark")}</Button>
     </div>
   );
 }

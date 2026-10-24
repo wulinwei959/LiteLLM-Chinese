@@ -9,6 +9,7 @@ import { fmtMs, fmtTok } from "../../utils";
 import { FieldTree } from "../content/FieldTree";
 import { DetailGroup } from "./DetailGroup";
 import { SpendLogLink, unmatchedReason } from "./SpendLogLink";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 interface RequestTabProps {
   span: Span;
@@ -18,8 +19,9 @@ interface RequestTabProps {
 }
 
 export function RequestTab({ span, accessToken, traceStartMs }: RequestTabProps) {
+  const t = useLensTranslate();
   if (span.type !== "llm") {
-    return <div className="py-16 text-center text-sm text-muted-foreground">This span is not a model request.</div>;
+    return <div className="py-16 text-center text-sm text-muted-foreground">{t("traces.spanModelRequest")}</div>;
   }
 
   const usage = fieldEntries([
@@ -33,17 +35,17 @@ export function RequestTab({ span, accessToken, traceStartMs }: RequestTabProps)
 
   return (
     <div className="flex flex-col gap-5 px-4 pt-3 pb-5">
-      <DetailGroup title="Usage">
+      <DetailGroup title={t("traces.usage")}>
         <FieldTree entries={usage} />
       </DetailGroup>
-      <DetailGroup title="Spend log">
+      <DetailGroup title={t("traces.spendLog")}>
         <div className="flex flex-col gap-2 py-1.5">
           {span.spend_log_request_id && (
             <div className="flex min-w-0 items-center gap-1">
               <div className="min-w-0 flex-1">
                 <FieldTree entries={fieldEntries([["request_id", span.spend_log_request_id]])} mono />
               </div>
-              <CopyButton variant="action" value={span.spend_log_request_id} label="Copy request ID" iconOnly />
+              <CopyButton variant="action" value={span.spend_log_request_id} label={t("traces.copyRequestID")} iconOnly />
             </div>
           )}
           <div className="self-start">

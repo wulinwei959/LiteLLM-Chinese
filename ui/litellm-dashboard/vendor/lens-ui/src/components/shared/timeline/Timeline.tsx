@@ -10,6 +10,7 @@ import type { DotBand, DotColumn } from "../dotField/dots";
 import { cn } from "../../../lib/cva.config";
 
 import type { TimeWindow } from "../timeRange/timeRange";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export const TIMELINE_BUCKETS = 60;
 const TICKS = 6;
@@ -85,6 +86,7 @@ function BucketTooltip({
   bucketCount: number;
   noun: ItemNoun;
 }) {
+  const t = useLensTranslate();
   return (
     <div
       className="pointer-events-none absolute top-full z-floating mt-1 rounded-md border border-border bg-popover px-2.5 py-1.5 font-mono text-xs text-popover-foreground shadow-md"
@@ -92,13 +94,12 @@ function BucketTooltip({
       role="tooltip"
     >
       <div>
-        {moment(bucket.startMs).format(EDGE_FORMAT)} to {moment(bucket.endMs).format("HH:mm")}
-      </div>
+        {t("investigations.value0Value1", { value0: moment(bucket.startMs).format(EDGE_FORMAT), value1: moment(bucket.endMs).format("HH:mm") })}</div>
       <div>
         {bucket.total} {bucket.total === 1 ? noun.singular : noun.plural}
-        {bucket.failed > 0 && `, ${bucket.failed} failed`}
+        {bucket.failed > 0 && t("sharedTimeline.value0Failed", { value0: bucket.failed })}
       </div>
-      <div className="text-info">drag to zoom</div>
+      <div className="text-info">{t("sharedTimeline.dragZoom")}</div>
     </div>
   );
 }
@@ -228,6 +229,7 @@ function TickAxis({ range, width }: { range: TimeWindow; width: number }) {
 
 /** Histogram over the window covered by `buckets`. Drag to select; drag the bracket or its edges to adjust; Esc clears. */
 export function Timeline({ buckets, selection, onSelect, noun }: TimelineProps) {
+  const t = useLensTranslate();
   const bucketCount = buckets.length;
   const [hover, setHover] = useState<number | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -340,7 +342,7 @@ export function Timeline({ buckets, selection, onSelect, noun }: TimelineProps) 
         <button
           type="button"
           onClick={() => onSelect(null)}
-          aria-label="Clear time zoom"
+          aria-label={t("sharedTimeline.clearTimeZoom")}
           className="absolute top-1 right-3 inline-flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="size-3" />

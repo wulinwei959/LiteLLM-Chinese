@@ -34,6 +34,8 @@ import { activeJob, failedTaskSummary } from "../../model/status";
 import { InvestigationProgress } from "../InvestigationProgress";
 import type { QueueContext } from "../useQueueReason";
 import { StepFeed } from "../StepFeed";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export type RunActionHandlers = Record<RunAction, () => void>;
 
@@ -66,49 +68,49 @@ interface SituationView {
 }
 
 const completed = ({ found, runs, reused }: Facts) => {
-  if (found) return `Found ${found} across ${runs}`;
-  if (reused) return `Reused ${plural(reused, "review")} with no new findings`;
-  return `Nothing found across ${runs}`;
+  if (found) return lensTranslate("investigations.foundValue0AcrossValue1", { value0: found, value1: runs });
+  if (reused) return lensTranslate("investigations.reusedValue0NewFindings", { value0: plural(reused, "review") });
+  return lensTranslate("investigations.nothingFoundAcrossValue0", { value0: runs });
 };
 
 const SITUATIONS: Record<RunSituation, SituationView> = {
-  never: { status: "Not run yet", tone: "muted", headline: () => "Run it to get the first report", body: null },
+  never: { get status() { return lensTranslate("investigations.runYet"); }, tone: "muted", headline: () => lensTranslate("investigations.runGetFirstReport"), body: null },
   queued: {
-    status: "Queued",
+    get status() { return lensTranslate("investigations.queued"); },
     tone: "info",
-    headline: () => "Waiting for an analyzer to pick this up",
+    headline: () => lensTranslate("investigations.waitingAnalyzerPickUp"),
     body: "progress",
   },
-  running: { status: "Running", tone: "info", headline: () => "Investigating now", body: "progress" },
+  running: { get status() { return lensTranslate("investigations.running"); }, tone: "info", headline: () => lensTranslate("investigations.investigatingNow"), body: "progress" },
   budget: {
-    status: "Stopped",
+    get status() { return lensTranslate("investigations.stopped"); },
     tone: "destructive",
-    headline: () => "Stopped: more investigation budget is needed",
+    headline: () => lensTranslate("investigations.stoppedMoreInvestigationBudget"),
     body: "error",
   },
   offline: {
-    status: "Failed",
+    get status() { return lensTranslate("investigations.failed"); },
     tone: "destructive",
-    headline: () => "Stopped: no analyzer is connected",
+    headline: () => lensTranslate("investigations.stoppedAnalyzerConnected"),
     body: "error",
   },
-  failed: { status: "Failed", tone: "destructive", headline: () => "Stopped before it finished", body: "error" },
+  failed: { get status() { return lensTranslate("investigations.failed"); }, tone: "destructive", headline: () => lensTranslate("investigations.stoppedBeforeFinished"), body: "error" },
   cancelled: {
-    status: "Cancelled",
+    get status() { return lensTranslate("investigations.cancelled"); },
     tone: "muted",
-    headline: ({ runs }) => `Cancelled after reviewing ${runs}`,
+    headline: ({ runs }) => lensTranslate("investigations.cancelledAfterReviewingValue0", { value0: runs }),
     body: "error",
   },
   partial: {
-    status: "Partial results",
+    get status() { return lensTranslate("investigations.partialResults"); },
     tone: "warning",
-    headline: (known) => (known.found ? completed(known) : `Stopped after reviewing ${known.runs}`),
+    headline: (known) => (known.found ? completed(known) : lensTranslate("investigations.stoppedAfterReviewingValue0", { value0: known.runs })),
     body: "partial",
   },
-  unknown: { status: "Completed", tone: "success", headline: ({ runs }) => `Reviewed ${runs}`, body: null },
-  issues: { status: "Completed", tone: "success", headline: completed, body: null },
-  watching: { status: "Completed", tone: "success", headline: completed, body: null },
-  clean: { status: "Completed", tone: "success", headline: completed, body: null },
+  unknown: { get status() { return lensTranslate("investigations.completed"); }, tone: "success", headline: ({ runs }) => lensTranslate("investigations.reviewedValue0", { value0: runs }), body: null },
+  issues: { get status() { return lensTranslate("investigations.completed"); }, tone: "success", headline: completed, body: null },
+  watching: { get status() { return lensTranslate("investigations.completed"); }, tone: "success", headline: completed, body: null },
+  clean: { get status() { return lensTranslate("investigations.completed"); }, tone: "success", headline: completed, body: null },
 };
 
 interface ActionView {
@@ -119,18 +121,18 @@ interface ActionView {
 }
 
 const ACTIONS: Record<RunAction, ActionView> = {
-  run: { label: () => "Run now", icon: Play, variant: "default", needsReady: true },
-  stop: { label: () => "Stop run", icon: CircleStop, variant: "outline", needsReady: false },
-  retry: { label: () => "Retry", icon: RefreshCw, variant: "default", needsReady: true },
-  raiseBudget: { label: () => "Raise budget", icon: Wallet, variant: "default", needsReady: false },
-  connectWorker: { label: () => "Configure analysis", icon: Plug, variant: "default", needsReady: false },
+  run: { label: () => lensTranslate("investigations.runNow"), icon: Play, variant: "default", needsReady: true },
+  stop: { label: () => lensTranslate("investigations.stopRun"), icon: CircleStop, variant: "outline", needsReady: false },
+  retry: { label: () => lensTranslate("investigations.retry"), icon: RefreshCw, variant: "default", needsReady: true },
+  raiseBudget: { label: () => lensTranslate("investigations.raiseBudget"), icon: Wallet, variant: "default", needsReady: false },
+  connectWorker: { label: () => lensTranslate("tabs.configureAnalysis"), icon: Plug, variant: "default", needsReady: false },
   reviewIssues: {
-    label: ({ openIssues: count }) => `Review ${plural(count, "issue")}`,
+    label: ({ openIssues: count }) => lensTranslate("investigations.reviewValue0", { value0: plural(count, "issue") }),
     icon: ListChecks,
     variant: "default",
     needsReady: false,
   },
-  monitor: { label: () => "Monitor this", icon: Repeat, variant: "default", needsReady: true },
+  monitor: { label: () => lensTranslate("investigations.monitor"), icon: Repeat, variant: "default", needsReady: true },
 };
 
 const TONE_CLASS: Record<Tone, string> = {
@@ -169,10 +171,10 @@ function Stat({ label, value, note }: { label: string; value: ReactNode; note?: 
 function coverageNote(job: Job): string | undefined {
   const { partial = 0, unassessable = 0, inconclusive = 0, reused = 0 } = job.coverage ?? {};
   const notes = [
-    reused && `${reused} reused`,
-    partial && `${partial} partial`,
-    unassessable && `${unassessable} unreadable`,
-    inconclusive && `${inconclusive} inconclusive`,
+    reused && lensTranslate("investigations.value0Reused", { value0: reused }),
+    partial && lensTranslate("investigations.value0Partial", { value0: partial }),
+    unassessable && lensTranslate("investigations.value0Unreadable", { value0: unassessable }),
+    inconclusive && lensTranslate("investigations.value0Inconclusive", { value0: inconclusive }),
   ].filter(Boolean);
   return notes.length ? notes.join(" · ") : undefined;
 }
@@ -180,11 +182,11 @@ function coverageNote(job: Job): string | undefined {
 const isActive = (job: Job) => job.status === "queued" || job.status === "running";
 
 function issueStat(job: Job, findings: readonly Finding[] | null | undefined) {
-  if (isActive(job)) return { value: "–", note: "When the run finishes" };
+  if (isActive(job)) return { value: "–", note: lensTranslate("investigations.runFinishes") };
   if (job.status !== "completed" || findings == null) return { value: "–" };
   const issues = findings.filter((f) => f.kind === "issue");
   const high = issues.filter((f) => f.priority === "high").length;
-  return { value: issues.length.toLocaleString(), note: high ? `${high} high priority` : undefined };
+  return { value: issues.length.toLocaleString(), note: high ? lensTranslate("investigations.value0HighPriority", { value0: high }) : undefined };
 }
 
 function RunDuration({ job }: { job: Job }) {
@@ -194,18 +196,19 @@ function RunDuration({ job }: { job: Job }) {
 }
 
 function RunStats({ job, findings }: { job: Job; findings: readonly Finding[] | null | undefined }) {
+  const t = useLensTranslate();
   const calls = (job.steps ?? []).filter((step) => step.kind === "model").length;
   const { screened = 0, selected = 0 } = job.coverage ?? {};
   return (
     <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-      <Stat label="Cost" value={money(job.cost ?? 0)} note={plural(calls, "model call")} />
-      <Stat label="Duration" value={<RunDuration job={job} />} note={`Started ${shortTime(job.created_at)}`} />
+      <Stat label={t("investigations.cost")} value={money(job.cost ?? 0)} note={plural(calls, t("investigations.modelCall"))} />
+      <Stat label={t("investigations.duration")} value={<RunDuration job={job} />} note={`Started ${shortTime(job.created_at)}`} />
       <Stat
-        label="Runs reviewed"
+        label={t("investigations.runsReviewed2")}
         value={`${screened.toLocaleString()} / ${selected.toLocaleString()}`}
         note={coverageNote(job)}
       />
-      <Stat label="Issues" {...issueStat(job, findings)} />
+      <Stat label={t("investigations.issues")} {...issueStat(job, findings)} />
     </dl>
   );
 }
@@ -219,33 +222,35 @@ function RunFailure({ job, connected }: { job: Job; connected: boolean }) {
 }
 
 function RunError({ job, connected }: { job: Job; connected: boolean }) {
+  const t = useLensTranslate();
   return (
     <>
       <pre
-        aria-label="Investigation error"
+        aria-label={t("investigations.investigationError")}
         className="whitespace-pre-wrap break-words font-mono text-xs text-destructive"
       >
         {job.error}
       </pre>
       <p className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
         <span>
-          Run <span className="font-mono">{job.id}</span>
+          {t("evals.run")}<span className="font-mono">{job.id}</span>
         </span>
         <span>
-          Model <span>{job.settings.model}</span>
+          {t("investigations.model")}<span>{job.settings.model}</span>
         </span>
-        <span>Worker {connected ? "connected now" : "not connected"}</span>
+        <span>{t("investigations.worker")}{connected ? t("investigations.connectedNow") : t("investigations.connected")}</span>
       </p>
     </>
   );
 }
 
 function RunPartial({ job, connected }: { job: Job; connected: boolean }) {
+  const t = useLensTranslate();
   return (
     <div role="status" className="space-y-2 rounded-md bg-warning/5 p-3 text-sm">
-      <p>{failedTaskSummary(job)}. Valid results are preserved.</p>
+      <p>{t("investigations.value0ValidResultsPreserved", { value0: failedTaskSummary(job) })}</p>
       <details>
-        <summary className="cursor-pointer text-xs text-muted-foreground">Run details</summary>
+        <summary className="cursor-pointer text-xs text-muted-foreground">{t("investigations.runDetails")}</summary>
         <div className="mt-2 space-y-2">
           <RunError job={job} connected={connected} />
         </div>
@@ -255,16 +260,16 @@ function RunPartial({ job, connected }: { job: Job; connected: boolean }) {
 }
 
 function RunLog({ job }: { job: Job }) {
+  const t = useLensTranslate();
   const models = modelsUsed(job.steps ?? []);
   return (
     <Collapsible className="border-t pt-3">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <CollapsibleTrigger className="group flex items-center gap-1 font-medium text-foreground hover:underline">
           <ChevronRight className="size-3.5 transition-transform group-data-[panel-open]:rotate-90" />
-          Activity log
-        </CollapsibleTrigger>
+          {t("investigations.activityLog")}</CollapsibleTrigger>
         <span className="truncate">
-          {job.trigger === "manual" ? "Manual" : "Scheduled"} · {windowLabel(job)}
+          {job.trigger === "manual" ? t("investigations.manual") : t("investigations.scheduled")} · {windowLabel(job)}
           {models.length > 0 && ` · ${models.join(", ")}`}
         </span>
       </div>
@@ -303,13 +308,14 @@ function nextAction(lens: Lens, job: Job | undefined, situation: RunSituation): 
 }
 
 export function RunReport({ lens, job, findings, connected, ready, busy, picker, actions, queue }: RunReportProps) {
+  const t = useLensTranslate();
   const input: SituationInput = { lens, job, findings, connected };
   const situation = runSituation(input);
   const view = SITUATIONS[situation];
   const known = facts(job, findings);
   const action = nextAction(lens, job, situation);
   return (
-    <section aria-label="Run report" className="space-y-4 rounded-lg border border-t-2 border-t-violet-400 bg-card p-4">
+    <section aria-label={t("investigations.runReport")} className="space-y-4 rounded-lg border border-t-2 border-t-violet-400 bg-card p-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className={cn("font-mono text-[10px] font-medium tracking-wide", TONE_CLASS[view.tone])}>{view.status}</p>

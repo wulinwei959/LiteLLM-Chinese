@@ -1,5 +1,6 @@
 import { formatActivityTimestamp } from "../../../utils/activityTimestamp";
 import type { Job, Lens, LensList } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export function workerConnected(worker: LensList["workers"][number], now = Date.now()): boolean {
   return !worker.revoked && !!worker.analysis_key_id && now - Date.parse(worker.last_seen) < 120000;
@@ -86,18 +87,18 @@ export function queueReasonText(reason: QueueReason): string {
   switch (reason.kind) {
     case "busy": {
       const count = reason.tasks.length;
-      const when = reason.startsIn === null ? "" : ` · starts in ${waitLabel(reason.startsIn)}`;
-      return `Worker is busy with ${count} ${count === 1 ? "investigation" : "investigations"}${when}`;
+      const when = reason.startsIn === null ? "" : lensTranslate("model.startsValue0", { value0: waitLabel(reason.startsIn) });
+      return lensTranslate("model.workerBusyValue0Value1value2", { value0: count, value1: count === 1 ? "investigation" : "investigations", value2: when });
     }
     case "no_worker":
-      return "Analysis is unavailable. Check Configure analysis in Settings.";
+      return lensTranslate("model.analysisUnavailableCheckConfigure");
     case "starting":
-      return `Picking up… ${reason.seconds}s`;
+      return lensTranslate("model.pickingUpValue0s", { value0: reason.seconds });
   }
 }
 
 export function workerTaskText(task: WorkerTask): string {
-  const progress = task.selected ? ` · ${task.reviewed} of ${task.selected} traces` : "";
+  const progress = task.selected ? lensTranslate("model.value0Value1Traces", { value0: task.reviewed, value1: task.selected }) : "";
   return `${task.name} · ${task.stage || "starting"}${progress}`;
 }
 
@@ -127,10 +128,10 @@ export function budgetReached(lens: Lens, now = new Date()): boolean {
 
 export function lensStatus(lens: Lens, connected: boolean): string {
   const active = lens.jobs?.find((job) => ["queued", "running"].includes(job.status ?? ""));
-  if (active) return connected ? active.stage ?? "Queued" : "Waiting for analyzer";
-  if (budgetReached(lens)) return "Budget reached";
+  if (active) return connected ? active.stage ?? lensTranslate("investigations.queued") : lensTranslate("model.waitingAnalyzer");
+  if (budgetReached(lens)) return lensTranslate("model.budgetReached");
   const latest = lens.jobs?.[0];
-  return latest ? runStatus(latest) : "Ready";
+  return latest ? runStatus(latest) : lensTranslate("model.ready");
 }
 
 export function isPartial(job: Pick<Job, "status" | "error">): boolean {
@@ -139,27 +140,27 @@ export function isPartial(job: Pick<Job, "status" | "error">): boolean {
 
 export function runStatus(job: Pick<Job, "status" | "error">): string {
   const status = job.status ?? "";
-  return isPartial(job) ? "Partial" : status.charAt(0).toUpperCase() + status.slice(1);
+  return isPartial(job) ? lensTranslate("model.partial") : status.charAt(0).toUpperCase() + status.slice(1);
 }
 
 export function failedTaskSummary(job: Pick<Job, "coverage">): string {
   const failed = job.coverage.failed_tasks ?? 0;
   const total = job.coverage.screened + job.coverage.investigated;
-  return failed > 0 ? `${failed} of ${total} analysis tasks failed` : "Some analysis tasks could not finish";
+  return failed > 0 ? lensTranslate("model.value0Value1AnalysisTasks", { value0: failed, value1: total }) : lensTranslate("model.someAnalysisTasksCould");
 }
 
 export function nextCheckStatus(lens: Lens, now: number): string | null {
   if (!lens.settings.enabled) return null;
   const active = lens.jobs.find((job) => job.status === "queued" || job.status === "running");
-  if (active?.status === "running") return "Next check scheduled after this scan finishes";
-  if (active?.status === "queued") return "Waiting for an analyzer";
+  if (active?.status === "running") return lensTranslate("model.nextCheckScheduledAfter");
+  if (active?.status === "queued") return lensTranslate("model.waitingForAnAnalyzer");
   const next = new Date(lens.next_run_at);
   const remaining = next.getTime() - now;
-  if (remaining <= 0) return "Due now · waiting for an analyzer";
+  if (remaining <= 0) return lensTranslate("model.dueNowWaitingAnalyzer");
   const minutes = Math.ceil(remaining / 60000);
-  const relative = minutes === 1 ? "in less than a minute" : `in ${minutes} minutes`;
+  const relative = minutes === 1 ? lensTranslate("model.lessMinute") : lensTranslate("model.value0Minutes", { value0: minutes });
   const time = formatActivityTimestamp(lens.next_run_at);
-  return `Next check ${time} · ${relative}`;
+  return lensTranslate("model.nextCheckValue0Value1", { value0: time, value1: relative });
 }
 
 export type InvestigationActivity = "running" | "queued" | "idle";

@@ -4,6 +4,7 @@ import type { paths } from "./schema";
 import { ApiError, deriveErrorMessage, retryAfterMs } from "./client";
 import { getAuthHeaderName, getAuthToken, getRequestBaseUrl, reportError } from "./runtime";
 import { resolveRequestUrl } from "./resolveApiBase";
+import { lensTranslate } from "../../host/lensTranslate";
 
 const BaseAwareRequest = function (url: string, init?: RequestInit): Request {
   const target = resolveRequestUrl(url, {
@@ -44,8 +45,8 @@ const middleware: Middleware = {
   async onResponse({ request, response }) {
     if (response.ok) {
       if (await carriesJson(response)) return response;
-      const contentType = response.headers.get("content-type") ?? "an unknown content type";
-      const message = `Expected JSON from ${new URL(request.url).pathname} but the server returned ${contentType}`;
+      const contentType = response.headers.get("content-type") ?? lensTranslate("lib.unknownContentType");
+      const message = lensTranslate("lib.expectedJSONValue0Server", { value0: new URL(request.url).pathname, value1: contentType });
       reportError(message);
       throw new ApiError(message, response.status, await response.clone().text());
     }
@@ -56,7 +57,7 @@ const middleware: Middleware = {
       body = JSON.parse(raw);
       message = deriveErrorMessage(body);
     } catch {
-      message = raw || `HTTP ${response.status}`;
+      message = raw || lensTranslate("lib.hTTPValue0", { value0: response.status });
     }
     reportError(message);
     throw new ApiError(message, response.status, body, retryAfterMs(response.headers));

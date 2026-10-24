@@ -7,10 +7,13 @@ import { Button, buttonVariants } from "../../ui/button";
 
 import { ApiError } from "../../../lib/http/client";
 import { STANDALONE_DOCS_URL, useLensHost } from "../../../host/LensHost";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const DOCS_URL = "https://docs.litellm.ai/docs/proxy/lens";
 
 function DocsLink() {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   return (
     <a
@@ -19,8 +22,7 @@ function DocsLink() {
       rel="noopener noreferrer"
       className={buttonVariants({ variant: "ghost", size: "sm" })}
     >
-      Lens docs
-      <ArrowUpRight aria-hidden="true" className="size-3.5" />
+      {t("investigations.lensDocs")}<ArrowUpRight aria-hidden="true" className="size-3.5" />
     </a>
   );
 }
@@ -31,13 +33,13 @@ function loadFailureMessage(
   standalone: boolean,
 ): string {
   if (standalone && unavailable)
-    return "Lens did not recognize this API request. Reload the page, and if it persists, check the Lens deployment.";
+    return lensTranslate("investigations.lensDidRecognizeAPI");
   if (unavailable)
-    return "This dashboard may be newer than the proxy. Reload the page, and if it persists, check the proxy deployment.";
+    return lensTranslate("investigations.dashboardMayNewerProxy");
   if (queryError instanceof Error) return queryError.message;
   return standalone
-    ? "Something went wrong while contacting Lens."
-    : "Something went wrong while contacting the proxy.";
+    ? lensTranslate("investigations.somethingWentWrongWhile")
+    : lensTranslate("investigations.somethingWentWrongWhileContactingTheProxy");
 }
 
 export function InvestigationsLoadFailed({
@@ -47,6 +49,7 @@ export function InvestigationsLoadFailed({
   queryError: unknown;
   refresh: () => void;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const unavailable =
     queryError instanceof ApiError && queryError.status === 404;
@@ -56,7 +59,7 @@ export function InvestigationsLoadFailed({
       tone="destructive"
       icon={<TriangleAlert className="size-5" />}
       title={
-        unavailable ? "Lens API is unavailable" : "Couldn't load investigations"
+        unavailable ? t("investigations.lensAPIUnavailable") : t("investigations.couldnTLoadInvestigations")
       }
       description={loadFailureMessage(queryError, unavailable, standalone)}
     >
@@ -64,7 +67,7 @@ export function InvestigationsLoadFailed({
         size="sm"
         onClick={() => (unavailable ? window.location.reload() : refresh())}
       >
-        {unavailable ? "Reload page" : "Try again"}
+        {unavailable ? t("investigations.reloadPage") : t("agents.tryAgain")}
       </Button>
       <DocsLink />
     </StateMessage>
@@ -78,6 +81,7 @@ export function InvestigationError({
   message: string;
   refresh: () => void;
 }) {
+  const t = useLensTranslate();
   return (
     <div
       role="alert"
@@ -85,8 +89,7 @@ export function InvestigationError({
     >
       <span className="min-w-0">{message}</span>
       <Button variant="ghost" size="sm" onClick={refresh}>
-        Retry
-      </Button>
+        {t("investigations.retry")}</Button>
     </div>
   );
 }
@@ -94,8 +97,8 @@ export function InvestigationError({
 export function InvestigationsLoading() {
   return (
     <LoadingState
-      title="Loading investigations…"
-      description="Fetching your investigations and their latest findings."
+      title={lensTranslate("investigations.loadingInvestigations")}
+      description={lensTranslate("investigations.fetchingInvestigationsLatestFindings")}
     />
   );
 }
@@ -105,21 +108,21 @@ export function InvestigationMissing({
 }: {
   selectLens: (id: string | null) => void;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   return (
     <StateMessage
       role="alert"
       icon={<SearchX className="size-5" />}
-      title="Investigation not found"
+      title={t("investigations.investigationFound")}
       description={
         standalone
-          ? "It may have been deleted, or the link points to a different Lens deployment."
-          : "It may have been deleted, or the link points to a different proxy."
+          ? t("investigations.mayBeenDeletedLink")
+          : t("investigations.itMayHaveBeenDeletedOrTheLink")
       }
     >
       <Button size="sm" onClick={() => selectLens(null)}>
-        View all investigations
-      </Button>
+        {t("investigations.viewAllInvestigations")}</Button>
     </StateMessage>
   );
 }

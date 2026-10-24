@@ -19,6 +19,7 @@ import {
   type CaseEdit,
 } from "./caseView";
 import type { DatasetCase } from "./types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export interface CasePanelProps {
   readonly item: DatasetCase;
@@ -33,20 +34,20 @@ export function CasePanel({
   editable,
   onEdit,
 }: CasePanelProps) {
+  const t = useLensTranslate();
   return (
     <Tabs defaultValue="case" className="min-h-0 flex-1 gap-0">
       <header className="lens-toolbar flex shrink-0 flex-col gap-1.5 px-4 pt-3 pb-2">
         <div className="flex min-w-0 items-center gap-2">
           <h2 className="min-w-0 truncate font-mono text-sm font-semibold text-foreground">
-            Case #{shortCaseId(item.id)}{" "}
+            {t("datasets.case")}{shortCaseId(item.id)}{" "}
             <span className="font-normal text-muted-foreground">
               @ {datasetName}
             </span>
           </h2>
-          <IdChip value={item.id} label="Copy case ID" />
+          <IdChip value={item.id} label={t("datasets.copyCaseID")} />
           <label className="ml-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
-            Included
-            <Switch
+            {t("datasets.included")}<Switch
               size="sm"
               checked={item.included}
               disabled={!editable}
@@ -58,15 +59,13 @@ export function CasePanel({
       <div className="shrink-0 border-b px-4">
         <TabsList
           variant="line"
-          aria-label="Case sections"
+          aria-label={t("datasets.caseSections")}
           className="h-9 gap-4 px-0"
         >
           <TabsTrigger value="case" className="flex-none px-0 text-sm">
-            Case
-          </TabsTrigger>
+            {t("datasets.case6")}</TabsTrigger>
           <TabsTrigger value="source" className="flex-none px-0 text-sm">
-            Source
-          </TabsTrigger>
+            {t("datasets.source")}</TabsTrigger>
         </TabsList>
       </div>
       <TabsContent value="case" className="min-h-0 overflow-auto pt-1">
@@ -84,40 +83,40 @@ function CaseBody({
   editable,
   onEdit,
 }: Omit<CasePanelProps, "datasetName">) {
+  const t = useLensTranslate();
   const expectedId = useId();
   const conversation = caseConversation(item);
   const output = caseOutput(item);
   return (
     <>
-      <Section title="Input" count={conversation.length}>
+      <Section title={t("datasets.input")} count={conversation.length}>
         {conversation.length ? (
           <MessageList messages={conversation} />
         ) : (
-          <Empty>No conversation recorded</Empty>
+          <Empty>{t("datasets.conversationRecorded")}</Empty>
         )}
       </Section>
-      <Section title="Output">
+      <Section title={t("datasets.output")}>
         {output.length ? (
           <MessageList messages={output} />
         ) : (
-          <Empty>No reply recorded</Empty>
+          <Empty>{t("datasets.replyRecorded")}</Empty>
         )}
       </Section>
       <section
-        aria-label="Expected"
+        aria-label={t("datasets.expected")}
         className="flex flex-col gap-2 px-4 pt-2 pb-5"
       >
         <label
           htmlFor={expectedId}
           className="lens-section-label text-xs font-semibold"
         >
-          Expected
-        </label>
+          {t("datasets.expected")}</label>
         {editable ? (
           <Textarea
             id={expectedId}
             value={item.expected}
-            placeholder="What a good reply looks like"
+            placeholder={t("datasets.goodReplyLooksLike")}
             className="min-h-24 border-[var(--lens-brand)]/20 bg-[var(--lens-soft)] text-sm"
             onChange={(event) => onEdit({ expected: event.target.value })}
           />
@@ -127,7 +126,7 @@ function CaseBody({
             className="text-sm whitespace-pre-wrap text-foreground"
           >
             {item.expected || (
-              <span className="text-muted-foreground italic">Not set</span>
+              <span className="text-muted-foreground italic">{t("datasets.set")}</span>
             )}
           </p>
         )}
@@ -143,13 +142,14 @@ function Empty({ children }: { children: ReactNode }) {
 }
 
 const SOURCE_FIELDS = [
-  ["Trace", "trace_id"],
-  ["Span", "span_id"],
-  ["Finding", "finding_id"],
-  ["Investigation", "lens_id"],
+  ["datasets.trace", "trace_id"],
+  ["datasets.span", "span_id"],
+  ["datasets.finding", "finding_id"],
+  ["investigations.investigation", "lens_id"],
 ] as const;
 
 function SourceBody({ item }: { item: DatasetCase }) {
+  const t = useLensTranslate();
   const openSourceTrace = useOpenSourceTrace();
   const { source } = item;
   return (
@@ -157,16 +157,16 @@ function SourceBody({ item }: { item: DatasetCase }) {
       <dl className="lens-panel grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-6 gap-y-2 rounded-lg border p-3 font-mono text-xs">
         {SOURCE_FIELDS.map(([label, key]) => (
           <div key={key} className="contents">
-            <dt className="text-muted-foreground">{label}</dt>
+            <dt className="text-muted-foreground">{t(label)}</dt>
             <dd className="flex min-w-0 items-center gap-1">
               {source[key] ? (
                 <IdChip
                   value={source[key]}
-                  label={`Copy ${label.toLowerCase()} ID`}
+                  label={t("datasets.copyValue0ID", { value0: label.toLowerCase() })}
                   showValue
                 />
               ) : (
-                <span className="text-muted-foreground italic">None</span>
+                <span className="text-muted-foreground italic">{t("datasets.none")}</span>
               )}
             </dd>
           </div>
@@ -185,8 +185,7 @@ function SourceBody({ item }: { item: DatasetCase }) {
             })
           }
         >
-          Open source trace
-          <SquareArrowOutUpRight className="size-3.5" />
+          {t("datasets.openSourceTrace")}<SquareArrowOutUpRight className="size-3.5" />
         </Button>
       )}
     </div>

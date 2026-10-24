@@ -16,6 +16,8 @@ import {
 import type { EvalRun } from "../evals/runs/types";
 import { CodeBlock } from "../onboarding/tracing/TracingSetupCard";
 import { useEvalRunRoute } from "../route";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 function GitHubLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -32,6 +34,7 @@ function GitHubLink({ href, children }: { href: string; children: ReactNode }) {
 }
 
 export function WorkflowSetup({ target }: { target: ConnectTarget }) {
+  const t = useLensTranslate();
   const files = [
     { path: ".github/workflows/lens.yml", body: workflowSnippet(target) },
     { path: "pyproject.toml", body: pyprojectSnippet(target) },
@@ -42,13 +45,11 @@ export function WorkflowSetup({ target }: { target: ConnectTarget }) {
   return (
     <div className="min-w-0 space-y-5 text-sm">
       <section className="space-y-3">
-        <h3 className="font-medium">Add the workflow and eval adapter</h3>
+        <h3 className="font-medium">{t("agents.addWorkflowEvalAdapter")}</h3>
         <p className="text-muted-foreground">
-          Merge these files into your repository. Keep existing project settings and add the dependencies and startup
-          steps your agent needs
-        </p>
+          {t("agents.mergeFilesRepositoryKeep")}</p>
         <Tabs.Root value={file} onValueChange={setFile} className="min-w-0 overflow-hidden rounded-lg border">
-          <Tabs.List aria-label="Setup files" className="flex overflow-x-auto border-b bg-muted/30">
+          <Tabs.List aria-label={t("agents.setupFiles")} className="flex overflow-x-auto border-b bg-muted/30">
             {files.map((item) => (
               <Tabs.Tab
                 key={item.path}
@@ -65,76 +66,67 @@ export function WorkflowSetup({ target }: { target: ConnectTarget }) {
             aria-label={shown.path}
             className="min-w-0 [&_pre]:max-h-56 [&_pre]:overflow-auto"
           >
-            <CodeBlock code={shown.body} copyLabel={`Copy ${shown.path}`} />
+            <CodeBlock code={shown.body} copyLabel={t("agents.copyValue0", { value0: shown.path })} />
           </Tabs.Panel>
         </Tabs.Root>
         {!target.taskImport && (
           <p className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-5">
-            Implement task() in the eval adapter before running. It should start this commit’s agent in eval mode and
-            return its trace reference. The template will fail until you connect your agent
-          </p>
+            {t("agents.implementTaskEvalAdapter")}</p>
         )}
         <p className="text-xs leading-5 text-muted-foreground">
-          Run the agent built from the checked-out commit, with the agent name{" "}
-          <code>{target.definition.spec.agent}</code>, its build SHA as <code>agent.version</code>, and{" "}
-          <code>deployment.environment=lens-eval</code> on its traces.{" "}
+          {t("agents.runAgentBuiltChecked")}{" "}
+          <code>{target.definition.spec.agent}</code>{t("agents.buildSHA")}<code>agent.version</code>, and{" "}
+          <code>{t("agents.deploymentEnvironmentLensEval")}</code> on its traces.{" "}
           <a
             className="underline"
             target="_blank"
             rel="noreferrer"
             href="https://github.com/BerriAI/lens/blob/main/src/sdk/README.md#complete-http-agent-example"
           >
-            Agent adapter guide
-          </a>
+            {t("agents.agentAdapterGuide")}</a>
         </p>
       </section>
       <section className="space-y-3">
-        <h3 className="font-medium">Add repository credentials</h3>
+        <h3 className="font-medium">{t("agents.addRepositoryCredentials")}</h3>
         <div className="rounded-lg border p-3 text-xs leading-6">
           <p>
-            <code className="font-medium">LENS_API_KEY</code> secret: a Lens credential that can read datasets and run
-            evals. A tracing key cannot run evals
-          </p>
+            <code className="font-medium">LENS_API_KEY</code> {t("agents.secretLensCredentialRead")}</p>
           <p>
             <code className="font-medium">LENS_BASE_URL</code> variable:{" "}
             <span className="break-all">{target.baseUrl}</span>
           </p>
           <p className="mt-2 text-muted-foreground">
-            Map your agent’s model and service secrets under env on the Lens Action step and any agent startup step.{" "}
+            {t("agents.mapAgentSModel")}{" "}
             {target.reportViaApp
-              ? "Lens publishes comments and checks through the GitHub App you connected"
-              : "The workflow uses GitHub’s built-in token for comments and checks"}
+              ? t("agents.lensPublishesCommentsChecks")
+              : t("agents.workflowUsesGitHubS")}
           </p>
         </div>
         <CodeBlock
           code={"env:\n  AGENT_API_KEY: ${{ secrets.AGENT_API_KEY }}"}
-          copyLabel="Copy agent secret mapping example"
+          copyLabel={t("agents.copyAgentSecretMapping")}
         />
         <div className="flex flex-wrap gap-4">
-          <GitHubLink href={`${target.repository?.url}/settings/secrets/actions`}>Open repository secrets</GitHubLink>
+          <GitHubLink href={`${target.repository?.url}/settings/secrets/actions`}>{t("agents.openRepositorySecrets")}</GitHubLink>
           <GitHubLink href={`${target.repository?.url}/settings/variables/actions`}>
-            Open repository variables
-          </GitHubLink>
+            {t("agents.openRepositoryVariables")}</GitHubLink>
         </div>
         <p className="text-xs leading-5 text-muted-foreground">
-          Your organization must allow this repository to use the Lens Action.{" "}
+          {t("agents.organizationMustAllowRepository")}{" "}
           <a
             className="underline"
             target="_blank"
             rel="noreferrer"
             href="https://docs.github.com/en/actions/how-tos/reuse-automations/share-with-your-organization"
           >
-            Private Action access
-          </a>
+            {t("agents.privateActionAccess")}</a>
         </p>
       </section>
       <section className="space-y-2 border-t pt-4">
-        <h3 className="font-medium">Run a baseline, then open a PR</h3>
+        <h3 className="font-medium">{t("agents.runBaselineOpenPR")}</h3>
         <p className="text-xs leading-5 text-muted-foreground">
-          Commit to main or run the Lens workflow on main from Actions. Then open or update a PR from a branch in this
-          repository. Fork PRs are skipped because they cannot safely use your credentials
-        </p>
-        <GitHubLink href={`${target.repository?.url}/actions/workflows/lens.yml`}>Open Lens workflow</GitHubLink>
+          {t("agents.commitMainRunLens")}</p>
+        <GitHubLink href={`${target.repository?.url}/actions/workflows/lens.yml`}>{t("agents.openLensWorkflow")}</GitHubLink>
       </section>
     </div>
   );
@@ -149,6 +141,7 @@ export function VerifyGitHub({
   runs: ReturnType<typeof useEvalRuns>;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useLensTranslate();
   const { openAgentRun } = useEvalRunRoute();
   const matching =
     runs.data?.filter(
@@ -172,29 +165,27 @@ export function VerifyGitHub({
         )}
         <h3 className="font-medium">
           {received
-            ? "PR eval received"
+            ? t("agents.pREvalReceived")
             : pull?.status === "failed"
-              ? "PR eval needs attention"
-              : "Waiting for your first PR eval"}
+              ? t("agents.pREvalNeedsAttention")
+              : t("agents.waitingFirstPREval")}
         </h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          {pull ? runStatus(pull) : "Open or update a PR in the selected repository, then check for its result here"}
+          {pull ? runStatus(pull) : t("agents.openUpdatePRSelected")}
         </p>
       </div>
       <p className="text-xs text-muted-foreground">
         {baseline
-          ? "Baseline received from main"
-          : "No completed main baseline received yet. Run the workflow on main to compare regressions"}
+          ? t("agents.baselineReceivedMain")
+          : t("agents.completedMainBaselineReceived")}
       </p>
       {runs.error && (
         <p role="alert" className="text-sm text-destructive">
-          Could not check eval runs. Try again
-        </p>
+          {t("agents.couldCheckEvalRuns")}</p>
       )}
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="outline" disabled={runs.isFetching} onClick={() => void runs.refetch()}>
-          {runs.isFetching && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} Check for PR eval
-        </Button>
+          {runs.isFetching && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} {t("agents.checkPREval")}</Button>
         {pull && (
           <Button
             onClick={() => {
@@ -202,24 +193,21 @@ export function VerifyGitHub({
               onOpenChange(false);
             }}
           >
-            View eval result
-          </Button>
+            {t("agents.viewEvalResult")}</Button>
         )}
-        <GitHubLink href={`${target.repository?.url}/actions/workflows/lens.yml`}>View workflow</GitHubLink>
-        {pull && <GitHubLink href={`${target.repository?.url}/pull/${pull.pr}`}>Open PR #{pull.pr}</GitHubLink>}
+        <GitHubLink href={`${target.repository?.url}/actions/workflows/lens.yml`}>{t("agents.viewWorkflow")}</GitHubLink>
+        {pull && <GitHubLink href={`${target.repository?.url}/pull/${pull.pr}`}>{t("agents.openPRValue0", { value0: pull.pr })}</GitHubLink>}
       </div>
       <div className="space-y-2 rounded-lg border p-4 text-xs leading-5 text-muted-foreground">
-        <p className="font-medium text-foreground">What appears on your PR</p>
+        <p className="font-medium text-foreground">{t("agents.appearsPR")}</p>
         <p>
-          Lens posts the eval result, pass counts, regressions and a link to the full run.{" "}
+          {t("agents.lensPostsEvalResult")}{" "}
           {target.reportViaApp
-            ? "The connected GitHub App posts a report for each eval run. Retrying publication updates that run’s report"
-            : "New commits update the same comment"}
+            ? t("agents.connectedGitHubAppPosts")
+            : t("agents.newCommitsUpdateSame")}
         </p>
         <p>
-          After a result arrives here, check the workflow’s Publish report step and the PR for its comment. Lens
-          receives the eval before GitHub publishes it
-        </p>
+          {t("agents.afterResultArrivesCheck")}</p>
       </div>
     </div>
   );
@@ -227,8 +215,8 @@ export function VerifyGitHub({
 
 function runStatus(run: EvalRun): string {
   if (run.status === "failed")
-    return run.failure || "The eval failed to finish. Open its result or workflow logs for details";
+    return run.failure || lensTranslate("agents.evalFailedFinishOpen");
   if (run.status !== "done" || !run.summary)
-    return `PR #${run.pr} is ${run.status}. Check again when the workflow finishes`;
-  return `PR #${run.pr}: ${run.summary.passed}/${run.summary.total} cases passed. ${run.summary.gate.passed ? "Gate passed" : "Gate failed, review the result before merging"}`;
+    return lensTranslate("agents.pRValue0Value1Check", { value0: run.pr, value1: run.status });
+  return lensTranslate("agents.pRValue0Value1Value2", { value0: run.pr, value1: run.summary.passed, value2: run.summary.total, value3: run.summary.gate.passed ? lensTranslate("agents.gatePassed") : lensTranslate("agents.gateFailedReviewResult") });
 }

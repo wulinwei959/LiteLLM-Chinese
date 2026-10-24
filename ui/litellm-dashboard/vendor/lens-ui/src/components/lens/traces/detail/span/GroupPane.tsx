@@ -8,6 +8,7 @@ import type { Trace } from "../../types";
 import { fmtMs, fmtTok } from "../../utils";
 import { errorHeadline } from "../content/SpanError";
 import { PaneHeader } from "./PaneHeader";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
@@ -30,12 +31,13 @@ export function GroupPane({
   accessToken: string;
   onClose: () => void;
 }) {
+  const t = useLensTranslate();
   const tokens = row.members.reduce((sum, m) => sum + m.input_tokens + m.output_tokens, 0);
   const firstFailure = row.members.find((m) => m.status === "error" && m.error);
   const sample = (firstFailure ?? row.members[0]).span_id;
   const handoff = useTracesApi(accessToken).handoff(trace.summary.trace_id, sample, trace.summary.trace_ref);
   return (
-    <aside className="flex h-full min-w-0 flex-col bg-background text-sm text-foreground" aria-label="Group details">
+    <aside className="flex h-full min-w-0 flex-col bg-background text-sm text-foreground" aria-label={t("traces.groupDetails")}>
       <PaneHeader
         type={row.type}
         model={row.members[0]?.model ?? null}
@@ -47,22 +49,22 @@ export function GroupPane({
         }
         facts={[]}
         actions={
-          <CopyButton variant="action" value={handoff.text} label="Copy group sample" copiedLabel={handoff.copied} />
+          <CopyButton variant="action" value={handoff.text} label={t("traces.copyGroupSample")} copiedLabel={handoff.copied} />
         }
         onClose={onClose}
       />
       <div className="min-h-0 flex-1 overflow-auto border-t px-4 py-4">
         <div className="grid grid-cols-2 gap-2 @[520px]/trace:grid-cols-3">
-          <Metric label="Invocations" value={row.members.length.toLocaleString()} />
-          <Metric label="Failed" value={row.failedCount.toLocaleString()} />
-          <Metric label="p50 latency" value={fmtMs(row.p50Duration)} />
-          <Metric label="Tokens" value={fmtTok(tokens)} />
-          <Metric label="Agent" value={row.agent || "—"} />
-          <Metric label="Type" value={row.type} />
+          <Metric label={t("traces.invocations")} value={row.members.length.toLocaleString()} />
+          <Metric label={t("investigations.failed")} value={row.failedCount.toLocaleString()} />
+          <Metric label={t("traces.p50Latency")} value={fmtMs(row.p50Duration)} />
+          <Metric label={t("traces.tokens")} value={fmtTok(tokens)} />
+          <Metric label={t("agents.agent")} value={row.agent || "—"} />
+          <Metric label={t("traces.type")} value={row.type} />
         </div>
         {firstFailure?.error && (
           <section className="mt-4 rounded-lg border border-destructive/40 bg-destructive/5 px-3.5 py-3">
-            <div className="text-sm font-semibold text-destructive">Failure pattern</div>
+            <div className="text-sm font-semibold text-destructive">{t("traces.failurePattern")}</div>
             <p className="mt-2 font-mono text-xs leading-relaxed text-foreground">
               {errorHeadline(firstFailure.error)}
             </p>

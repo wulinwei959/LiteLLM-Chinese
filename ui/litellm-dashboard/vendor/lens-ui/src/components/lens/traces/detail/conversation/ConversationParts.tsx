@@ -15,6 +15,8 @@ import { toolSummary } from "../content/payload";
 import { ErrorBlock } from "../content/SpanError";
 import { ToolArguments, ToolOutput } from "../content/ToolContent";
 import type { ConversationGroup, ConversationItem } from "./conversation";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 export function ConversationSteps({
   groups,
@@ -28,7 +30,7 @@ export function ConversationSteps({
       <ConversationStep key={group.item.id} item={group.item} onOpenStep={onOpenStep} />
     ) : (
       <details key={group.id} className="min-w-0 rounded-md border p-3">
-        <summary className="cursor-pointer text-sm font-medium">Subagent: {group.name}</summary>
+        <summary className="cursor-pointer text-sm font-medium">{lensTranslate("traces.subagentValue0", { value0: group.name })}</summary>
         <div className="mt-4 min-w-0 space-y-5 border-l pl-3">
           <ConversationSteps groups={group.children} onOpenStep={onOpenStep} />
         </div>
@@ -38,8 +40,9 @@ export function ConversationSteps({
 }
 
 export function ConversationStep({ item, onOpenStep }: { item: ConversationItem; onOpenStep: (id: string) => void }) {
+  const t = useLensTranslate();
   return (
-    <section className="min-w-0 space-y-2" aria-label={`Conversation step ${item.span.name}`}>
+    <section className="min-w-0 space-y-2" aria-label={t("traces.conversationStepValue0", { value0: item.span.name })}>
       {item.toolResult === undefined && (
         <div className="flex min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground">
           <div className="flex min-w-0 items-center gap-2">
@@ -53,12 +56,11 @@ export function ConversationStep({ item, onOpenStep }: { item: ConversationItem;
           <Button
             variant="ghost"
             size="xs"
-            aria-label={`Inspect step ${item.span.name}`}
+            aria-label={t("traces.inspectStepValue0", { value0: item.span.name })}
             onClick={() => onOpenStep(item.span.span_id)}
             className="shrink-0 text-muted-foreground"
           >
-            Inspect step
-          </Button>
+            {t("traces.inspectStep")}</Button>
         </div>
       )}
       {item.showError && <ErrorBlock span={item.span} />}
@@ -71,6 +73,7 @@ export function ConversationStep({ item, onOpenStep }: { item: ConversationItem;
 }
 
 function ConversationTool({ item, onOpenStep }: { item: ConversationItem; onOpenStep: (id: string) => void }) {
+  const t = useLensTranslate();
   const [open, setOpen] = useState(item.span.status === "error");
   const failed = item.span.status === "error";
   const summary = toolSummary(item.toolCall?.args);
@@ -80,7 +83,7 @@ function ConversationTool({ item, onOpenStep }: { item: ConversationItem; onOpen
         <button
           type="button"
           aria-expanded={open}
-          aria-label={`${open ? "Collapse" : "Expand"} ${item.span.name} tool call`}
+          aria-label={t("traces.value0Value1ToolCall", { value0: open ? "Collapse" : "Expand", value1: item.span.name })}
           onClick={() => setOpen((value) => !value)}
           className="flex min-w-0 flex-1 items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-muted/40"
         >
@@ -97,18 +100,17 @@ function ConversationTool({ item, onOpenStep }: { item: ConversationItem; onOpen
             )}
           </span>
           <span className={cn("ml-auto shrink-0 text-xs", failed ? "text-destructive" : "text-muted-foreground")}>
-            {failed ? "Failed" : "Completed"}
+            {failed ? t("investigations.failed") : t("investigations.completed")}
           </span>
         </button>
         <Button
           variant="ghost"
           size="xs"
-          aria-label={`Inspect step ${item.span.name}`}
+          aria-label={t("traces.inspectStepValue0", { value0: item.span.name })}
           onClick={() => onOpenStep(item.span.span_id)}
           className="my-2.5 shrink-0 text-muted-foreground"
         >
-          Inspect
-        </Button>
+          {t("traces.inspect")}</Button>
       </div>
       {open && (
         <div className="min-w-0 space-y-3 border-t px-3 py-3">
@@ -117,18 +119,18 @@ function ConversationTool({ item, onOpenStep }: { item: ConversationItem; onOpen
             <p className="text-sm text-destructive">{item.span.error}</p>
           )}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Result</span>
+            <span>{t("traces.result")}</span>
             <CopyButton
               variant="action"
               value={item.toolResult ?? ""}
-              label={`Copy ${item.span.name} result`}
+              label={t("traces.copyValue0Result", { value0: item.span.name })}
               iconOnly
             />
           </div>
           {item.toolResult ? (
             <ToolOutput result={item.toolResult} failed={failed} />
           ) : (
-            <p className="text-sm text-muted-foreground">No result content recorded.</p>
+            <p className="text-sm text-muted-foreground">{t("traces.resultContentRecorded")}</p>
           )}
         </div>
       )}
@@ -137,18 +139,19 @@ function ConversationTool({ item, onOpenStep }: { item: ConversationItem; onOpen
 }
 
 export function ConversationMessage({ message }: { message: TraceMessage }) {
-  if (message.role === "system" && (message.content.startsWith("Agent ") || message.content === "Context compacted"))
+  const t = useLensTranslate();
+  if (message.role === "system" && (message.content.startsWith(t("traces.agent")) || message.content === "Context compacted"))
     return <p className="text-xs text-muted-foreground">{message.content}</p>;
   if (message.role === "system")
     return (
       <details className="text-sm text-muted-foreground">
-        <summary className="cursor-pointer">Session context</summary>
+        <summary className="cursor-pointer">{t("traces.sessionContext")}</summary>
         <div className="pt-3">
           <Markdown text={message.content} />
         </div>
       </details>
     );
-  if (message.role === "tool") return <ToolResultCard name={message.name || "Tool result"} result={message.content} />;
+  if (message.role === "tool") return <ToolResultCard name={message.name || t("traces.toolResult")} result={message.content} />;
   return (
     <div className={message.role === "user" ? "flex justify-end" : "space-y-3"}>
       {message.content && (

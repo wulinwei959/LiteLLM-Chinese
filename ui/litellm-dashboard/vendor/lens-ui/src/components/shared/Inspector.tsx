@@ -20,6 +20,7 @@ import { useLocalStorage, useMediaQuery, useOnClickOutside, useWindowSize } from
 import { ShortcutHints } from "./ShortcutHints";
 import { useShortcut } from "./useShortcut";
 import { cn } from "../../lib/cva.config";
+import { useLensTranslate } from "../../host/useLensTranslate";
 
 const MIN_WIDTH = 700;
 const MIN_LEFT_GAP = 100;
@@ -185,6 +186,7 @@ function useExitPresence<T>(item: T | null, itemKey: (item: T) => string) {
 }
 
 function ResizeHandle({ noun, width, onResize }: { noun: string; width: number; onResize: (width: number) => void }) {
+  const t = useLensTranslate();
   const [dragging, setDragging] = useState(false);
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -207,7 +209,7 @@ function ResizeHandle({ noun, width, onResize }: { noun: string; width: number; 
     <div
       role="separator"
       aria-orientation="vertical"
-      aria-label={`Resize ${noun} panel`}
+      aria-label={t("shared.resizeValue0Panel", { value0: noun })}
       aria-valuenow={width}
       aria-valuemin={MIN_WIDTH}
       tabIndex={0}
@@ -254,17 +256,18 @@ function HeaderButton({
 }
 
 function Header() {
+  const t = useLensTranslate();
   const { index, total, noun, step, close, fullScreen, setFullScreen } = useInspector();
   return (
     <div data-slot="inspector-header" className="flex h-[37px] shrink-0 items-center gap-1 border-b border-border px-2">
-      <HeaderButton label="Close (Esc)" onClick={close}>
+      <HeaderButton label={t("shared.closeEsc")} onClick={close}>
         <ChevronsRight className="size-4" />
       </HeaderButton>
       <span className="mx-1 h-4 w-px bg-border" />
-      <HeaderButton label={`Next ${noun} (J)`} disabled={index < 0 || index >= total - 1} onClick={() => step(1)}>
+      <HeaderButton label={t("shared.nextValue0J", { value0: noun })} disabled={index < 0 || index >= total - 1} onClick={() => step(1)}>
         <ChevronDown className="size-4" />
       </HeaderButton>
-      <HeaderButton label={`Previous ${noun} (K)`} disabled={index <= 0} onClick={() => step(-1)}>
+      <HeaderButton label={t("shared.previousValue0K", { value0: noun })} disabled={index <= 0} onClick={() => step(-1)}>
         <ChevronUp className="size-4" />
       </HeaderButton>
       {index >= 0 && (
@@ -274,12 +277,12 @@ function Header() {
       )}
       <div className="ml-auto flex items-center gap-1">
         <HeaderButton
-          label={fullScreen ? "Exit full screen" : "Enter full screen"}
+          label={fullScreen ? t("shared.exitFullScreen") : t("shared.enterFullScreen")}
           onClick={() => setFullScreen(!fullScreen)}
         >
           {fullScreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
         </HeaderButton>
-        <HeaderButton label={`Close ${noun} (Esc)`} onClick={close}>
+        <HeaderButton label={t("shared.closeValue0Esc", { value0: noun })} onClick={close}>
           <X className="size-4" />
         </HeaderButton>
       </div>

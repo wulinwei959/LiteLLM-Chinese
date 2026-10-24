@@ -9,6 +9,7 @@ import { FieldTree } from "./FieldTree";
 import { Markdown } from "./Markdown";
 import { MessageList, ToolResultCard } from "./Messages";
 import type { PayloadView, TextFormat } from "./payload";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 const TEXT_CARD = "rounded-lg border border-border bg-card px-3.5 py-3";
 
@@ -28,6 +29,7 @@ export function TextBody({ text, format }: { text: string; format: TextFormat })
 }
 
 export function Payload({ view, name, failed }: { view: PayloadView; name: string; failed: boolean }) {
+  const t = useLensTranslate();
   switch (view.kind) {
     case "messages":
       return <MessageList messages={view.messages} />;
@@ -41,7 +43,7 @@ export function Payload({ view, name, failed }: { view: PayloadView; name: strin
               <Braces />
             </BlockBadge>
           }
-          label="Fields"
+          label={t("traces.fields")}
           name="fields"
           meta={<span className="text-xs text-muted-foreground tabular-nums">{view.entries.length}</span>}
         >

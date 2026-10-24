@@ -8,6 +8,11 @@ references it, covering three call shapes:
   comes from the wrapper in `src/lib/i18n/translators.ts`
 - the `toastMessage` bridge, which reads the `toast` namespace
 
+The vendor package (`vendor/lens-ui`) takes its translator from the host, so
+its keys read as bare relative paths (`t("sidebar.lensNavigation")`) rather
+than through a namespace scope. Those literals reach the verbatim rescue
+below, which is why the scan covers the vendor tree too.
+
 Keys reached through a table constant (`labelKey: "authType.tokenExchange"`)
 cannot be attributed to a namespace by the scanner, so every key whose
 relative path appears verbatim as a string literal anywhere in `src` is
@@ -44,7 +49,7 @@ CATALOG = flat(en)
 files = [
     f
     for f in subprocess.run(
-        ["git", "ls-files", "src"], cwd=ROOT, capture_output=True, text=True
+        ["git", "ls-files", "src", "vendor/lens-ui/src"], cwd=ROOT, capture_output=True, text=True
     ).stdout.split()
     if f.endswith((".ts", ".tsx"))
 ]

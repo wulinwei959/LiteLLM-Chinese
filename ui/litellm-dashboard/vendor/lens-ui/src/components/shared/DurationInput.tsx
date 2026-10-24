@@ -5,6 +5,7 @@ import { useId, useState } from "react";
 import { Input } from "../ui/input";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../../lib/cva.config";
+import { useLensTranslate } from "../../host/useLensTranslate";
 
 export type DurationInputProps = Omit<ComponentProps<"div">, "onChange"> & {
   label: string;
@@ -15,17 +16,18 @@ export type DurationInputProps = Omit<ComponentProps<"div">, "onChange"> & {
 };
 
 export function DurationInput({ label, value, onChange, base, max, className, ...props }: DurationInputProps) {
+  const t = useLensTranslate();
   const id = useId();
   const units =
     base === "minutes"
       ? [
-          { label: "minutes", scale: 1 },
-          { label: "hours", scale: 60 },
-          { label: "days", scale: 1440 },
+          { label: t("shared.unitMinutes"), scale: 1 },
+          { label: t("shared.unitHours"), scale: 60 },
+          { label: t("shared.unitDays"), scale: 1440 },
         ]
       : [
-          { label: "hours", scale: 1 },
-          { label: "days", scale: 24 },
+          { label: t("shared.unitHours"), scale: 1 },
+          { label: t("shared.unitDays"), scale: 24 },
         ];
   const [scale, setScale] = useState(() => [...units].reverse().find((unit) => value % unit.scale === 0)?.scale ?? 1);
   function changeUnit(next: number) {
@@ -48,7 +50,7 @@ export function DurationInput({ label, value, onChange, base, max, className, ..
         />
         <div className="relative w-28 shrink-0">
           <select
-            aria-label={`${label} unit`}
+            aria-label={t("shared.value0Unit", { value0: label })}
             value={scale}
             className="h-9 w-full appearance-none rounded-md border border-input bg-background pl-3 pr-9 text-sm"
             onChange={(event) => changeUnit(Number(event.target.value))}

@@ -12,6 +12,7 @@ import { CaseCompare } from "./CaseCompare";
 import { costPerCase, passedLabel, shortSha } from "./format";
 import { CriticalTag, GateStatus } from "./RunBadges";
 import type { CaseDiff, EvalRun, Summary } from "./types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export interface RunDetailProps {
   readonly runId: string;
@@ -26,6 +27,7 @@ export function RunDetail({
   onBack,
   onOpenCase,
 }: RunDetailProps) {
+  const t = useLensTranslate();
   const run = useEvalRun(runId);
   if (run.isPending)
     return (
@@ -34,8 +36,8 @@ export function RunDetail({
         icon={
           <Loader2 className="size-5 animate-spin motion-reduce:animate-none" />
         }
-        title="Loading run…"
-        description="Fetching its summary and gate."
+        title={t("evals.loadingRun")}
+        description={t("evals.fetchingSummaryGate")}
       />
     );
   if (run.error)
@@ -44,12 +46,11 @@ export function RunDetail({
         role="alert"
         tone="destructive"
         icon={<TriangleAlert className="size-5" />}
-        title="Couldn't load this run"
+        title={t("evals.couldnTLoadRun")}
         description={run.error.message}
       >
         <Button size="sm" variant="outline" onClick={onBack}>
-          All runs
-        </Button>
+          {t("evals.allRuns")}</Button>
       </StateMessage>
     );
   return (
@@ -65,16 +66,17 @@ const STRIP_ITEM =
 const KEY = "text-muted-foreground";
 
 function RunStrip({ run, onBack }: { run: EvalRun; onBack: () => void }) {
+  const t = useLensTranslate();
   const summary = run.summary;
   return (
     <header
-      aria-label="Run"
+      aria-label={t("evals.run")}
       className="lens-toolbar flex h-11 shrink-0 items-center overflow-x-auto border-b font-mono text-xs"
     >
       <button
         type="button"
         onClick={onBack}
-        aria-label="All runs"
+        aria-label={t("evals.allRuns")}
         className="flex h-full items-center gap-1 border-r px-3 text-muted-foreground hover:bg-muted hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
@@ -96,8 +98,8 @@ function RunStrip({ run, onBack }: { run: EvalRun; onBack: () => void }) {
       <span className={STRIP_ITEM}>
         <span className={KEY}>vs</span>
         {summary?.baseline_version
-          ? `main@${shortSha(summary.baseline_version)}`
-          : "no baseline"}
+          ? t("evals.mainValue0", { value0: shortSha(summary.baseline_version) })
+          : t("evals.baseline")}
       </span>
       {summary && (
         <>
@@ -125,8 +127,7 @@ function RunStrip({ run, onBack }: { run: EvalRun; onBack: () => void }) {
           </span>
           <span className={STRIP_ITEM}>
             <span className={KEY}>cost</span>
-            {costPerCase(summary)}/case
-          </span>
+            {t("evals.value0Case", { value0: costPerCase(summary) })}</span>
         </>
       )}
       <span className={STRIP_ITEM}>
@@ -134,7 +135,7 @@ function RunStrip({ run, onBack }: { run: EvalRun; onBack: () => void }) {
         {run.received_trials}/{run.expected_trials}
       </span>
       <span className={cn(STRIP_ITEM, "ml-auto")}>
-        <IdChip value={run.id} label="Copy run ID" />
+        <IdChip value={run.id} label={t("evals.copyRunID")} />
       </span>
     </header>
   );
@@ -149,6 +150,7 @@ function RunBody({
   caseId: string | null;
   onOpenCase: RunDetailProps["onOpenCase"];
 }) {
+  const t = useLensTranslate();
   if (run.status === "failed")
     return (
       <p
@@ -157,7 +159,7 @@ function RunBody({
       >
         error:{" "}
         {run.failure ||
-          "This run ended with an error before it could be scored."}
+          t("evals.runEndedErrorBefore")}
       </p>
     );
   if (!run.summary)
@@ -166,8 +168,7 @@ function RunBody({
         role="status"
         className="px-3 py-2 font-mono text-xs text-muted-foreground"
       >
-        scoring… {run.received_trials}/{run.expected_trials} trials received
-      </p>
+        {t("evals.scoringValue0Value1Trials", { value0: run.received_trials, value1: run.expected_trials })}</p>
     );
   const summary = run.summary;
   const requested = caseId === null ? null : findDiff(summary, caseId);
@@ -201,8 +202,8 @@ function RunBody({
           ) : (
             <p className="px-3 py-6 font-mono text-xs text-muted-foreground">
               {summary.baseline_run_id === null
-                ? "No main baseline yet, so nothing to compare against."
-                : "No case changed verdict against main."}
+                ? t("evals.mainBaselineYetNothing")
+                : t("evals.caseChangedVerdictAgainst")}
             </p>
           )}
         </div>
@@ -212,10 +213,11 @@ function RunBody({
 }
 
 function GateReasons({ summary }: { summary: Summary }) {
+  const t = useLensTranslate();
   if (summary.gate.reasons.length === 0) return null;
   return (
     <ul
-      aria-label="Gate reasons"
+      aria-label={t("evals.gateReasons")}
       className={cn(
         "flex shrink-0 flex-wrap gap-x-4 border-b px-3 py-1.5 font-mono text-xs",
         summary.gate.passed
@@ -239,20 +241,21 @@ function CaseList({
   selected: string | null;
   onOpen: (caseId: string) => void;
 }) {
+  const t = useLensTranslate();
   return (
     <nav
-      aria-label="Changed cases"
+      aria-label={t("evals.changedCases")}
       className="w-72 shrink-0 overflow-y-auto border-r bg-[var(--lens-soft)]"
     >
       <CaseGroup
-        title="Regressed"
+        title={t("evals.regressed2")}
         tone="text-destructive"
         diffs={summary.regressions}
         selected={selected}
         onOpen={onOpen}
       />
       <CaseGroup
-        title="Fixed"
+        title={t("evals.fixed2")}
         tone="text-success"
         diffs={summary.fixed}
         selected={selected}
@@ -330,6 +333,7 @@ function MissingCase({
   caseId: string;
   onDismiss: () => void;
 }) {
+  const t = useLensTranslate();
   return (
     <div
       role="alert"
@@ -340,12 +344,11 @@ function MissingCase({
         className="size-3.5 shrink-0 text-warning"
       />
       <p className="min-w-0 flex-1 text-muted-foreground">
-        Case <span className="text-foreground">{caseId}</span> did not regress
+        {t("datasets.case6")}<span className="text-foreground">{caseId}</span> did not regress
         or get fixed in this run.
       </p>
       <Button size="sm" variant="outline" onClick={onDismiss}>
-        Dismiss
-      </Button>
+        {t("evals.dismiss")}</Button>
     </div>
   );
 }

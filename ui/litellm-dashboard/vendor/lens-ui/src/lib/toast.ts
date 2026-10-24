@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { toast as sonner } from "sonner";
 import { ApiError, deriveErrorMessage, unwrapProxyErrorMessage } from "./http/client";
+import { lensTranslate } from "../host/lensTranslate";
 
 export type ToastKind = "success" | "info" | "warning" | "error";
 
@@ -23,29 +24,30 @@ const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
 };
 
 const PROXY_TYPE_TITLES: Readonly<Record<string, string>> = {
-  budget_exceeded: "Budget Exceeded",
-  no_db_connection: "Service Unavailable",
-  expired_key: "Authentication Error",
-  token_not_found_in_db: "Authentication Error",
-  team_member_permission_error: "Access Denied",
-  not_found_error: "Not Found",
-  validation_error: "Validation Error",
-  bad_request_error: "Request Error",
-  team_member_already_in_team: "Already Exists",
+  get budget_exceeded() { return lensTranslate("lib.budgetExceeded"); },
+  get no_db_connection() { return lensTranslate("lib.serviceUnavailable"); },
+  get expired_key() { return lensTranslate("lib.authenticationError"); },
+  get token_not_found_in_db() { return lensTranslate("lib.authenticationError"); },
+  get team_member_permission_error() { return lensTranslate("lib.accessDenied"); },
+  get not_found_error() { return lensTranslate("lib.found"); },
+  get validation_error() { return lensTranslate("lib.validationError"); },
+  get bad_request_error() { return lensTranslate("lib.requestError"); },
+  get team_member_already_in_team() { return lensTranslate("lib.alreadyExists"); },
 };
 
 const STATUS_TITLES: Readonly<Record<number, string>> = {
-  400: "Request Error",
-  401: "Authentication Error",
-  403: "Access Denied",
-  404: "Not Found",
-  409: "Already Exists",
-  422: "Validation Error",
-  429: "Rate Limit Exceeded",
-  503: "Service Unavailable",
+  get ["400"]() { return lensTranslate("lib.requestError"); },
+  get ["401"]() { return lensTranslate("lib.authenticationError"); },
+  get ["403"]() { return lensTranslate("lib.accessDenied"); },
+  get ["404"]() { return lensTranslate("lib.found"); },
+  get ["409"]() { return lensTranslate("lib.alreadyExists"); },
+  get ["422"]() { return lensTranslate("lib.validationError"); },
+  get ["429"]() { return lensTranslate("lib.rateLimitExceeded"); },
+  get ["503"]() { return lensTranslate("lib.serviceUnavailable"); },
 };
 
-const WARNING_TITLES: ReadonlySet<string> = new Set(["Budget Exceeded", "Rate Limit Exceeded"]);
+const isWarning = ({ status, proxyType }: ErrorFacts): boolean =>
+  proxyType === "budget_exceeded" || status === 429;
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
@@ -113,16 +115,16 @@ const describeError = (input: unknown): ErrorFacts => {
 const titleForStatus = (status: number): string => {
   const known = STATUS_TITLES[status];
   if (known !== undefined) return known;
-  if (status >= 500) return "Server Error";
-  if (status >= 400) return "Request Error";
-  return "Error";
+  if (status >= 500) return lensTranslate("lib.serverError");
+  if (status >= 400) return lensTranslate("lib.requestError");
+  return lensTranslate("lib.error");
 };
 
 const titleFor = ({ status, proxyType }: ErrorFacts): string => {
-  if (proxyType?.endsWith("_access_denied")) return "Access Denied";
+  if (proxyType?.endsWith("_access_denied")) return lensTranslate("lib.accessDenied");
   const byType = proxyType === undefined ? undefined : PROXY_TYPE_TITLES[proxyType];
   if (byType !== undefined) return byType;
-  return status === undefined ? "Error" : titleForStatus(status);
+  return status === undefined ? lensTranslate("lib.error") : titleForStatus(status);
 };
 
 const show = (kind: ToastKind, message: ReactNode, options?: ToastOptions): void => {
@@ -140,7 +142,7 @@ export const toast = {
   fromError: (input: unknown, options?: ToastOptions): void => {
     const facts = describeError(input);
     const title = titleFor(facts);
-    show(WARNING_TITLES.has(title) ? "warning" : "error", title, { description: facts.text, ...options });
+    show(isWarning(facts) ? "warning" : "error", title, { description: facts.text, ...options });
   },
   dismiss: (): void => {
     sonner.dismiss();

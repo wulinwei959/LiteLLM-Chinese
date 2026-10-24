@@ -14,6 +14,7 @@ import { useRunRoute } from "../../route";
 
 import { money, when } from "../../model/format";
 import { failedTaskSummary, isPartial, runStatus } from "../../model/status";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const PAGE = 50;
 
@@ -35,6 +36,7 @@ function HistoryContent({
   offset,
   setOffset,
 }: HistoryTabProps & { offset: number; setOffset: (offset: number) => void }) {
+  const t = useLensTranslate();
   const history = useRunHistory(lens, offset, offset > 0);
   const { openRun } = useRunRoute();
   const rows = history.data ?? lens.jobs;
@@ -42,10 +44,9 @@ function HistoryContent({
     <>
       {history.error && (
         <p role="alert" className="text-sm text-destructive">
-          Could not load run history.{" "}
+          {t("investigations.couldLoadRunHistory")}{" "}
           <Button variant="link" size="sm" onClick={() => void history.refetch()}>
-            Retry
-          </Button>
+            {t("investigations.retry")}</Button>
         </p>
       )}
       {rows.length > 0 && <HistoryTimeline jobs={rows} slots={PAGE} onOpen={openRun} />}
@@ -59,8 +60,7 @@ function HistoryContent({
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium">{when(j.created_at)}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {j.coverage?.screened ?? 0} runs reviewed
-                {j.findings != null && <> · {j.findings.length} findings</>}
+                {j.coverage?.screened ?? 0} {t("investigations.runsReviewed")}{j.findings != null && <> {t("investigations.value0Findings", { value0: j.findings.length })}</>}
                 <ScanDuration job={j} />
               </p>
               {j.error && (
@@ -85,16 +85,14 @@ function HistoryContent({
       {(offset > 0 || (history.data?.length ?? 0) >= PAGE) && (
         <div className="flex justify-between">
           <Button variant="ghost" size="sm" disabled={!offset} onClick={() => setOffset(Math.max(0, offset - PAGE))}>
-            Newer runs
-          </Button>
+            {t("investigations.newerRuns")}</Button>
           <Button
             variant="ghost"
             size="sm"
             disabled={(history.data?.length ?? 0) < PAGE}
             onClick={() => setOffset(offset + PAGE)}
           >
-            Older runs
-          </Button>
+            {t("investigations.olderRuns")}</Button>
         </div>
       )}
     </>

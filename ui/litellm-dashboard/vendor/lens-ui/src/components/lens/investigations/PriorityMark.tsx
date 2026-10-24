@@ -1,12 +1,14 @@
 import { cn } from "../../../lib/cva.config";
 import type { Priority } from "../model/inbox";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export const PRIORITY_ORDER: readonly Priority[] = ["high", "medium", "low"];
 
 export const PRIORITY_LABEL: Readonly<Record<Priority, string>> = {
-  high: "High",
-  medium: "Medium",
-  low: "Low",
+  get high() { return lensTranslate("investigations.high"); },
+  get medium() { return lensTranslate("investigations.medium"); },
+  get low() { return lensTranslate("investigations.low"); },
 };
 
 const DOT: Readonly<Record<Priority, string>> = {
@@ -26,6 +28,7 @@ export function PriorityDot({ priority, className }: { priority: Priority; class
 }
 
 export function PriorityPill({ priority }: { priority: Priority }) {
+  const t = useLensTranslate();
   return (
     <span
       className={cn(
@@ -34,7 +37,6 @@ export function PriorityPill({ priority }: { priority: Priority }) {
       )}
     >
       <PriorityDot priority={priority} />
-      {PRIORITY_LABEL[priority]} priority
-    </span>
+      {t("investigations.value0Priority", { value0: PRIORITY_LABEL[priority] })}</span>
   );
 }

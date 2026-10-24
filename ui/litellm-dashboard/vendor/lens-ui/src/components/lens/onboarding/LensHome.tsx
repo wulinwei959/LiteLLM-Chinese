@@ -15,6 +15,7 @@ import {
   TracingKey,
   useLensService,
 } from "./tracing/TracingSetupCard";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const shellValue = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
 
@@ -33,6 +34,7 @@ export function LensHome({
   readonly onSetup?: () => void;
   readonly onConnectGitHub?: (name: string) => void;
 }) {
+  const t = useLensTranslate();
   const [project] = useConnectProjectRoute();
   const [discoverAfter] = useState(Date.now);
   const accessToken = useLensAccessToken();
@@ -47,33 +49,29 @@ export function LensHome({
       traceUrl,
   );
   const environment = (key: string | null) =>
-    `export LITELLM_TRACING_KEY=${shellValue(key ?? "<your tracing key>")}\nexport OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=${shellValue(`${traceUrl}/v1/traces`)}\nexport OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer $LITELLM_TRACING_KEY"\nexport OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"`;
+    `export LITELLM_TRACING_KEY=${shellValue(key ?? t("onboarding.yourTracingKey"))}\nexport OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=${shellValue(`${traceUrl}/v1/traces`)}\nexport OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer $LITELLM_TRACING_KEY"\nexport OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"`;
 
   return (
     <section
-      aria-label="Get started with Lens"
+      aria-label={t("onboarding.getStartedLens")}
       className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8"
     >
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
           <h2 className="text-xl font-medium tracking-tight">
-            Get your first trace
-          </h2>
+            {t("onboarding.getFirstTrace")}</h2>
           <p className="text-sm text-muted-foreground">
-            Let your coding agent connect your project. Lens will watch for its
-            trace here.
-          </p>
+            {t("onboarding.letCodingAgentConnect")}</p>
         </div>
         {agents.list.agents.length > 0 && (
           <Button variant="outline" size="sm" onClick={onOpenAgents}>
-            View agents <ArrowRight aria-hidden className="size-3.5" />
+            {t("onboarding.viewAgents")}<ArrowRight aria-hidden className="size-3.5" />
           </Button>
         )}
       </div>
       {!enabled ? (
         <p className="text-sm text-muted-foreground">
-          Turn off demo data to connect your project.
-        </p>
+          {t("onboarding.turnOffDemoData")}</p>
       ) : (
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div className="min-w-0 space-y-5">
@@ -88,21 +86,16 @@ export function LensHome({
               id="tracing-key"
             >
               <summary className="cursor-pointer text-sm font-medium">
-                Tracing key
-              </summary>
+                {t("onboarding.tracingKey")}</summary>
               <div className="mt-4 space-y-4">
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Your coding agent will use the key already in your project. If
-                  it needs one, create a dedicated key here and save it in your
-                  local environment as <code>LITELLM_TRACING_KEY</code>. Keep it
-                  out of the prompt.
-                </p>
+                  {t("onboarding.codingAgentUseKey")}<code>LITELLM_TRACING_KEY</code>{t("onboarding.keepOutPrompt")}</p>
                 {ready && canMintTracingKey && !readOnly ? (
                   <TracingKey
                     accessToken={accessToken}
                     tracingKey={tracingKey}
                     compact
-                    name={project?.name ?? "Agent tracing"}
+                    name={project?.name ?? t("onboarding.agentTracing")}
                     onCreated={(key, active) => {
                       setTracingKey(key);
                       setKeyReady(active);
@@ -111,8 +104,8 @@ export function LensHome({
                 ) : (
                   <p className="text-sm text-muted-foreground">
                     {!canMintTracingKey || readOnly
-                      ? "Ask your Lens administrator for a tracing key."
-                      : "A working Lens connection and trace storage are needed to create a tracing key."}
+                      ? t("onboarding.askLensAdministratorTracing")
+                      : t("onboarding.workingLensConnectionTrace")}
                   </p>
                 )}
               </div>
@@ -120,25 +113,19 @@ export function LensHome({
             {ready && (
               <details className="rounded-md border bg-card px-5 py-4">
                 <summary className="cursor-pointer text-sm font-medium">
-                  Set up manually
-                </summary>
+                  {t("onboarding.setUpManually")}</summary>
                 <p className="my-4 text-sm leading-6 text-muted-foreground">
-                  Add these variables where your project loads its environment.
-                  Keep its existing agent name and model settings.
-                </p>
+                  {t("onboarding.addVariablesProjectLoads")}</p>
                 <CodeBlock
                   code={environment(tracingKey)}
                   display={environment(tracingKey && maskSecret(tracingKey))}
-                  copyLabel="Copy project environment"
+                  copyLabel={t("onboarding.copyProjectEnvironment")}
                   wrap
                 />
                 <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                  When the agent runs on another host, use{" "}
-                  <code>LITELLM_TRACE_ENDPOINT</code> with an HTTPS URL ending
-                  in <code>/v1/traces</code> and save the key as{" "}
-                  <code>LITELLM_TRACE_API_KEY</code>. The tracing exporter is
-                  built in.
-                </p>
+                  {t("onboarding.agentRunsAnotherHost")}{" "}
+                  <code>LITELLM_TRACE_ENDPOINT</code> {t("onboarding.hTTPSURLEnding")}<code>/v1/traces</code> {t("onboarding.saveKey")}{" "}
+                  <code>LITELLM_TRACE_API_KEY</code>{t("onboarding.tracingExporterBuilt")}</p>
               </details>
             )}
           </div>
@@ -160,8 +147,7 @@ export function LensHome({
           className="mt-6 px-0 text-xs text-muted-foreground"
           onClick={onSetup}
         >
-          Deployment setup
-        </Button>
+          {t("onboarding.deploymentSetup")}</Button>
       )}
     </section>
   );

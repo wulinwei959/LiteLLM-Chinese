@@ -20,16 +20,19 @@ import { LensPageHeader } from "../ui/LensPageHeader";
 import { useDatasets } from "./api";
 import { DatasetDetail } from "./DatasetDetail";
 import type { DatasetSummary } from "./types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export interface DatasetsViewProps {
   readonly readOnly?: boolean;
 }
 
 export function DatasetsView({ readOnly = false }: DatasetsViewProps) {
+  const t = useLensTranslate();
   const { datasetId, openDataset } = useDatasetRoute();
   return (
     <section
-      aria-label="Datasets"
+      aria-label={t("tabs.datasets")}
       className="flex w-full min-w-0 flex-1 flex-col"
     >
       {datasetId ? (
@@ -42,9 +45,9 @@ export function DatasetsView({ readOnly = false }: DatasetsViewProps) {
       ) : (
         <>
           <LensPageHeader
-            section="05 / REPLAY LIBRARY"
-            title="Datasets"
-            description="Real conversations. Reproducible test cases."
+            section={t("datasets.05REPLAYLIBRARY")}
+            title={t("tabs.datasets")}
+            description={t("datasets.realConversationsReproducibleTest")}
           />
           <DatasetList onOpen={openDataset} />
         </>
@@ -54,6 +57,7 @@ export function DatasetsView({ readOnly = false }: DatasetsViewProps) {
 }
 
 function DatasetList({ onOpen }: { onOpen: (id: string) => void }) {
+  const t = useLensTranslate();
   const datasets = useDatasets();
   if (datasets.isPending)
     return (
@@ -62,8 +66,8 @@ function DatasetList({ onOpen }: { onOpen: (id: string) => void }) {
         icon={
           <Loader2 className="size-5 animate-spin motion-reduce:animate-none" />
         }
-        title="Loading datasets…"
-        description="Fetching the datasets you can see."
+        title={t("datasets.loadingDatasets")}
+        description={t("datasets.fetchingDatasetsSee")}
       />
     );
   if (datasets.isError)
@@ -72,12 +76,11 @@ function DatasetList({ onOpen }: { onOpen: (id: string) => void }) {
         role="alert"
         tone="destructive"
         icon={<TriangleAlert className="size-5" />}
-        title="Couldn't load datasets"
+        title={t("datasets.couldnTLoadDatasets")}
         description={datasets.error.message}
       >
         <Button size="sm" onClick={() => void datasets.refetch()}>
-          Try again
-        </Button>
+          {t("agents.tryAgain")}</Button>
       </StateMessage>
     );
   if (datasets.data.length === 0)
@@ -86,8 +89,8 @@ function DatasetList({ onOpen }: { onOpen: (id: string) => void }) {
         <StateMessage
           role="status"
           icon={<Database className="size-5" />}
-          title="No datasets yet"
-          description="Open a trace or a finding and choose Add to dataset to save real conversations for an agent."
+          title={t("datasets.datasetsYet")}
+          description={t("datasets.openTraceFindingChoose")}
         />
       </div>
     );
@@ -109,7 +112,7 @@ function NameCell({ row: { original: dataset } }: Cell) {
           {dataset.name}
         </span>
         <span className="truncate font-mono text-xs text-muted-foreground md:hidden">
-          {dataset.agent_name || "Any agent"}
+          {dataset.agent_name || lensTranslate("datasets.anyAgent")}
         </span>
       </span>
     </span>
@@ -119,7 +122,7 @@ function NameCell({ row: { original: dataset } }: Cell) {
 function AgentCell({ row: { original: dataset } }: Cell) {
   return (
     <span className="block truncate font-mono text-muted-foreground">
-      {dataset.agent_name || "Any agent"}
+      {dataset.agent_name || lensTranslate("datasets.anyAgent")}
     </span>
   );
 }
@@ -158,27 +161,27 @@ function OpenCell() {
 }
 
 const COLUMNS: ColumnDef<DatasetSummary>[] = [
-  { id: "name", header: "Dataset", cell: NameCell },
-  { id: "agent", size: 160, header: "Agent", cell: AgentCell },
+  { id: "name", get header() { return lensTranslate("datasets.dataset"); }, cell: NameCell },
+  { id: "agent", size: 160, get header() { return lensTranslate("agents.agent"); }, cell: AgentCell },
   {
     id: "revision",
     size: 80,
-    header: "Revision",
+    get header() { return lensTranslate("datasets.revision"); },
     cell: RevisionCell,
     meta: { numeric: true },
   },
   {
     id: "cases",
     size: 64,
-    header: "Cases",
+    get header() { return lensTranslate("datasets.cases"); },
     cell: CasesCell,
     meta: { numeric: true },
   },
-  { id: "updated", size: 200, header: "Updated", cell: UpdatedCell },
+  { id: "updated", size: 200, get header() { return lensTranslate("datasets.updated"); }, cell: UpdatedCell },
   {
     id: "open",
     size: 40,
-    header: "Open",
+    get header() { return lensTranslate("datasets.open"); },
     cell: OpenCell,
     meta: { headerClassName: "sr-only", className: "pl-0" },
   },
@@ -191,6 +194,7 @@ function DatasetTable({
   datasets: readonly DatasetSummary[];
   onOpen: (id: string) => void;
 }) {
+  const t = useLensTranslate();
   const desktop = useMediaQuery("(min-width: 768px)");
   const tableOptions: TableOptions<DatasetSummary> = {
     data: [...datasets],
@@ -218,7 +222,7 @@ function DatasetTable({
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
         <InspectorTable.Root table={table}>
           <InspectorTable.Grid
-            aria-label="Datasets"
+            aria-label={t("tabs.datasets")}
             className="lens-table text-xs md:min-w-[720px]"
           >
             <InspectorTable.Header />

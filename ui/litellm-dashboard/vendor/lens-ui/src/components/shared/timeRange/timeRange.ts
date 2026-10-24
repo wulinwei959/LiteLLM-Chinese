@@ -1,3 +1,4 @@
+import { lensTranslate } from "../../../host/lensTranslate";
 const HOUR_MS = 60 * 60 * 1000;
 
 export interface TimeWindow {
@@ -6,11 +7,11 @@ export interface TimeWindow {
 }
 
 export const RANGE_PRESETS = [
-  { hours: 1, label: "Last hour" },
-  { hours: 6, label: "Last 6 hours" },
-  { hours: 24, label: "Last 24 hours" },
-  { hours: 168, label: "Last 7 days" },
-  { hours: 720, label: "Last 30 days" },
+  { hours: 1, get label() { return lensTranslate("model.lastHour"); } },
+  { hours: 6, get label() { return lensTranslate("sharedTimeRange.last6Hours"); } },
+  { hours: 24, get label() { return lensTranslate("sharedTimeRange.last24Hours"); } },
+  { hours: 168, get label() { return lensTranslate("sharedTimeRange.last7Days"); } },
+  { hours: 720, get label() { return lensTranslate("sharedTimeRange.last30Days"); } },
 ] as const;
 
 export type RangeHours = (typeof RANGE_PRESETS)[number]["hours"];
@@ -19,7 +20,7 @@ export const DEFAULT_RANGE_HOURS: RangeHours = 24;
 export const isRangeHours = (hours: number): hours is RangeHours => RANGE_HOURS.includes(hours as RangeHours);
 
 export const presetLabel = (hours: number): string =>
-  RANGE_PRESETS.find((preset) => preset.hours === hours)?.label ?? `Last ${hours} hours`;
+  RANGE_PRESETS.find((preset) => preset.hours === hours)?.label ?? lensTranslate("sharedTimeRange.lastValue0Hours", { value0: hours });
 
 /** A preset length that ends now while live, or at the moment live was paused. */
 export interface RelativeRange {

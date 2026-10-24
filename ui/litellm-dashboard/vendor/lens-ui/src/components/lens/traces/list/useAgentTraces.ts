@@ -13,6 +13,7 @@ import { ApiError } from "../../../../lib/http/client";
 
 import type { TracePage, TraceSummary } from "../types";
 import type { TraceWindow } from "../api";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 interface LoadedTracePage extends TracePage {
   window: TraceWindow;
@@ -96,7 +97,7 @@ export function useAgentTraces({ accessToken, range, enabled }: UseAgentTracesOp
     isFetching: query.isFetching,
     isPlaceholder: query.isPlaceholderData,
     window: query.data?.pages[0]?.window ?? null,
-    notEnabledDetail: notEnabled ? query.error?.message || "Agent tracing is not enabled" : null,
+    notEnabledDetail: notEnabled ? query.error?.message || lensTranslate("traces.agentTracingEnabled") : null,
     error: notEnabled ? null : displayError(query.error),
     hasMore: query.hasNextPage,
     loadMore: () => {

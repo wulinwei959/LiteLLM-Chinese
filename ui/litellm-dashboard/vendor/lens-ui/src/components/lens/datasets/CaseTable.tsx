@@ -20,6 +20,8 @@ import { useOpenSourceTrace } from "../route";
 import { FINDING_PANEL_WIDTH_KEY } from "../storage";
 import { caseInput, caseReplyText, toolCallCount } from "./caseView";
 import type { DatasetCase } from "./types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const CASE_HEIGHT = 36;
 const MOBILE_CASE_HEIGHT = 52;
@@ -39,7 +41,7 @@ function useCaseTable(): CaseTableContextValue {
   return value;
 }
 
-export const caseLabel = (index: number): string => `Case ${index + 1}`;
+export const caseLabel = (index: number): string => lensTranslate("datasets.caseValue0", { value0: index + 1 });
 
 type Cell = CellContext<DatasetCase, unknown>;
 
@@ -47,7 +49,7 @@ function IncludeCell({ row }: Cell) {
   const { editable, onToggle } = useCaseTable();
   return (
     <Checkbox
-      aria-label={`Include ${caseLabel(row.index).toLowerCase()}`}
+      aria-label={lensTranslate("datasets.includeValue0", { value0: caseLabel(row.index).toLowerCase() })}
       checked={row.original.included}
       disabled={!editable}
       onClick={(event) => event.stopPropagation()}
@@ -58,8 +60,9 @@ function IncludeCell({ row }: Cell) {
 }
 
 function InputText({ item }: { item: DatasetCase }) {
+  const t = useLensTranslate();
   const input = caseInput(item);
-  if (!input) return <span className={MUTED_ITALIC}>No input</span>;
+  if (!input) return <span className={MUTED_ITALIC}>{t("datasets.noInput")}</span>;
   return (
     <>
       <span className="font-mono text-[var(--lens-brand)]">{input.role}: </span>
@@ -73,7 +76,7 @@ function ReplyText({ item }: { item: DatasetCase }) {
   return reply ? (
     <span>{reply}</span>
   ) : (
-    <span className={MUTED_ITALIC}>No reply</span>
+    <span className={MUTED_ITALIC}>{lensTranslate("datasets.reply")}</span>
   );
 }
 
@@ -102,7 +105,7 @@ function ExpectedCell({ row: { original: item } }: Cell) {
   return item.expected ? (
     <span className="block truncate text-foreground">{item.expected}</span>
   ) : (
-    <span className={MUTED_ITALIC}>Not set</span>
+    <span className={MUTED_ITALIC}>{lensTranslate("datasets.set")}</span>
   );
 }
 
@@ -117,8 +120,8 @@ function SourceCell({ row: { original: item } }: Cell) {
   return (
     <button
       type="button"
-      aria-label="Open source trace"
-      title="Open source trace"
+      aria-label={lensTranslate("datasets.openSourceTrace")}
+      title={lensTranslate("datasets.openSourceTrace")}
       onClick={(event) => {
         event.stopPropagation();
         openSourceTrace({ traceId, traceRef, spanId });
@@ -135,7 +138,7 @@ function ToolCallsCell({ row: { original: item } }: Cell) {
   if (count === 0) return null;
   return (
     <span
-      title={`${count} tool ${count === 1 ? "call" : "calls"}`}
+      title={lensTranslate("datasets.value0ToolValue1", { value0: count, value1: count === 1 ? "call" : "calls" })}
       className="inline-flex min-w-5 justify-center rounded-md bg-[var(--lens-violet)]/10 px-1.5 font-mono text-xs tabular-nums text-[var(--lens-violet)]"
     >
       {count}
@@ -147,18 +150,18 @@ const COLUMNS: ColumnDef<DatasetCase>[] = [
   {
     id: "include",
     size: 40,
-    header: "Include",
+    get header() { return lensTranslate("datasets.include"); },
     cell: IncludeCell,
     meta: { headerClassName: "sr-only", className: "pr-0" },
   },
-  { id: "input", header: "Input", cell: InputCell },
-  { id: "reply", header: "Reply", cell: ReplyCell },
-  { id: "expected", size: 220, header: "Expected", cell: ExpectedCell },
-  { id: "source", size: 72, header: "Source", cell: SourceCell },
+  { id: "input", get header() { return lensTranslate("datasets.input"); }, cell: InputCell },
+  { id: "reply", get header() { return lensTranslate("datasets.reply3"); }, cell: ReplyCell },
+  { id: "expected", size: 220, get header() { return lensTranslate("datasets.expected"); }, cell: ExpectedCell },
+  { id: "source", size: 72, get header() { return lensTranslate("datasets.source"); }, cell: SourceCell },
   {
     id: "tools",
     size: 104,
-    header: "Tool calls",
+    get header() { return lensTranslate("datasets.toolCalls"); },
     cell: ToolCallsCell,
     meta: { numeric: true },
   },
@@ -181,6 +184,7 @@ export function CaseTable({
   onToggle,
   children,
 }: CaseTableProps) {
+  const t = useLensTranslate();
   const desktop = useMediaQuery("(min-width: 768px)");
   const tableOptions: TableOptions<DatasetCase> = {
     data: [...cases],
@@ -209,7 +213,7 @@ export function CaseTable({
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
           <InspectorTable.Root table={table}>
             <InspectorTable.Grid
-              aria-label="Cases"
+              aria-label={t("datasets.cases")}
               className="lens-table text-xs md:min-w-[860px]"
             >
               <InspectorTable.Header />
@@ -238,7 +242,7 @@ export function CaseTable({
           </footer>
         </div>
       </CaseTableContext.Provider>
-      <Inspector.Panel<DatasetCase> label="Case details" testId="case-panel">
+      <Inspector.Panel<DatasetCase> label={t("datasets.caseDetails")} testId="case-panel">
         {children}
       </Inspector.Panel>
     </Inspector.Root>

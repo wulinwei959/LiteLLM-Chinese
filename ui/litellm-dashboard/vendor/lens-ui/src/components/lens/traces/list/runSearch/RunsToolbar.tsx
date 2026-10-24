@@ -6,6 +6,7 @@ import type { TimeWindow } from "../../../../shared/timeRange/timeRange";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../ui/select";
 import { useRunFilterRouting } from "../../routing";
 import { RunSearch } from "./RunSearch";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 interface RunsToolbarProps {
   query: string;
@@ -20,11 +21,12 @@ interface RunsToolbarProps {
 }
 
 export function RunsToolbar({ query, onQueryChange, runs, range, busy, children }: RunsToolbarProps) {
+  const t = useLensTranslate();
   const { status, setStatus } = useRunFilterRouting();
   const statuses = [
-    { value: "all", label: "All status" },
-    { value: "ok", label: "No errors" },
-    { value: "error", label: "With errors" },
+    { value: "all", label: t("traces.allStatus") },
+    { value: "ok", label: t("traces.errors") },
+    { value: "error", label: t("traces.withErrors") },
   ];
   return (
     <div className="lens-toolbar flex shrink-0 flex-col bg-card">
@@ -33,7 +35,7 @@ export function RunsToolbar({ query, onQueryChange, runs, range, busy, children 
         {children && <div className="ml-auto flex h-10 max-w-full items-stretch">{children}</div>}
       </div>
       <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2">
-        <span className="lens-section-label mr-1">Filter</span>
+        <span className="lens-section-label mr-1">{t("traces.filter")}</span>
         <Select
           items={statuses}
           value={status}
@@ -42,7 +44,7 @@ export function RunsToolbar({ query, onQueryChange, runs, range, busy, children 
           <SelectTrigger
             size="sm"
             className="h-7 min-w-28 bg-background font-mono text-[11px]"
-            aria-label="Filter traces by status"
+            aria-label={t("traces.filterTracesStatus")}
           >
             <SelectValue />
           </SelectTrigger>

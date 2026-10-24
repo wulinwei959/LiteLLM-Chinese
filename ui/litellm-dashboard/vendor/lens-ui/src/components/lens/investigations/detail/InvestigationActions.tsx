@@ -10,6 +10,7 @@ import {
 } from "../../../ui/dropdown-menu";
 import { hasActiveJob } from "../../model/status";
 import { type Lens } from "../../model/types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export interface InvestigationIntents {
   readonly onEdit: () => void;
@@ -37,34 +38,30 @@ export function InvestigationActions({
   onEnableMonitoring,
   onRunNow,
 }: InvestigationActionsProps) {
+  const t = useLensTranslate();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Investigation actions" />}>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label={t("investigations.investigationActions")} />}>
         <MoreHorizontal className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem disabled={busy || hasActiveJob(lens.jobs) || !ready} onClick={onRunNow}>
           <Play />
-          Run now
-        </DropdownMenuItem>
+          {t("investigations.runNow")}</DropdownMenuItem>
         <DropdownMenuItem onClick={onEdit}>
           <Settings2 />
-          Edit investigation
-        </DropdownMenuItem>
+          {t("investigations.editInvestigation")}</DropdownMenuItem>
         <DropdownMenuItem disabled={!ready} onClick={onDuplicate}>
           <Copy />
-          Duplicate
-        </DropdownMenuItem>
+          {t("investigations.duplicate")}</DropdownMenuItem>
         {lens.settings.enabled ? (
           <DropdownMenuItem disabled={busy} onClick={onPause}>
             <Pause />
-            Pause monitoring
-          </DropdownMenuItem>
+            {t("investigations.pauseMonitoring")}</DropdownMenuItem>
         ) : (
           <DropdownMenuItem disabled={!ready || busy} onClick={onEnableMonitoring}>
             <Play />
-            Enable monitoring
-          </DropdownMenuItem>
+            {t("investigations.enableMonitoring")}</DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

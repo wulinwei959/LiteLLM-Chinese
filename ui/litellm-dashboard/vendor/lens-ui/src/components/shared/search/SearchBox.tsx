@@ -17,6 +17,8 @@ import { type FilterOp, languageOps, parseQuery, type QueryClause, type QueryLan
 import { type SearchQuery, toSearchQuery } from "./searchQuery";
 import { completingField, completingPrefix, suggest, type Suggestion, type SuggestionMenu } from "./suggestions";
 import { NO_VALUES, type ValueSource } from "./valueSource";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const schema = new Schema({ nodes: { doc: { content: "text*" }, text: {} } });
 
@@ -25,9 +27,9 @@ const KEEP_MENU_CLOSED = "searchBoxKeepMenuClosed";
 
 const OPERATORS: readonly { readonly op: FilterOp; readonly label: string; readonly example: string }[] = [
   { op: "eq", label: "equals", example: "foo:bar" },
-  { op: "neq", label: "not equals", example: "-foo:bar" },
-  { op: "glob", label: "wildcard match", example: "foo:*bar*" },
-  { op: "nglob", label: "does not contain", example: "-foo:*bar*" },
+  { op: "neq", get label() { return lensTranslate("sharedSearch.equals"); }, example: "-foo:bar" },
+  { op: "glob", get label() { return lensTranslate("sharedSearch.wildcardMatch"); }, example: "foo:*bar*" },
+  { op: "nglob", get label() { return lensTranslate("sharedSearch.contain"); }, example: "-foo:*bar*" },
 ];
 
 /** Colours each `key:` so the filters stand out from free text. */
@@ -251,7 +253,7 @@ function Input({ placeholder, busy = false, className, ...props }: SearchBoxInpu
       {busy ? (
         <Loader2
           role="status"
-          aria-label="Loading results"
+          aria-label={lensTranslate("sharedSearch.loadingResults")}
           className="size-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none"
         />
       ) : (
@@ -288,7 +290,7 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
       )}
       {...props}
     >
-      <div id={listId} role="listbox" aria-label="Search suggestions" className="max-h-80 overflow-y-auto p-1">
+      <div id={listId} role="listbox" aria-label={lensTranslate("sharedSearch.searchSuggestions")} className="max-h-80 overflow-y-auto p-1">
         {menu.groups.map((group) => (
           <div key={group.heading} role="group" aria-label={group.heading}>
             <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">{group.heading}</div>
@@ -313,8 +315,7 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
         ))}
         {menu.loading && (
           <div role="status" className="px-2 py-1.5 font-mono text-xs text-muted-foreground">
-            Loading values…
-          </div>
+            {lensTranslate("sharedSearch.loadingValues")}</div>
         )}
         {menu.showOperators && <OperatorHints ops={ops} />}
       </div>
@@ -322,14 +323,12 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
         <span className="flex items-center gap-1">
           <Kbd>↑</Kbd>
           <Kbd>↓</Kbd>
-          Navigate
-        </span>
+          {lensTranslate("sharedSearch.navigate")}</span>
         <span className="flex items-center gap-1">
           <Kbd>
             <CornerDownLeft className="size-3" />
           </Kbd>
-          Select
-        </span>
+          {lensTranslate("sharedSearch.select")}</span>
         {children}
       </div>
     </div>
@@ -346,8 +345,8 @@ export type SearchBoxCopyCommandProps<F extends string> = {
 type CopyOutcome = { readonly command: string; readonly outcome: "copied" | "failed" } | null;
 
 const copyLabel = (last: CopyOutcome, command: string): string => {
-  if (last?.command !== command) return "Copy as curl";
-  return last.outcome === "copied" ? "Copied" : "Copy failed";
+  if (last?.command !== command) return lensTranslate("sharedSearch.copyCurl");
+  return last.outcome === "copied" ? lensTranslate("onboarding.copied") : lensTranslate("sharedSearch.copyFailed");
 };
 
 /** Puts the current query on the clipboard as an API call, from the suggestions footer. */
@@ -379,9 +378,10 @@ function CopyCommand<F extends string>({ title, command }: SearchBoxCopyCommandP
 }
 
 function OperatorHints({ ops }: { ops: readonly FilterOp[] }) {
+  const t = useLensTranslate();
   return (
     <div className="pb-1">
-      <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">Comparison operators</div>
+      <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">{t("sharedSearch.comparisonOperators")}</div>
       {OPERATORS.filter((op) => ops.includes(op.op)).map((op) => (
         <div key={op.label} className="flex items-center justify-between px-2 py-1 font-mono text-xs">
           <span className="text-warning">{op.label}</span>

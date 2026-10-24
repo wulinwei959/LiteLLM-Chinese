@@ -9,8 +9,10 @@ import type { TraceMessage, TraceToolCall } from "../../types";
 import { Block, BlockBadge, type BadgeTone } from "./Block";
 import { Markdown } from "./Markdown";
 import { ToolArguments, ToolOutput } from "./ToolContent";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
-const ROLE_LABEL: Record<string, string> = { user: "User", system: "System", assistant: "Assistant", tool: "Tool" };
+const ROLE_LABEL: Record<string, string> = { get user() { return lensTranslate("traces.user"); }, get system() { return lensTranslate("traces.system"); }, get assistant() { return lensTranslate("traces.assistant"); }, get tool() { return lensTranslate("traces.tool"); } };
 const ROLE_TONE: Record<string, BadgeTone> = { user: "user", assistant: "assistant", tool: "tool", system: "neutral" };
 const ROLE_ICON: Record<string, React.ReactNode> = {
   user: <User />,
@@ -22,6 +24,7 @@ const ROLE_ICON: Record<string, React.ReactNode> = {
 const argsText = (args: unknown): string => (typeof args === "string" ? args : JSON.stringify(args));
 
 export function ToolCallBlock({ call }: { call: TraceToolCall }) {
+  const t = useLensTranslate();
   return (
     <div className="rounded-md border border-border bg-background">
       <div className="flex items-center gap-2 border-b border-border/70 px-2.5 py-1.5">
@@ -32,14 +35,14 @@ export function ToolCallBlock({ call }: { call: TraceToolCall }) {
         <CopyButton
           variant="action"
           value={`${call.name}(${argsText(call.args)})`}
-          label={`Copy ${call.name} call`}
+          label={t("traces.copyValue0Call", { value0: call.name })}
           iconOnly
           className="ml-auto size-6 text-muted-foreground"
         />
       </div>
       <div className="px-2.5 py-2">
         {call.args === undefined ? (
-          <p className="py-2 text-xs text-muted-foreground">Arguments not recorded</p>
+          <p className="py-2 text-xs text-muted-foreground">{t("traces.argumentsRecorded")}</p>
         ) : (
           <ToolArguments args={call.args} />
         )}
@@ -86,6 +89,7 @@ export function MessageList({ messages }: { messages: readonly TraceMessage[] })
 }
 
 export function ToolResultCard({ name, result, failed = false }: { name: string; result: string; failed?: boolean }) {
+  const t = useLensTranslate();
   return (
     <article
       className={cn(
@@ -101,7 +105,7 @@ export function ToolResultCard({ name, result, failed = false }: { name: string;
         <CopyButton
           variant="action"
           value={result}
-          label={`Copy ${name} result`}
+          label={t("traces.copyValue0Result", { value0: name })}
           iconOnly
           className="size-6 shrink-0 text-muted-foreground"
         />

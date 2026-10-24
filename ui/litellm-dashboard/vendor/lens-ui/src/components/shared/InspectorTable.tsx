@@ -11,6 +11,7 @@ import { Inspector } from "./Inspector";
 import { Skeleton } from "../ui/skeleton";
 import { TableBody, TableCell, TableHead, TableHeader } from "../ui/table";
 import { cn } from "../../lib/cva.config";
+import { lensTranslate } from "../../host/lensTranslate";
 
 const OVERSCAN_ROWS = 12;
 const NUMERIC = "text-right tabular-nums";
@@ -176,7 +177,7 @@ interface IndentProps<T> {
   readonly className?: string;
 }
 
-function Indent<T>({ row, toggleLabel = (expanded) => (expanded ? "Collapse" : "Expand"), className }: IndentProps<T>) {
+function Indent<T>({ row, toggleLabel = (expanded) => (expanded ? lensTranslate("traces.collapse") : lensTranslate("traces.expand")), className }: IndentProps<T>) {
   if (row.depth > 0) {
     const last = row.getParentRow()?.subRows.at(-1)?.id === row.id;
     return (

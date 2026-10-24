@@ -19,8 +19,11 @@ import { RunDetail } from "./runs/RunDetail";
 import { RunsTab } from "./runs/RunsTab";
 import type { EvalDefinition } from "./runs/types";
 import { gateLabel, scorerLabel } from "./labels";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export function EvalsView() {
+  const t = useLensTranslate();
   const { evalName, runId, caseId, openEval, openRun, openCase } = useEvalRunRoute();
   const [creating, setCreating] = useState(false);
   if (runId)
@@ -43,13 +46,12 @@ export function EvalsView() {
   return (
     <>
       <LensPageHeader
-        section="06 / REGRESSION LAB"
-        title="Evals"
-        description="Replay production. Catch regressions before they ship."
+        section={t("evals.06REGRESSIONLAB")}
+        title={t("tabs.evals")}
+        description={t("evals.replayProductionCatchRegressions")}
         actions={
           <Button size="sm" onClick={() => setCreating(true)}>
-            <Plus /> New eval
-          </Button>
+            <Plus /> {t("evals.newEval")}</Button>
         }
       />
       <EvalList onOpen={openEval} />
@@ -62,7 +64,7 @@ const loading = (title: string) => (
     role="status"
     icon={<Loader2 className="size-5 animate-spin motion-reduce:animate-none" />}
     title={title}
-    description="This takes a moment."
+    description={lensTranslate("evals.takesMoment")}
   />
 );
 
@@ -83,18 +85,19 @@ const datasetLabel = (definition: EvalDefinition, datasets: readonly DatasetSumm
 };
 
 function EvalList({ onOpen }: { onOpen: (name: string) => void }) {
+  const t = useLensTranslate();
   const evals = useEvals();
   const datasets = useDatasets();
-  if (evals.isPending) return loading("Loading evals…");
-  if (evals.error) return failed("Couldn't load evals", evals.error);
+  if (evals.isPending) return loading(t("agents.loadingEvals"));
+  if (evals.error) return failed(t("evals.couldnTLoadEvals"), evals.error);
   if (evals.data.length === 0)
     return (
       <div className="lens-empty-state flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
         <StateMessage
           role="status"
           icon={<FlaskConical className="size-5" />}
-          title="No evals yet"
-          description="An eval replays a dataset of production cases against every PR and fails the check on regressions."
+          title={t("evals.evalsYet")}
+          description={t("evals.evalReplaysDatasetProduction")}
         />
       </div>
     );
@@ -110,11 +113,12 @@ function EvalTable({
   datasets: readonly DatasetSummary[];
   onOpen: (name: string) => void;
 }) {
+  const t = useLensTranslate();
   const columns: ColumnDef<EvalDefinition>[] = [
     {
       id: "name",
       size: 220,
-      header: "Eval",
+      header: t("evals.eval"),
       cell: ({ row }) => (
         <span className="flex min-w-0 items-center gap-2.5 font-mono">
           <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--lens-violet)]/20 bg-[var(--lens-violet)]/10 text-[var(--lens-violet)]">
@@ -127,20 +131,20 @@ function EvalTable({
     {
       id: "agent",
       size: 160,
-      header: "Agent",
+      header: t("agents.agent"),
       cell: ({ row }) => <span className="font-mono">{row.original.spec.agent}</span>,
     },
     {
       id: "dataset",
       size: 200,
-      header: "Dataset",
+      header: t("datasets.dataset"),
       cell: ({ row }) => (
         <span className="font-mono text-muted-foreground">{datasetLabel(row.original, datasets)}</span>
       ),
     },
     {
       id: "scorers",
-      header: "Scorers",
+      header: t("evals.scorers"),
       cell: ({ row }) => (
         <span className="truncate font-mono text-muted-foreground">
           {row.original.spec.scorers.map(scorerLabel).join(", ")}
@@ -150,14 +154,14 @@ function EvalTable({
     {
       id: "trials",
       size: 70,
-      header: "Trials",
+      header: t("evals.trials"),
       meta: { numeric: true },
       cell: ({ row }) => row.original.spec.trials,
     },
     {
       id: "gate",
       size: 200,
-      header: "Gate",
+      header: t("evals.gate"),
       cell: ({ row }) => <span className="font-mono text-muted-foreground">{gateLabel(row.original.spec.gate)}</span>,
     },
   ];
@@ -187,7 +191,7 @@ function EvalTable({
           </span>
         </div>
         <InspectorTable.Root table={table}>
-          <InspectorTable.Grid aria-label="Evals" className="lens-table text-xs" style={{ minWidth: 960 }}>
+          <InspectorTable.Grid aria-label={t("tabs.evals")} className="lens-table text-xs" style={{ minWidth: 960 }}>
             <InspectorTable.Header />
             <InspectorTable.Body<EvalDefinition> rowHeight={() => 36}>
               {(row) => (
@@ -216,32 +220,32 @@ function EvalPage({
   onBack: () => void;
   onOpenRun: (runId: string) => void;
 }) {
+  const t = useLensTranslate();
   const definition = useEvalDefinition(name);
   const datasets = useDatasets();
-  if (definition.isPending) return loading("Loading eval…");
-  if (definition.error) return failed("Couldn't load eval", definition.error);
+  if (definition.isPending) return loading(t("evals.loadingEval"));
+  if (definition.error) return failed(t("evals.couldnTLoadEval"), definition.error);
   const spec = definition.data.spec;
   const dataset = datasets.data?.find((item) => item.id === spec.dataset_id);
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
       <div className="lens-toolbar flex min-h-12 shrink-0 flex-wrap items-center gap-3 border-b px-3 py-2 text-xs">
         <Button variant="ghost" size="xs" onClick={onBack}>
-          <ChevronLeft /> Evals
-        </Button>
+          <ChevronLeft /> {t("tabs.evals")}</Button>
         <h2 className="flex shrink-0 items-center gap-2 whitespace-nowrap font-mono font-medium">
           <FlaskConical aria-hidden="true" className="size-4 text-[var(--lens-violet)]" />
           {name}
         </h2>
         <dl className="flex min-w-0 items-center gap-3 truncate font-mono text-muted-foreground">
-          <dt className="sr-only">Agent</dt>
+          <dt className="sr-only">{t("agents.agent")}</dt>
           <dd>{spec.agent}</dd>
-          <dt className="sr-only">Dataset</dt>
+          <dt className="sr-only">{t("datasets.dataset")}</dt>
           <dd>{datasetLabel(definition.data, datasets.data ?? [])}</dd>
-          <dt className="sr-only">Scorers</dt>
+          <dt className="sr-only">{t("evals.scorers")}</dt>
           <dd className="truncate">{spec.scorers.map(scorerLabel).join(", ")}</dd>
-          <dt className="sr-only">Trials</dt>
-          <dd>{spec.trials}× trials</dd>
-          <dt className="sr-only">Gate</dt>
+          <dt className="sr-only">{t("evals.trials")}</dt>
+          <dd>{t("evals.value0Trials", { value0: spec.trials })}</dd>
+          <dt className="sr-only">{t("evals.gate")}</dt>
           <dd>{gateLabel(spec.gate)}</dd>
         </dl>
       </div>

@@ -1,3 +1,4 @@
+import { lensTranslate } from "../../../../../host/lensTranslate";
 const MIN_BAR_PERCENT = 0.6;
 const TICK_STEPS_MS = [
   1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10_000, 15_000, 30_000, 60_000, 120_000, 300_000,
@@ -23,7 +24,7 @@ export function tickLabel(ms: number): string {
   if (ms === 0) return "0";
   if (ms >= 60_000) return `${+(ms / 60_000).toFixed(1)}m`;
   if (ms >= 1000) return `${+(ms / 1000).toFixed(1)}s`;
-  return `${ms}ms`;
+  return lensTranslate("evals.value0ms", { value0: ms });
 }
 
 /** Round tick offsets across the run: the smallest step that fits at most `maxTicks` labels. */

@@ -2,6 +2,7 @@ import { cn } from "../../../../lib/cva.config";
 
 import { gateTone, type GateTone } from "./format";
 import type { EvalRun } from "./types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const GATE: Record<
   GateTone,
@@ -20,6 +21,7 @@ export function GateStatus({
   run: EvalRun;
   className?: string;
 }) {
+  const t = useLensTranslate();
   const { label, className: tone } = GATE[gateTone(run)];
   return (
     <span
@@ -30,8 +32,7 @@ export function GateStatus({
       )}
     >
       <span aria-hidden="true" className="size-2 rounded-[2px] bg-current" />
-      gate {label}
-    </span>
+      {t("evals.gateValue0", { value0: label })}</span>
   );
 }
 

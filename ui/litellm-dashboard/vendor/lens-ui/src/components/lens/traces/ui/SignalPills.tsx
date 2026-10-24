@@ -1,6 +1,7 @@
 import { cn } from "../../../../lib/cva.config";
 
 import type { SignalFlag } from "../types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const percent = (score: number): string => `${Math.round(score * 100)}%`;
 
@@ -26,11 +27,12 @@ export function SignalPills({
   showScore?: boolean;
   className?: string;
 }) {
+  const t = useLensTranslate();
   return (
     <span
       role="list"
-      aria-label="Signals"
-      title={`Signals: ${signalSummary(flags)}`}
+      aria-label={t("settings.signals")}
+      title={t("traces.signalsValue0", { value0: signalSummary(flags) })}
       className={cn("inline-flex max-w-full min-w-0 items-center gap-1", className)}
     >
       {flags.map((flag) => (

@@ -1,6 +1,7 @@
 import { durationText } from "./format";
 import { activeJob, isActive, readingStart } from "./status";
 import type { Activity, InFlight, Job, Review, ReviewVerdict, Settings, ToolCount } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export type Outcome = "issue" | "clear" | "unknown";
 
@@ -42,7 +43,7 @@ export function outcome(review: Pick<Review, "cannot_assess" | "verdicts">): Out
 export function shortVerdict(review: Pick<Review, "cannot_assess" | "verdicts">): string {
   const issue = review.verdicts.find((v) => v.kind === "issue");
   if (issue) return issue.summary;
-  return review.cannot_assess ? "not enough evidence" : "no issues";
+  return review.cannot_assess ? lensTranslate("model.enoughEvidence") : lensTranslate("model.issues");
 }
 
 export type StripState =
@@ -54,20 +55,20 @@ export type StripState =
 export function stripState(
   job: Pick<Job, "status" | "error" | "stage" | "steps" | "coverage" | "reviews">,
   model: string,
-  queued = "Queued, waiting for a worker to pick this up",
+  queued = lensTranslate("model.queuedWaitingWorkerPick"),
 ): StripState {
-  if (job.status === "failed") return { kind: "failed", message: job.error || "The investigation failed" };
+  if (job.status === "failed") return { kind: "failed", message: job.error || lensTranslate("model.investigationFailed") };
   if (job.status === "completed" || job.status === "cancelled") return { kind: "done" };
   const stepError = job.steps.findLast((step) => step.kind === "error");
   if (stepError && !job.reviews.length) return { kind: "failed", message: stepError.label };
-  if (job.reviews.length) return { kind: "reviewing", message: job.stage || "Reviewing traces" };
+  if (job.reviews.length) return { kind: "reviewing", message: job.stage || lensTranslate("model.reviewingTraces") };
   if (job.status === "queued") return { kind: "waiting", message: queued };
   const { selected } = job.coverage;
-  const using = model ? ` with ${model}` : "";
+  const using = model ? lensTranslate("model.value0", { value0: model }) : "";
   if (job.stage === "Reading executions" && selected) {
-    return { kind: "waiting", message: `Reading ${selected} ${selected === 1 ? "trace" : "traces"}${using}…` };
+    return { kind: "waiting", message: lensTranslate("model.readingValue0Value1value2", { value0: selected, value1: selected === 1 ? "trace" : "traces", value2: using }) };
   }
-  return { kind: "waiting", message: `${job.stage || "Starting"}${using}…` };
+  return { kind: "waiting", message: `${job.stage || lensTranslate("investigations.starting")}${using}…` };
 }
 
 export interface IssueCount {
@@ -79,7 +80,7 @@ export function issueCount(job: Pick<Job, "status" | "findings" | "reviews" | "r
   const findings = job.findings?.filter((f) => f.kind === "issue").length;
   if (job.status === "completed" && findings !== undefined) return { count: findings, scope: "findings" };
   const count = job.reviews.filter((r) => outcome(r) === "issue").length;
-  if (job.reviewed > job.reviews.length) return { count, scope: `in ${job.reviews.length} displayed reviews` };
+  if (job.reviewed > job.reviews.length) return { count, scope: lensTranslate("model.value0DisplayedReviews", { value0: job.reviews.length }) };
   return { count, scope: "" };
 }
 
@@ -182,37 +183,37 @@ export function activeActivities(job: Pick<Job, "status" | "activities">): reado
 }
 
 const PHASE_LABELS: Record<Activity["phase"], string> = {
-  load: "Loading trace evidence",
-  review: "Reviewing trace",
-  group: "Grouping observations",
-  reconcile: "Combining candidate groups",
-  investigate: "Investigating candidate",
+  get load() { return lensTranslate("model.loadingTraceEvidence"); },
+  get review() { return lensTranslate("model.reviewingTrace"); },
+  get group() { return lensTranslate("model.groupingObservations"); },
+  get reconcile() { return lensTranslate("model.combiningCandidateGroups"); },
+  get investigate() { return lensTranslate("model.investigatingCandidate"); },
 };
 
 const TOOL_LABELS: Record<ToolCount["name"], string> = {
-  model: "Model",
-  read: "Read",
-  search: "Search",
-  python: "Python",
-  catalog: "Trace catalog",
-  review_catalog: "Review catalog",
-  read_reviews: "Read reviews",
-  search_reviews: "Search reviews",
-  history: "History",
-  checkpoint: "Context compaction",
+  get model() { return lensTranslate("investigations.model"); },
+  get read() { return lensTranslate("model.read"); },
+  get search() { return lensTranslate("model.search"); },
+  get python() { return lensTranslate("model.python"); },
+  get catalog() { return lensTranslate("model.traceCatalog"); },
+  get review_catalog() { return lensTranslate("model.reviewCatalog"); },
+  get read_reviews() { return lensTranslate("model.readReviews"); },
+  get search_reviews() { return lensTranslate("model.searchReviews"); },
+  get history() { return lensTranslate("investigations.history"); },
+  get checkpoint() { return lensTranslate("model.contextCompaction"); },
 };
 
 const OPERATION_LABELS: Record<ToolCount["name"], string> = {
-  model: "Analyzing evidence",
-  read: "Reading trace content",
-  search: "Searching trace content",
-  python: "Running Python",
-  catalog: "Inspecting trace catalog",
-  review_catalog: "Inspecting review catalog",
-  read_reviews: "Reading review observations",
-  search_reviews: "Searching review observations",
-  history: "Reading prior analysis",
-  checkpoint: "Compacting context",
+  get model() { return lensTranslate("model.analyzingEvidence"); },
+  get read() { return lensTranslate("model.readingTraceContent"); },
+  get search() { return lensTranslate("model.searchingTraceContent"); },
+  get python() { return lensTranslate("model.runningPython"); },
+  get catalog() { return lensTranslate("model.inspectingTraceCatalog"); },
+  get review_catalog() { return lensTranslate("model.inspectingReviewCatalog"); },
+  get read_reviews() { return lensTranslate("model.readingReviewObservations"); },
+  get search_reviews() { return lensTranslate("model.searchingReviewObservations"); },
+  get history() { return lensTranslate("model.readingPriorAnalysis"); },
+  get checkpoint() { return lensTranslate("model.compactingContext"); },
 };
 
 export function activityPhase(activity: Pick<Activity, "phase">): string {
@@ -234,17 +235,17 @@ export function toolCallSummary(calls: readonly ToolCount[] = []): string {
 }
 
 export function reviewScope(reviewed: number, displayed: number): string {
-  return reviewed > displayed ? `${displayed} displayed of ${reviewed} reviewed` : "";
+  return reviewed > displayed ? lensTranslate("model.value0DisplayedValue1Reviewed", { value0: displayed, value1: reviewed }) : "";
 }
 
 export function nowLine(job: Pick<Job, "coverage" | "reviewed">, reading: number): string {
   const { selected } = job.coverage;
-  const done = selected ? `${Math.min(job.reviewed, selected)} of ${selected}` : `${job.reviewed} done`;
-  return reading ? `${done} · ${reading} in flight` : done;
+  const done = selected ? lensTranslate("model.value0Value1", { value0: Math.min(job.reviewed, selected), value1: selected }) : lensTranslate("model.value0Done", { value0: job.reviewed });
+  return reading ? lensTranslate("model.value0Value1Flight", { value0: done, value1: reading }) : done;
 }
 
 export function durationLabel(ms: number): string {
-  if (ms < 1000) return `${Math.max(0, Math.round(ms))}ms`;
+  if (ms < 1000) return lensTranslate("evals.value0ms", { value0: Math.max(0, Math.round(ms)) });
   return ms < 60_000
     ? `${(ms / 1000).toFixed(1)}s`
     : `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`;
@@ -253,6 +254,6 @@ export function durationLabel(ms: number): string {
 export function doneLine(job: Pick<Job, "reviewed" | "created_at" | "finished_at" | "steps">): string {
   const end = job.finished_at ? Date.parse(job.finished_at) : Number.NaN;
   const seconds = Math.round((end - Date.parse(readingStart(job))) / 1000);
-  const took = Number.isFinite(seconds) && seconds >= 0 ? ` in ${durationText(seconds)}` : "";
-  return `Reviewed ${job.reviewed} ${job.reviewed === 1 ? "trace" : "traces"}${took} with`;
+  const took = Number.isFinite(seconds) && seconds >= 0 ? lensTranslate("model.inValue0", { value0: durationText(seconds) }) : "";
+  return lensTranslate("model.reviewedValue0Value1value2", { value0: job.reviewed, value1: job.reviewed === 1 ? "trace" : "traces", value2: took });
 }

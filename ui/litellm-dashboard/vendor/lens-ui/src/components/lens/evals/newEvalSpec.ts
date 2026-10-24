@@ -1,4 +1,5 @@
 import type { EvalSpec, Gate, Scorer } from "./runs/types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export interface NewEvalDraft {
   readonly name: string;
@@ -49,12 +50,12 @@ function optionalNumber(value: string): number | null | undefined {
 export function buildEvalSpec(draft: NewEvalDraft): DraftResult {
   const name = draft.name.trim();
   if (!NAME.test(name) || name === "runs")
-    return { ok: false, error: "Name must be lowercase letters, digits, - or _" };
-  if (!draft.datasetId) return { ok: false, error: "Pick a dataset" };
-  if (!draft.agent.trim()) return { ok: false, error: "Agent is required" };
+    return { ok: false, error: lensTranslate("evals.nameMustLowercaseLetters") };
+  if (!draft.datasetId) return { ok: false, error: lensTranslate("evals.pickDataset") };
+  if (!draft.agent.trim()) return { ok: false, error: lensTranslate("evals.agentRequired") };
   if (draft.calledBefore && (!draft.first.trim() || !draft.then.trim()))
-    return { ok: false, error: "Name both tools for the ordering check" };
-  if (draft.judge && !draft.prompt.trim()) return { ok: false, error: "The judge needs a question" };
+    return { ok: false, error: lensTranslate("evals.nameBothToolsOrdering") };
+  if (draft.judge && !draft.prompt.trim()) return { ok: false, error: lensTranslate("evals.judgeNeedsQuestion") };
   const scorers: Scorer[] = [
     ...(draft.taskCompleted ? [{ kind: "task_completed" } as const] : []),
     ...(draft.calledBefore
@@ -62,16 +63,16 @@ export function buildEvalSpec(draft: NewEvalDraft): DraftResult {
       : []),
     ...(draft.judge ? [{ kind: "judge", prompt: draft.prompt.trim(), model: "" } as const] : []),
   ];
-  if (scorers.length === 0) return { ok: false, error: "Pick at least one scorer" };
+  if (scorers.length === 0) return { ok: false, error: lensTranslate("evals.pickLeastOneScorer") };
   const trials = Number(draft.trials);
   if (!Number.isInteger(trials) || trials < 1 || trials > 10)
-    return { ok: false, error: "Trials must be a whole number from 1 to 10" };
+    return { ok: false, error: lensTranslate("evals.trialsMustWholeNumber") };
   const regressions = optionalNumber(draft.regressions);
   const critical = optionalNumber(draft.critical);
   const passRate = optionalNumber(draft.passRate);
   const costPerCase = optionalNumber(draft.costPerCase);
   if ([regressions, critical, passRate, costPerCase].includes(undefined) || (passRate ?? 0) > 100)
-    return { ok: false, error: "Gate limits must be non-negative numbers, pass rate at most 100" };
+    return { ok: false, error: lensTranslate("evals.gateLimitsMustNon") };
   const gate: Gate = {
     regressions: regressions === null || regressions === undefined ? null : Math.floor(regressions),
     critical: critical === null || critical === undefined ? null : Math.floor(critical),

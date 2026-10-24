@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { useLensUpdate } from "../data/mutations";
 import type { Lens } from "../model/types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const watchAllResult = z.object({
   skipped: z.array(z.object({ id: z.string(), name: z.string(), reason: z.string() })),
@@ -13,6 +14,7 @@ export interface WatchAllBannerProps {
 }
 
 export function WatchAllBanner({ lenses }: WatchAllBannerProps) {
+  const t = useLensTranslate();
   const watchAll = useLensUpdate();
   const paused = lenses.filter((lens) => !lens.settings.enabled).length;
   if (paused === 0) return null;
@@ -25,20 +27,18 @@ export function WatchAllBanner({ lenses }: WatchAllBannerProps) {
         className="text-xs text-muted-foreground"
         title={skipped.map((s) => `${s.name}: ${s.reason}`).join("\n")}
       >
-        {paused} paused · {skipped.length === 1 ? `${skipped[0].name} needs a fix` : `${skipped.length} need a fix`}
-      </span>
+        {t("investigations.value0PausedValue1", { value0: paused, value1: skipped.length === 1 ? t("investigations.value0NeedsFix", { value0: skipped[0].name }) : t("investigations.value0NeedFix", { value0: skipped.length }) })}</span>
     );
   return (
     <span role="status" className="text-xs text-muted-foreground">
-      {paused} paused · {watchAll.error && <span className="text-destructive">{watchAll.error.message} · </span>}
+      {paused} {t("investigations.paused")}{watchAll.error && <span className="text-destructive">{watchAll.error.message} · </span>}
       <button
         type="button"
         disabled={watchAll.isPending}
         onClick={() => watchAll.mutate((api) => api.watchAll())}
         className="font-medium text-foreground underline-offset-2 hover:underline disabled:opacity-50"
       >
-        Turn all on
-      </button>
+        {t("investigations.turnAll")}</button>
     </span>
   );
 }

@@ -6,8 +6,10 @@ import { Input } from "../../../ui/input";
 import { DurationInput } from "../../../shared/DurationInput";
 import type { InvestigationInput } from "../investigationSchema";
 import { AnalysisModelField, type AnalysisModelFieldProps } from "./AnalysisModelField";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
+  const t = useLensTranslate();
   const {
     control,
     register,
@@ -20,14 +22,13 @@ export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
       <div className="space-y-3">
         <label className="flex items-center gap-2 text-sm font-medium">
           <input type="checkbox" className="size-4 rounded border-input accent-foreground" {...register("repeat")} />
-          Keep watching for new traces
-        </label>
+          {t("setup.keepWatchingNewTraces")}</label>
         {repeat && (
           <Controller
             control={control}
             name="interval"
             render={({ field }) => (
-              <DurationInput label="Check every" value={field.value} onChange={field.onChange} base="minutes" />
+              <DurationInput label={t("setup.checkEvery")} value={field.value} onChange={field.onChange} base="minutes" />
             )}
           />
         )}
@@ -38,19 +39,18 @@ export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
         )}
       </div>
       <details open={!gate.modelValid || undefined}>
-        <summary className="cursor-pointer text-sm font-medium">Advanced options</summary>
+        <summary className="cursor-pointer text-sm font-medium">{t("setup.advancedOptions")}</summary>
         <div className="mt-4 space-y-5">
           <AnalysisModelField models={models} gate={gate} model={model} />
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="grid content-start gap-2 text-sm font-medium">
-              Maximum runs (optional)
-              <Input
+              {t("setup.maximumRunsOptional")}<Input
                 {...register("selection.sample_size", {
                   setValueAs: (value: unknown) => (value == null || value === "" ? null : Number(value)),
                 })}
                 type="number"
                 min="1"
-                placeholder="No limit"
+                placeholder={t("setup.limit")}
               />
               {errors.selection?.sample_size?.message && (
                 <p role="alert" className="text-sm text-destructive">
@@ -65,8 +65,7 @@ export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
                   onChange: () => setValue("selection.execution_ids", [], { shouldValidate: true }),
                 })}
               />
-              Choose individual runs
-            </label>
+              {t("setup.chooseIndividualRuns")}</label>
           </div>
           {errors.selection?.execution_ids?.message && (
             <p role="alert" className="text-sm text-destructive">
@@ -75,8 +74,7 @@ export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
           )}
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="grid content-start gap-2 text-sm font-medium">
-              Monthly limit (USD)
-              <Input {...register("budget", { valueAsNumber: true })} type="number" min="0.01" step="1" />
+              {t("setup.monthlyLimitUSD")}<Input {...register("budget", { valueAsNumber: true })} type="number" min="0.01" step="1" />
               {errors.budget?.message && (
                 <p role="alert" className="text-sm text-destructive">
                   {errors.budget.message}
@@ -87,9 +85,8 @@ export function RunFields({ models, gate, model }: AnalysisModelFieldProps) {
         </div>
       </details>
       {gate.modelValid && Number.isFinite(budget) && budget > 0 && (
-        <p role="note" aria-label="Analysis usage" className="text-xs leading-5 text-muted-foreground">
-          Lens sends selected trace content to {model}. Monthly limit: {money(budget)}. Provider charges apply.
-        </p>
+        <p role="note" aria-label={t("setup.analysisUsage")} className="text-xs leading-5 text-muted-foreground">
+          {t("setup.lensSendsSelectedTrace", { value0: model, value1: money(budget) })}</p>
       )}
     </>
   );

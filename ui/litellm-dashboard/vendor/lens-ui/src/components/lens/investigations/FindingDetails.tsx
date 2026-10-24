@@ -20,6 +20,8 @@ import { FrequencyCard } from "./FrequencyCard";
 import { IssueBrief } from "./IssueBrief";
 import { PriorityPill } from "./PriorityMark";
 import { type EvidenceRef, useEvidenceRoute } from "../route";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export const ownedFindingKey = (owned: OwnedFinding): string => findingKey(owned.lens, owned.finding);
 
@@ -40,6 +42,7 @@ export interface FindingDetailsProps {
 }
 
 function TopBar({ finding, onClose }: Pick<FindingDetailsProps, "finding" | "onClose">) {
+  const t = useLensTranslate();
   const now = useNow(30000);
   return (
     <div className="lens-toolbar sticky top-0 z-raised flex h-12 items-center justify-between gap-2 border-b bg-background px-4">
@@ -57,22 +60,20 @@ function TopBar({ finding, onClose }: Pick<FindingDetailsProps, "finding" | "onC
           variant="outline"
           size="xs"
           className="enabled:active:scale-[0.96]"
-          onClick={() => void copyToClipboard(findingMarkdown(finding), "Copied for agent")}
+          onClick={() => void copyToClipboard(findingMarkdown(finding), t("investigations.copiedAgent"))}
         >
           <ClipboardCopy />
-          Copy for agent
-        </Button>
+          {t("investigations.copyAgent")}</Button>
         {onClose && (
           <Button
             variant="ghost"
             size="xs"
             className="enabled:active:scale-[0.96]"
-            aria-label="Close finding (Esc)"
+            aria-label={t("investigations.closeFindingEsc")}
             onClick={onClose}
           >
             <X />
-            Close
-          </Button>
+            {t("investigations.close")}</Button>
         )}
       </div>
     </div>
@@ -107,17 +108,17 @@ function ProseSection({ title, children }: { title: string; children: string }) 
 
 const FIELD = /^(Input|Output|Status|Error)\s*:/gm;
 const FIELD_LABEL: Readonly<Record<string, string>> = {
-  "Input,Output": "Call and result",
-  Input: "Call input",
-  Output: "Returned output",
-  Status: "Span status",
-  Error: "Error",
+  get ["Input,Output"]() { return lensTranslate("investigations.callResult"); },
+  get Input() { return lensTranslate("investigations.callInput"); },
+  get Output() { return lensTranslate("investigations.returnedOutput"); },
+  get Status() { return lensTranslate("investigations.spanStatus"); },
+  get Error() { return lensTranslate("investigations.error"); },
 };
 
 function quoteLabel(quote: Quote, isTrace: boolean): string {
-  if (quote.role === "counterexample") return "Counterexample";
+  if (quote.role === "counterexample") return lensTranslate("investigations.counterexample");
   const fields = [...new Set(Array.from(quote.quote.matchAll(FIELD), (m) => m[1]))].join(",");
-  return FIELD_LABEL[fields] ?? (isTrace ? "Trace step" : "Logged request");
+  return FIELD_LABEL[fields] ?? (isTrace ? lensTranslate("investigations.traceStep") : lensTranslate("investigations.loggedRequest"));
 }
 
 const MARK = {
@@ -126,19 +127,20 @@ const MARK = {
 } as const;
 
 function QuoteCard({ quote, onOpen }: { quote: Quote; onOpen: () => void }) {
+  const t = useLensTranslate();
   const isTrace = evidenceTarget(quote.execution_id)?.source === "traces";
   return (
     <div className="-mx-1 rounded-md border border-l-2 border-l-cyan-400/60 bg-background p-3">
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <span className="min-w-0 truncate font-mono text-[11px] font-medium">{quoteLabel(quote, isTrace)}</span>
         <Button variant="outline" size="xs" className="enabled:active:scale-[0.96]" onClick={onOpen}>
-          {isTrace ? "View span" : "View request"}
+          {isTrace ? t("investigations.viewSpan") : t("investigations.viewRequest")}
         </Button>
       </div>
       <button
         type="button"
         tabIndex={-1}
-        title="Open this evidence"
+        title={t("investigations.openEvidence")}
         onClick={onOpen}
         className="block w-full overflow-x-auto rounded-md bg-muted/60 py-1.5 text-left font-mono text-xs leading-5 transition-[background-color] duration-150 hover:bg-muted"
       >
@@ -151,6 +153,7 @@ function QuoteCard({ quote, onOpen }: { quote: Quote; onOpen: () => void }) {
 }
 
 function EvidenceRail({ children }: { children: React.ReactNode }) {
+  const t = useLensTranslate();
   return (
     <>
       <div className="relative flex gap-2">
@@ -160,7 +163,7 @@ function EvidenceRail({ children }: { children: React.ReactNode }) {
           </div>
           <div aria-hidden="true" className="h-2 w-px bg-border" />
         </div>
-        <div className={`min-w-0 flex-1 leading-5 ${SECTION_LABEL}`}>Evidence</div>
+        <div className={`min-w-0 flex-1 leading-5 ${SECTION_LABEL}`}>{t("investigations.evidence")}</div>
       </div>
       <div className="relative">
         <div aria-hidden="true" className="absolute inset-y-0 left-[5px] w-px bg-border" />
@@ -177,8 +180,9 @@ interface ExampleGroup {
 }
 
 function Example({ group, onOpenEvidence }: { group: ExampleGroup; onOpenEvidence: (e: EvidenceRef) => void }) {
+  const t = useLensTranslate();
   const traceId = evidenceTarget(group.id)?.id;
-  const name = group.run?.name ?? (traceId ? `Trace ${traceId.slice(0, 8)}` : "Recorded run");
+  const name = group.run?.name ?? (traceId ? t("investigations.traceValue0", { value0: traceId.slice(0, 8) }) : t("investigations.recordedRun"));
   return (
     <article
       aria-label={name}
@@ -195,10 +199,9 @@ function Example({ group, onOpenEvidence }: { group: ExampleGroup; onOpenEvidenc
       <div className="w-full">
         {group.quotes.length === 0 ? (
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">No quote was retained for this trace.</p>
+            <p className="text-sm text-muted-foreground">{t("investigations.quoteRetainedTrace")}</p>
             <Button variant="outline" size="xs" onClick={() => onOpenEvidence({ id: group.id, span: "" })}>
-              View trace
-            </Button>
+              {t("investigations.viewTrace")}</Button>
           </div>
         ) : (
           <EvidenceRail>
@@ -225,12 +228,12 @@ function Examples({
   groups: readonly ExampleGroup[];
   onOpenEvidence: (e: EvidenceRef) => void;
 }) {
+  const t = useLensTranslate();
   const [expanded, setExpanded] = useState(false);
   if (groups.length === 0)
     return (
       <p className="lens-empty-state rounded-lg border px-4 py-8 text-sm text-muted-foreground">
-        No examples were recorded.
-      </p>
+        {t("investigations.examplesRecorded")}</p>
     );
   const shown = expanded ? groups : groups.slice(0, VISIBLE_EXAMPLES);
   const hidden = groups.length - shown.length;
@@ -246,7 +249,7 @@ function Examples({
           className="self-start text-muted-foreground"
           onClick={() => setExpanded(true)}
         >
-          Show {hidden} more {hidden === 1 ? "example" : "examples"}
+          {t("investigations.showHiddenValue0Examples", { value0: hidden })}
         </Button>
       )}
     </>
@@ -254,27 +257,26 @@ function Examples({
 }
 
 function ReviewForm({ finding, busy, onReview }: Pick<FindingDetailsProps, "finding" | "busy" | "onReview">) {
+  const t = useLensTranslate();
   const [reason, setReason] = useState(finding.reason ?? "");
   return (
     <section className="space-y-3 border-t pt-6">
       <label className="grid gap-2 text-sm font-medium">
-        What should Lens remember?
-        <Textarea
+        {t("investigations.shouldLensRemember")}<Textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="What should Lens know about this finding?"
+          placeholder={t("investigations.shouldLensKnowAbout")}
         />
       </label>
-      <p className="text-xs text-muted-foreground">Your explanation informs future scans of this Lens.</p>
+      <p className="text-xs text-muted-foreground">{t("investigations.explanationInformsFutureScans")}</p>
       <div className="flex flex-wrap gap-2">
         {finding.kind === "issue" && (
           <Button disabled={busy} onClick={() => onReview(finding.status === "resolved" ? "open" : "resolved", reason)}>
-            {finding.status === "resolved" ? "Reopen" : "Mark resolved"}
+            {finding.status === "resolved" ? t("investigations.reopen") : t("investigations.markResolved")}
           </Button>
         )}
         <Button disabled={busy} variant="outline" onClick={() => onReview("dismissed", reason)}>
-          This is expected
-        </Button>
+          {t("investigations.expected")}</Button>
       </div>
     </section>
   );
@@ -291,6 +293,7 @@ export function FindingDetails({
   onReview,
   onClose,
 }: FindingDetailsProps) {
+  const t = useLensTranslate();
   const groups: ExampleGroup[] = [
     ...new Set([...finding.evidence.map((e) => e.execution_id), ...finding.occurrences]),
   ].map((id) => ({
@@ -311,8 +314,7 @@ export function FindingDetails({
               <PriorityPill priority={finding.priority} />
             ) : (
               <span className="inline-flex h-5 items-center rounded border border-violet-200 bg-violet-50 px-2 font-mono text-violet-700 dark:border-violet-400/30 dark:bg-violet-400/10 dark:text-violet-300">
-                Pattern
-              </span>
+                {t("investigations.pattern")}</span>
             )}
             {agents.length > 0 && (
               <span className="font-mono text-[11px] font-medium text-foreground">{agents.join(", ")}</span>
@@ -322,37 +324,37 @@ export function FindingDetails({
             </span>
             {runs > 0 && (
               <span className="font-mono text-[10px] tabular-nums">
-                Found across {runs} investigation {runs === 1 ? "run" : "runs"}
+                {t("investigations.foundAcross")}{runs} investigation {runs === 1 ? "run" : "runs"}
               </span>
             )}
           </div>
         </header>
-        <ProseSection title="Summary">{finding.description}</ProseSection>
-        {finding.suggestion && <ProseSection title="Suggested fix">{finding.suggestion}</ProseSection>}
+        <ProseSection title={t("investigations.summary")}>{finding.description}</ProseSection>
+        {finding.suggestion && <ProseSection title={t("investigations.suggestedFix")}>{finding.suggestion}</ProseSection>}
         {finding.brief && (
-          <Disclosure title="Issue brief and test cases">
+          <Disclosure title={t("investigations.issueBriefTestCases")}>
             <IssueBrief title={finding.title} brief={finding.brief} />
           </Disclosure>
         )}
         {finding.limitation && (
-          <Disclosure title="Evidence limits">
+          <Disclosure title={t("investigations.evidenceLimits")}>
             <p className="max-w-[70ch] text-sm leading-relaxed text-pretty text-muted-foreground">
               {finding.limitation}
             </p>
           </Disclosure>
         )}
         <section>
-          <h2 className={`mb-2 ${SECTION_LABEL}`}>Monitors</h2>
+          <h2 className={`mb-2 ${SECTION_LABEL}`}>{t("investigations.monitors")}</h2>
           <FrequencyCard frequency={findingFrequency(finding.occurrences, sampledRuns)} />
         </section>
         <section className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
-            <h2 className={SECTION_LABEL}>Examples</h2>
+            <h2 className={SECTION_LABEL}>{t("investigations.examples")}</h2>
             {lensId && finding.evidence.length > 0 && (
               <AddToDatasetButton
                 sources={[{ kind: "finding", lens_id: lensId, finding_ids: [finding.id] }]}
                 agentName={agents[0]}
-                label="Add evidence to dataset"
+                label={t("investigations.addEvidenceDataset")}
               />
             )}
           </div>
@@ -383,6 +385,7 @@ export function FindingPanelBody({
   sampledRuns,
   onReview,
 }: FindingPanelProps & { readonly owned: OwnedFinding }) {
+  const t = useLensTranslate();
   const { evidence, setEvidence } = useEvidenceRoute();
   return (
     <>
@@ -403,7 +406,7 @@ export function FindingPanelBody({
         <EvidenceView
           lensId={owned.lens.id}
           evidence={evidence}
-          backLabel="Back to finding"
+          backLabel={t("investigations.backFinding")}
           onBack={() => setEvidence(null)}
         />
       )}
@@ -413,8 +416,9 @@ export function FindingPanelBody({
 
 /** The side panel for whichever finding the surrounding Inspector has open. */
 export function FindingPanel(props: FindingPanelProps) {
+  const t = useLensTranslate();
   return (
-    <Inspector.Panel label="Finding details" testId="finding-panel">
+    <Inspector.Panel label={t("investigations.findingDetails")} testId="finding-panel">
       {(owned: OwnedFinding) => <FindingPanelBody {...props} owned={owned} />}
     </Inspector.Panel>
   );

@@ -15,6 +15,7 @@ import {
   type SetupEval,
   type SetupGoal,
 } from "./setupPrompt";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export function SetupAgentPrompt({
   goal = "start",
@@ -31,6 +32,7 @@ export function SetupAgentPrompt({
   readonly agentName?: string;
   readonly prominent?: boolean;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const [baseUrl, setBaseUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -54,7 +56,7 @@ export function SetupAgentPrompt({
     setCopied(
       await copyToClipboard(
         setupPrompt({ ...context, baseUrl: current }),
-        "Prompt copied",
+        t("onboarding.promptCopied"),
       ),
     );
   };
@@ -70,8 +72,7 @@ export function SetupAgentPrompt({
         <div className="mb-5 space-y-4">
           <div>
             <h3 className="text-base font-medium">
-              Give this to your coding agent
-            </h3>
+              {t("onboarding.giveCodingAgent")}</h3>
             <div className="mt-4 flex flex-wrap items-center gap-5">
               <span className="inline-flex items-center gap-2 text-sm font-medium">
                 <img src={claudeCodeLogo.src} alt="Claude Code logo" className="size-6 object-contain" />
@@ -83,14 +84,10 @@ export function SetupAgentPrompt({
               </span>
             </div>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Open your project in your coding agent, then paste these instructions.
-            </p>
+              {t("onboarding.openProjectCodingAgent")}</p>
           </div>
           <blockquote className="rounded-md bg-muted/40 p-4 text-sm leading-7">
-            Connect this project to Lens. Send a trace and verify that Lens
-            received it. Then ask me, “What would you like to instrument next?”
-            and help me do that.
-          </blockquote>
+            {t("onboarding.connectProjectLensSend")}</blockquote>
         </div>
       )}
       <div className="flex flex-wrap items-center gap-3">
@@ -98,7 +95,7 @@ export function SetupAgentPrompt({
           variant={prominent ? "default" : "outline"}
           size={prominent ? "default" : "sm"}
           aria-label={
-            prominent ? "Copy setup instructions" : "Set it up for me"
+            prominent ? t("onboarding.copySetupInstructions") : t("onboarding.setUpMe")
           }
           onClick={() => void copy()}
         >
@@ -108,15 +105,15 @@ export function SetupAgentPrompt({
             <Copy aria-hidden="true" className="size-3.5" />
           )}
           {copied
-            ? "Prompt copied"
+            ? t("onboarding.promptCopied")
             : prominent
-              ? "Copy setup instructions"
-              : "Set it up for me"}
+              ? t("onboarding.copySetupInstructions")
+              : t("onboarding.setUpMe")}
         </Button>
         <p className="text-xs leading-5 text-muted-foreground">
           {prominent
-            ? "Includes your Lens address. No keys or secrets."
-            : "Copy a prompt for your coding agent. It checks your setup and asks only for missing choices."}
+            ? t("onboarding.includesLensAddressKeys")
+            : t("onboarding.copyPromptCodingAgent")}
         </p>
       </div>
       <details
@@ -126,7 +123,7 @@ export function SetupAgentPrompt({
         }}
       >
         <summary className="w-fit cursor-pointer">
-          {prominent ? "View full instructions" : "View prompt"}
+          {prominent ? t("onboarding.viewFullInstructions") : t("onboarding.viewPrompt")}
         </summary>
         <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words font-sans leading-5">
           {prompt}

@@ -593,4 +593,19 @@ node scripts/i18n-file-inventory.mjs
 
 `model-insights` 基线里唯一留下的 `session` 判保留：它来自 `costPerSessionHint` 的 `session_id`（教用户往请求里加的 API 字段名），目录里就有这个词，删掉它文案读不通
 
-白名单净增 18 条（`scripts/rendered-ui-fixtures.mjs` 的 `ALLOWED_ENGLISH`），逐条判定：供应商名 `Anthropic`、集成名 `CloudZero`、`MS Teams`、供应商 `Hashicorp Vault`、`CyberArk Conjur`、技能页产品与路径段 `Claude Code`/`claude-code`/`marketplace.json`、协议 `SCIM`、单位 `token`（zh 文案按惯例不译）、端点路径段 `decisions`/`systemone`、时区 `UTC`、文件扩展名 `.png`/`.svg`/`.ico` 与界面词条自带的 `logo`/`Logo`（ui-theme 的 zh 文案本身写的就是"logo 链接"）
+白名单净增 18 条（`scripts/rendered-ui-fixtures.mjs` 的 `ALLOWED_ENGLISH`），逐条判定：供应商名 `Anthropic`、集成名 `CloudZero`、`MS Teams`、供应商 `Hashicorp Vault`、`CyberArk Conjur`、技能页产品与路径段 `Claude Code`/`claude-code`/`marketplace.json`、协议 `SCIM`、单位 `token`（zh 文案按惯例不译）、端点路径段 `decisions`/`systemone`、时区 `UTC`、文件扩展名 `.png`/`.svg`/`.ico` 与界面词条自带的 `logo`/`Logo`（ui-theme 的 zh 文案本身写的就是“logo 链接”）
+
+## lens 追踪观察页（2026-10-24 第 533 簇）
+
+lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源文件经 `scripts/lens-localize.mjs --apply` 改写，lens 命名空间在目录两侧各 1503 键，这份"未接入清单"对 vendor 不再有未接条目。手工位点与批量改写的分工账记在 [PROGRESS.md](./PROGRESS.md) 第 533 簇，此处只记渲染扫描事后揪出的尾账：
+
+| 位置 | 接线前 | 落定的键 |
+| --- | --- | --- |
+| `vendor/.../onboarding/tracing/TracingSetupCard.tsx:508` | 三条 `message = "…"` 整句漏抽（抽取工具只认翻译调用形态） | 新开 `onboarding.enableLensExistingHelmDocker`/`lensConfiguredLiteLLMUnreachable`/`lensConnectedTracingStorageUnavailable` |
+| `vendor/.../agents/AgentGitHubDialog.tsx:161` | `availability_error \|\| "The App may have been…"` 英文 fallback 藏在 ICU 参数值里 | 复用批量抽好的 `agents.appMayBeenRemoved` |
+| `vendor/.../agents/GitHubWorkflowSetup.tsx:221` | `gate.passed ? "Gate passed" : "Gate failed, review…"` 同上 | 复用 `agents.gatePassed`/`agents.gateFailedReviewResult` |
+| `vendor/.../investigations/WatchAllBanner.tsx:30` | `` `${name} needs a fix` `` / `` `${n} need a fix` `` 模板拼串 | 复用 `investigations.value0NeedsFix`/`value0NeedFix` |
+| `vendor/.../evals/runs/connectSnippets.ts:141` | `` `, model=${pyString(scorer.model)}` `` 内嵌插值 | 复用 `evals.modelValue0` |
+| `vendor/.../settings/signals/SignalSettings.tsx:32` | 模块顶层 `new Set(SIGNAL_LIBRARY.map(...question))` 在翻译器注册前触发 getter，lens 页整页崩溃 | 改惰性函数 `LIBRARY_QUESTIONS()` |
+
+这批接线同时把死键判定器真死账清零：判定器此前只扫 `src`，lens 键全库误报 1293 条死，文件清单补 `vendor/lens-ui/src` 后剩的 6 条真死键即上表中间四行

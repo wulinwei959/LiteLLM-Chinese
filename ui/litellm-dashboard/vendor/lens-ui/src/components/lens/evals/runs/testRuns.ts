@@ -6,13 +6,14 @@ import type {
   ToolStep,
   TrialSteps,
 } from "./types";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export const diff = (
   case_id: string,
   overrides: Partial<CaseDiff> = {},
 ): CaseDiff => ({
   case_id,
-  title: `Case ${case_id}`,
+  title: lensTranslate("datasets.caseValue0", { value0: case_id }),
   critical: false,
   baseline_url: `https://lens.test/?eval_run=main&eval_case=${case_id}`,
   candidate_url: `https://lens.test/?eval_run=pr&eval_case=${case_id}`,
@@ -58,7 +59,7 @@ export const step = (
   start_ns: number,
   overrides: Partial<ToolStep> = {},
 ): ToolStep => ({
-  name: `tool ${tool_name}`,
+  name: lensTranslate("evals.toolValue0", { value0: tool_name }),
   tool_name,
   ok: true,
   start_ns,
@@ -83,7 +84,7 @@ export const runCase = (
   trials: readonly TrialSteps[],
 ): RunCase => ({
   case_id: "c1",
-  title: "Fix the flaky test",
+  title: lensTranslate("evals.fixFlakyTest"),
   critical: false,
   passed,
   trials,

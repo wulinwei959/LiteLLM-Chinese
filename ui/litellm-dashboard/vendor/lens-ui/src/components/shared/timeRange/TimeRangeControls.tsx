@@ -13,11 +13,13 @@ import {
 import { cn } from "../../../lib/cva.config";
 
 import { isLive, presetLabel, RANGE_PRESETS, type RelativeRange, type TimeWindow, timeWindow } from "./timeRange";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const RANGE_LABEL_FORMAT = "MMM D, h:mm A";
 
 const fixedRangeLabel = (range: TimeWindow): string =>
-  `${moment(range.startMs).format(RANGE_LABEL_FORMAT)} to ${moment(range.endMs).format(RANGE_LABEL_FORMAT)}`;
+  lensTranslate("investigations.value0Value1", { value0: moment(range.startMs).format(RANGE_LABEL_FORMAT), value1: moment(range.endMs).format(RANGE_LABEL_FORMAT) });
 
 /** A zoom or a paused range names its actual bounds; a live range names its preset. */
 const rangeLabel = (range: RelativeRange, zoom: TimeWindow | null): string => {
@@ -43,13 +45,14 @@ export function TimeRangeControls({
   showLive = true,
   onLiveChange,
 }: TimeRangeControlsProps) {
+  const t = useLensTranslate();
   const live = isLive(range);
   const label = rangeLabel(range, zoom);
   return (
     <div className="flex min-w-0 max-w-full items-stretch border-l border-border">
       <DropdownMenu>
         <DropdownMenuTrigger
-          aria-label="Time range"
+          aria-label={t("sharedTimeRange.timeRange")}
           className={cn(SEGMENT, "min-w-0 justify-between text-foreground hover:bg-muted/60 sm:min-w-40")}
           title={label}
           data-testid="time-range-trigger"
@@ -82,8 +85,7 @@ export function TimeRangeControls({
           )}
         >
           {live ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
-          Live
-        </button>
+          {t("traces.live")}</button>
       )}
     </div>
   );

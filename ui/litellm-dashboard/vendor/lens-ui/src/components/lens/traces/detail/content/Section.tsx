@@ -5,8 +5,9 @@ import { useState } from "react";
 import { cn } from "../../../../../lib/cva.config";
 
 import { FoldChevron } from "../../ui/Collapse";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
-const MODES = ["Formatted", "Raw"] as const;
+const MODES = ["traces.formatted", "traces.raw"] as const;
 export type SectionMode = (typeof MODES)[number];
 
 function ModeSwitch({
@@ -18,8 +19,9 @@ function ModeSwitch({
   onChange: (mode: SectionMode) => void;
   title: string;
 }) {
+  const t = useLensTranslate();
   return (
-    <div role="radiogroup" aria-label={`${title} format`} className="flex items-center rounded-md bg-muted p-0.5">
+    <div role="radiogroup" aria-label={t("traces.value0Format", { value0: title })} className="flex items-center rounded-md bg-muted p-0.5">
       {MODES.map((option) => (
         <button
           key={option}
@@ -34,7 +36,7 @@ function ModeSwitch({
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          {option}
+          {t(option)}
         </button>
       ))}
     </div>
@@ -51,8 +53,9 @@ interface SectionProps {
 
 /** Collapsible "Input" / "Output" section with a sticky header. */
 export function Section({ title, count, defaultOpen = true, children }: SectionProps) {
+  const t = useLensTranslate();
   const [open, setOpen] = useState(defaultOpen);
-  const [mode, setMode] = useState<SectionMode>("Formatted");
+  const [mode, setMode] = useState<SectionMode>("traces.formatted");
   const switchable = typeof children === "function";
   return (
     <section aria-label={title} className="flex flex-col">
@@ -66,9 +69,7 @@ export function Section({ title, count, defaultOpen = true, children }: SectionP
           <FoldChevron open={open} className="size-3.5 shrink-0 text-muted-foreground" />
           <span className="text-sm font-semibold text-foreground">{title}</span>{" "}
           {count !== undefined && (
-            <span className="text-xs text-muted-foreground">
-              {count} {count === 1 ? "message" : "messages"}
-            </span>
+            <span className="text-xs text-muted-foreground">{t("traces.messages", { value0: count })}</span>
           )}
         </button>
         {switchable && open && <ModeSwitch mode={mode} onChange={setMode} title={title} />}

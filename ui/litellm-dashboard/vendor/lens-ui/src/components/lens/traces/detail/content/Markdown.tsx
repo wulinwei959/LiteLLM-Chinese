@@ -4,6 +4,7 @@ import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "../../../../../lib/cva.config";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 const BLOCK_GAP = "mb-3 last:mb-0";
 
@@ -46,7 +47,7 @@ const components: Components = {
   ),
   th: ({ node, ...props }) => <th className="border-b border-border px-2 py-1.5 font-medium" {...props} />,
   td: ({ node, ...props }) => <td className="border-b border-border/60 px-2 py-1.5 align-top" {...props} />,
-  img: ({ alt }) => <span>{alt || "Image omitted"}</span>,
+  img: ({ alt }) => <span>{alt || lensTranslate("traces.imageOmitted")}</span>,
 };
 
 export function Markdown({ text, className }: { text: string; className?: string }) {

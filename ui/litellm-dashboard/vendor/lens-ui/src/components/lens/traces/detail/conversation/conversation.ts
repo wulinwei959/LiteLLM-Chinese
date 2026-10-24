@@ -3,6 +3,7 @@ import type { Span, SpanDetail, TraceMessage, TraceToolCall, UIContent } from ".
 import { isFrameworkSpan, parseAssistantSummary, parseMessages, prettyPayload } from "../../utils";
 import { toTraceMessage, toolInput } from "../content/payload";
 import { claudeCaptureWarnings, claudeToolDetails, isClaudeSupplement } from "./nativeClaude";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 export const CONVERSATION_PAGE_SIZE = 20;
 
@@ -248,7 +249,7 @@ function withoutForwardedAnswers(
 }
 
 function isNativeAgent(span: Span): boolean {
-  return span.framework === "claude-code" && span.type === "tool" && ["Agent", "Task"].includes(span.name);
+  return span.framework === "claude-code" && span.type === "tool" && [lensTranslate("agents.agent"), lensTranslate("traces.task")].includes(span.name);
 }
 
 function conversationBranch(span: Span, byId: ReadonlyMap<string, Span>): string {
@@ -278,8 +279,8 @@ function agentLabels(agents: readonly Span[], details: ReadonlyMap<string, SpanD
     const description = args && typeof args === "object" && "description" in args ? args.description : undefined;
     const name =
       agent.framework === "claude-code" && !isNativeAgent(agent)
-        ? agent.agent || agent.name || "Agent"
-        : agent.name || agent.agent || "Agent";
+        ? agent.agent || agent.name || lensTranslate("agents.agent")
+        : agent.name || agent.agent || lensTranslate("agents.agent");
     return { agent, name: typeof description === "string" && description ? description : name };
   });
   return new Map(
@@ -321,7 +322,7 @@ export function buildConversation(
         byId,
       );
       const item = {
-        id: `${span.span_id}-output`,
+        id: lensTranslate("traces.value0Output", { value0: span.span_id }),
         span,
         time: event.time,
         messages: fresh,
@@ -444,7 +445,7 @@ export function groupConversation(items: readonly ConversationItem[], spans: rea
       if (!id || seen.has(id) || ancestors.has(id)) return [];
       seen.add(id);
       const first = items.find((candidate) => candidate.branchId === id);
-      const name = first?.agentName || byId.get(id)?.name || "Subagent";
+      const name = first?.agentName || byId.get(id)?.name || lensTranslate("traces.subagent");
       return [{ kind: "branch", id, name, children: build(id, new Set([...ancestors, id])) }];
     });
   };
@@ -481,7 +482,7 @@ export function conversationWarnings(
   const missingReplies = !hasAssistantText && !hasReplyEvent && hasEmptyRequest;
   if (complete && missingReplies) {
     warnings.push(
-      "This Claude Code trace has no recorded assistant replies. Enable assistant response logs for future sessions.",
+      lensTranslate("traces.claudeCodeTraceRecorded"),
     );
   }
   return [...new Set(warnings)];

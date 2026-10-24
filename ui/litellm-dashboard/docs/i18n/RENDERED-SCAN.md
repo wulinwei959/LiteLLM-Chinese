@@ -2,11 +2,13 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-24 第 532 簇。把第 530 簇进基线的零头（除 lens 86、api-reference 31、transform-request 20 外的 25 条）逐条甄别完：6 条真漏接键（model-insights 的 Requests/Spend/Linear/Log、telemetry 的面包屑 Telemetry、cost-tracking 的 Docs 按钮默认值），18 条判技术 token 或品牌名进 `ALLOWED_ENGLISH`，`model-insights` 的 `session` 判保留（`session_id` API 字段词）。基线从 162 撤到 138，38 页 0 渲染错误、0 条新发现。剩余 138 条按页是 lens 86、api-reference 31、transform-request 20、model-insights 1。Lens 仍是下一个施工对象，接完一块就从基线里撤一块
+最近一次复跑：2026-10-24 第 533 簇。lens 追踪观察页批量接入完成：批量工具改写 vendor 166 个源文件、10 处手工位点接线，`SignalSettings.tsx` 一处在模块顶层解引用 getter 导致 lens 整页崩溃（`needs a translator: register one before the package renders`）改惰性求值修掉，`TracingSetupCard` 三条赋给变量的英文 message 分支漏抽、新开 3 键接线。基线从 138 撤到 60，38 页 0 渲染错误、0 条新发现。剩余 60 条按页是 lens 8（入门页示例追踪时间轴的 span 标识符，判数据保留）、api-reference 31、transform-request 20、model-insights 1（`session`，`session_id` API 字段词）；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词
+
+（沿革）第 532 簇把第 530 簇进基线的零头（除 lens 86、api-reference 31、transform-request 20 外的 25 条）逐条甄别完：6 条真漏接键（model-insights 的 Requests/Spend/Linear/Log、telemetry 的面包屑 Telemetry、cost-tracking 的 Docs 按钮默认值），18 条判技术 token 或品牌名进 `ALLOWED_ENGLISH`，`model-insights` 的 `session` 判保留（`session_id` API 字段词）。基线从 162 撤到 138，38 页 0 渲染错误、0 条新发现
 
 （沿革）第 530 簇复跑把扫描面从 15 页扩到 38 页主路由（`PAGES` 列表见 `rendered-ui-fixtures.mjs`），并给 stub 代理补了 20 多个端点的最小形状（`/v1/mcp/server`、`/alerting/settings`、`/cache/settings`、`/coordination_redis/settings`、`/v1/traces` 这类），其中 6 个页面此前在空 stub 下直接崩进 Next 错误页，错误页的 "Back/Reload" 假英文会污染结果；现在 38 页全部渲染出真实内容。诊断手段也进了一步：`pageerror` 会带上调用栈前两帧、未命中 stub 的请求路径会以 `[stub-miss]` 打到 stderr，这两条是本次定位 6 处崩溃的手段，保留为常设行为
 
-基线因此从 2 条涨到 162 条。这不是门禁变松，而是新页面的真账第一次被看见：lens（追踪观察页）86 条、api-reference 31 条（多为代码语料）、transform-request 20 条（curl 示例）、model-insights 5 条、其余零头见基线文件。Lens 是下一个施工对象，接完它的键就从基线里撤
+基线因此从 2 条涨到 162 条。这不是门禁变松，而是新页面的真账第一次被看见：lens（追踪观察页）86 条、api-reference 31 条（多为代码语料）、transform-request 20 条（curl 示例）、model-insights 5 条、其余零头见基线文件（lens 侧已于第 533 簇批量接入完成，撤到 8 条）
 
 （沿革记录）第 525 簇复跑时是 15 个页面，各 0 个渲染错误，只有 `model-health` 剩基线里的 2 处端点路径段，与第 515 簇首跑那轮的结论逐页一致，中间两簇的文件级拆分没有改变渲染结果
 

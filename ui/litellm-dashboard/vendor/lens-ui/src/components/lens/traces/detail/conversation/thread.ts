@@ -1,5 +1,6 @@
 import type { TraceMessage } from "../../types";
 import type { ConversationGroup, ConversationItem } from "./conversation";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 export type ThreadWork =
   | { kind: "step"; item: ConversationItem }
@@ -150,7 +151,7 @@ export function buildThread(groups: readonly ConversationGroup[]): ThreadTurn[] 
       ...pieces.slice(start + 1, end).flatMap((p, offset) => stripRepeat(p, start + 1 + offset)),
     ];
     const promptStart = prompt.length ? head.start : Infinity;
-    const turnHead: TurnHead = { id: headItem?.id ?? `turn-${start}`, prompt, context, promptStart };
+    const turnHead: TurnHead = { id: headItem?.id ?? lensTranslate("traces.turnValue0", { value0: start }), prompt, context, promptStart };
     return [closeTurn(turnHead, body)];
   });
 }

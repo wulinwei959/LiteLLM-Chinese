@@ -5,9 +5,10 @@ import { useCallback, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { useLensRoute } from "../route";
 import { useLensHost } from "../../../host/LensHost";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const SELECTED_AGENT_KEY = "litellm.lens.agent";
-export const selectedAgentKey = (demo: boolean): string => (demo ? `${SELECTED_AGENT_KEY}.demo` : SELECTED_AGENT_KEY);
+export const selectedAgentKey = (demo: boolean): string => (demo ? lensTranslate("agents.value0Demo", { value0: SELECTED_AGENT_KEY }) : SELECTED_AGENT_KEY);
 
 const AGENT_PARSERS = { agent: parseAsString.withDefault("") };
 

@@ -1,5 +1,6 @@
 import { compareSteps, firstTrial } from "./steps";
 import type { RunCase } from "./types";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface Diagnosis {
   readonly headline: string;
@@ -17,7 +18,7 @@ function failedChecks(runCase: RunCase): string[] {
         failures.set(check.scorer, (failures.get(check.scorer) ?? 0) + 1);
   return [...failures].map(
     ([scorer, count]) =>
-      `${scorer} failed ${count}/${runCase.trials.length} trials`,
+      lensTranslate("evals.value0FailedValue1Value2", { value0: scorer, value1: count, value2: runCase.trials.length }),
   );
 }
 
@@ -36,10 +37,10 @@ function stepChanges(candidate: RunCase, baseline: RunCase | null): string[] {
     .map((step) => step.step.tool_name);
   return [
     ...(skipped.length
-      ? [`never called ${[...new Set(skipped)].join(", ")}, which main called`]
+      ? [lensTranslate("evals.neverCalledValue0Main", { value0: [...new Set(skipped)].join(", ") })]
       : []),
     ...(added.length
-      ? [`called ${[...new Set(added)].join(", ")}, which main did not`]
+      ? [lensTranslate("evals.calledValue0MainDid", { value0: [...new Set(added)].join(", ") })]
       : []),
   ];
 }
@@ -58,19 +59,19 @@ export function diagnose(
     ...failed,
     ...changes,
     ...(failedTools.length
-      ? [`tool errors: ${[...new Set(failedTools)].join(", ")}`]
+      ? [lensTranslate("evals.toolErrorsValue0", { value0: [...new Set(failedTools)].join(", ") })]
       : []),
     ...(errors.length
-      ? [`${plural(errors.length, "trial")} errored: ${errors[0]?.error}`]
+      ? [lensTranslate("evals.value0ErroredValue1", { value0: plural(errors.length, "trial"), value1: errors[0]?.error })]
       : []),
   ];
   const headline =
     candidate.passed === false
       ? [changes[0], failed[0]].filter(Boolean).join(" · ") ||
         details[0] ||
-        "Failed the judge scorer"
+        lensTranslate("evals.failedJudgeScorer")
       : candidate.passed
-        ? "Passes now" + (changes.length ? ` · ${changes[0]}` : "")
-        : "Still scoring";
+        ? lensTranslate("evals.passesNow") + (changes.length ? ` · ${changes[0]}` : "")
+        : lensTranslate("evals.stillScoring");
   return { headline, details };
 }

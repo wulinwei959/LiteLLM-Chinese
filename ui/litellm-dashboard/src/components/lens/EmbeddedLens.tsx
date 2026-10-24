@@ -1,6 +1,7 @@
 "use client";
 
 import type { ComponentProps } from "react";
+import { useTranslations } from "next-intl";
 import { configureLensHttp, LensHostProvider, LensWorkspace, type LensHost } from "@litellm/lens-ui";
 import { LogDetailsDrawer } from "@/components/logs/detail";
 import { getGlobalLitellmHeaderName, getProxyBaseUrl, handleError, uiSpendLogsCall } from "@/components/networking";
@@ -24,8 +25,10 @@ const http = {
 configureLensHttp(http);
 
 export function EmbeddedLens(props: ComponentProps<typeof LensWorkspace>) {
+  const translator = useTranslations("lens");
+  const hostWithTranslator = { ...host, t: translator as LensHost["t"] };
   return (
-    <LensHostProvider host={host}>
+    <LensHostProvider host={hostWithTranslator}>
       <LensWorkspace {...props} />
     </LensHostProvider>
   );

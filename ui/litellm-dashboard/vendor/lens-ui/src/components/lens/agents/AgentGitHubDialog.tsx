@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import type { EvalDefinition } from "../evals/runs/types";
 import { GitHubEvalSetupDialog } from "./GitHubEvalSetupDialog";
 import { gitHubAuthorizationDestination, openGitHubAuthorization, useGitHubConnection } from "./githubConnection";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 interface AgentGitHubDialogProps {
   readonly agent: string;
@@ -28,6 +29,7 @@ export function AgentGitHubDialog({
   onAuthorize = openGitHubAuthorization,
   onAuthorizationComplete,
 }: AgentGitHubDialogProps) {
+  const t = useLensTranslate();
   const github = useGitHubConnection(agent, authorizationId);
   const [repositoryId, setRepositoryId] = useState<string | null>(null);
   const [settingUpEvals, setSettingUpEvals] = useState(false);
@@ -46,7 +48,7 @@ export function AgentGitHubDialog({
           try {
             onAuthorize(gitHubAuthorizationDestination(authorization_url, github.status.data?.service_origin));
           } catch {
-            setRedirectError("Could not open GitHub. Try again");
+            setRedirectError(t("agents.couldOpenGitHubTry"));
           }
         },
       });
@@ -100,52 +102,42 @@ export function AgentGitHubDialog({
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Github aria-hidden="true" className="size-5" /> Connect GitHub
-          </DialogTitle>
+            <Github aria-hidden="true" className="size-5" /> {t("workspace.connectGitHub")}</DialogTitle>
           <DialogDescription>
-            Connect <span className="font-medium text-foreground">{agent}</span> to a repository through the Lens GitHub
-            App
-          </DialogDescription>
+            {t("agents.connect")}<span className="font-medium text-foreground">{agent}</span> {t("agents.repositoryThroughLensGitHub")}</DialogDescription>
         </DialogHeader>
 
         {github.status.isPending ? (
           <p role="status" className="flex items-center gap-2 py-8 text-sm">
-            <Loader2 aria-hidden="true" className="size-4 animate-spin" /> Checking GitHub connection
-          </p>
+            <Loader2 aria-hidden="true" className="size-4 animate-spin" /> {t("agents.checkingGitHubConnection")}</p>
         ) : github.status.error ? (
           <div className="space-y-3">
             <p role="alert" className="text-sm text-destructive">
-              Could not check the GitHub connection
-            </p>
+              {t("agents.couldCheckGitHubConnection")}</p>
             <Button variant="outline" onClick={() => void github.status.refetch()}>
-              Try again
-            </Button>
+              {t("agents.tryAgain")}</Button>
           </div>
         ) : !github.status.data?.configured ? (
           <div className="space-y-4 rounded-lg border p-4 text-sm">
-            <h3 className="font-medium">GitHub connection unavailable</h3>
+            <h3 className="font-medium">{t("agents.gitHubConnectionUnavailable")}</h3>
             <p className="text-muted-foreground">
-              The Lens GitHub service has not been enabled for this deployment. Your administrator can check the
-              connection settings so you can install the Lens App and choose a repository
-            </p>
+              {t("agents.lensGitHubServiceBeen")}</p>
             <a
               className="inline-flex items-center gap-1 underline underline-offset-4"
               href="https://github.com/BerriAI/lens/blob/main/docs/github-app.md"
               target="_blank"
               rel="noreferrer"
             >
-              GitHub connection guide <ExternalLink aria-hidden="true" className="size-3" />
+              {t("agents.gitHubConnectionGuide")}<ExternalLink aria-hidden="true" className="size-3" />
             </a>
             <Button variant="outline" onClick={() => void github.status.refetch()}>
-              Check configuration
-            </Button>
+              {t("agents.checkConfiguration")}</Button>
           </div>
         ) : connection && (!authorizationId || github.connect.isSuccess || authorized?.status === "connected") ? (
           <div className="space-y-4">
             <div className="space-y-2 rounded-lg border p-4">
               <h3 className="flex items-center gap-2 font-medium">
-                <Check aria-hidden="true" className="size-4" /> GitHub connected
-              </h3>
+                <Check aria-hidden="true" className="size-4" /> {t("agents.gitHubConnected")}</h3>
               <a
                 className="inline-flex items-center gap-1 break-all text-sm underline underline-offset-4"
                 href={`https://github.com/${connection.repository}`}
@@ -155,35 +147,28 @@ export function AgentGitHubDialog({
                 {connection.repository} <ExternalLink aria-hidden="true" className="size-3 shrink-0" />
               </a>
               <p className="text-xs text-muted-foreground">
-                Connected through the GitHub App. Repository access is limited to the installation you authorized
-              </p>
+                {t("agents.connectedThroughGitHubApp")}</p>
             </div>
             {connection.available ? (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Next, configure the eval that should run on pull requests. Connecting GitHub does not run an eval by
-                  itself
-                </p>
-                <Button onClick={() => setSettingUpEvals(true)}>Set up PR evals</Button>
+                  {t("agents.nextConfigureEvalShould")}</p>
+                <Button onClick={() => setSettingUpEvals(true)}>{t("agents.setUpPREvals")}</Button>
               </div>
             ) : (
               <div className="space-y-3">
                 <p role="alert" className="text-sm text-destructive">
-                  GitHub access needs attention. {connection.availability_error ||
-                    "The App may have been removed, suspended, or lost access to this repository"}
-                </p>
+                  {t("agents.gitHubAccessNeedsAttention", { value0: connection.availability_error ||
+                    t("agents.appMayBeenRemoved") })}</p>
                 <Button disabled={github.start.isPending} onClick={() => begin(true)}>
-                  Restore GitHub access
-                </Button>
+                  {t("agents.restoreGitHubAccess")}</Button>
                 <Button variant="outline" disabled={github.status.isFetching} onClick={() => void github.status.refetch()}>
-                  Check connection again
-                </Button>
+                  {t("agents.checkConnectionAgain")}</Button>
               </div>
             )}
             <div className="flex flex-wrap gap-2 border-t pt-4">
               <Button variant="outline" disabled={github.start.isPending} onClick={() => begin(true)}>
-                Manage repository access
-              </Button>
+                {t("agents.manageRepositoryAccess")}</Button>
               <Button
                 variant="ghost"
                 disabled={github.disconnect.isPending}
@@ -192,50 +177,40 @@ export function AgentGitHubDialog({
                   github.disconnect.mutate();
                 }}
               >
-                Disconnect
-              </Button>
+                {t("agents.disconnect")}</Button>
             </div>
           </div>
         ) : authorizationId ? (
           <div className="space-y-4">
             {github.authorization.isPending || authorized?.status === "pending" ? (
               <p role="status" className="flex items-center gap-2 py-8 text-sm">
-                <Loader2 aria-hidden="true" className="size-4 animate-spin" /> Completing GitHub authorization
-              </p>
+                <Loader2 aria-hidden="true" className="size-4 animate-spin" /> {t("agents.completingGitHubAuthorization")}</p>
             ) : github.authorization.error || authorized?.status === "failed" ? (
               <>
                 <p role="alert" className="text-sm text-destructive">
-                  GitHub authorization was cancelled, expired, or could not be completed. Your agent is not connected
-                </p>
+                  {t("agents.gitHubAuthorizationCancelledExpired")}</p>
                 <Button disabled={github.start.isPending} onClick={() => begin(false)}>
-                  Try GitHub again
-                </Button>
+                  {t("agents.tryGitHubAgain")}</Button>
               </>
             ) : repositories.length === 0 ? (
               <>
-                <h3 className="font-medium">Give Lens access to a repository</h3>
+                <h3 className="font-medium">{t("agents.giveLensAccessRepository")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Install the Lens GitHub App and choose the repositories it can access. You’ll return here to link one
-                  to {agent}
-                </p>
+                  {t("agents.installLensGitHubApp", { value0: agent })}</p>
                 <Button disabled={github.start.isPending} onClick={() => begin(true)}>
-                  <Github aria-hidden="true" className="size-4" /> Install GitHub App
-                </Button>
+                  <Github aria-hidden="true" className="size-4" /> {t("agents.installGitHubApp")}</Button>
                 <Button variant="ghost" disabled={github.start.isPending} onClick={() => begin(false)}>
-                  I already installed it
-                </Button>
+                  {t("agents.iAlreadyInstalled")}</Button>
               </>
             ) : (
               <>
                 <div className="space-y-1">
-                  <h3 className="font-medium">Choose a repository</h3>
+                  <h3 className="font-medium">{t("agents.chooseRepository")}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Only repositories available to you through the GitHub App are shown
-                  </p>
+                    {t("agents.onlyRepositoriesAvailableThrough")}</p>
                 </div>
                 <label htmlFor="github-repository" className="text-sm font-medium">
-                  GitHub repository
-                </label>
+                  {t("agents.gitHubRepository")}</label>
                 <Select value={selected ? String(selected.id) : null} onValueChange={setRepositoryId}>
                   <SelectTrigger id="github-repository" className="w-full">
                     <SelectValue>{selected?.full_name}</SelectValue>
@@ -252,25 +227,18 @@ export function AgentGitHubDialog({
                   disabled={!selected || github.connect.isPending}
                   onClick={() => selected && github.connect.mutate(selected.id)}
                 >
-                  {github.connect.isPending && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} Connect
-                  repository
-                </Button>
+                  {github.connect.isPending && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} {t("agents.connectRepository")}</Button>
                 <Button variant="ghost" disabled={github.start.isPending} onClick={() => begin(true)}>
-                  Missing a repository? Manage App access
-                </Button>
+                  {t("agents.missingRepositoryManageApp")}</Button>
               </>
             )}
           </div>
         ) : (
           <div className="space-y-4 py-4">
             <p role="status" className="text-sm text-muted-foreground">
-              Choose your GitHub account or organization and install the Lens App. Then authorize access and return
-              here to select your repository
-            </p>
+              {t("agents.chooseGitHubAccountOrganization")}</p>
             <Button disabled={github.start.isPending} onClick={() => begin(true)}>
-              {github.start.isPending && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} Continue to
-              GitHub
-            </Button>
+              {github.start.isPending && <Loader2 aria-hidden="true" className="size-4 animate-spin" />} {t("agents.continueGitHub")}</Button>
           </div>
         )}
         {error && (

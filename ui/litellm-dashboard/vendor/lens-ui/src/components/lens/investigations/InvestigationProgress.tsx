@@ -13,8 +13,10 @@ import { useProgressSamples } from "./useProgressSamples";
 import { type Job } from "../model/types";
 import { QueueReasonText } from "./QueueReasonText";
 import { useQueueReason, type QueueContext } from "./useQueueReason";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export function InvestigationProgress({ job, queue }: { job: Job; queue?: QueueContext }) {
+  const t = useLensTranslate();
   const now = useNow(1000);
   const reason = useQueueReason(job, queue);
   const progress = analysisProgress(job);
@@ -23,16 +25,16 @@ export function InvestigationProgress({ job, queue }: { job: Job; queue?: QueueC
   const { secondsLeft } = analysisPace(useProgressSamples(progress), now);
   const queued = progress.step < 0;
   return (
-    <section aria-label="Analysis progress" className="space-y-2">
+    <section aria-label={t("investigations.analysisProgress")} className="space-y-2">
       <div className="flex items-baseline justify-between gap-3 tabular-nums">
         <span
           role="progressbar"
-          aria-label="Investigation progress"
+          aria-label={t("investigations.investigationProgress")}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
           aria-valuetext={`${percent}% overall. ${progress.title}: ${progress.detail}`}
-          title={`Overall progress: ${stages.map((stage) => `${stage.label} ${stage.weight * 100}%`).join(", ")}`}
+          title={t("investigations.overallProgressValue0", { value0: stages.map((stage) => `${stage.label} ${stage.weight * 100}%`).join(", ") })}
           className="text-2xl font-semibold"
         >
           {queued ? "–" : `${percent}%`}
@@ -40,10 +42,10 @@ export function InvestigationProgress({ job, queue }: { job: Job; queue?: QueueC
         </span>
         <span className="text-xs text-muted-foreground">
           {analysisElapsed(job.created_at, now)} elapsed
-          {!queued && ` · ${remainingLabel(secondsLeft)} left`}
+          {!queued && t("investigations.value0Left", { value0: remainingLabel(secondsLeft) })}
         </span>
       </div>
-      <ol aria-label="Analysis stages" className="flex gap-1">
+      <ol aria-label={t("investigations.analysisStages")} className="flex gap-1">
         {stages.map((stage) => (
           <li
             key={stage.label}

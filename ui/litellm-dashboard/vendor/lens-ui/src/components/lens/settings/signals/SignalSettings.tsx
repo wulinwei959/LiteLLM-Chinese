@@ -27,15 +27,17 @@ import {
   type SignalDraft,
   type SignalRow,
 } from "./signalDraft";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
-const LIBRARY_QUESTIONS: ReadonlySet<string> = new Set(SIGNAL_LIBRARY.map((signal) => signal.question));
+const LIBRARY_QUESTIONS = (): ReadonlySet<string> => new Set(SIGNAL_LIBRARY.map((signal) => signal.question));
 
 export function SignalSettings() {
+  const t = useLensTranslate();
   return (
     <SettingsSection
-      heading="Signals"
+      heading={t("settings.signals")}
       icon={<Flag aria-hidden="true" className="size-4" />}
-      description="Set once for every trace. A System 1 model checks each run and Traces flags matches in red."
+      description={t("settings.setOnceEveryTrace")}
     >
       <SignalConfigLoader />
     </SettingsSection>
@@ -43,15 +45,15 @@ export function SignalSettings() {
 }
 
 function SignalConfigLoader() {
+  const t = useLensTranslate();
   const api = useLensApi();
   const config = useQuery(lensQueries.signalConfig(api));
   if (config.error)
     return (
       <p role="alert" className="text-sm text-destructive">
-        Could not load signals: {config.error.message}
-      </p>
+        {t("settings.couldLoadSignalsValue0", { value0: config.error.message })}</p>
     );
-  if (!config.data) return <Skeleton aria-label="Loading signals" className="h-40 w-full" />;
+  if (!config.data) return <Skeleton aria-label={t("settings.loadingSignals")} className="h-40 w-full" />;
   return <SignalForm saved={config.data} />;
 }
 
@@ -59,24 +61,24 @@ const FieldError = ({ children }: { children?: string }) =>
   children ? <p className="mt-1 text-xs text-destructive">{children}</p> : null;
 
 function SetupCallout({ hasModels }: { hasModels: boolean }) {
+  const t = useLensTranslate();
   return (
     <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm">
       <Flag aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-destructive" />
       <div className="space-y-1">
-        <p className="font-medium">Choose a System 1 model to start flagging traces</p>
+        <p className="font-medium">{t("settings.chooseSystem1Model")}</p>
         {hasModels ? (
-          <p className="text-xs text-muted-foreground">Pick one of the evaluation models configured for Lens below.</p>
+          <p className="text-xs text-muted-foreground">{t("settings.pickOneEvaluationModels")}</p>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Add an evaluation provider to your Lens deployment, then refresh this page.{" "}
+            {t("settings.addEvaluationProviderLens")}{" "}
             <a
               href="https://github.com/BerriAI/lens/blob/main/docs/signals.md"
               target="_blank"
               rel="noreferrer"
               className="font-medium text-foreground underline underline-offset-2"
             >
-              Configure signals
-            </a>
+              {t("settings.configureSignals")}</a>
           </p>
         )}
       </div>
@@ -95,13 +97,14 @@ function SignalFields({
   onChange: (row: SignalRow) => void;
   onRemove: () => void;
 }) {
-  const label = row.name.trim() || "new signal";
+  const t = useLensTranslate();
+  const label = row.name.trim() || t("settings.newSignal");
   return (
     <li className="grid gap-2 rounded-lg border border-[var(--lens-violet)]/20 bg-background/60 p-3 sm:grid-cols-[200px_minmax(0,1fr)_auto]">
       <div>
         <Input
-          aria-label="Signal name"
-          placeholder="User frustration"
+          aria-label={t("settings.signalName")}
+          placeholder={t("model.userFrustration")}
           value={row.name}
           aria-invalid={Boolean(problems?.name)}
           onChange={(event) => onChange({ ...row, name: event.target.value })}
@@ -110,8 +113,8 @@ function SignalFields({
       </div>
       <div>
         <Textarea
-          aria-label={`Question for ${label}`}
-          placeholder="Does the user show frustration with the agent in this run?"
+          aria-label={t("settings.questionValue0", { value0: label })}
+          placeholder={t("settings.userShowFrustrationAgent")}
           rows={2}
           value={row.question}
           aria-invalid={Boolean(problems?.question)}
@@ -119,7 +122,7 @@ function SignalFields({
         />
         <FieldError>{problems?.question}</FieldError>
       </div>
-      <Button variant="ghost" size="icon-sm" aria-label={`Remove ${label}`} onClick={onRemove}>
+      <Button variant="ghost" size="icon-sm" aria-label={t("settings.removeValue0", { value0: label })} onClick={onRemove}>
         <Trash2 aria-hidden="true" />
       </Button>
     </li>
@@ -127,6 +130,7 @@ function SignalFields({
 }
 
 export function SignalForm({ saved }: { saved: SignalConfig }) {
+  const t = useLensTranslate();
   const api = useLensApi();
   const queryClient = useQueryClient();
   const modelId = useId();
@@ -169,7 +173,7 @@ export function SignalForm({ saved }: { saved: SignalConfig }) {
   const setRows = (rows: readonly SignalRow[]) => setDraft((current) => ({ ...current, rows }));
   const addRow = () => setRows([...draft.rows, newRow(crypto.randomUUID())]);
   const active = signalsConfigured(saved);
-  const custom = draft.rows.filter((row) => !LIBRARY_QUESTIONS.has(row.question));
+  const custom = draft.rows.filter((row) => !LIBRARY_QUESTIONS().has(row.question));
   const picked = new Set(
     SIGNAL_LIBRARY.filter((signal) => draft.rows.some((row) => row.question === signal.question)).map(
       (signal) => signal.id,
@@ -203,39 +207,36 @@ export function SignalForm({ saved }: { saved: SignalConfig }) {
           className="inline-flex items-center gap-2 rounded-md border bg-background px-2.5 py-1.5 font-mono text-xs"
         >
           <StatusDot state={active ? "ok" : "off"} />
-          {active ? `Flagging traces with ${saved.model}` : "Signals are off"}
+          {active ? t("settings.flaggingTracesValue0", { value0: saved.model }) : t("settings.signalsOff")}
         </p>
         {!saved.model && !details.isPending && <SetupCallout hasModels={models.length > 0} />}
         {savedElsewhere && (
           <div role="alert" className="flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
-            <span>Signals were changed elsewhere</span>
+            <span>{t("settings.signalsChangedElsewhere")}</span>
             <Button type="button" variant="outline" size="sm" onClick={loadLatest}>
-              Load latest
-            </Button>
+              {t("settings.loadLatest")}</Button>
           </div>
         )}
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_160px]">
           <div className="space-y-1.5">
             <label htmlFor={modelId} className="font-mono text-xs font-medium">
-              System 1 model
-            </label>
+              {t("settings.system1Model")}</label>
             <SearchSelect
               inputId={modelId}
-              aria-label="System 1 model"
+              aria-label={t("settings.system1Model")}
               options={options}
               value={draft.model}
               onValueChange={(value) => setDraft((current) => ({ ...current, model: value ?? "" }))}
-              placeholder={details.isPending ? "Loading models…" : "Choose a System 1 model"}
+              placeholder={details.isPending ? t("settings.loadingModels") : t("settings.chooseASystem1Model")}
               disabled={details.isPending}
-              emptyText="No evaluation models configured for Lens"
+              emptyText={t("settings.evaluationModelsConfiguredLens")}
               allowClear
             />
-            <p className="text-xs text-muted-foreground">Evaluation models configured for Lens, such as TypeSafe JEV</p>
+            <p className="text-xs text-muted-foreground">{t("settings.evaluationModelsConfiguredForLensSuchAsTypeSafe")}</p>
           </div>
           <div className="space-y-1.5">
             <label htmlFor={thresholdId} className="font-mono text-xs font-medium">
-              Flag at score
-            </label>
+              {t("settings.flagScore")}</label>
             <div className="flex items-center gap-1.5">
               <Input
                 id={thresholdId}
@@ -257,7 +258,7 @@ export function SignalForm({ saved }: { saved: SignalConfig }) {
         </div>
         <div className="space-y-4 border-t border-border pt-4">
           <WatchPicker
-            label="Flag runs where"
+            label={t("settings.flagRuns")}
             options={SIGNAL_LIBRARY}
             selected={picked}
             onChange={pick}
@@ -265,7 +266,7 @@ export function SignalForm({ saved }: { saved: SignalConfig }) {
             addDisabled={draft.rows.length >= MAX_SIGNALS}
           />
           {custom.length > 0 && (
-            <ul aria-label="Custom signals" className="space-y-2">
+            <ul aria-label={t("settings.customSignals")} className="space-y-2">
               {custom.map((row) => (
                 <SignalFields
                   key={row.key}
@@ -278,22 +279,20 @@ export function SignalForm({ saved }: { saved: SignalConfig }) {
             </ul>
           )}
           {draft.rows.length === 0 && (
-            <p className="text-xs text-muted-foreground">Pick at least one signal to flag traces</p>
+            <p className="text-xs text-muted-foreground">{t("settings.pickLeastOneSignal")}</p>
           )}
           <FieldError>{problems.signals}</FieldError>
         </div>
         <p className="text-xs text-muted-foreground">
-          Lens sends trace content to this model automatically. Your provider may charge for these requests.
-        </p>
+          {t("settings.lensSendsTraceContent")}</p>
         <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
           {save.error && (
             <p role="alert" className="text-sm text-destructive">
-              Could not save signals: {save.error.message}
-            </p>
+              {t("settings.couldSaveSignalsValue0", { value0: save.error.message })}</p>
           )}
-          {save.isSuccess && !dirty && <p className="text-xs text-muted-foreground">Saved</p>}
+          {save.isSuccess && !dirty && <p className="text-xs text-muted-foreground">{t("settings.saved")}</p>}
           <Button disabled={!dirty || problems.any || save.isPending} onClick={() => save.mutate(next)}>
-            {save.isPending ? "Saving…" : "Save signals"}
+            {save.isPending ? t("settings.saving") : t("settings.saveSignals")}
           </Button>
         </div>
       </SettingsCard>

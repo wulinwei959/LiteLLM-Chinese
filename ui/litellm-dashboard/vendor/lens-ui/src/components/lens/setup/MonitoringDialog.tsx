@@ -13,6 +13,7 @@ import {
 } from "../../ui/dialog";
 import { DurationInput } from "../../shared/DurationInput";
 import { type Settings } from "../model/types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const monitoringSchema = z.object({
   interval_minutes: z.number().int().min(1),
@@ -29,6 +30,7 @@ export function MonitoringDialog({
   onSave: (settings: Settings) => Promise<void>;
   onClose: () => void;
 }) {
+  const t = useLensTranslate();
   const [error, setError] = useState("");
   const form = useZodForm(monitoringSchema, {
     defaultValues: { interval_minutes: settings.interval_minutes ?? 30 },
@@ -41,7 +43,7 @@ export function MonitoringDialog({
       await onSave({ ...settings, enabled: true, interval_minutes });
       onClose();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not enable monitoring");
+      setError(cause instanceof Error ? cause.message : t("setup.couldEnableMonitoring"));
     }
   });
   return (
@@ -53,16 +55,15 @@ export function MonitoringDialog({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">Keep monitoring</DialogTitle>
+          <DialogTitle className="text-xl">{t("setup.keepMonitoring")}</DialogTitle>
           <DialogDescription>
-            Repeat this investigation with the saved scope, sample, model, and budget.
-          </DialogDescription>
+            {t("setup.repeatInvestigationSavedScope")}</DialogDescription>
         </DialogHeader>
         <Controller
           control={control}
           name="interval_minutes"
           render={({ field }) => (
-            <DurationInput label="Check every" value={field.value} onChange={field.onChange} base="minutes" />
+            <DurationInput label={t("setup.checkEvery")} value={field.value} onChange={field.onChange} base="minutes" />
           )}
         />
         {formState.errors.interval_minutes?.message && (
@@ -71,12 +72,10 @@ export function MonitoringDialog({
           </p>
         )}
         <p className="text-xs leading-5 text-muted-foreground">
-          Each investigation looks back over the saved time range. The interval starts after the previous run finishes.
-        </p>
+          {t("setup.eachInvestigationLooksBack")}</p>
         {!ready && (
           <p role="status" className="text-sm text-warning">
-            Reconnect the worker before enabling monitoring.
-          </p>
+            {t("setup.reconnectWorkerBeforeEnabling")}</p>
         )}
         {error && (
           <p role="alert" className="text-sm text-destructive">
@@ -85,10 +84,9 @@ export function MonitoringDialog({
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
+            {t("datasets.cancel")}</Button>
           <Button disabled={!formState.isValid || formState.isSubmitting || !ready} onClick={() => void save()}>
-            {formState.isSubmitting ? "Saving…" : "Enable monitoring"}
+            {formState.isSubmitting ? t("settings.saving") : t("investigations.enableMonitoring")}
           </Button>
         </DialogFooter>
       </DialogContent>

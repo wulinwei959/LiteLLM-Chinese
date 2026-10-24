@@ -19,6 +19,8 @@ import { RunBody } from "./RunBody";
 import { RunHeader } from "./RunHeader";
 import { FeedbackPanel } from "../feedback/FeedbackPanel";
 import { useTraceSignalFlags } from "../../list/useTraceSignals";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 interface RunViewProps {
   traceId: string;
@@ -36,10 +38,11 @@ function selectedSpanMissing(trace: Trace, spanId: string | null): boolean {
 }
 
 function RunLoading() {
-  return <LoadingState title="Loading trace…" description="Fetching this run and its steps." />;
+  return <LoadingState title={lensTranslate("traces.loadingTrace")} description={lensTranslate("traces.fetchingRunSteps")} />;
 }
 
 function RunLoadError({ error, onBack, onRetry }: { error: unknown; onBack: () => void; onRetry: () => void }) {
+  const t = useLensTranslate();
   return (
     <div className="p-6 text-xs" data-testid="run-view-error">
       <button
@@ -47,13 +50,11 @@ function RunLoadError({ error, onBack, onRetry }: { error: unknown; onBack: () =
         onClick={onBack}
         className="mb-4 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
-        <ArrowLeft className="size-3.5" /> Back to traces
-      </button>
-      <h1 className="mb-2 text-sm font-medium">Could not load trace</h1>
-      <span className="text-muted-foreground">{error instanceof Error ? error.message : "Unknown error"}</span>
+        <ArrowLeft className="size-3.5" /> {t("traces.backTraces")}</button>
+      <h1 className="mb-2 text-sm font-medium">{t("traces.couldLoadTrace")}</h1>
+      <span className="text-muted-foreground">{error instanceof Error ? error.message : t("traces.unknownError")}</span>
       <Button variant="outline" size="sm" className="ml-3" onClick={onRetry}>
-        Retry
-      </Button>
+        {t("investigations.retry")}</Button>
     </div>
   );
 }
@@ -93,6 +94,7 @@ function LoadedRun({
   showSignals = false,
   switching,
 }: RunViewProps & { switching: boolean }) {
+  const t = useLensTranslate();
   const traces = useTracesApi(accessToken);
   const queryClient = useQueryClient();
   const [live, setLive] = useState(traces.live);
@@ -179,10 +181,8 @@ function LoadedRun({
       <FeedbackPanel summary={trace.summary} accessToken={accessToken} />
       {traceQuery.isRefetchError && (
         <div role="alert" className="flex items-center gap-3 border-b p-3 text-xs text-muted-foreground">
-          Could not refresh this run. Previously received steps are still shown.
-          <Button variant="outline" size="sm" disabled={manualRead || traceQuery.isFetching} onClick={refreshRun}>
-            Retry refresh
-          </Button>
+          {t("traces.couldRefreshRunPreviously")}<Button variant="outline" size="sm" disabled={manualRead || traceQuery.isFetching} onClick={refreshRun}>
+            {t("traces.retryRefresh")}</Button>
         </div>
       )}
       {(traceQuery.hasNextPage || failure) && (

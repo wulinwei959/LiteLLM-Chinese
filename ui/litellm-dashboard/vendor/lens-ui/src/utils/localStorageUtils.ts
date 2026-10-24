@@ -1,3 +1,4 @@
+import { lensTranslate } from "../host/lensTranslate";
 export const LOCAL_STORAGE_EVENT = "local-storage-change";
 
 export function emitLocalStorageChange(key: string) {
@@ -9,7 +10,7 @@ export function getLocalStorageItem(key: string): string | null {
   try {
     return window.localStorage.getItem(key);
   } catch (error) {
-    console.warn(`Error reading localStorage key "${key}":`, error);
+    console.warn(lensTranslate("utils.errorReadingLocalStorageKey", { value0: key }), error);
     return null;
   }
 }
@@ -19,7 +20,7 @@ export function setLocalStorageItem(key: string, value: string): void {
   try {
     window.localStorage.setItem(key, value);
   } catch (error) {
-    console.warn(`Error setting localStorage key "${key}":`, error);
+    console.warn(lensTranslate("utils.errorSettingLocalStorageKey", { value0: key }), error);
   }
 }
 
@@ -28,6 +29,6 @@ export function removeLocalStorageItem(key: string): void {
   try {
     window.localStorage.removeItem(key);
   } catch (error) {
-    console.warn(`Error removing localStorage key "${key}":`, error);
+    console.warn(lensTranslate("utils.errorRemovingLocalStorageKey", { value0: key }), error);
   }
 }

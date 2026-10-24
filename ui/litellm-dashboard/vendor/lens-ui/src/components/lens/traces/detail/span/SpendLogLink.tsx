@@ -10,20 +10,20 @@ import { useLensHost } from "../../../../../host/LensHost";
 import { formatCost } from "../../list/AgentTracesTable";
 import type { Span } from "../../types";
 import { useSpanRequestLog } from "../useSpanRequestLog";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 const UNMATCHED_REASON: Record<
   Exclude<NonNullable<Span["spend_match"]>, "matched">,
   string
 > = {
-  no_call_id:
-    "This step records no usable call identifier or transport context",
-  no_spend_log: "No matching spend log belongs to this run",
-  incomplete_evidence:
-    "This step does not account for every request in the call",
-  ambiguous: "Recorded identifiers do not select one compatible spend log",
+  get no_call_id() { return lensTranslate("traces.stepRecordsUsableCall"); },
+  get no_spend_log() { return lensTranslate("traces.matchingSpendLogBelongs"); },
+  get incomplete_evidence() { return lensTranslate("traces.stepAccountEveryRequest"); },
+  get ambiguous() { return lensTranslate("traces.recordedIdentifiersSelectOne"); },
 };
 
-const LENS_TRACE = { label: "Lens trace", icon: <Aperture aria-hidden /> };
+const LENS_TRACE = { get label() { return lensTranslate("traces.lensTrace"); }, icon: <Aperture aria-hidden /> };
 
 export const unmatchedReason = (span: Span): string | null =>
   span.spend_match && span.spend_match !== "matched"
@@ -39,6 +39,7 @@ export function SpendLogLink({
   accessToken: string;
   traceStartMs: number;
 }) {
+  const t = useLensTranslate();
   const { spendLogs } = useLensHost();
   const [open, setOpen] = useState(false);
   const requestId = span.spend_log_request_id ?? null;
@@ -57,7 +58,7 @@ export function SpendLogLink({
         className="inline-flex items-center gap-1 text-xs text-muted-foreground"
         title={reason}
       >
-        Cost <span className="font-medium text-foreground">not matched</span>
+        {t("investigations.cost")}<span className="font-medium text-foreground">{t("traces.matched")}</span>
       </span>
     );
   }
@@ -69,9 +70,9 @@ export function SpendLogLink({
         variant="outline"
         size="xs"
         onClick={() => setOpen(true)}
-        title={spendLogs ? requestId : "Connect LiteLLM to open this spend log"}
+        title={spendLogs ? requestId : t("traces.connectLiteLLMOpenSpend")}
         disabled={!spendLogs}
-        aria-label={`Open LiteLLM spend log ${requestId}`}
+        aria-label={t("traces.openLiteLLMSpendLog", { value0: requestId })}
         className="tabular-nums active:scale-[0.97] motion-reduce:transition-none"
       >
         <img
@@ -80,7 +81,7 @@ export function SpendLogLink({
           aria-hidden
           className="size-3.5"
         />
-        <span className="font-medium">LiteLLM Spend Log</span>
+        <span className="font-medium">{t("traces.liteLLMSpendLog")}</span>
         {span.spend != null && (
           <span className="text-muted-foreground">
             {formatCost(span.spend)}
@@ -90,8 +91,7 @@ export function SpendLogLink({
       </Button>
       {missing && (
         <span className="text-xs text-muted-foreground">
-          Spend log not visible in this time range
-        </span>
+          {t("traces.spendLogVisibleTime")}</span>
       )}
       {spendLogs && (
         <spendLogs.Drawer

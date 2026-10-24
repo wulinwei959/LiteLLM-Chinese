@@ -32,6 +32,7 @@ import { type AgentTracesResult, useAgentTraces, useTraceAvailability } from "./
 import { WaitingForTraces } from "../../onboarding/WaitingForTraces";
 import { LensPageHeader } from "../../ui/LensPageHeader";
 import styles from "../TraceAppearance.module.css";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const DRAWER_WIDTH_KEY = "litellm.agentTraces.drawerWidth";
 
@@ -83,13 +84,13 @@ function useTracingSetup(traces: AgentTracesResult, isActive: boolean, rangeChan
 }
 
 function TraceHistoryError({ history }: { history: ReturnType<typeof useTraceAvailability> }) {
+  const t = useLensTranslate();
   if (!history.error) return null;
   return (
     <div role="alert" className="flex items-center justify-between gap-4 border-b px-3 py-3 text-sm">
-      <p>Could not check earlier traces. {history.error.message}</p>
+      <p>{t("traces.couldCheckEarlierTraces", { value0: history.error.message })}</p>
       <Button variant="outline" size="sm" disabled={history.isFetching} onClick={() => void history.refetch()}>
-        Retry trace check
-      </Button>
+        {t("traces.retryTraceCheck")}</Button>
     </div>
   );
 }
@@ -106,6 +107,7 @@ export function AgentTracesSection({
   onSetUpSignals,
   onConnectAgent,
 }: AgentTracesSectionProps) {
+  const t = useLensTranslate();
   const live = useTracesLive();
   const { trace: openTrace, openTrace: openRun, selection, fullScreen, setFullScreen } = useOpenTraceRouting();
   const { query, setQuery, agent, status } = useRunFilterRouting();
@@ -186,8 +188,7 @@ export function AgentTracesSection({
           onClick={() => setShowSetup(false)}
           className="mb-3 text-sm text-muted-foreground hover:text-foreground"
         >
-          ← Back to traces
-        </button>
+          {t("traces.backToTraces")}</button>
         <TracingSetupCard detail={null} connected {...setupProps} />
       </div>
     );
@@ -206,11 +207,11 @@ export function AgentTracesSection({
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
         {!(openTrace && fullScreen) && (
-          <LensPageHeader section="02 / TRACE EXPLORER" title="Traces" description="Every run leaves a trail" />
+          <LensPageHeader section={t("traces.02TRACEEXPLORER")} title={t("tabs.traces")} description={t("traces.everyRunLeavesTrail")} />
         )}
         {checkHistory && <TraceHistoryError history={history} />}
         <TracesReceived received={setup.received} />
-        <Inspector.Panel label="Trace details" testId="run-drawer">
+        <Inspector.Panel label={t("traces.traceDetails")} testId="run-drawer">
           {(shown: TraceRef) => (
             <RunView
               traceId={shown.traceId}
@@ -239,8 +240,8 @@ export function AgentTracesSection({
             variant="ghost"
             size="icon-sm"
             className="h-full w-10 shrink-0 rounded-none border-l"
-            aria-label="Refresh traces"
-            title="Refresh traces"
+            aria-label={t("traces.refreshTraces")}
+            title={t("traces.refreshTraces")}
             disabled={traces.isFetching}
             onClick={checkTraces}
           >
@@ -284,27 +285,28 @@ export function AgentTracesSection({
 }
 
 function TracesReceived({ received }: { received: boolean }) {
+  const t = useLensTranslate();
   if (!received) return null;
   return (
     <p role="status" className="border-b px-3 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-      Traces received. Select a run to inspect it.
-    </p>
+      {t("traces.tracesReceivedSelectRun")}</p>
   );
 }
 
 function TraceCounts({ runs }: { runs: readonly TraceSummary[] }) {
+  const t = useLensTranslate();
   return (
-    <dl className={styles.counts} aria-label="Loaded trace summary">
+    <dl className={styles.counts} aria-label={t("traces.loadedTraceSummary")}>
       <div className="lens-metric">
-        <dt>Loaded runs</dt>
+        <dt>{t("traces.loadedRuns")}</dt>
         <dd>{runs.length.toLocaleString()}</dd>
       </div>
       <div className="lens-metric">
-        <dt>Agents</dt>
+        <dt>{t("tabs.agents")}</dt>
         <dd>{new Set(runs.flatMap(traceAgentNames)).size.toLocaleString()}</dd>
       </div>
       <div className="lens-metric">
-        <dt>Recorded steps</dt>
+        <dt>{t("traces.recordedSteps")}</dt>
         <dd>{runs.reduce((total, run) => total + run.span_count, 0).toLocaleString()}</dd>
       </div>
     </dl>
@@ -321,6 +323,7 @@ function TraceFooter({ runs, hasMore }: { runs: readonly TraceSummary[]; hasMore
 }
 
 function TracingSetupAction({ available, live, onSetup }: { available: boolean; live: boolean; onSetup: () => void }) {
+  const t = useLensTranslate();
   if (!available) return null;
   return (
     <Button
@@ -330,7 +333,6 @@ function TracingSetupAction({ available, live, onSetup }: { available: boolean; 
       disabled={!live}
       onClick={onSetup}
     >
-      Connect project
-    </Button>
+      {t("agents.connectProject")}</Button>
   );
 }

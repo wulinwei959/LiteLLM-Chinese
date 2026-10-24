@@ -15,6 +15,8 @@ import { ConnectAgent } from "./ConnectAgent";
 import { costPerCase, groupRuns, passedLabel, shortSha } from "./format";
 import { GateStatus } from "./RunBadges";
 import type { EvalDefinition, EvalRun } from "./types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface RunsTabProps {
   readonly definition: EvalDefinition;
@@ -24,6 +26,7 @@ export interface RunsTabProps {
 }
 
 export function RunsTab({ definition, datasetName, revision, onOpen }: RunsTabProps) {
+  const t = useLensTranslate();
   const runs = useEvalRuns({ eval: definition.name });
   const waited = useRef(false);
   const first = runs.data?.[0]?.id;
@@ -39,8 +42,8 @@ export function RunsTab({ definition, datasetName, revision, onOpen }: RunsTabPr
       <StateMessage
         role="status"
         icon={<Loader2 className="size-5 animate-spin motion-reduce:animate-none" />}
-        title="Loading runs…"
-        description="Fetching eval runs for this eval set."
+        title={t("evals.loadingRuns")}
+        description={t("evals.fetchingEvalRunsEval")}
       />
     );
   if (runs.error)
@@ -49,7 +52,7 @@ export function RunsTab({ definition, datasetName, revision, onOpen }: RunsTabPr
         role="alert"
         tone="destructive"
         icon={<TriangleAlert className="size-5" />}
-        title="Couldn't load runs"
+        title={t("evals.couldnTLoadRuns")}
         description={runs.error.message}
       />
     );
@@ -71,11 +74,11 @@ const fixedCount = (run: EvalRun) =>
   run.summary ? (run.summary.baseline_run_id === null ? "n/a" : run.summary.fixed.length) : "–";
 
 const COLUMNS: ColumnDef<EvalRun>[] = [
-  { id: "gate", size: 120, header: "Gate", cell: ({ row }) => <GateStatus run={row.original} /> },
+  { id: "gate", size: 120, get header() { return lensTranslate("evals.gate"); }, cell: ({ row }) => <GateStatus run={row.original} /> },
   {
     id: "commit",
     size: 220,
-    header: "Commit",
+    get header() { return lensTranslate("evals.commit"); },
     cell: ({ row: { original: run } }) => (
       <span className="font-mono">
         <span className="text-muted-foreground">{run.branch}@</span>
@@ -86,20 +89,20 @@ const COLUMNS: ColumnDef<EvalRun>[] = [
   },
   {
     id: "agent",
-    header: "Agent",
+    get header() { return lensTranslate("agents.agent"); },
     cell: ({ row }) => <span className="truncate text-muted-foreground">{row.original.agent}</span>,
   },
   {
     id: "pass",
     size: 90,
-    header: "Pass",
+    get header() { return lensTranslate("evals.pass"); },
     meta: { numeric: true },
     cell: ({ row }) => (row.original.summary ? passedLabel(row.original.summary) : "–"),
   },
   {
     id: "regressed",
     size: 100,
-    header: "Regressed",
+    get header() { return lensTranslate("evals.regressed2"); },
     meta: { numeric: true },
     cell: ({ row }) => (
       <span className={cn(row.original.summary?.regressions.length ? "text-destructive" : "text-muted-foreground")}>
@@ -110,7 +113,7 @@ const COLUMNS: ColumnDef<EvalRun>[] = [
   {
     id: "fixed",
     size: 80,
-    header: "Fixed",
+    get header() { return lensTranslate("evals.fixed2"); },
     meta: { numeric: true },
     cell: ({ row }) => (
       <span className={cn(row.original.summary?.fixed.length ? "text-success" : "text-muted-foreground")}>
@@ -121,26 +124,27 @@ const COLUMNS: ColumnDef<EvalRun>[] = [
   {
     id: "cost",
     size: 100,
-    header: "Cost/case",
+    get header() { return lensTranslate("evals.costCase"); },
     meta: { numeric: true },
     cell: ({ row }) => (row.original.summary ? costPerCase(row.original.summary) : "–"),
   },
   {
     id: "trials",
     size: 80,
-    header: "Trials",
+    get header() { return lensTranslate("evals.trials"); },
     meta: { numeric: true },
     cell: ({ row }) => `${row.original.received_trials}/${row.original.expected_trials}`,
   },
   {
     id: "run",
     size: 100,
-    header: "Run",
+    get header() { return lensTranslate("evals.run"); },
     cell: ({ row }) => <span className="font-mono text-muted-foreground">{row.original.id.slice(0, 8)}</span>,
   },
 ];
 
 function RunTable({ runs, onOpen }: { runs: readonly EvalRun[]; onOpen: (id: string) => void }) {
+  const t = useLensTranslate();
   const tableOptions: TableOptions<EvalRun> = {
     data: [...runs],
     columns: COLUMNS,
@@ -161,7 +165,7 @@ function RunTable({ runs, onOpen }: { runs: readonly EvalRun[]; onOpen: (id: str
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <InspectorTable.Root table={table}>
-          <InspectorTable.Grid aria-label="Eval runs" className="lens-table text-xs" style={{ minWidth: 960 }}>
+          <InspectorTable.Grid aria-label={t("evals.evalRuns")} className="lens-table text-xs" style={{ minWidth: 960 }}>
             <InspectorTable.Header />
             <InspectorTable.Body<EvalRun> rowHeight={() => ROW_HEIGHT}>
               {(row) => (

@@ -6,6 +6,7 @@ import { Check, Columns3 } from "lucide-react";
 
 import { Button } from "../../ui/button";
 import { cn } from "../../../lib/cva.config";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -16,7 +17,7 @@ interface DataTableViewOptionsProps<TData> {
 
 export function DataTableViewOptions<TData>({
   table,
-  label = "View",
+  label = lensTranslate("sharedDataTable.view"),
   iconOnly = false,
   className,
 }: DataTableViewOptionsProps<TData>) {

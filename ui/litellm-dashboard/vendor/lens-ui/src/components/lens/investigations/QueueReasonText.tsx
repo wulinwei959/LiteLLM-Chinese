@@ -2,24 +2,25 @@
 
 import { queueReasonText, workerTaskText, type QueueReason } from "../model/status";
 import type { QueueContext } from "./useQueueReason";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export function QueueReasonText({ reason, onConnect }: { reason: QueueReason; onConnect?: () => void }) {
+  const t = useLensTranslate();
   if (reason.kind !== "no_worker" || !onConnect) return <>{queueReasonText(reason)}</>;
   return (
     <>
-      Analysis is unavailable. Check{" "}
+      {t("investigations.analysisUnavailableCheck")}{" "}
       <button type="button" onClick={onConnect} className="font-medium text-foreground underline underline-offset-2">
-        Configure analysis
-      </button>{" "}
-      in Settings.
-    </>
+        {t("tabs.configureAnalysis")}</button>{" "}
+      {t("investigations.settings")}</>
   );
 }
 
 export function WorkerTasks({ reason, queue }: { reason: QueueReason; queue?: QueueContext }) {
+  const t = useLensTranslate();
   if (reason.kind === "no_worker" || !reason.tasks.length) return null;
   return (
-    <ol aria-label="What the worker is doing" className="flex flex-col">
+    <ol aria-label={t("investigations.workerDoing")} className="flex flex-col">
       {reason.tasks.map((task) => (
         <li key={task.lensId}>
           <button

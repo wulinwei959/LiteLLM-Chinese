@@ -11,6 +11,7 @@ import { formatScore } from "../../list/AgentTracesTable";
 import { LOW_SCORE } from "../../list/useTraceFeedback";
 import type { Feedback, TraceSummary } from "../../types";
 import { feedbackView } from "./feedback";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 interface FeedbackPanelProps {
   summary: Pick<TraceSummary, "trace_id" | "trace_ref">;
@@ -20,6 +21,7 @@ interface FeedbackPanelProps {
 const isLow = (score: number) => score <= LOW_SCORE;
 
 function Entry({ entry }: { entry: Feedback }) {
+  const t = useLensTranslate();
   const low = isLow(entry.score);
   return (
     <li className="flex gap-3 py-2 first:pt-0 last:pb-0" data-testid="feedback-entry" data-low={low || undefined}>
@@ -36,7 +38,7 @@ function Entry({ entry }: { entry: Feedback }) {
         {entry.comment ? (
           <p className="text-sm whitespace-pre-wrap text-foreground">“{entry.comment}”</p>
         ) : (
-          <p className="text-sm text-muted-foreground italic">No comment</p>
+          <p className="text-sm text-muted-foreground italic">{t("traces.comment")}</p>
         )}
         <span className="text-xs text-muted-foreground">
           {entry.author} · <span title={entry.updated_at}>{formatActivityTimestamp(entry.updated_at)}</span>
@@ -47,6 +49,7 @@ function Entry({ entry }: { entry: Feedback }) {
 }
 
 export function FeedbackPanel({ summary, accessToken }: FeedbackPanelProps) {
+  const t = useLensTranslate();
   const api = useTracesApi(accessToken);
   const traceRef = summary.trace_ref ?? "";
   const feedback = useQuery({
@@ -59,7 +62,7 @@ export function FeedbackPanel({ summary, accessToken }: FeedbackPanelProps) {
   const low = isLow(view.lowest);
   return (
     <section
-      aria-label="User feedback"
+      aria-label={t("traces.userFeedback")}
       data-low={low || undefined}
       className={cn(
         "flex shrink-0 flex-col gap-2 border-b px-4 py-3",
@@ -68,12 +71,10 @@ export function FeedbackPanel({ summary, accessToken }: FeedbackPanelProps) {
     >
       <header className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <MessageSquareQuote className="size-3.5" />
-        User feedback
-        {view.entries.length > 1 && (
+        {t("traces.userFeedback")}{view.entries.length > 1 && (
           <span className={cn("inline-flex items-center gap-1 font-mono", low && "text-destructive")}>
             <Star className="size-3" />
-            {formatScore(view.average)}/10 avg from {view.entries.length} users
-          </span>
+            {t("traces.value010AvgValue1", { value0: formatScore(view.average), value1: view.entries.length })}</span>
         )}
       </header>
       <ul className="flex max-h-48 flex-col divide-y overflow-y-auto">

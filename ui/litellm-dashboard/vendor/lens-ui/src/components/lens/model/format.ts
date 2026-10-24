@@ -1,5 +1,6 @@
 import { formatActivityTimestamp as runTime } from "../../../utils/activityTimestamp";
 import type { Settings } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export { runTime };
 
@@ -7,7 +8,7 @@ export function scopeLabel(settings: Partial<Pick<Settings, "service" | "agent_n
   return (
     [settings.agent_name, settings.service, ...(settings.filters ?? []).map((f) => `${f.key}: ${f.value}`)]
       .filter(Boolean)
-      .join(" · ") || "All activity"
+      .join(" · ") || lensTranslate("model.allActivity")
   );
 }
 
@@ -30,15 +31,15 @@ export function durationLabel(value: number, base: "minutes" | "hours" = "minute
 
 export function agoLabel(thenMs: number, nowMs: number): string {
   const seconds = Math.max(0, Math.floor((nowMs - thenMs) / 1000));
-  if (seconds < 5) return "just now";
-  if (seconds < 60) return `${seconds}s ago`;
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
+  if (seconds < 5) return lensTranslate("model.justNow");
+  if (seconds < 60) return lensTranslate("model.value0sAgo", { value0: seconds });
+  if (seconds < 3600) return lensTranslate("model.value0mAgo", { value0: Math.floor(seconds / 60) });
+  if (seconds < 86400) return lensTranslate("model.value0hAgo", { value0: Math.floor(seconds / 3600) });
+  return lensTranslate("model.value0dAgo", { value0: Math.floor(seconds / 86400) });
 }
 
 export const money = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 3 }).format(n);
-export const when = (value?: string | null) => (value ? runTime(value) : "Not yet");
+export const when = (value?: string | null) => (value ? runTime(value) : lensTranslate("model.yet"));
 
-export const sourceLabels = { both: "Traces and requests", requests: "LLM requests", traces: "Agent traces" };
+export const sourceLabels = { get both() { return lensTranslate("model.tracesRequests"); }, get requests() { return lensTranslate("model.lLMRequests"); }, get traces() { return lensTranslate("model.agentTraces"); } };

@@ -26,6 +26,7 @@ import { lensQueries } from "../../data/queries";
 import { useLensApi } from "../../data/LensServices";
 import type { Lens, RunWindow } from "../../model/types";
 import { RUN_PRESETS, runRequest, type RunChoice, type RunPreset } from "../../model/runRequest";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const localInput = (date: Date) =>
   new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
@@ -41,6 +42,7 @@ export function RunNowDialog({
   onClose: () => void;
   onRun: (request: RunWindow) => Promise<void>;
 }) {
+  const t = useLensTranslate();
   const api = useLensApi();
   const agentsQuery = useQuery(lensQueries.agents(api, "traces"));
   const agents = Array.isArray(agentsQuery.data) ? agentsQuery.data : [];
@@ -64,24 +66,22 @@ export function RunNowDialog({
     <Dialog open onOpenChange={(open) => !open && !busy && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Run now</DialogTitle>
+          <DialogTitle>{t("investigations.runNow")}</DialogTitle>
           <DialogDescription>
-            Runs once with these choices. The saved schedule and settings stay the same.
-          </DialogDescription>
+            {t("investigations.runsOnceChoicesSaved")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <label className="grid gap-1.5 text-sm font-medium">
-            Agent
-            <Combobox
+            {t("agents.agent")}<Combobox
               items={agents}
               value={agent || null}
               inputValue={agent}
               onInputValueChange={setAgent}
               onValueChange={(name) => setAgent(name ?? "")}
             >
-              <ComboboxInput aria-label="Agent" placeholder="All agents" showClear={!!agent} className="h-9 w-full" />
+              <ComboboxInput aria-label={t("agents.agent")} placeholder={t("investigations.allAgents")} showClear={!!agent} className="h-9 w-full" />
               <ComboboxContent>
-                <ComboboxEmpty>No matches. You can enter a recorded name.</ComboboxEmpty>
+                <ComboboxEmpty>{t("investigations.matchesEnterRecordedName")}</ComboboxEmpty>
                 <ComboboxList>
                   {(name: string) => (
                     <ComboboxItem key={name} value={name}>
@@ -93,7 +93,7 @@ export function RunNowDialog({
             </Combobox>
           </label>
           <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">Traces to review</legend>
+            <legend className="text-sm font-medium">{t("investigations.tracesReview")}</legend>
             <div className="flex flex-wrap gap-1.5">
               {RUN_PRESETS.map((p) => (
                 <button
@@ -110,12 +110,10 @@ export function RunNowDialog({
             {preset === -1 && (
               <div className="grid grid-cols-2 gap-2">
                 <label className="grid gap-1 text-xs text-muted-foreground">
-                  From
-                  <Input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
+                  {t("investigations.from")}<Input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
                 </label>
                 <label className="grid gap-1 text-xs text-muted-foreground">
-                  To
-                  <Input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+                  {t("investigations.to")}<Input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
                 </label>
               </div>
             )}
@@ -128,11 +126,9 @@ export function RunNowDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" disabled={busy} onClick={onClose}>
-            Cancel
-          </Button>
+            {t("datasets.cancel")}</Button>
           <Button disabled={busy} onClick={() => void submit()}>
-            Run now
-          </Button>
+            {t("investigations.runNow")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

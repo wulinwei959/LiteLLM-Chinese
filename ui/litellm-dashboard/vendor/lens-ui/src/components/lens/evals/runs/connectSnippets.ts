@@ -1,4 +1,5 @@
 import type { EvalDefinition, Scorer } from "./types";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface GitHubRepository {
   readonly owner: string;
@@ -48,7 +49,7 @@ export function parseGitHubRepository(
   ) {
     return {
       ok: false,
-      error: "Enter a GitHub repository URL or owner/repository.",
+      error: lensTranslate("evals.enterGitHubRepositoryURL"),
     };
   }
   const fullName = `${owner}/${name}`;
@@ -109,7 +110,7 @@ export function parseTaskImport(input: string): SetupInput<TaskImport> {
     return {
       ok: false,
       error:
-        "Use package.module:function for an async task that accepts Case and returns Run.",
+        lensTranslate("evals.usePackageModuleFunction"),
     };
   }
   return {
@@ -133,11 +134,11 @@ export function githubRunRepository(
 function scorerCall(scorer: Scorer): string {
   switch (scorer.kind) {
     case "task_completed":
-      return "scorers.task_completed()";
+      return lensTranslate("evals.scorersTaskCompleted");
     case "called_before":
-      return `scorers.called_before(${pyString(scorer.first)}, ${pyString(scorer.then)})`;
+      return lensTranslate("evals.scorersCalledBeforeValue0", { value0: pyString(scorer.first), value1: pyString(scorer.then) });
     case "judge":
-      return `judge(${pyString(scorer.prompt)}${scorer.model ? `, model=${pyString(scorer.model)}` : ""})`;
+      return lensTranslate("evals.judgeValue0value1", { value0: pyString(scorer.prompt), value1: scorer.model ? lensTranslate("evals.modelValue0", { value0: pyString(scorer.model) }) : "" });
   }
 }
 
@@ -152,10 +153,10 @@ function gateCall(definition: EvalDefinition): string {
   const minimums = Object.entries(gate.min ?? {});
   const minimumArgument = minimums.length
     ? [
-        `min={${minimums.map(([key, value]) => `${pyString(key)}: ${value}`).join(", ")}}`,
+        lensTranslate("evals.minValue0", { value0: minimums.map(([key, value]) => `${pyString(key)}: ${value}`).join(", ") }),
       ]
     : [];
-  return `Gate(${[...fields.map(([key, value]) => `${key}=${value}`), ...minimumArgument].join(", ")})`;
+  return lensTranslate("evals.gateValue02", { value0: [...fields.map(([key, value]) => `${key}=${value}`), ...minimumArgument].join(", ") });
 }
 
 const ACTION =
@@ -168,7 +169,7 @@ export function evalModule(agent: string): string {
       .replace(/[^a-z0-9]+/g, "_")
       .replace(/^_+|_+$/g, "") || "agent";
   return /^[0-9]/.test(name) || PYTHON_KEYWORDS.has(name)
-    ? `eval_${name}`
+    ? lensTranslate("evals.evalValue0", { value0: name })
     : name;
 }
 
@@ -234,7 +235,7 @@ export function evalSnippet(target: ConnectTarget): string {
     (scorer) => scorer.kind !== "judge",
   );
   const taskImport = target.taskImport
-    ? `\nfrom ${target.taskImport.module} import ${target.taskImport.functionName} as agent_task\n`
+    ? lensTranslate("evals.value0ImportValue1Agent", { value0: target.taskImport.module, value1: target.taskImport.functionName })
     : "";
   const taskBody = target.taskImport
     ? "    return await agent_task(case)"

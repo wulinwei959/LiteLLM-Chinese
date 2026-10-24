@@ -5,6 +5,7 @@ import { cn } from "../../../lib/cva.config";
 import styles from "./LensIntroduction.module.css";
 import { GatewayFlow } from "./GatewayFlow";
 import { STANDALONE_DOCS_URL, useLensHost } from "../../../host/LensHost";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const traceSteps = [
   { name: "research_agent", start: 0, duration: 14.2, failed: false },
@@ -15,12 +16,10 @@ const traceSteps = [
   { name: "answer", start: 9.7, duration: 4.5, failed: false },
 ];
 
-const sampleAnswer =
-  "The column store is 40% faster than the row store for your workload.";
-
 type EvidenceProps = { highlighted: boolean; onHighlight: () => void };
 
 function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
+  const t = useLensTranslate();
   return (
     <section
       aria-labelledby="lens-sample-trace"
@@ -28,13 +27,12 @@ function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
     >
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <h3 id="lens-sample-trace" className="font-semibold">
-          Tracing
-        </h3>
-        <p className="text-xs text-muted-foreground">Sample trace · 14.2s</p>
+          {t("onboarding.tracing")}</h3>
+        <p className="text-xs text-muted-foreground">{t("onboarding.sampleTrace142s")}</p>
       </div>
       <ol
         className="mt-3 space-y-1.5 text-xs leading-5 sm:text-sm"
-        aria-label="Sample trace timeline"
+        aria-label={t("onboarding.sampleTraceTimeline")}
       >
         {traceSteps.map((item, index) => {
           const linked = item.failed || item.name === "answer";
@@ -59,7 +57,7 @@ function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
                 <span className="truncate" title={item.name}>
                   {item.name}
                 </span>
-                {item.failed && <span className="sr-only">Failed</span>}
+                {item.failed && <span className="sr-only">{t("investigations.failed")}</span>}
               </span>
               <span
                 aria-hidden="true"
@@ -91,7 +89,7 @@ function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
                   type="button"
                   className={cn(rowClass, styles.evidenceLink)}
                   data-evidence-link=""
-                  aria-label={`${item.name}, ${item.duration} seconds${item.failed ? ", failed" : ""}. Highlight related finding`}
+                  aria-label={t("onboarding.value0Value1Secondsvalue2Highlight", { value0: item.name, value1: item.duration, value2: item.failed ? ", failed" : "" })}
                   aria-controls="lens-linked-finding"
                   aria-pressed={highlighted}
                   onClick={onHighlight}
@@ -111,18 +109,16 @@ function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
           className={cn(styles.evidenceOutput, "rounded-lg bg-muted/60 p-2.5")}
         >
           <p className="text-xs text-muted-foreground">
-            run_benchmark · output
-          </p>
+            {t("onboarding.runBenchmarkOutput")}</p>
           <p className="mt-1.5 text-sm leading-4.5">
-            Error: benchmark runner unavailable (503)
-          </p>
+            {t("onboarding.errorBenchmarkRunnerUnavailable")}</p>
         </div>
         <div
           id="lens-answer-output"
           className={cn(styles.evidenceOutput, "rounded-lg bg-muted/60 p-2.5")}
         >
-          <p className="text-xs text-muted-foreground">answer · output</p>
-          <p className="mt-1.5 text-sm leading-4.5">“{sampleAnswer}”</p>
+          <p className="text-xs text-muted-foreground">{t("onboarding.answerOutput")}</p>
+          <p className="mt-1.5 text-sm leading-4.5">“{t("onboarding.sampleAnswer")}”</p>
         </div>
       </div>
     </section>
@@ -130,6 +126,7 @@ function TraceExample({ highlighted, onHighlight }: EvidenceProps) {
 }
 
 function FindingExamples({ highlighted, onHighlight }: EvidenceProps) {
+  const t = useLensTranslate();
   return (
     <section
       aria-labelledby="lens-sample-findings"
@@ -137,11 +134,9 @@ function FindingExamples({ highlighted, onHighlight }: EvidenceProps) {
     >
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <h3 id="lens-sample-findings" className="font-semibold">
-          Lens findings
-        </h3>
+          {t("onboarding.lensFindings")}</h3>
         <p className="text-xs text-muted-foreground">
-          500 sample runs reviewed
-        </p>
+          {t("onboarding.500SampleRunsReviewed")}</p>
       </div>
       <div className="mt-3 divide-y border-t">
         <article
@@ -164,23 +159,17 @@ function FindingExamples({ highlighted, onHighlight }: EvidenceProps) {
                 aria-hidden="true"
                 className="mt-1.5 size-2 shrink-0 rounded-full bg-rose-500"
               />
-              Claims numbers it never measured
-            </button>
+              {t("onboarding.claimsNumbersNeverMeasured")}</button>
           </h4>
           <div className="ml-4 mt-1.5 space-y-1.5 text-sm leading-4.5">
             <p className="text-muted-foreground">
-              Reports a speedup even though the benchmark failed.
-            </p>
+              {t("onboarding.reportsSpeedupEvenThough")}</p>
             <blockquote className="border-l-2 pl-3 italic">
-              “…40% faster than the row store for your workload.”
-            </blockquote>
+              {t("onboarding.40FasterRowStore")}</blockquote>
             <p>
-              <span className="text-muted-foreground">Next step: </span>Report
-              the failed benchmark instead of estimating.
-            </p>
+              <span className="text-muted-foreground">{t("onboarding.nextStep")}</span>{t("onboarding.reportFailedBenchmarkInstead")}</p>
             <p className="text-xs text-muted-foreground">
-              38 linked runs · High priority
-            </p>
+              {t("onboarding.38LinkedRunsHigh")}</p>
           </div>
         </article>
         <article className="pt-3">
@@ -189,14 +178,11 @@ function FindingExamples({ highlighted, onHighlight }: EvidenceProps) {
               aria-hidden="true"
               className="mt-1.5 size-2 shrink-0 rounded-full bg-amber-500"
             />
-            Promises to follow up, then stops
-          </h4>
+            {t("onboarding.promisesFollowUpStops")}</h4>
           <div className="ml-4 mt-1.5 space-y-1.5 text-sm leading-4.5 text-muted-foreground">
             <p>
-              After an order lookup times out, the agent promises to check and
-              ends the run.
-            </p>
-            <p className="text-xs">12 linked runs · Medium priority</p>
+              {t("onboarding.afterOrderLookupTimes")}</p>
+            <p className="text-xs">{t("onboarding.12LinkedRunsMedium")}</p>
           </div>
         </article>
       </div>
@@ -205,6 +191,7 @@ function FindingExamples({ highlighted, onHighlight }: EvidenceProps) {
 }
 
 export function LensIntroduction({ onStart }: { onStart: () => void }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const [highlighted, setHighlighted] = useState(false);
   const toggleEvidence = () => setHighlighted((current) => !current);
@@ -218,17 +205,14 @@ export function LensIntroduction({ onStart }: { onStart: () => void }) {
         className="text-2xl leading-tight font-semibold tracking-tight sm:text-3xl"
       >
         {standalone
-          ? "Understand and improve your agents"
-          : "The gateway that helps your agents improve"}
+          ? t("onboarding.understandImproveAgents")
+          : t("onboarding.gatewayHelpsAgentsImprove")}
       </h2>
       <p className="mt-3 max-w-[780px] text-sm leading-6 text-muted-foreground">
-        Turn recorded agent runs into findings linked to the exact steps, so you
-        know what happened and what to change.
-      </p>
+        {t("onboarding.turnRecordedAgentRuns")}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button className="rounded-lg px-4" onClick={onStart}>
-          Set up Lens
-        </Button>
+          {t("onboarding.setUpLens")}</Button>
         <a
           href={
             standalone
@@ -239,7 +223,7 @@ export function LensIntroduction({ onStart }: { onStart: () => void }) {
           rel="noreferrer"
           className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
         >
-          Docs <ArrowUpRight aria-hidden="true" className="size-4" />
+          {t("onboarding.docs")}<ArrowUpRight aria-hidden="true" className="size-4" />
         </a>
       </div>
       <GatewayFlow standalone={standalone} />

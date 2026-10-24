@@ -3,6 +3,8 @@
 import { Button } from "../../../../ui/button";
 
 import { isRetryableTraceRead, type TraceReadFailure } from "../../list/traceReadFailure";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 interface PagingBannerProps {
   readonly loaded: number;
@@ -17,14 +19,14 @@ interface PagingBannerProps {
 function pageFailureMessage(failure: TraceReadFailure): string {
   switch (failure.kind) {
     case "changed":
-      return "This trace changed while you were browsing. Refresh to continue from its latest steps.";
+      return lensTranslate("traces.traceChangedWhileBrowsing");
     case "invalid":
-      return "This page could not be continued. Refresh the trace to start over.";
+      return lensTranslate("traces.pageCouldContinuedRefresh");
     case "too_large":
-      return "A step on the next page is too large to load here. Your loaded steps are still available.";
+      return lensTranslate("traces.stepNextPageToo");
     case "unavailable":
     case "unknown":
-      return "Could not load more steps. Your loaded steps are still available.";
+      return lensTranslate("traces.couldLoadMoreSteps");
   }
 }
 
@@ -35,8 +37,9 @@ function pageFailureMessage(failure: TraceReadFailure): string {
  * same way every time.
  */
 export function PagingBanner({ loaded, total, failure, busy, onLoadMore, onRefresh }: PagingBannerProps) {
+  const t = useLensTranslate();
   const retryable = failure !== null && isRetryableTraceRead(failure);
-  const nextLabel = failure ? "Retry" : "Load more steps";
+  const nextLabel = failure ? t("investigations.retry") : t("traces.loadMoreSteps");
   return (
     <div
       className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-1.5 text-xs text-muted-foreground"
@@ -45,17 +48,16 @@ export function PagingBanner({ loaded, total, failure, busy, onLoadMore, onRefre
       <span>
         {failure
           ? pageFailureMessage(failure)
-          : `Showing ${loaded.toLocaleString()} of ${total.toLocaleString()} steps`}
+          : t("traces.showingValue0Value1Steps", { value0: loaded.toLocaleString(), value1: total.toLocaleString() })}
       </span>
       <span className="flex items-center gap-2">
         {failure && (
           <Button size="xs" variant={retryable ? "ghost" : "outline"} disabled={busy} onClick={onRefresh}>
-            Refresh trace
-          </Button>
+            {t("traces.refreshTrace")}</Button>
         )}
         {(!failure || retryable) && (
           <Button size="xs" variant="outline" disabled={busy} onClick={onLoadMore}>
-            {busy ? "Loading…" : nextLabel}
+            {busy ? t("traces.loading") : nextLabel}
           </Button>
         )}
       </span>

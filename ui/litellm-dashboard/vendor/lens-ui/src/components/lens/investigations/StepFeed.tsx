@@ -4,6 +4,7 @@ import { cn } from "../../../lib/cva.config";
 
 import { stepLine } from "../model/inbox";
 import type { Job } from "../model/types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const STEP_MARK = { model: "✓", stage: "▸", error: "!" } as const;
 const STEP_TONE = {
@@ -13,14 +14,15 @@ const STEP_TONE = {
 } as const;
 
 export function StepFeed({ job }: { job: Job }) {
+  const t = useLensTranslate();
   const steps = job.steps ?? [];
   return (
     <ol
-      aria-label="Investigation steps"
+      aria-label={t("investigations.investigationSteps")}
       className="max-h-56 space-y-0.5 overflow-y-auto font-mono text-xs"
       data-testid="step-feed"
     >
-      {steps.length === 0 && <li className="text-muted-foreground">Waiting for the worker to start…</li>}
+      {steps.length === 0 && <li className="text-muted-foreground">{t("investigations.waitingWorkerStart")}</li>}
       {[...steps].reverse().map((step, index) => (
         <li
           key={`${step.at}-${index}`}

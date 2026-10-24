@@ -10,6 +10,8 @@ import { Logo } from "../../../molecules/logo/Logo";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../../ui/hover-card";
 
 import type { TraceSummary } from "../types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 type Source = NonNullable<TraceSummary["source"]>;
 type SourceType = Source["type"];
@@ -24,12 +26,12 @@ interface BrandedApp extends SourceApp {
 }
 
 const BRANDED: Readonly<Record<Exclude<SourceType, "custom">, BrandedApp>> = {
-  slack: { label: "Slack", logo: slackLogo.src, domains: ["slack.com"] },
-  teams: { label: "Teams", logo: null, domains: ["teams.microsoft.com", "teams.cloud.microsoft"] },
-  discord: { label: "Discord", logo: null, domains: ["discord.com"] },
-  linear: { label: "Linear", logo: linearLogo.src, domains: ["linear.app"] },
-  github: { label: "GitHub", logo: githubLogo.src, domains: ["github.com"] },
-  jira: { label: "Jira", logo: jiraLogo.src, domains: ["atlassian.net"] },
+  slack: { get label() { return lensTranslate("traces.slack"); }, logo: slackLogo.src, domains: ["slack.com"] },
+  teams: { get label() { return lensTranslate("traces.teams"); }, logo: null, domains: ["teams.microsoft.com", "teams.cloud.microsoft"] },
+  discord: { get label() { return lensTranslate("traces.discord"); }, logo: null, domains: ["discord.com"] },
+  linear: { get label() { return lensTranslate("traces.linear"); }, logo: linearLogo.src, domains: ["linear.app"] },
+  github: { get label() { return lensTranslate("traces.gitHub"); }, logo: githubLogo.src, domains: ["github.com"] },
+  jira: { get label() { return lensTranslate("traces.jira"); }, logo: jiraLogo.src, domains: ["atlassian.net"] },
 };
 
 const onDomain = (hostname: string, domain: string): boolean => hostname === domain || hostname.endsWith(`.${domain}`);
@@ -67,6 +69,7 @@ export function RunUser({ user }: { user: string }) {
 
 /** Links a run back to the conversation that started it, e.g. a Slack thread; hover previews its title. */
 export function RunSourceLink({ source }: { source: Source }) {
+  const t = useLensTranslate();
   const app = sourceApp(source);
   if (!app) return null;
   return (
@@ -75,17 +78,17 @@ export function RunSourceLink({ source }: { source: Source }) {
         href={source.url}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`Open ${app.label} thread`}
+        aria-label={t("traces.openValue0Thread", { value0: app.label })}
         className={`${chip} shrink-0 transition-colors hover:bg-muted`}
       >
         <AppMark app={app} className="size-3 shrink-0" />
-        <span className="truncate">{app.label} thread</span>
+        <span className="truncate">{t("traces.value0Thread", { value0: app.label })}</span>
         <ArrowUpRight aria-hidden className="size-3 shrink-0 text-muted-foreground" />
       </HoverCardTrigger>
       <HoverCardContent align="start" className="w-72 p-3">
         <a href={source.url} target="_blank" rel="noopener noreferrer" className="flex flex-col gap-1.5">
           <span className="line-clamp-2 text-sm font-medium text-foreground">
-            {source.title || `Open in ${app.label}`}
+            {source.title || t("traces.openValue0", { value0: app.label })}
           </span>
           <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
             <AppMark app={app} className="size-3 shrink-0" />

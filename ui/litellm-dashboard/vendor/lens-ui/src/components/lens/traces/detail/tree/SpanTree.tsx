@@ -21,6 +21,8 @@ import { treeGuides } from "../../utils";
 import { BAR_TRACK, tickLabel, timeTicks } from "./timeline";
 import { GroupRow, LoadMoreRow, type RowContext, SpanRow, type TreeLayout } from "./TreeRows";
 import styles from "../../TraceAppearance.module.css";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 interface SpanTreeProps {
   rows: TreeRow[];
@@ -45,13 +47,14 @@ interface SpanTreeProps {
 }
 
 const LAYOUTS: readonly { id: TreeLayout; label: string; icon: typeof ListTree }[] = [
-  { id: "tree", label: "Tree", icon: ListTree },
-  { id: "waterfall", label: "Waterfall", icon: ChartGantt },
+  { id: "tree", get label() { return lensTranslate("traces.tree"); }, icon: ListTree },
+  { id: "waterfall", get label() { return lensTranslate("traces.waterfall"); }, icon: ChartGantt },
 ];
 
 function LayoutSwitch({ layout, onChange }: { layout: TreeLayout; onChange: (layout: TreeLayout) => void }) {
+  const t = useLensTranslate();
   return (
-    <div role="radiogroup" aria-label="Step layout" className="flex items-center rounded-md border bg-background p-0.5">
+    <div role="radiogroup" aria-label={t("traces.stepLayout")} className="flex items-center rounded-md border bg-background p-0.5">
       {LAYOUTS.map(({ id, label, icon: Icon }) => (
         <button
           key={id}
@@ -137,6 +140,7 @@ export function SpanTree({
   onClearFilters,
   onCollapseAll,
 }: SpanTreeProps) {
+  const t = useLensTranslate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const guides = useMemo(() => treeGuides(rows.map((row) => row.depth)), [rows]);
   const traceStartMs = Date.parse(summary.start_time);
@@ -150,33 +154,32 @@ export function SpanTree({
   return (
     <section
       className="flex h-full min-h-0 min-w-0 flex-col border-r border-border bg-background"
-      aria-label="Run spans"
+      aria-label={t("traces.runSpans")}
     >
       <div className={cn(styles.stepHeader, "flex shrink-0 flex-col gap-2 border-b px-3 py-2.5")}>
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-semibold text-foreground">
-            Steps{" "}
+            {t("traces.steps")}{" "}
             <span className="ml-0.5 rounded bg-primary/10 px-1.5 py-0.5 text-[11px] font-normal text-primary tabular-nums">
-              {filtering && `${rows.length.toLocaleString()} of `}
+              {filtering && t("traces.value0", { value0: rows.length.toLocaleString() })}
               {summary.span_count.toLocaleString()}
             </span>
           </span>
           <div className="ml-auto flex items-center gap-1">
             <LayoutSwitch layout={layout} onChange={onLayoutChange} />
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label="Step display options" />}>
+              <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={t("traces.stepDisplayOptions")} />}>
                 <MoreHorizontal className="size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuCheckboxItem checked={hideFramework} onCheckedChange={onToggleHideFramework}>
-                  Hide framework spans
-                </DropdownMenuCheckboxItem>
+                  {t("traces.hideFrameworkSpans")}</DropdownMenuCheckboxItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={onCollapseAll}>Collapse branches</DropdownMenuItem>
+                <DropdownMenuItem onClick={onCollapseAll}>{t("traces.collapseBranches")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             {onOpenDetails && (
-              <Button variant="ghost" size="icon-xs" onClick={onOpenDetails} aria-label="Show details">
+              <Button variant="ghost" size="icon-xs" onClick={onOpenDetails} aria-label={t("traces.showDetails")}>
                 <PanelRightOpen className="size-4" />
               </Button>
             )}
@@ -186,8 +189,8 @@ export function SpanTree({
           <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="Search steps"
-              placeholder="Filter steps"
+              aria-label={t("traces.searchSteps")}
+              placeholder={t("traces.filterSteps")}
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
               className="h-7 bg-background pr-7 pl-7 font-mono text-[11px] shadow-none md:text-[11px]"
@@ -196,7 +199,7 @@ export function SpanTree({
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label="Clear step search"
+                aria-label={t("traces.clearStepSearch")}
                 className="absolute top-1/2 right-0.5 -translate-y-1/2"
                 onClick={() => onQueryChange("")}
               >
@@ -205,11 +208,9 @@ export function SpanTree({
             )}
           </div>
           <FilterChip pressed={!errorsOnly} onClick={() => onErrorsOnlyChange(false)}>
-            All
-          </FilterChip>
+            {t("traces.all")}</FilterChip>
           <FilterChip pressed={errorsOnly} onClick={() => onErrorsOnlyChange(true)}>
-            Errors
-            <span
+            {t("agents.errors")}<span
               className={cn("tabular-nums", summary.error_count > 0 ? "text-destructive" : "text-muted-foreground")}
             >
               {summary.error_count}
@@ -217,8 +218,7 @@ export function SpanTree({
           </FilterChip>
           {filtering && (
             <span role="status" className="sr-only">
-              {rows.length} found
-            </span>
+              {t("traces.value0Found", { value0: rows.length })}</span>
           )}
         </div>
       </div>
@@ -226,13 +226,12 @@ export function SpanTree({
         {layout === "waterfall" && rows.length > 0 && <TimeAxis totalMs={summary.duration_ms} />}
         {rows.length === 0 && (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-            <p>No matching steps</p>
+            <p>{t("traces.matchingSteps")}</p>
             <Button variant="link" size="sm" onClick={onClearFilters}>
-              Clear filters
-            </Button>
+              {t("traces.clearFilters")}</Button>
           </div>
         )}
-        <div role="tree" aria-label="Spans in time order" className="pt-1">
+        <div role="tree" aria-label={t("traces.spansTimeOrder")} className="pt-1">
           {rows.map((row, i) => {
             if (row.kind === "load-more")
               return <LoadMoreRow key={row.id} row={row} guide={guides[i]} onLoadMore={onLoadMore} />;

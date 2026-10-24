@@ -12,6 +12,8 @@ import { type Job, type Lens } from "../../model/types";
 import { EvidenceView } from "../Evidence";
 import { FINDING_PANEL_WIDTH_KEY } from "../../storage";
 import { useRunEvidenceRoute } from "../../route";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 const PAGE = 50;
 
@@ -22,9 +24,9 @@ interface RunRef {
 const runKey = (run: RunRef): string => run.id;
 
 function assessmentLabel(assessment: Job["assessments"][number] | undefined): string {
-  if (!assessment) return "Not reviewed";
-  if (assessment.cannot_assess) return "Insufficient evidence";
-  return assessment.issue_checks?.length ? "Issue observed" : "No issue observed";
+  if (!assessment) return lensTranslate("investigations.reviewed");
+  if (assessment.cannot_assess) return lensTranslate("investigations.insufficientEvidence");
+  return assessment.issue_checks?.length ? lensTranslate("investigations.issueObserved") : lensTranslate("investigations.noIssueObserved");
 }
 
 export interface RunsTabProps {
@@ -34,6 +36,7 @@ export interface RunsTabProps {
 
 /** The runs a batch reviewed; each opens its original trace or request in the side panel. */
 export function RunsTab({ lens, job }: RunsTabProps) {
+  const t = useLensTranslate();
   const { runId, selectRun } = useRunEvidenceRoute();
   const [runOffset, setRunOffset] = useState(0);
   const [runFilter, setRunFilter] = useState("all");
@@ -60,10 +63,9 @@ export function RunsTab({ lens, job }: RunsTabProps) {
       <TabsContent value="runs" className="space-y-4 pt-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            {runs.length} selected from {job?.sample?.eligible ?? 0} matching runs
-          </p>
+            {t("investigations.value0SelectedValue1Matching", { value0: runs.length, value1: job?.sample?.eligible ?? 0 })}</p>
           <select
-            aria-label="Filter reviewed runs"
+            aria-label={t("investigations.filterReviewedRuns")}
             className="h-8 max-w-full rounded-md border bg-background px-2 text-xs sm:max-w-64"
             value={runFilter}
             onChange={(e) => {
@@ -71,10 +73,10 @@ export function RunsTab({ lens, job }: RunsTabProps) {
               setRunOffset(0);
             }}
           >
-            <option value="all">All outcomes</option>
-            <option value="clear">No issue observed</option>
-            <option value="unknown">Insufficient evidence or not reviewed</option>
-            {job?.settings?.context && <option value="expected_behavior">Expected behavior deviation</option>}
+            <option value="all">{t("investigations.allOutcomes")}</option>
+            <option value="clear">{t("investigations.noIssueObserved")}</option>
+            <option value="unknown">{t("investigations.insufficientEvidenceReviewed")}</option>
+            {job?.settings?.context && <option value="expected_behavior">{t("investigations.expectedBehaviorDeviation")}</option>}
             {job?.settings?.checks.map((check) => (
               <option key={check.id} value={check.id}>
                 {check.instruction}
@@ -111,8 +113,8 @@ export function RunsTab({ lens, job }: RunsTabProps) {
           {!visibleRuns.length && (
             <p className="py-10 text-center text-sm text-muted-foreground">
               {runs.length
-                ? "No runs match this outcome."
-                : "Selected activity appears here when the worker starts reviewing it."}
+                ? t("investigations.runsMatchOutcome")
+                : t("investigations.selectedActivityAppearsWorker")}
             </p>
           )}
         </div>
@@ -124,23 +126,20 @@ export function RunsTab({ lens, job }: RunsTabProps) {
               disabled={!runOffset}
               onClick={() => setRunOffset(Math.max(0, runOffset - PAGE))}
             >
-              Previous runs
-            </Button>
+              {t("investigations.previousRuns")}</Button>
             <span>
-              {runOffset + 1}–{Math.min(runOffset + PAGE, visibleRuns.length)} of {visibleRuns.length}
-            </span>
+              {t("investigations.value0Value1Value2", { value0: runOffset + 1, value1: Math.min(runOffset + PAGE, visibleRuns.length), value2: visibleRuns.length })}</span>
             <Button
               size="sm"
               variant="ghost"
               disabled={runOffset + PAGE >= visibleRuns.length}
               onClick={() => setRunOffset(runOffset + PAGE)}
             >
-              Next runs
-            </Button>
+              {t("investigations.nextRuns")}</Button>
           </div>
         )}
       </TabsContent>
-      <Inspector.Panel label="Run details" testId="run-panel">
+      <Inspector.Panel label={t("investigations.runDetails")} testId="run-panel">
         {(run: RunRef) => <EvidenceView lensId={lens.id} evidence={{ id: run.id, span: "" }} />}
       </Inspector.Panel>
     </Inspector.Root>

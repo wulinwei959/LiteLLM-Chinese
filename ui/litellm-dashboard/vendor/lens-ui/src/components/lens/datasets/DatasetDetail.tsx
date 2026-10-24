@@ -28,6 +28,7 @@ import {
   type CaseEdits,
 } from "./caseView";
 import type { Dataset } from "./types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export interface DatasetDetailProps {
   readonly datasetId: string;
@@ -40,6 +41,7 @@ export function DatasetDetail({
   readOnly,
   onBack,
 }: DatasetDetailProps) {
+  const t = useLensTranslate();
   const { revision, setRevision } = useDatasetRoute();
   const latest = useDataset(datasetId);
   const viewed = useDataset(datasetId, revision);
@@ -50,8 +52,8 @@ export function DatasetDetail({
         icon={
           <Loader2 className="size-5 animate-spin motion-reduce:animate-none" />
         }
-        title="Loading dataset…"
-        description="Fetching its cases."
+        title={t("datasets.loadingDataset")}
+        description={t("datasets.fetchingCases")}
       />
     );
   const error = latest.error ?? viewed.error;
@@ -61,12 +63,11 @@ export function DatasetDetail({
         role="alert"
         tone="destructive"
         icon={<TriangleAlert className="size-5" />}
-        title="Couldn't load this dataset"
-        description={error?.message ?? "The proxy returned no dataset."}
+        title={t("datasets.couldnTLoadDataset")}
+        description={error?.message ?? t("datasets.proxyReturnedDataset")}
       >
         <Button size="sm" variant="outline" onClick={onBack}>
-          All datasets
-        </Button>
+          {t("datasets.allDatasets")}</Button>
       </StateMessage>
     );
   return (
@@ -99,6 +100,7 @@ interface DatasetRevisionProps {
 }
 
 function DatasetRevision(props: DatasetRevisionProps) {
+  const t = useLensTranslate();
   const {
     dataset,
     latestRevision,
@@ -135,7 +137,7 @@ function DatasetRevision(props: DatasetRevisionProps) {
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="lens-toolbar flex shrink-0 flex-col gap-2 border-b px-3 py-3 sm:px-4">
         <nav
-          aria-label="Breadcrumb"
+          aria-label={t("datasets.breadcrumb")}
           className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground"
         >
           <button
@@ -143,8 +145,7 @@ function DatasetRevision(props: DatasetRevisionProps) {
             onClick={onBack}
             className="rounded hover:text-foreground hover:underline"
           >
-            Datasets
-          </button>
+            {t("tabs.datasets")}</button>
           <ChevronRight aria-hidden="true" className="size-3" />
           <span className="truncate">{dataset.name}</span>
         </nav>
@@ -156,9 +157,9 @@ function DatasetRevision(props: DatasetRevisionProps) {
             <h2 className="min-w-0 truncate text-base font-semibold">
               {dataset.name}
             </h2>
-            <IdChip value={dataset.id} label="Copy dataset ID" />
+            <IdChip value={dataset.id} label={t("datasets.copyDatasetID")} />
             <span className="hidden truncate font-mono text-xs text-muted-foreground sm:inline">
-              {dataset.agent_name || "Any agent"}
+              {dataset.agent_name || t("datasets.anyAgent")}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -180,8 +181,7 @@ function DatasetRevision(props: DatasetRevisionProps) {
               }
             >
               <Download className="size-3.5" />
-              Export JSONL
-            </Button>
+              {t("datasets.exportJSONL")}</Button>
             {editable && (
               <Button
                 size="sm"
@@ -191,7 +191,7 @@ function DatasetRevision(props: DatasetRevisionProps) {
                 {save.isPending && (
                   <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" />
                 )}
-                Save as revision {dataset.revision + 1}
+                {t("datasets.saveRevision")}{dataset.revision + 1}
               </Button>
             )}
           </div>
@@ -201,12 +201,11 @@ function DatasetRevision(props: DatasetRevisionProps) {
         <div className="shrink-0 border-b px-3 sm:px-4">
           <TabsList
             variant="line"
-            aria-label="Dataset sections"
+            aria-label={t("datasets.datasetSections")}
             className="h-9 gap-4 px-0"
           >
             <TabsTrigger value="cases" className="flex-none px-0 text-sm">
-              Cases
-            </TabsTrigger>
+              {t("datasets.cases")}</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="cases" className="flex min-h-0 flex-col">
@@ -219,14 +218,11 @@ function DatasetRevision(props: DatasetRevisionProps) {
               role="status"
               className="border-b px-4 py-2 text-xs text-muted-foreground"
             >
-              Revision {dataset.revision} is read-only. Switch to the latest
-              revision to make changes.
-            </p>
+              {t("datasets.revisionValue0ReadOnly", { value0: dataset.revision })}</p>
           )}
           {cases.length === 0 ? (
             <p className="lens-empty-state m-4 rounded-xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-              This revision has no cases. Add some from a trace or a finding.
-            </p>
+              {t("datasets.revisionCasesAddSome")}</p>
           ) : (
             <CaseTable
               cases={cases}
@@ -259,6 +255,7 @@ function SaveProblem({
   error: Error | null;
   onReload: () => void;
 }) {
+  const t = useLensTranslate();
   if (!error) return null;
   const conflict = isRevisionConflict(error);
   return (
@@ -268,13 +265,12 @@ function SaveProblem({
     >
       <span className="min-w-0">
         {conflict
-          ? "Someone saved a newer revision while you were editing. Reload to see it, then make your changes again."
+          ? t("datasets.someoneSavedNewerRevision")
           : error.message}
       </span>
       {conflict && (
         <Button variant="ghost" size="sm" onClick={onReload}>
-          Reload
-        </Button>
+          {t("datasets.reload")}</Button>
       )}
     </div>
   );
@@ -289,21 +285,22 @@ function RevisionPicker({
   latest: number;
   onPick: (revision: number) => void;
 }) {
+  const t = useLensTranslate();
   const revisions = Array.from(
     { length: latest + 1 },
     (_, offset) => latest - offset,
   );
   return (
     <select
-      aria-label="Revision"
+      aria-label={t("datasets.revision")}
       className="h-8 rounded-md border border-[var(--lens-brand)]/20 bg-background pr-7 pl-2 font-mono text-xs text-[var(--lens-brand)] hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
       value={revision}
       onChange={(event) => onPick(Number(event.target.value))}
     >
       {revisions.map((value) => (
         <option key={value} value={value}>
-          Revision {value}
-          {value === latest ? " (latest)" : ""}
+          {t("datasets.revision")}{value}
+          {value === latest ? t("datasets.latest") : ""}
         </option>
       ))}
     </select>

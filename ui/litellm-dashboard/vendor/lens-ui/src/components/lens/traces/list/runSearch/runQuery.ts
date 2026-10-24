@@ -5,14 +5,15 @@ import { previewText, traceAgentNames } from "../../utils";
 
 import { type ClientIndex, filterItems } from "../../../../shared/search/evaluate";
 import { ALL_OPERATORS, type FieldSpec, type QueryLanguage } from "../../../../shared/search/language";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 const RUN_FIELDS = {
-  name: { group: "Run attributes", icon: SquareChevronRight, suggestValues: true },
-  agent: { group: "Run attributes", icon: Bot, suggestValues: true },
-  status: { group: "Run attributes", icon: CircleDashed, suggestValues: true },
-  model: { group: "Run attributes", icon: Box, suggestValues: true },
-  input: { group: "Content", icon: Braces, suggestValues: false },
-  trace_id: { group: "Identity", icon: Hash, suggestValues: false },
+  name: { get group() { return lensTranslate("traces.runAttributes"); }, icon: SquareChevronRight, suggestValues: true },
+  agent: { get group() { return lensTranslate("traces.runAttributes"); }, icon: Bot, suggestValues: true },
+  status: { get group() { return lensTranslate("traces.runAttributes"); }, icon: CircleDashed, suggestValues: true },
+  model: { get group() { return lensTranslate("traces.runAttributes"); }, icon: Box, suggestValues: true },
+  input: { get group() { return lensTranslate("traces.content"); }, icon: Braces, suggestValues: false },
+  trace_id: { get group() { return lensTranslate("traces.identity"); }, icon: Hash, suggestValues: false },
 } as const satisfies Record<string, FieldSpec>;
 
 export type RunField = keyof typeof RUN_FIELDS;

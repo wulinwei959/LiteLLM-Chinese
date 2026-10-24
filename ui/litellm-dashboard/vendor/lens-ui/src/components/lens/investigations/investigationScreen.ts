@@ -1,5 +1,6 @@
 import type { Lens, LensList, Settings } from "../model/types";
 import type { LensDialog } from "../route";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export type SetupMode = "new" | "edit" | "duplicate";
 
@@ -29,7 +30,7 @@ function setupScreen(mode: SetupMode, lens: Lens | undefined): SetupScreen | und
   if (mode === "new") return { kind: "setup", mode };
   if (!lens) return undefined;
   const initial =
-    mode === "duplicate" ? { ...lens.settings, name: `${lens.settings.name} copy`, enabled: false } : lens.settings;
+    mode === "duplicate" ? { ...lens.settings, name: lensTranslate("investigations.value0Copy", { value0: lens.settings.name }), enabled: false } : lens.settings;
   return { kind: "setup", mode, lens, initial };
 }
 

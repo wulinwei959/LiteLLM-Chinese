@@ -6,6 +6,7 @@ import CopyButton from "../../../../shared/CopyButton";
 import { cn } from "../../../../../lib/cva.config";
 
 import { FoldChevron } from "../../ui/Collapse";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 const COPY =
   "size-6 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity duration-150 group-hover/block:opacity-100 focus-visible:opacity-100 motion-reduce:transition-none";
@@ -33,6 +34,7 @@ export function Block({
   defaultOpen = true,
   children,
 }: BlockProps) {
+  const t = useLensTranslate();
   const [open, setOpen] = useState(defaultOpen);
   const foldable = children !== undefined && children !== null && children !== false;
   const expanded = open && foldable;
@@ -48,7 +50,7 @@ export function Block({
           <button
             type="button"
             aria-expanded={open}
-            aria-label={`${open ? "Collapse" : "Expand"} ${name}`}
+            aria-label={`${open ? t("traces.collapse") : t("traces.expand")} ${name}`}
             onClick={() => setOpen((value) => !value)}
             className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-sm py-0.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
@@ -64,7 +66,7 @@ export function Block({
         )}
         {meta}
         {copyValue !== undefined && (
-          <CopyButton variant="action" value={copyValue} label={`Copy ${name}`} iconOnly className={COPY} />
+          <CopyButton variant="action" value={copyValue} label={t("agents.copyValue0", { value0: name })} iconOnly className={COPY} />
         )}
       </header>
       {expanded && (

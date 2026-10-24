@@ -1,11 +1,12 @@
 import type { DatasetCase, DatasetToolCall, SkipReason } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export const SKIP_REASON_TEXT: Readonly<Record<SkipReason, string>> = {
-  duplicate: "Already in the dataset",
-  no_content: "No conversation or reply was recorded",
-  too_large: "Too large to store as one case",
-  over_limit: "The dataset is full",
-  invalid: "Not a valid case line",
+  get duplicate() { return lensTranslate("datasets.alreadyDataset"); },
+  get no_content() { return lensTranslate("datasets.conversationReplyRecorded"); },
+  get too_large() { return lensTranslate("datasets.tooLargeStoreOne"); },
+  get over_limit() { return lensTranslate("datasets.datasetFull"); },
+  get invalid() { return lensTranslate("datasets.validCaseLine"); },
 };
 
 export interface Draft {
@@ -55,5 +56,5 @@ const callText = (call: DatasetToolCall): string =>
 export const caseReplySummary = (item: DatasetCase): string => {
   const calls = item.tool_calls.map(callText).join(", ");
   if (item.reply && calls) return `${item.reply} · ${calls}`;
-  return item.reply || calls || "No reply recorded";
+  return item.reply || calls || lensTranslate("datasets.replyRecorded");
 };

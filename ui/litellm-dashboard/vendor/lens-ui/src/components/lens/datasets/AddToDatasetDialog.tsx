@@ -64,6 +64,8 @@ import type {
   DatasetSummary,
   SkippedCase,
 } from "./types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const NEW_DATASET = "__new__";
 
@@ -113,6 +115,7 @@ export function AddToDatasetDialog({
   agentName = "",
   onClose,
 }: AddToDatasetDialogProps) {
+  const t = useLensTranslate();
   const { datasets, target, existingId, setPicked } =
     useDatasetTarget(agentName);
   const dataset = useDataset(existingId);
@@ -121,7 +124,7 @@ export function AddToDatasetDialog({
     target !== null,
   );
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
-  const [name, setName] = useState(agentName ? `${agentName} cases` : "");
+  const [name, setName] = useState(agentName ? t("datasets.value0Cases", { value0: agentName }) : "");
   const [conflict, setConflict] = useState(false);
   const create = useCreateDataset();
   const save = useSaveRevision();
@@ -167,15 +170,14 @@ export function AddToDatasetDialog({
           cases: revisionCases(base.cases, built, draft),
         },
       });
-      toast.success(`Added ${cases(chosen)} to ${saved.name}`, {
+      toast.success(t("datasets.addedValue0Value1", { value0: cases(chosen), value1: saved.name }), {
         description: (
           <button
             type="button"
             className="underline underline-offset-2"
             onClick={() => openSaved(saved.id)}
           >
-            Open dataset
-          </button>
+            {t("datasets.openDataset")}</button>
         ),
       });
       onClose();
@@ -189,11 +191,9 @@ export function AddToDatasetDialog({
     <Dialog open onOpenChange={(open) => !open && !busy && onClose()}>
       <DialogContent className="max-h-[90vh] grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4 sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Add to dataset</DialogTitle>
+          <DialogTitle>{t("datasets.addDataset")}</DialogTitle>
           <DialogDescription>
-            Saves a copy of each conversation, so it stays after the trace
-            expires.
-          </DialogDescription>
+            {t("datasets.savesCopyEachConversation")}</DialogDescription>
         </DialogHeader>
         <TargetFields
           datasets={datasets}
@@ -219,8 +219,7 @@ export function AddToDatasetDialog({
           )}
           <div className="flex gap-2">
             <Button variant="outline" disabled={busy} onClick={onClose}>
-              Cancel
-            </Button>
+              {t("datasets.cancel")}</Button>
             <Button disabled={!canSave} onClick={() => void submit()}>
               {busy && (
                 <Loader2
@@ -228,7 +227,7 @@ export function AddToDatasetDialog({
                   className="animate-spin motion-reduce:animate-none"
                 />
               )}
-              {chosen > 0 ? `Save ${cases(chosen)}` : "Save"}
+              {chosen > 0 ? t("datasets.saveValue0", { value0: cases(chosen) }) : t("datasets.save")}
             </Button>
           </div>
         </DialogFooter>
@@ -252,16 +251,16 @@ function TargetFields({
   onTarget,
   onName,
 }: TargetFieldsProps) {
+  const t = useLensTranslate();
   const nameId = useId();
   const items = [
-    { value: NEW_DATASET, label: "New dataset" },
+    { value: NEW_DATASET, label: t("datasets.newDataset") },
     ...datasets.map((item) => ({ value: item.id, label: item.name })),
   ];
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       <label className="grid gap-1.5 text-xs text-muted-foreground">
-        Dataset
-        <Select
+        {t("datasets.dataset")}<Select
           value={target}
           items={items}
           onValueChange={(next: string | null) =>
@@ -269,14 +268,14 @@ function TargetFields({
           }
         >
           <SelectTrigger
-            aria-label="Dataset"
+            aria-label={t("datasets.dataset")}
             size="sm"
             className="w-full text-sm"
           >
-            <SelectValue placeholder="Loading datasets…" />
+            <SelectValue placeholder={t("datasets.loadingDatasets")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NEW_DATASET}>New dataset</SelectItem>
+            <SelectItem value={NEW_DATASET}>{t("datasets.newDataset")}</SelectItem>
             {datasets.map((item) => (
               <SelectItem key={item.id} value={item.id}>
                 {item.name}
@@ -293,12 +292,11 @@ function TargetFields({
           htmlFor={nameId}
           className="grid gap-1.5 text-xs text-muted-foreground"
         >
-          Name
-          <Input
+          {t("datasets.name")}<Input
             id={nameId}
             value={name}
             maxLength={120}
-            placeholder="checkout regressions"
+            placeholder={t("datasets.checkoutRegressions")}
             onChange={(event) => onName(event.target.value)}
             className="h-8"
           />
@@ -309,18 +307,16 @@ function TargetFields({
 }
 
 function ConflictNotice({ onReload }: { onReload: () => void }) {
+  const t = useLensTranslate();
   return (
     <p
       role="alert"
       className="flex items-center gap-2 text-xs text-destructive"
     >
       <TriangleAlert aria-hidden="true" className="size-3.5" />
-      Someone saved this dataset since you opened it. Reload to add to the
-      latest version.
-      <Button variant="outline" size="xs" onClick={onReload}>
+      {t("datasets.someoneSavedDatasetSince")}<Button variant="outline" size="xs" onClick={onReload}>
         <RotateCw aria-hidden="true" />
-        Reload
-      </Button>
+        {t("datasets.reload")}</Button>
     </p>
   );
 }
@@ -340,6 +336,7 @@ function CasePreview({
   onToggle,
   onExpected,
 }: CasePreviewProps) {
+  const t = useLensTranslate();
   if (build.isPending)
     return (
       <p
@@ -350,8 +347,7 @@ function CasePreview({
           aria-hidden="true"
           className="size-4 animate-spin motion-reduce:animate-none"
         />
-        Reading the conversation…
-      </p>
+        {t("datasets.readingConversation")}</p>
     );
   if (build.isError)
     return (
@@ -367,17 +363,15 @@ function CasePreview({
   return (
     <div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
       <div className="flex items-baseline justify-between">
-        <p className="text-sm font-medium">Cases</p>
+        <p className="text-sm font-medium">{t("datasets.cases")}</p>
         <p className="text-xs text-muted-foreground tabular-nums">
-          {chosen} of {cases.length} selected
-        </p>
+          {t("datasets.value0Value1Selected", { value0: chosen, value1: cases.length })}</p>
       </div>
       {cases.length === 0 ? (
         <p className="rounded-xl bg-muted/60 px-3 py-4 text-sm text-muted-foreground">
-          Nothing new to add.
-        </p>
+          {t("datasets.nothingNewAdd")}</p>
       ) : (
-        <ul aria-label="Cases to add" className="grid gap-2.5">
+        <ul aria-label={t("datasets.casesAdd")} className="grid gap-2.5">
           {cases.map((item, index) => (
             <CaseTile
               key={item.id}
@@ -411,7 +405,8 @@ function CaseTile({
   onToggle: () => void;
   onExpected: (text: string) => void;
 }) {
-  const label = `Case ${index + 1}`;
+  const t = useLensTranslate();
+  const label = t("datasets.caseValue0", { value0: index + 1 });
   return (
     <li
       className={cn(
@@ -431,7 +426,7 @@ function CaseTile({
         <Checkbox
           checked={selected}
           onCheckedChange={onToggle}
-          aria-label={`Include ${label}`}
+          aria-label={t("datasets.includeValue0", { value0: label })}
           className="mt-0.5"
         />
         <span className="grid min-w-0 gap-0.5">
@@ -446,7 +441,7 @@ function CaseTile({
       {item.messages.length > 0 && (
         <details className="pl-6.5 text-xs">
           <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-            Conversation · {item.messages.length}{" "}
+            {t("datasets.conversation")}{item.messages.length}{" "}
             {item.messages.length === 1 ? "message" : "messages"}
           </summary>
           <CaseConversation messages={item.messages} />
@@ -454,13 +449,12 @@ function CaseTile({
       )}
       {selected && (
         <label className="grid gap-1 pl-6.5 text-xs text-muted-foreground">
-          Expected
-          <Textarea
+          {t("datasets.expected")}<Textarea
             value={expected}
             rows={1}
-            placeholder="What a good reply does (optional)"
+            placeholder={t("datasets.goodReplyOptional")}
             onChange={(event) => onExpected(event.target.value)}
-            aria-label={`Expected for ${label}`}
+            aria-label={t("datasets.expectedValue0", { value0: label })}
             className="min-h-8 text-sm"
           />
         </label>
@@ -504,11 +498,12 @@ export function CaseConversation({
 }
 
 function SkippedList({ skipped }: { skipped: readonly SkippedCase[] }) {
+  const t = useLensTranslate();
   return (
     <div className="grid gap-1.5">
-      <p className="text-sm font-medium">Skipped</p>
+      <p className="text-sm font-medium">{t("datasets.skipped")}</p>
       <ul
-        aria-label="Skipped"
+        aria-label={t("datasets.skipped")}
         className="grid gap-1 text-xs text-muted-foreground"
       >
         {skipped.map((item, index) => (
@@ -521,8 +516,7 @@ function SkippedList({ skipped }: { skipped: readonly SkippedCase[] }) {
             </span>
             {item.source.trace_id && (
               <span className="truncate">
-                trace {item.source.trace_id.slice(0, 12)}
-              </span>
+                {t("datasets.traceValue0", { value0: item.source.trace_id.slice(0, 12) })}</span>
             )}
           </li>
         ))}
@@ -542,7 +536,7 @@ export interface AddToDatasetButtonProps {
 export function AddToDatasetButton({
   sources,
   agentName,
-  label = "Add to dataset",
+  label = lensTranslate("datasets.addDataset"),
   className,
 }: AddToDatasetButtonProps) {
   const allowed = useCanAddToDataset();

@@ -1,5 +1,6 @@
 import type { AnalysisModelInfo } from "../../model/types";
 import type { AnalysisModels } from "./useAnalysisModels";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface ModelGate {
   readonly modelValid: boolean;
@@ -21,9 +22,9 @@ export function analysisModelOptions(models: string[], details: AnalysisModelInf
   return [...new Set(models)].sort().map((name) => {
     const info = details.find((item) => item.model_group === name);
     const capability = () => {
-      if (info?.mode && info.mode !== "chat") return `${info.mode}: not suitable for Lens`;
-      if (info?.supported_openai_params?.includes("response_format")) return "JSON output supported";
-      return "JSON output support unverified";
+      if (info?.mode && info.mode !== "chat") return lensTranslate("setup.value0SuitableLens", { value0: info.mode });
+      if (info?.supported_openai_params?.includes("response_format")) return lensTranslate("setup.jSONOutputSupported");
+      return lensTranslate("setup.jSONOutputSupportUnverified");
     };
     return {
       value: name,

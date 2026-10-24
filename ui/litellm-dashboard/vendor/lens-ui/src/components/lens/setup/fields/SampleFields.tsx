@@ -5,8 +5,10 @@ import { Input } from "../../../ui/input";
 
 import { DurationInput } from "../../../shared/DurationInput";
 import type { InvestigationInput } from "../investigationSchema";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export function SampleFields() {
+  const t = useLensTranslate();
   const {
     control,
     register,
@@ -18,7 +20,7 @@ export function SampleFields() {
         control={control}
         name="selection.lookback_hours"
         render={({ field }) => (
-          <DurationInput label="Review the last" value={field.value ?? 24} base="hours" onChange={field.onChange} />
+          <DurationInput label={t("setup.reviewLast")} value={field.value ?? 24} base="hours" onChange={field.onChange} />
         )}
       />
       {errors.selection?.lookback_hours?.message && (
@@ -27,8 +29,7 @@ export function SampleFields() {
         </p>
       )}
       <label className="grid gap-2 text-sm">
-        Sample (%)
-        <Input
+        {t("setup.sample")}<Input
           {...register("selection.sample_percent", { valueAsNumber: true })}
           type="number"
           min="0.01"

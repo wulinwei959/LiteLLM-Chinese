@@ -28,6 +28,7 @@ import type {
   TraceAgentList,
   TraceAgentsQuery,
 } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export interface TraceWindow {
   readonly startMs: number;
@@ -63,7 +64,7 @@ export interface TracesApi {
 /** A one-liner Claude Code / Codex can run to read the trace. */
 export const agentHandoffText = (traceId: string, spanId?: string | null, traceRef?: string): string => {
   const base = `${getProxyBaseUrl().replace(/\/$/, "")}/v1/traces/${encodeURIComponent(traceId)}`;
-  const path = spanId ? `${base}/spans/${encodeURIComponent(spanId)}` : base;
+  const path = spanId ? lensTranslate("traces.value0SpansValue1", { value0: base, value1: encodeURIComponent(spanId) }) : base;
   const query = spanId
     ? ({ trace_ref: traceRef } satisfies SpanQuery)
     : ({ trace_ref: traceRef, page_size: 200 } satisfies TraceDetailQuery);
@@ -74,10 +75,10 @@ export const agentHandoffText = (traceId: string, spanId?: string | null, traceR
   ).toString();
   const url = params ? `${path}?${params}` : path;
   const quotedUrl = "'" + url.replaceAll("'", "'\"'\"'") + "'";
-  const what = spanId ? "this step of a LiteLLM agent trace" : "this LiteLLM agent trace";
+  const what = spanId ? lensTranslate("traces.stepLiteLLMAgentTrace") : lensTranslate("traces.liteLLMAgentTrace");
   const guidance = spanId
-    ? "The JSON response contains this step's captured input, output, and attributes. Report missing content and capture warnings explicitly."
-    : `The JSON response contains span summaries. Follow next_cursor by adding cursor to this URL until it is null, preserving trace_ref and page_size. Fetch captured content at ${base}/spans/{span_id}, using the same trace_ref. Report missing content and capture warnings explicitly.`;
+    ? lensTranslate("traces.jSONResponseContainsStep")
+    : lensTranslate("traces.jSONResponseContainsSpan", { value0: base });
   return `Read ${what}, explain what happened, and investigate any issues:\ncurl --fail-with-body -sS -H "Authorization: Bearer $LITELLM_API_KEY" ${quotedUrl}\n${guidance}`;
 };
 
@@ -86,7 +87,7 @@ export function liveTracesApi(accessToken: string): TracesApi {
     live: true,
     handoff: (traceId, spanId, traceRef) => ({
       text: agentHandoffText(traceId, spanId, traceRef),
-      copied: "Command copied",
+      copied: lensTranslate("investigations.commandCopied"),
     }),
     list: (window) => agentTraceListCall({ accessToken, ...window }),
     agents: async ({ startMs, endMs }) => {

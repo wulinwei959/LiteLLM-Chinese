@@ -10,23 +10,25 @@ import { SpanIcon } from "../../ui/SpanIcon";
 import type { GroupRowData } from "../../tree";
 import type { Span, SpanType } from "../../types";
 import { fmtMs, fmtTok } from "../../utils";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 export const HOVER_OPEN_DELAY_MS = 300;
 const HOVER_CLOSE_DELAY_MS = 100;
 
 const TYPE_LABEL: Record<SpanType, string> = {
-  agent: "Agent",
+  get agent() { return lensTranslate("agents.agent"); },
   llm: "LLM",
-  tool: "Tool",
-  chain: "Chain",
-  framework: "Framework",
-  retriever: "Retriever",
-  embedding: "Embedding",
-  reranker: "Reranker",
-  guardrail: "Guardrail",
-  evaluator: "Evaluator",
-  prompt: "Prompt",
-  decision: "Decision",
+  get tool() { return lensTranslate("traces.tool"); },
+  get chain() { return lensTranslate("traces.chain"); },
+  get framework() { return lensTranslate("traces.framework"); },
+  get retriever() { return lensTranslate("traces.retriever"); },
+  get embedding() { return lensTranslate("traces.embedding"); },
+  get reranker() { return lensTranslate("traces.reranker"); },
+  get guardrail() { return lensTranslate("traces.guardrail"); },
+  get evaluator() { return lensTranslate("traces.evaluator"); },
+  get prompt() { return lensTranslate("traces.prompt"); },
+  get decision() { return lensTranslate("traces.decision"); },
 };
 
 const ABSOLUTE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -56,7 +58,7 @@ export interface HoverFacts {
   tags: readonly string[];
 }
 
-const agentTags = (agent: string): readonly string[] => (agent ? [`agent:${agent}`] : []);
+const agentTags = (agent: string): readonly string[] => (agent ? [lensTranslate("traces.agentValue0", { value0: agent })] : []);
 
 export const spanFacts = (span: Span): HoverFacts => ({
   name: span.name,
@@ -107,6 +109,7 @@ function FactSection({ title, children }: { title: string; children: React.React
 }
 
 function HoverCardBody({ facts, traceStartMs }: { facts: HoverFacts; traceStartMs: number }) {
+  const t = useLensTranslate();
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-start gap-2">
@@ -119,7 +122,7 @@ function HoverCardBody({ facts, traceStartMs }: { facts: HoverFacts; traceStartM
             {!facts.failed && (
               <span
                 className="grid size-4 shrink-0 place-items-center rounded-full bg-trace-ok p-0.5"
-                aria-label="Success"
+                aria-label={t("traces.success")}
               >
                 <Check className="size-3 text-trace-ok-glyph" strokeWidth={2.5} />
               </span>
@@ -131,23 +134,23 @@ function HoverCardBody({ facts, traceStartMs }: { facts: HoverFacts; traceStartM
           </span>
         </div>
       </div>
-      <FactSection title="Time">
+      <FactSection title={t("traces.time")}>
         <dl className="flex flex-col gap-1.5">
-          <Fact label="Start" value={absoluteTime(traceStartMs, facts.startMs)} />
-          <Fact label="End" value={absoluteTime(traceStartMs, facts.startMs + facts.durationMs)} />
-          <Fact label="Duration" value={fmtMs(facts.durationMs)} />
+          <Fact label={t("traces.start")} value={absoluteTime(traceStartMs, facts.startMs)} />
+          <Fact label={t("traces.end")} value={absoluteTime(traceStartMs, facts.startMs + facts.durationMs)} />
+          <Fact label={t("investigations.duration")} value={fmtMs(facts.durationMs)} />
         </dl>
       </FactSection>
       {(facts.tokens > 0 || facts.spend != null) && (
-        <FactSection title="Usage">
+        <FactSection title={t("traces.usage")}>
           <dl className="flex flex-col gap-1.5">
-            {facts.tokens > 0 && <Fact label="Tokens" value={fmtTok(facts.tokens)} />}
-            {facts.spend != null && <Fact label="Cost" value={formatCost(facts.spend)} />}
+            {facts.tokens > 0 && <Fact label={t("traces.tokens")} value={fmtTok(facts.tokens)} />}
+            {facts.spend != null && <Fact label={t("investigations.cost")} value={formatCost(facts.spend)} />}
           </dl>
         </FactSection>
       )}
       {facts.tags.length > 0 && (
-        <FactSection title="Tags">
+        <FactSection title={t("traces.tags")}>
           <ul className="flex flex-wrap gap-1">
             {facts.tags.map((tag) => (
               <li key={tag} className="rounded-sm bg-trace-tag px-1 py-0.5 text-trace-duration">

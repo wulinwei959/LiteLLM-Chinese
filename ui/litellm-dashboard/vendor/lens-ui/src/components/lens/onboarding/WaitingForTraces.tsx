@@ -3,6 +3,7 @@
 import { Activity, ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useConnectProjectRoute } from "../route";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export function WaitingForTraces({
   onConnect,
@@ -15,10 +16,11 @@ export function WaitingForTraces({
   readonly checking: boolean;
   readonly detail?: string | null;
 }) {
+  const t = useLensTranslate();
   const [project] = useConnectProjectRoute();
   return (
     <section
-      aria-label="Waiting for traces"
+      aria-label={t("onboarding.waitingTraces")}
       className="my-5 flex flex-col items-center rounded-xl border bg-muted/20 px-5 py-12 sm:py-16"
     >
       <div className="w-full max-w-xl">
@@ -27,31 +29,27 @@ export function WaitingForTraces({
           className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white dark:bg-indigo-500"
         >
           <Activity aria-hidden className="size-3.5" />
-          Waiting for traces
-        </span>
+          {t("onboarding.waitingTraces")}</span>
         <h2 className="mt-5 text-xl font-semibold tracking-tight">
-          {project ? "Your first trace will appear here" : "Connect your project to see its traces"}
+          {project ? t("onboarding.firstTraceAppear") : t("onboarding.connectProjectSeeTraces")}
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {project ? (
             <>
-              Continue setup for <span className="break-all font-medium text-foreground">{project.name}</span> on Home.
-              Lens checks the connection there automatically.
-            </>
+              {t("onboarding.continueSetup")}<span className="break-all font-medium text-foreground">{project.name}</span> {t("onboarding.homeLensChecksConnection")}</>
           ) : (
-            "Home walks you through setup and checks the connection live. Your agent appears here automatically when its traces arrive."
+            t("onboarding.homeWalksThroughSetup")
           )}
         </p>
         {onConnect && (
           <Button className="mt-6" onClick={onConnect}>
-            {project ? "Continue setup" : "Connect project"}
+            {project ? t("onboarding.continueSetup2") : t("agents.connectProject")}
             <ArrowRight aria-hidden className="size-4" />
           </Button>
         )}
         {detail && (
           <p role="alert" className="mt-4 text-sm text-muted-foreground">
-            Trace storage is not configured yet. Check the live connection panel on Home.
-          </p>
+            {t("onboarding.traceStorageConfiguredYet")}</p>
         )}
         <div className="mt-4">
           <Button
@@ -62,7 +60,7 @@ export function WaitingForTraces({
             className="px-0 text-xs text-muted-foreground"
           >
             <RefreshCw aria-hidden className="size-3.5" />
-            {checking ? "Checking…" : "Check for traces"}
+            {checking ? t("onboarding.checking") : t("onboarding.checkTraces")}
           </Button>
         </div>
       </div>

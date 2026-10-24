@@ -6,6 +6,7 @@ import { cn } from "../../lib/cva.config";
 import { copyToClipboard } from "../../utils/dataUtils";
 import { Check, Copy } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { lensTranslate } from "../../host/lensTranslate";
 
 interface CopyButtonProps {
   value: string | null | undefined;
@@ -37,7 +38,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   iconClassName,
   variant = "icon",
   iconOnly = false,
-  copiedLabel = "Copied",
+  copiedLabel = lensTranslate("onboarding.copied"),
 }) => {
   const [copied, setCopied] = useState(false);
   const isAction = variant === "action";

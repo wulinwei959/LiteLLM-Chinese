@@ -9,6 +9,7 @@ import { useWorkerConnected } from "../../hooks/useWorkerConnected";
 import type { LensList } from "../../model/types";
 import { SettingsCard } from "../SettingsSection";
 import { SetupAgentPrompt } from "../../onboarding/SetupAgentPrompt";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const CONFIGURATION_GUIDE = "https://github.com/BerriAI/lens/blob/main/docs/analysis.md";
 
@@ -19,6 +20,7 @@ export function DeploymentAnalysis({
   workers: LensList["workers"];
   readyAction?: ReactNode;
 }) {
+  const t = useLensTranslate();
   const api = useLensApi();
   const models = useQuery(lensQueries.modelDetails(api));
   const list = useQuery(lensQueries.list(api));
@@ -33,26 +35,22 @@ export function DeploymentAnalysis({
       <SetupAgentPrompt goal="analysis" featureConfigured={models.isSuccess ? configured.length > 0 : undefined} />
       {models.isPending ? (
         <p role="status" className="text-sm text-muted-foreground">
-          Checking analysis models…
-        </p>
+          {t("settings.checkingAnalysisModels")}</p>
       ) : models.isError || list.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          Could not check analysis configuration. {models.error?.message ?? list.error?.message}
-        </p>
+          {t("settings.couldCheckAnalysisConfiguration", { value0: models.error?.message ?? list.error?.message })}</p>
       ) : configured.length === 0 ? (
         <div className="space-y-2">
-          <h3 className="font-semibold">Add an analysis provider</h3>
+          <h3 className="font-semibold">{t("settings.addAnalysisProvider")}</h3>
           <p className="text-sm text-muted-foreground">
-            Configure a model and its provider key in your Lens deployment, then restart Lens and check again. You can
-            keep recording and inspecting traces while analysis is unconfigured.
-          </p>
+            {t("settings.configureModelProviderKey")}</p>
         </div>
       ) : (
         <div className="space-y-3">
           <p role="status" className="text-sm">
-            {connected ? "Analysis is configured" : "Models are configured; waiting for the investigation worker"}
+            {connected ? t("settings.analysisConfigured") : t("settings.modelsConfiguredWaitingInvestigation")}
           </p>
-          <ul aria-label="Analysis models" className="space-y-1.5 font-mono text-xs">
+          <ul aria-label={t("settings.analysisModels")} className="space-y-1.5 font-mono text-xs">
             {configured.map((model) => (
               <li key={model.model_group} className="rounded-md border bg-background px-3 py-2">
                 <span className="font-medium text-[var(--lens-brand)]">{model.model_group}</span>
@@ -61,13 +59,10 @@ export function DeploymentAnalysis({
             ))}
           </ul>
           <p className="text-sm text-muted-foreground">
-            Investigations send selected trace content to these providers. Choose a model and monthly spending limit
-            when creating an investigation. Provider keys stay on the Lens server.
-          </p>
+            {t("settings.investigationsSendSelectedTrace")}</p>
           {!connected && (
             <p className="text-sm text-muted-foreground">
-              Check the Lens service logs if the worker does not become ready, then retry.
-            </p>
+              {t("settings.checkLensServiceLogs")}</p>
           )}
         </div>
       )}
@@ -78,11 +73,9 @@ export function DeploymentAnalysis({
           rel="noopener noreferrer"
           className="text-sm underline underline-offset-4"
         >
-          Configure analysis models
-        </a>
+          {t("settings.configureAnalysisModels")}</a>
         <Button variant="outline" size="sm" onClick={refresh} disabled={models.isFetching || list.isFetching}>
-          Check configuration
-        </Button>
+          {t("agents.checkConfiguration")}</Button>
       </div>
       {connected && configured.length > 0 && !models.isError && !list.isError && readyAction}
     </SettingsCard>

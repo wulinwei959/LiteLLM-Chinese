@@ -13,6 +13,7 @@ import { fmtMs, previewText, type TreeGuide } from "../../utils";
 import { groupFacts, SpanHoverCard, spanFacts } from "./SpanHoverCard";
 import { toolSummary } from "../content/payload";
 import { BAR_TRACK, barGeometry } from "./timeline";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 export type TreeLayout = "tree" | "waterfall";
 
@@ -46,11 +47,12 @@ function Guides({ depth, guide }: { depth: number; guide: TreeGuide }) {
 }
 
 function Caret({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const t = useLensTranslate();
   return (
     <span
       role="button"
       tabIndex={-1}
-      aria-label={open ? "Collapse" : "Expand"}
+      aria-label={open ? t("traces.collapse") : t("traces.expand")}
       className="grid size-5 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground"
       onClick={(event) => {
         event.stopPropagation();
@@ -207,6 +209,7 @@ export function SpanRow({ row, ctx }: { row: SpanRowData; ctx: RowContext }) {
 }
 
 export function GroupRow({ row, ctx }: { row: GroupRowData; ctx: RowContext }) {
+  const t = useLensTranslate();
   const start = Math.min(...row.members.map((m) => m.start_offset_ms));
   const end = Math.max(...row.members.map((m) => m.start_offset_ms + m.duration_ms));
   return (
@@ -230,7 +233,7 @@ export function GroupRow({ row, ctx }: { row: GroupRowData; ctx: RowContext }) {
           <span className="shrink-0 rounded-sm bg-muted px-1 text-xs leading-4 text-muted-foreground tabular-nums">
             ×{row.members.length}
           </span>
-          {row.failedCount > 0 && <span className={cn(META, "text-destructive")}>{row.failedCount} failed</span>}
+          {row.failedCount > 0 && <span className={cn(META, "text-destructive")}>{t("traces.value0Failed", { value0: row.failedCount })}</span>}
         </Label>
         {ctx.layout === "waterfall" && (
           <Bar start={start} duration={end - start} total={ctx.totalMs} type={row.type} failed={row.isFailureGroup} />
@@ -252,6 +255,7 @@ export function LoadMoreRow({
   guide: TreeGuide;
   onLoadMore: (groupId: string) => void;
 }) {
+  const t = useLensTranslate();
   return (
     <button
       type="button"
@@ -260,8 +264,7 @@ export function LoadMoreRow({
     >
       <Guides depth={row.depth} guide={guide} />
       <span className="flex items-center gap-2 pl-1.5">
-        <MoreHorizontal className="size-3.5" /> Load 20 more
-        <span>({row.remaining} remaining)</span>
+        <MoreHorizontal className="size-3.5" /> {t("traces.load20More")}<span>{t("traces.value0Remaining", { value0: row.remaining })}</span>
       </span>
     </button>
   );

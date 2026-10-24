@@ -9,6 +9,7 @@ import { SpanIcon } from "../../ui/SpanIcon";
 import type { SpanType } from "../../types";
 import styles from "../../TraceAppearance.module.css";
 import { cn } from "../../../../../lib/cva.config";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 interface PaneHeaderProps {
   type: SpanType;
@@ -24,19 +25,20 @@ interface PaneHeaderProps {
 
 /** Selected step identity: tile, name, id, then its time and usage on one quiet line. */
 export function PaneHeader({ type, model, failed, title, idValue, facts, actions, links, onClose }: PaneHeaderProps) {
+  const t = useLensTranslate();
   return (
     <div className={cn(styles.stepHeader, "flex shrink-0 flex-col gap-1.5 border-b px-4 pt-3 pb-2.5")}>
       <div className="flex min-w-0 items-center gap-2">
         <SpanIcon type={type} model={model} error={failed} size="lg" />
         <h2 className="min-w-0 truncate font-mono text-sm font-semibold text-foreground">{title}</h2>
-        {idValue && <IdChip value={idValue} label="Copy span ID" />}
+        {idValue && <IdChip value={idValue} label={t("traces.copySpanID")} />}
         <div className="ml-auto flex shrink-0 items-center gap-1">
           {actions}
           <Button
             variant="ghost"
             size="icon-xs"
             onClick={onClose}
-            aria-label="Close details"
+            aria-label={t("traces.closeDetails")}
             className="text-muted-foreground"
           >
             <PanelRightClose className="size-4" />

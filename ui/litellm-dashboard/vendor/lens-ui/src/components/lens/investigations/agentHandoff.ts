@@ -1,23 +1,24 @@
+import { lensTranslate } from "../../../host/lensTranslate";
 const shellQuote = (value: string): string => "'" + value.replaceAll("'", "'\"'\"'") + "'";
 
 export function investigationHandoffText(
   baseUrl: string,
   lensId: string,
   batchId = "latest",
-  authHeader = "Authorization",
+  authHeader = lensTranslate("investigations.authorization"),
 ): string {
-  const base = `${baseUrl.replace(/\/$/, "")}/lens/${encodeURIComponent(lensId)}`;
+  const base = lensTranslate("investigations.value0LensValue1", { value0: baseUrl.replace(/\/$/, ""), value1: encodeURIComponent(lensId) });
   const selectedRun = batchId !== "latest" && batchId !== "all";
   const command = (url: string) =>
     `curl --fail-with-body -sS -H ${shellQuote(`${authHeader}: Bearer ***`)} ${shellQuote(url)}`;
   const selectionText = (): string => {
     if (selectedRun) {
-      return `Inspect the selected run's findings, settings, coverage, assessments, and errors:\n${command(`${base}/runs/${encodeURIComponent(batchId)}`)}\nUse the investigation's top-level findings to check current review status and reason by finding id.`;
+      return `Inspect the selected run's findings, settings, coverage, assessments, and errors:\n${command(lensTranslate("investigations.value0RunsValue1", { value0: base, value1: encodeURIComponent(batchId) }))}\nUse the investigation's top-level findings to check current review status and reason by finding id.`;
     }
     if (batchId === "all") {
-      return "Inspect the top-level findings: these are all accumulated findings, including their current review status and reason.";
+      return lensTranslate("investigations.inspectTopLevelFindings");
     }
-    return `Inspect jobs[0] for the latest run's findings, settings, coverage, assessments, and errors. Fetch its full snapshot at ${base}/runs/{job_id}. Use the top-level findings to check current review status and reason by finding id. If there is no run or its findings are null, report that explicitly rather than treating accumulated findings as this run's results.`;
+    return lensTranslate("investigations.inspectJobs0Latest", { value0: base });
   };
   return `Read this LiteLLM Lens investigation, inspect its findings, and explain any issues and suggested fixes.
 Replace *** with a LiteLLM API key authorized to read this investigation (proxy administrator or read-only administrator). Do not paste the key into chat.

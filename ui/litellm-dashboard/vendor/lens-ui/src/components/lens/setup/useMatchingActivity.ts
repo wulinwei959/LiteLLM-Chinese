@@ -9,6 +9,7 @@ import { durationLabel } from "../model/format";
 import type { Sample } from "../model/types";
 import { useDebouncedValue } from "./useDebouncedValue";
 import type { InvestigationInput } from "./investigationSchema";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const PREVIEW_DEBOUNCE_MS = 350;
 const EMPTY_PREVIEW_POLL_MS = 15000;
@@ -84,12 +85,12 @@ function previewTitle(
   source: Selection["source"],
   data: PreviewPageData | undefined,
 ): string {
-  if (!state.validWindow) return "Choose a history window between 1 hour and 365 days";
-  if (!state.valid) return "Complete your condition to preview matches";
-  if (state.pending) return "Finding matching activity…";
-  if (!data) return "Preview unavailable";
+  if (!state.validWindow) return lensTranslate("setup.chooseHistoryWindowBetween");
+  if (!state.valid) return lensTranslate("setup.completeConditionPreviewMatches");
+  if (state.pending) return lensTranslate("setup.findingMatchingActivity");
+  if (!data) return lensTranslate("setup.previewUnavailable");
   const noun = source === "requests" ? "request" : "run";
-  return `${data.eligible} matching ${noun}${data.eligible === 1 ? "" : "s"}`;
+  return lensTranslate("setup.value0MatchingValue1value2", { value0: data.eligible, value1: noun, value2: data.eligible === 1 ? "" : "s" });
 }
 
 function manualSelectedCount(selection: Selection): number {
@@ -108,8 +109,8 @@ function manualPicks(selection: Selection, setExecutionIds: (ids: readonly strin
 }
 
 function windowLabel(selection: Selection): string {
-  if (!validWindow(selection)) return "Choose a valid history window";
-  return `Last ${durationLabel(selection.lookback_hours ?? 24, "hours")}`;
+  if (!validWindow(selection)) return lensTranslate("setup.chooseValidHistoryWindow");
+  return lensTranslate("setup.lastValue0", { value0: durationLabel(selection.lookback_hours ?? 24, "hours") });
 }
 
 function useScopeFieldOptions(api: ReturnType<typeof useLensApi>, selection: Selection): ScopeOptions {

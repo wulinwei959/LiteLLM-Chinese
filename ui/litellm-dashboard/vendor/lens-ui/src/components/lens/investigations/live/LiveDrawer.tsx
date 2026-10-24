@@ -13,13 +13,15 @@ import { ModelName } from "./LiveStrip";
 import { ActiveWork, NowReading } from "./NowReading";
 import { TraceList } from "./TraceList";
 import { useStage } from "./useStage";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 const STATUS: Record<Job["status"], { label: string; tone: StatusTone }> = {
-  queued: { label: "Queued", tone: "neutral" },
-  running: { label: "Running", tone: "neutral" },
-  completed: { label: "Done", tone: "neutral" },
-  failed: { label: "Failed", tone: "error" },
-  cancelled: { label: "Cancelled", tone: "neutral" },
+  queued: { get label() { return lensTranslate("investigations.queued"); }, tone: "neutral" },
+  running: { get label() { return lensTranslate("investigations.running"); }, tone: "neutral" },
+  completed: { get label() { return lensTranslate("investigations.done"); }, tone: "neutral" },
+  failed: { get label() { return lensTranslate("investigations.failed"); }, tone: "error" },
+  cancelled: { get label() { return lensTranslate("investigations.cancelled"); }, tone: "neutral" },
 };
 const PANE_TITLE = "text-xs font-semibold text-foreground";
 
@@ -46,6 +48,7 @@ function Stage({
   checks: Settings["checks"];
   children: (listed: readonly Review[], groups: ReturnType<typeof conclusions>, nowReading: ReactNode) => ReactNode;
 }) {
+  const t = useLensTranslate();
   const legacyReading = running && !activities.length && stageName === "Reading executions";
   const { stage, now, charMs } = useStage(reviews, reading, legacyReading, slots);
   const listed = useMemo(
@@ -61,7 +64,7 @@ function Stage({
     }
     return (
       <p role="status" className="mb-3 px-2 text-xs text-muted-foreground">
-        {stageName || "Starting"}
+        {stageName || t("investigations.starting")}
       </p>
     );
   }
@@ -103,6 +106,7 @@ export function LiveDrawer({
   scope: string;
   waiting?: ReactNode;
 }) {
+  const t = useLensTranslate();
   const [group, setGroup] = useState<string | null>(null);
   const badge = STATUS[status];
   const running = status === "running";
@@ -131,20 +135,20 @@ export function LiveDrawer({
             {(listed, groups, nowReading) => (
               <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-2 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:grid-rows-1">
                 <section
-                  aria-label="Traces"
+                  aria-label={t("tabs.traces")}
                   className="min-h-0 overflow-y-auto border-b px-4 py-4 md:border-r md:border-b-0"
                 >
                   <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-2">
-                    <h2 className={PANE_TITLE}>Traces</h2>
+                    <h2 className={PANE_TITLE}>{t("tabs.traces")}</h2>
                     <span className="text-xs leading-relaxed tabular-nums text-muted-foreground">
-                      {done ?? `${reviewed} reviewed`}
+                      {done ?? t("investigations.value0Reviewed", { value0: reviewed })}
                       {done && (
                         <>
                           {" "}
                           <ModelName model={model} />
                         </>
                       )}
-                      {reviewed > reviews.length && reviews.length ? ` · ${reviews.length} displayed` : ""}
+                      {reviewed > reviews.length && reviews.length ? t("investigations.value0Displayed", { value0: reviews.length }) : ""}
                     </span>
                   </div>
                   {nowReading}
@@ -153,21 +157,19 @@ export function LiveDrawer({
                   ) : (
                     !running && (
                       <div className="flex flex-col gap-1 px-2 py-6 text-xs text-muted-foreground">
-                        <p className="text-sm text-foreground">Waiting for the first trace…</p>
+                        <p className="text-sm text-foreground">{t("investigations.waitingFirstTrace")}</p>
                         {waiting}
                       </div>
                     )
                   )}
                 </section>
                 <section
-                  aria-label="Preliminary observations"
+                  aria-label={t("investigations.preliminaryObservations")}
                   className="flex min-h-0 flex-col gap-3 overflow-y-auto px-5 py-4"
                 >
-                  <h2 className={PANE_TITLE}>Preliminary observations</h2>
+                  <h2 className={PANE_TITLE}>{t("investigations.preliminaryObservations")}</h2>
                   <p className="text-xs leading-relaxed text-muted-foreground">
-                    First-pass trace observations, grouped by check. Final findings are shown in Findings after the
-                    investigation finishes.
-                  </p>
+                    {t("investigations.firstPassTraceObservations")}</p>
                   <ConclusionsPanel
                     groups={groups}
                     total={listed.length}

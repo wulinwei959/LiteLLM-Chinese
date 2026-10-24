@@ -31,13 +31,15 @@ import {
 import { ReadinessBanner } from "./ReadinessBanner";
 import { useInvestigationActions } from "./useInvestigationActions";
 import { WatchAllBanner } from "./WatchAllBanner";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export interface InvestigationsViewProps {
   readonly readOnly?: boolean;
 }
 
 const assertNever = (value: never): never => {
-  throw new Error(`Unhandled screen ${JSON.stringify(value)}`);
+  throw new Error(lensTranslate("investigations.unhandledScreenValue0", { value0: JSON.stringify(value) }));
 };
 
 interface BannersProps {
@@ -58,6 +60,7 @@ function Banners({ error, activityReady, flush, refresh }: BannersProps) {
 }
 
 export function InvestigationsView({ readOnly = false }: InvestigationsViewProps) {
+  const t = useLensTranslate();
   const api = useLensApi();
   const invalidateLenses = useInvalidateLenses();
   const actions = useInvestigationActions();
@@ -141,8 +144,7 @@ export function InvestigationsView({ readOnly = false }: InvestigationsViewProps
                 <>
                   <WatchAllBanner lenses={current.lenses} />
                   <Button size="sm" className="h-8" disabled={!status.ready} onClick={() => openDialog("new")}>
-                    <Plus className="size-4" /> New investigation
-                  </Button>
+                    <Plus className="size-4" /> {t("workspace.newInvestigation")}</Button>
                 </>
               )
             }
@@ -198,7 +200,7 @@ export function InvestigationsView({ readOnly = false }: InvestigationsViewProps
 
   return (
     <section
-      aria-label="Investigations"
+      aria-label={t("tabs.investigations")}
       className={cn("flex w-full min-w-0 flex-1 flex-col", !browsing && "gap-3 p-4")}
     >
       <Banners

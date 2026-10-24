@@ -30,12 +30,14 @@ import { EvidenceView } from "./Evidence";
 import { FindingDetails } from "./FindingDetails";
 import { InvestigationError, InvestigationsLoading } from "./InvestigationStates";
 import { PRIORITY_LABEL, PRIORITY_ORDER, PriorityDot } from "./PriorityMark";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const PRIORITIES: { value: Priority | "all"; label: string }[] = [
-  { value: "all", label: "All priorities" },
-  { value: "high", label: "High" },
-  { value: "medium", label: "Medium" },
-  { value: "low", label: "Low" },
+  { value: "all", get label() { return lensTranslate("investigations.allPriorities"); } },
+  { value: "high", get label() { return lensTranslate("investigations.high"); } },
+  { value: "medium", get label() { return lensTranslate("investigations.medium"); } },
+  { value: "low", get label() { return lensTranslate("investigations.low"); } },
 ];
 
 function FilterSelect<T extends string>({
@@ -70,6 +72,7 @@ function FilterSelect<T extends string>({
 }
 
 function FindingRow({ row, now }: { row: InboxRow; now: number }) {
+  const t = useLensTranslate();
   const frequency = findingFrequency(inboxFinding(row).occurrences, inboxSampledRuns(row));
   const percent = percentLabel(frequency.affected, frequency.total);
   return (
@@ -93,9 +96,9 @@ function FindingRow({ row, now }: { row: InboxRow; now: number }) {
         </span>
         <span
           className="whitespace-nowrap text-foreground/75 tabular-nums"
-          title={`${row.runs} affected ${row.runs === 1 ? "trace" : "traces"} across ${row.sources.map(({ lens }) => lens.settings.name).join(", ")}`}
+          title={t("investigations.value0AffectedValue1Across", { value0: row.runs, value1: row.runs === 1 ? t("investigations.traceSingular") : t("investigations.tracePlural"), value2: row.sources.map(({ lens }) => lens.settings.name).join(", ") })}
         >
-          {percent ? `${percent} affected` : `${row.runs} ${row.runs === 1 ? "trace" : "traces"}`}
+          {percent ? t("investigations.value0Affected", { value0: percent }) : t("investigations.value0Value1Running", { value0: row.runs, value1: row.runs === 1 ? t("investigations.traceSingular") : t("investigations.tracePlural") })}
         </span>
       </div>
     </Inspector.Row>
@@ -103,20 +106,21 @@ function FindingRow({ row, now }: { row: InboxRow; now: number }) {
 }
 
 function FindingList({ rows, now }: { rows: readonly InboxRow[]; now: number }) {
+  const t = useLensTranslate();
   const groups = PRIORITY_ORDER.map((priority) => ({
     priority,
     rows: rows.filter((row) => row.priority === priority),
   })).filter((group) => group.rows.length > 0);
   return (
-    <div role="grid" aria-label="Findings" className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-2">
+    <div role="grid" aria-label={t("tabs.findings")} className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-2">
       {groups.map((group) => (
-        <div role="rowgroup" key={group.priority} aria-label={`${PRIORITY_LABEL[group.priority]} priority findings`}>
+        <div role="rowgroup" key={group.priority} aria-label={t("investigations.value0PriorityFindings", { value0: PRIORITY_LABEL[group.priority] })}>
           <div
             role="row"
             className="sticky top-0 z-raised flex items-center gap-2 border-b bg-background px-4 py-3 font-mono text-[10px] font-medium tracking-wide text-muted-foreground"
           >
             <PriorityDot priority={group.priority} />
-            <span role="columnheader">{PRIORITY_LABEL[group.priority]} priority</span>
+            <span role="columnheader">{t("investigations.value0Priority", { value0: PRIORITY_LABEL[group.priority] })}</span>
             <span className="ml-auto rounded border bg-muted/30 px-1.5 tabular-nums">{group.rows.length}</span>
           </div>
           <div className="space-y-1 py-2">
@@ -141,6 +145,7 @@ function InboxDetail({
   busy: boolean;
   onReview: (row: InboxRow, status: Finding["status"], reason: string) => void;
 }) {
+  const t = useLensTranslate();
   const { close } = useInspector<InboxRow>();
   const { evidence, setEvidence } = useEvidenceRoute();
   const owner =
@@ -165,7 +170,7 @@ function InboxDetail({
         <EvidenceView
           lensId={owner.lens.id}
           evidence={evidence}
-          backLabel="Back to finding"
+          backLabel={t("investigations.backFinding")}
           onBack={() => setEvidence(null)}
         />
       )}
@@ -174,6 +179,7 @@ function InboxDetail({
 }
 
 export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useLensTranslate();
   const api = useLensApi();
   const list = useQuery(lensQueries.list(api));
   const update = useLensUpdate();
@@ -185,7 +191,7 @@ export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
   const selected =
     all.find((row) => row.sources.some(({ lens, finding }) => findingKey(lens, finding) === issueKey)) ?? null;
   const agents = [
-    { value: ALL_AGENTS, label: "All agents" },
+    { value: ALL_AGENTS, label: t("investigations.allAgents") },
     ...inboxAgents(all).map((agent) => ({ value: agent, label: agent })),
   ];
   const review = (row: InboxRow, status: Finding["status"], reason: string) => {
@@ -212,9 +218,9 @@ export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
     >
       <div className="@container/findings flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
         <LensPageHeader
-          section="03 / SIGNAL IN THE NOISE"
-          title="Findings"
-          description="Follow the evidence. Find what needs fixing."
+          section={t("investigations.03SIGNALNOISE")}
+          title={t("tabs.findings")}
+          description={t("investigations.followEvidenceFindNeeds")}
         />
         {(list.error || update.error) && (
           <InvestigationError
@@ -227,13 +233,13 @@ export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
         )}
         <div className="lens-panel flex min-h-0 flex-1 overflow-hidden rounded-lg border">
           <section
-            aria-label="Findings list"
+            aria-label={t("investigations.findingsList")}
             className={`flex min-h-0 w-full flex-col border-r @3xl/findings:w-72 @3xl/findings:shrink-0 @5xl/findings:w-80 ${selected ? "hidden @3xl/findings:flex" : "flex"}`}
           >
             <div className="lens-toolbar flex shrink-0 items-center gap-2 border-b px-3 py-3">
-              <FilterSelect label="Filter by agent" value={filters.agent} items={agents} onChange={filters.setAgent} />
+              <FilterSelect label={t("investigations.filterAgent")} value={filters.agent} items={agents} onChange={filters.setAgent} />
               <FilterSelect
-                label="Filter by priority"
+                label={t("investigations.filterPriority")}
                 value={filters.priority}
                 items={PRIORITIES}
                 onChange={filters.setPriority}
@@ -243,18 +249,17 @@ export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
             {!rows.length && !list.error && (
               <p className="lens-empty-state px-4 py-16 text-center text-xs leading-6 text-muted-foreground">
                 {all.length
-                  ? "No findings match these filters."
-                  : "No open findings yet. New problems show up here as soon as an investigation spots them."}
+                  ? t("investigations.findingsMatchFilters")
+                  : t("investigations.openFindingsYetNew")}
               </p>
             )}
             <footer className="flex h-9 shrink-0 items-center border-t px-3 font-mono text-[10px] text-muted-foreground">
-              {rows.length} {rows.length === 1 ? "finding" : "findings"}
-              {rows.length !== all.length && ` of ${all.length}`}
+              {t("investigations.findingsCount", { value0: rows.length, value1: all.length })}
             </footer>
           </section>
           {selected ? (
             <aside
-              aria-label="Finding details"
+              aria-label={t("investigations.findingDetails")}
               data-testid="finding-panel"
               className="flex min-h-0 min-w-0 flex-1 flex-col"
             >
@@ -267,8 +272,7 @@ export function FindingsView({ readOnly = false }: { readOnly?: boolean }) {
               </span>
               {rows.length ? (
                 <p className="max-w-64 text-center text-xs leading-6">
-                  Select a finding to see how often it happens and where.
-                </p>
+                  {t("investigations.selectFindingSeeOften")}</p>
               ) : null}
             </div>
           )}

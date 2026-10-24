@@ -41,6 +41,7 @@ import { AgentsView } from "./agents/AgentsView";
 import { AgentPicker } from "./agents/AgentPicker";
 import { LensHome } from "./onboarding/LensHome";
 import { AgentGitHubDialog } from "./agents/AgentGitHubDialog";
+import { useLensTranslate } from "../../host/useLensTranslate";
 
 type WorkspaceProps = {
   accessToken: string;
@@ -72,6 +73,7 @@ function SampleSession() {
 }
 
 function DemoToggle({ demo, onChange }: { demo: boolean; onChange: (demo: boolean) => void }) {
+  const t = useLensTranslate();
   const id = useId();
   return (
     <div
@@ -80,7 +82,7 @@ function DemoToggle({ demo, onChange }: { demo: boolean; onChange: (demo: boolea
         demo ? "font-medium text-info" : "text-muted-foreground",
       )}
     >
-      <label htmlFor={id}>Demo data</label>
+      <label htmlFor={id}>{t("workspace.demoData")}</label>
       <Switch id={id} size="sm" checked={demo} onCheckedChange={onChange} className="data-checked:bg-info" />
     </div>
   );
@@ -101,6 +103,7 @@ const PANEL =
   "flex min-h-0 flex-1 flex-col overflow-y-auto animate-in fade-in-0 duration-300 motion-reduce:animate-none";
 
 function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">) {
+  const t = useLensTranslate();
   const embedded = useLensHost().surface === "embedded";
   const accessToken = useLensAccessToken();
   const { tab, defaultTab: entryTab, lensId, demo, settingUp, setTab, setDemo, setSetup } = useLensRoute();
@@ -227,8 +230,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                           className="h-auto p-0 text-muted-foreground"
                           onClick={() => navigate("agents")}
                         >
-                          Agents
-                        </Button>
+                          {t("tabs.agents")}</Button>
                         <ChevronRight aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground/60" />
                         <span className="hidden max-w-64 truncate text-muted-foreground sm:inline">{agents.agent}</span>
                         <ChevronRight
@@ -244,8 +246,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
               <div className="flex shrink-0 items-center gap-3">
                 {connectGitHub && agents.agent && activeTab !== "agents" && (
                   <Button variant="outline" size="sm" onClick={() => connectGitHub(agents.agent!)}>
-                    <Github aria-hidden="true" className="size-4" /> Connect GitHub
-                  </Button>
+                    <Github aria-hidden="true" className="size-4" /> {t("workspace.connectGitHub")}</Button>
                 )}
                 <DemoToggle demo={demo} onChange={toggleDemo} />
                 {embedded && (
@@ -253,8 +254,8 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                     href="https://docs.litellm.ai/docs/proxy/lens"
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="Documentation"
-                    title="Documentation"
+                    aria-label={t("sidebar.documentation")}
+                    title={t("sidebar.documentation")}
                     className="rounded-sm text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <BookOpen aria-hidden="true" className="size-4" />
@@ -278,8 +279,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                   {setupState.loading ? (
                     <p role="status" className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
                       <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-                      Checking Lens setup…
-                    </p>
+                      {t("workspace.checkingLensSetup")}</p>
                   ) : (
                     <LensGettingStarted state={setupState} onStart={startSetup} onExit={exitSetup} />
                   )}
@@ -319,7 +319,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                     {canViewInvestigations ? (
                       <FindingsView readOnly={readOnly || !isAdmin} />
                     ) : (
-                      <p className="py-6 text-sm text-muted-foreground">Findings require proxy administrator access.</p>
+                      <p className="py-6 text-sm text-muted-foreground">{t("workspace.findingsRequireProxyAdministrator")}</p>
                     )}
                   </TabsContent>
                   <TabsContent value="investigations" className={PANEL}>
@@ -327,8 +327,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                       <InvestigationsView readOnly={readOnly || !isAdmin} />
                     ) : (
                       <p className="py-6 text-sm text-muted-foreground">
-                        Investigations require proxy administrator access. You can still view your traces.
-                      </p>
+                        {t("workspace.investigationsRequireProxyAdministrator")}</p>
                     )}
                   </TabsContent>
                   <TabsContent value="datasets" className={PANEL}>
@@ -338,7 +337,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                     {canViewInvestigations ? (
                       <EvalsView />
                     ) : (
-                      <p className="py-6 text-sm text-muted-foreground">Evals require proxy administrator access.</p>
+                      <p className="py-6 text-sm text-muted-foreground">{t("workspace.evalsRequireProxyAdministrator")}</p>
                     )}
                   </TabsContent>
                 </>
@@ -350,8 +349,7 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
                     workerReadyAction={
                       list.lenses.length === 0 ? (
                         <Button className="w-full" onClick={startFirstInvestigation}>
-                          New investigation
-                        </Button>
+                          {t("workspace.newInvestigation")}</Button>
                       ) : undefined
                     }
                     onConnectProject={connectProject}
@@ -382,8 +380,9 @@ function LensContent({ userRole, readOnly }: Omit<WorkspaceProps, "accessToken">
 }
 
 function DatasetsPanel({ canView, isAdmin, readOnly }: { canView: boolean; isAdmin: boolean; readOnly: boolean }) {
+  const t = useLensTranslate();
   if (!canView)
-    return <p className="py-6 text-sm text-muted-foreground">Datasets require proxy administrator access.</p>;
+    return <p className="py-6 text-sm text-muted-foreground">{t("workspace.datasetsRequireProxyAdministrator")}</p>;
   return <DatasetsView readOnly={readOnly || !isAdmin} />;
 }
 

@@ -7,6 +7,7 @@ import { cn } from "../../lib/cva.config";
 import { Button } from "./button";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./input-group";
 import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react";
+import { lensTranslate } from "../../host/lensTranslate";
 
 const Combobox = ComboboxPrimitive.Root;
 
@@ -32,7 +33,7 @@ const ComboboxTrigger = React.forwardRef<
 });
 ComboboxTrigger.displayName = "ComboboxTrigger";
 
-function ComboboxClear({ className, "aria-label": ariaLabel = "Clear", ...props }: ComboboxPrimitive.Clear.Props) {
+function ComboboxClear({ className, "aria-label": ariaLabel = lensTranslate("ui.clear"), ...props }: ComboboxPrimitive.Clear.Props) {
   return (
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"

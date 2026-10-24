@@ -9,6 +9,7 @@ import { useAgentConnectionStatus } from "../agents/useAgentConnectionStatus";
 import { useLensAccessToken } from "../data/LensServices";
 import { useLensService } from "./tracing/TracingSetupCard";
 import { connectionAuthStatus } from "./connectionErrors";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 interface HomeConnectionStatusProps {
   readonly name: string;
@@ -33,6 +34,7 @@ export function HomeConnectionStatus({
   setupIssue,
   discoverAfter,
 }: HomeConnectionStatusProps) {
+  const t = useLensTranslate();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const detailsId = useId();
   const verificationHeading = useRef<HTMLHeadingElement>(null);
@@ -64,54 +66,54 @@ export function HomeConnectionStatus({
   const checking = service.isFetching || receipt.isChecking;
   const title =
     authStatus === 401
-      ? "Sign in again"
+      ? t("onboarding.signAgain")
       : authStatus === 403
-        ? "Access required"
+        ? t("onboarding.accessRequired")
         : unavailable
-          ? "Unable to check"
+          ? t("onboarding.unableCheck")
           : blocked
-            ? "Connection needs attention"
+            ? t("onboarding.connectionNeedsAttention")
             : discovered
-              ? "New trace received"
+              ? t("onboarding.newTraceReceived")
               : receiving
-                ? "Receiving traces"
+                ? t("onboarding.receivingTraces")
                 : receipt.status === "waiting-for-new-traces"
-                  ? "Waiting for new traces"
-                  : "Waiting for traces";
+                  ? t("onboarding.waitingNewTraces")
+                  : t("onboarding.waitingTraces");
   const guidance =
     authStatus === 401
-      ? "Your session is no longer valid. Sign in again to check your connection."
+      ? t("onboarding.sessionLongerValidSign")
       : authStatus === 403
-        ? "Your account cannot check this connection. Ask your Lens administrator for access."
+        ? t("onboarding.accountCannotCheckConnection")
         : unavailable
-          ? "We couldn't check the connection. Try again to see the latest status."
+          ? t("onboarding.weCouldnTCheck")
           : apiReady === false
-            ? "Lens is unavailable. Check that the service is running, then retry."
+            ? t("onboarding.lensUnavailableCheckService")
             : storageReady === false
-              ? "Trace storage isn't ready. Check your Lens deployment, then retry."
+              ? t("onboarding.traceStorageIsnT")
               : endpointMissing
-                ? "Set your public Lens address in deployment setup so your project knows where to send traces."
+                ? t("onboarding.setPublicLensAddress")
                 : credentialsPending
-                  ? "Lens is syncing tracing credentials. Check again in a moment."
+                  ? t("onboarding.lensSyncingTracingCredentials")
                   : setupIssue
                     ? setupIssue
                     : discovered
-                      ? `A trace arrived from “${matchedAgentName}”. Your coding agent will verify the run it sent before asking: “What would you like to instrument next?”`
+                      ? t("onboarding.traceArrivedValue0Coding", { value0: matchedAgentName })
                       : receiving
-                        ? "A recent run is visible in Lens. Open it to inspect your agent's work."
+                        ? t("onboarding.recentRunVisibleLens")
                         : discovering
-                          ? "Lens is watching for new named traces. Your coding agent will verify the run it sends."
+                          ? t("onboarding.lensWatchingNewNamed")
                           : stage === "name" || !agentName
-                            ? "Choose your project and agent name to watch for its traces here."
+                            ? t("onboarding.chooseProjectAgentName")
                             : stage === "key"
-                              ? "Get a tracing key, then connect your project using the setup instructions."
+                              ? t("onboarding.getTracingKeyConnect")
                               : verifying
-                                ? "Run your agent once. Lens will confirm a new trace here."
-                                : "Your coding agent will run one task and verify its trace. Lens checks for new traffic automatically.";
+                                ? t("onboarding.runAgentOnceLens")
+                                : t("onboarding.codingAgentRunOne");
 
   return (
     <section
-      aria-label="Live connection"
+      aria-label={t("onboarding.liveConnection")}
       className={cn(
         "min-w-0",
         verifying
@@ -121,17 +123,16 @@ export function HomeConnectionStatus({
     >
       <div className={cn(verifying ? "p-5 sm:p-6" : "py-4 lg:px-5")}>
         <div className={cn("items-center justify-between gap-3", verifying ? "flex" : "hidden lg:flex")}>
-          <h3 className="text-sm font-medium">Live connection</h3>
+          <h3 className="text-sm font-medium">{t("onboarding.liveConnection")}</h3>
           {enabled && (agentName || discovering) && !authStatus && (
             <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
               <span className="size-1.5 rounded-full bg-current motion-safe:animate-pulse" aria-hidden="true" />
-              Checking every 3s
-            </span>
+              {t("onboarding.checkingEvery3s")}</span>
           )}
         </div>
         {verifying && (
           <h3 ref={verificationHeading} tabIndex={-1} className="mt-3 text-base font-medium outline-none">
-            {unavailable || blocked ? "Check your connection" : receiving ? "Traces received" : "Run one task"}
+            {unavailable || blocked ? t("onboarding.checkConnection") : receiving ? t("onboarding.tracesReceived") : t("onboarding.runOneTask")}
           </h3>
         )}
         <div
@@ -157,18 +158,16 @@ export function HomeConnectionStatus({
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {receipt.match && !authStatus && (
               <Button size="sm" onClick={() => onOpenTraces(matchedAgentName)}>
-                View traces <ArrowRight className="size-3.5" aria-hidden="true" />
+                {t("onboarding.viewTraces")}<ArrowRight className="size-3.5" aria-hidden="true" />
               </Button>
             )}
             {(receiving || discovered) && onConnectGitHub && (
               <Button size="sm" variant="outline" onClick={() => onConnectGitHub(matchedAgentName)}>
-                <Github className="size-3.5" aria-hidden="true" /> Connect GitHub
-              </Button>
+                <Github className="size-3.5" aria-hidden="true" /> {t("workspace.connectGitHub")}</Button>
             )}
             {authStatus === 401 && (
               <Button size="sm" onClick={() => window.location.reload()}>
-                Reload to sign in
-              </Button>
+                {t("onboarding.reloadSign")}</Button>
             )}
             {unavailable && !authStatus && (
               <Button
@@ -180,8 +179,7 @@ export function HomeConnectionStatus({
                   receipt.refresh();
                 }}
               >
-                Retry connection
-              </Button>
+                {t("onboarding.retryConnection")}</Button>
             )}
             {!desktop && (
               <Button
@@ -192,14 +190,12 @@ export function HomeConnectionStatus({
                 aria-controls={detailsId}
                 onClick={() => setDetailsOpen((open) => !open)}
               >
-                Connection details
-                <ChevronDown aria-hidden="true" className={cn("size-3.5", detailsOpen && "rotate-180")} />
+                {t("onboarding.connectionDetails")}<ChevronDown aria-hidden="true" className={cn("size-3.5", detailsOpen && "rotate-180")} />
               </Button>
             )}
             {blocked && onSetup && (
               <Button variant="link" size="sm" className="px-0 text-xs" onClick={onSetup}>
-                Deployment setup
-              </Button>
+                {t("onboarding.deploymentSetup")}</Button>
             )}
           </div>
         )}
@@ -211,36 +207,36 @@ export function HomeConnectionStatus({
       >
         <dl className="space-y-3 text-sm">
           <ConnectionCheck
-            label="Lens API"
+            label={t("onboarding.lensAPI")}
             ready={service.error ? false : apiReady}
-            success="Reachable"
-            failure="Unavailable"
+            success={t("onboarding.reachable")}
+            failure={t("onboarding.unavailable")}
           />
-          <ConnectionCheck label="Trace storage" ready={storageReady} success="Ready" failure="Not ready" />
+          <ConnectionCheck label={t("onboarding.traceStorage")} ready={storageReady} success={t("model.ready")} failure={t("onboarding.ready")} />
           {keyReady !== undefined && keyReady !== null && (
             <ConnectionCheck
-              label="Tracing key"
+              label={t("onboarding.tracingKey")}
               ready={keyReady}
-              success="Ready to use"
-              failure="Activation unconfirmed"
+              success={t("onboarding.readyUse")}
+              failure={t("onboarding.activationUnconfirmed")}
             />
           )}
         </dl>
         <div>
-          <p className="text-xs text-muted-foreground">{discovered ? "Detected agent" : "Watching for agent"}</p>
+          <p className="text-xs text-muted-foreground">{discovered ? t("onboarding.detectedAgent") : t("onboarding.watchingAgent")}</p>
           <p className="mt-1 font-mono text-xs break-all">
-            {matchedAgentName || (discovering ? "New named traces" : "Name your agent to begin")}
+            {matchedAgentName || (discovering ? t("onboarding.newNamedTraces") : t("onboarding.nameAgentBegin"))}
           </p>
           {receipt.match && (
             <dl className="mt-3 space-y-2 border-t pt-3 text-xs">
               <div className="flex justify-between gap-3">
                 <dt className="text-muted-foreground">
-                  {discovering ? "Runs since setup opened" : "Runs in the last 14 days"}
+                  {discovering ? t("onboarding.runsSinceSetupOpened") : t("onboarding.runsLast14Days")}
                 </dt>
                 <dd className="font-medium tabular-nums">{receipt.match.runs.toLocaleString()}</dd>
               </div>
               <div className="flex flex-wrap justify-between gap-1">
-                <dt className="text-muted-foreground">Last run started</dt>
+                <dt className="text-muted-foreground">{t("onboarding.lastRunStarted")}</dt>
                 <dd className="font-medium">{new Date(receipt.match.last_seen).toLocaleString()}</dd>
               </div>
             </dl>
@@ -248,7 +244,7 @@ export function HomeConnectionStatus({
         </div>
         {verifying && !receiving && agentName && !unavailable && !blocked && (
           <p className="text-xs leading-5 text-muted-foreground">
-            Nothing arriving? Check the endpoint and tracing key, restart your project, and confirm its trace name is{" "}
+            {t("onboarding.nothingArrivingCheckEndpoint")}{" "}
             <span className="font-medium text-foreground">{agentName}</span>.
           </p>
         )}
@@ -263,13 +259,12 @@ export function HomeConnectionStatus({
             }}
           >
             <RefreshCw aria-hidden="true" className={cn("size-3.5", checking && "motion-safe:animate-spin")} />
-            {checking ? "Checking…" : "Check connection"}
+            {checking ? t("onboarding.checking") : t("onboarding.checkConnection2")}
           </Button>
         </div>
         {receipt.lastChecked !== null && (
           <p className="font-mono text-[11px] text-muted-foreground">
-            Last checked {new Date(receipt.lastChecked).toLocaleTimeString()}
-          </p>
+            {t("onboarding.lastCheckedValue0", { value0: new Date(receipt.lastChecked).toLocaleTimeString() })}</p>
         )}
       </div>
     </section>
@@ -287,6 +282,7 @@ function ConnectionCheck({
   readonly success: string;
   readonly failure: string;
 }) {
+  const t = useLensTranslate();
   return (
     <div className="flex items-center justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
@@ -297,7 +293,7 @@ function ConnectionCheck({
         )}
       >
         {ready ? <Check aria-hidden="true" className="size-3.5" /> : <Circle aria-hidden="true" className="size-2" />}
-        {ready === null ? "Checking" : ready ? success : failure}
+        {ready === null ? t("onboarding.checking3") : ready ? success : failure}
       </dd>
     </div>
   );

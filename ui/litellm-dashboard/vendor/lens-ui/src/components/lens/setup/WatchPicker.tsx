@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { watches as defaultWatches } from "../model/watches";
 import { cn } from "../../../lib/cva.config";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const dotColors = ["#8b5cf6", "#22b3e8", "#e3a32b", "#eb6b93", "#22b3e8", "#8b5cf6", "#e3a32b", "#eb6b93"];
 const lensBlue = { light: "#0011b3", dark: "#8b9bff" };
@@ -86,7 +88,7 @@ export function WatchPicker({
   onChange,
   onAddCustom,
   options: watches = defaultWatches,
-  label = "Watch for",
+  label = lensTranslate("investigations.watch"),
   addDisabled = false,
 }: {
   selected: ReadonlySet<string>;
@@ -96,6 +98,7 @@ export function WatchPicker({
   label?: string;
   addDisabled?: boolean;
 }) {
+  const t = useLensTranslate();
   const [cursor, setCursor] = useState(0);
   const items = useRef<(HTMLButtonElement | null)[]>([]);
   const toggle = (id: string) =>
@@ -126,8 +129,7 @@ export function WatchPicker({
       <div className="flex items-end justify-between gap-3">
         <legend className="text-sm font-medium">{label}</legend>
         <span className="text-xs tabular-nums text-muted-foreground">
-          {watches.filter((watch) => selected.has(watch.id)).length} of {watches.length} selected
-        </span>
+          {t("datasets.value0Value1Selected", { value0: watches.filter((watch) => selected.has(watch.id)).length, value1: watches.length })}</span>
       </div>
       <DotFlow active={activeColors} />
       <div role="group" aria-label={label} onKeyDown={onKey} className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -187,8 +189,8 @@ export function WatchPicker({
         >
           +
         </span>
-        <span className="font-medium">Add your own</span>
-        <span className="text-muted-foreground">describe anything else in plain English</span>
+        <span className="font-medium">{t("setup.addOwn")}</span>
+        <span className="text-muted-foreground">{t("setup.describeAnythingElsePlain")}</span>
       </button>
     </fieldset>
   );

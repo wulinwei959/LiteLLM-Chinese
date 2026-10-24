@@ -14,6 +14,7 @@ import { laneText, typedChars, type Lane } from "../../model/stage";
 import type { Activity } from "../../model/types";
 import { useNow } from "../../../../hooks/useNow";
 import { ModelName } from "./LiveStrip";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const RED = "text-destructive";
 
@@ -23,6 +24,7 @@ function dotTone(reading: boolean, issueShown: boolean): string {
 }
 
 function LaneRow({ lane, now, charMs }: { lane: Lane; now: number; charMs: number }) {
+  const t = useLensTranslate();
   const { review } = lane;
   const text = review ? laneText(review.reasoning) : "";
   const typed = typedChars(lane, now, charMs);
@@ -35,7 +37,7 @@ function LaneRow({ lane, now, charMs }: { lane: Lane; now: number; charMs: numbe
         <span className="truncate font-medium text-foreground">{lane.agent || "trace"}</span>
         <span className="truncate font-mono text-xs text-muted-foreground">{lane.traceId.slice(0, 8)}</span>
         <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
-          {review ? durationLabel(review.duration_ms) : `reading · ${durationLabel(Math.max(0, now - lane.startedAt))}`}
+          {review ? durationLabel(review.duration_ms) : t("investigations.readingValue0", { value0: durationLabel(Math.max(0, now - lane.startedAt)) })}
         </span>
       </div>
       {!review ? (
@@ -79,8 +81,9 @@ export function NowReading({
   now: number;
   charMs: number;
 }) {
+  const t = useLensTranslate();
   return (
-    <section aria-label="Now reading" className="mb-3 flex flex-col gap-2 rounded-xl bg-muted p-2.5 ring-1 ring-border">
+    <section aria-label={t("investigations.nowReading")} className="mb-3 flex flex-col gap-2 rounded-xl bg-muted p-2.5 ring-1 ring-border">
       <header className="flex items-center justify-between gap-3 px-0.5">
         <ModelName model={model} size="md" />
         <span role="status" className="text-xs tabular-nums text-muted-foreground">
@@ -103,17 +106,18 @@ export function NowReading({
 }
 
 export function ActiveWork({ model, activities }: { model: string; activities: readonly Activity[] }) {
+  const t = useLensTranslate();
   const now = useNow(500);
   return (
     <section
-      aria-label="Current work"
+      aria-label={t("investigations.currentWork")}
       className="mb-3 flex flex-col gap-2 rounded-xl bg-muted p-2.5 ring-1 ring-border"
     >
       <header className="flex items-center justify-between gap-3 px-0.5">
         <ModelName model={model} size="md" />
-        <span className="text-xs tabular-nums text-muted-foreground">{activities.length} active</span>
+        <span className="text-xs tabular-nums text-muted-foreground">{t("investigations.value0Active", { value0: activities.length })}</span>
       </header>
-      <ol aria-label="Active analysis tasks" className="flex flex-col gap-1.5">
+      <ol aria-label={t("investigations.activeAnalysisTasks")} className="flex flex-col gap-1.5">
         {activities.map((activity) => {
           const tools = toolCallSummary(activity.tool_calls);
           return (
@@ -135,7 +139,7 @@ export function ActiveWork({ model, activities }: { model: string; activities: r
               <p role="status" className="text-foreground">
                 {activityOperation(activity)}
               </p>
-              {tools && <p className="text-muted-foreground">Tool calls: {tools}</p>}
+              {tools && <p className="text-muted-foreground">{t("investigations.toolCallsValue0", { value0: tools })}</p>}
             </li>
           );
         })}

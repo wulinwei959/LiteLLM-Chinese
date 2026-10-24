@@ -8,6 +8,7 @@ import type { DotColumn } from "../../../shared/dotField/dots";
 import { when } from "../../model/format";
 import type { Job } from "../../model/types";
 import { runStatus } from "../../model/status";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const UNSUCCESSFUL_OPACITY = 0.35;
 
@@ -51,6 +52,7 @@ export interface HistoryTimelineProps {
 
 /** Every check as a dot column: reviewed traces in grey, affected traces in red, failed checks faded. */
 export function HistoryTimeline({ jobs, slots, onOpen }: HistoryTimelineProps) {
+  const t = useLensTranslate();
   const columns = checkColumns(jobs, slots);
   const [hover, setHover] = useState<number | null>(null);
   const hovered = hover === null ? null : columns[hover];
@@ -63,7 +65,7 @@ export function HistoryTimeline({ jobs, slots, onOpen }: HistoryTimelineProps) {
             <button
               key={job.id}
               type="button"
-              aria-label={`Check at ${when(job.created_at)}`}
+              aria-label={t("investigations.checkValue0", { value0: when(job.created_at) })}
               className="relative h-full flex-1 focus-visible:outline-2 focus-visible:outline-ring"
               onPointerEnter={() => setHover(i)}
               onFocus={() => setHover(i)}
@@ -83,8 +85,7 @@ export function HistoryTimeline({ jobs, slots, onOpen }: HistoryTimelineProps) {
         >
           <div>{when(hovered.job.created_at)}</div>
           <div>
-            {hovered.total} reviewed, {hovered.failed} affected
-          </div>
+            {t("investigations.value0ReviewedValue1Affected", { value0: hovered.total, value1: hovered.failed })}</div>
           {(hovered.job.status !== "completed" || hovered.job.error) && <div>{runStatus(hovered.job)}</div>}
         </div>
       )}

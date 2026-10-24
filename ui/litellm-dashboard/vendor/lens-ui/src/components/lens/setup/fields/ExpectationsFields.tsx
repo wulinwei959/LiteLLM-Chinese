@@ -8,8 +8,10 @@ import { WatchPicker } from "../WatchPicker";
 
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import type { InvestigationInput } from "../investigationSchema";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export function ExpectationsFields() {
+  const t = useLensTranslate();
   const {
     control,
     register,
@@ -19,11 +21,10 @@ export function ExpectationsFields() {
   return (
     <div className="space-y-5">
       <label className="grid gap-2 text-sm font-medium">
-        What should the agent be doing?
-        <Textarea
+        {t("investigations.shouldAgentDoing")}<Textarea
           {...register("context")}
           rows={4}
-          placeholder="Answer the customer's question using verified sources and explain when information is missing."
+          placeholder={t("setup.answerCustomerSQuestion")}
         />
       </label>
       {errors.context?.message && (
@@ -43,15 +44,15 @@ export function ExpectationsFields() {
         )}
       />
       <fieldset className="space-y-2">
-        <legend className="sr-only">Custom checks</legend>
+        <legend className="sr-only">{t("setup.customChecks")}</legend>
         {fields.map((check, index) => (
           <div key={check.fieldId} className="flex items-start gap-2">
             <div className="min-w-0 flex-1">
               <Textarea
-                aria-label={`Check ${index + 1}`}
+                aria-label={t("setup.checkValue0", { value0: index + 1 })}
                 {...register(`questions.${index}.instruction`)}
                 rows={2}
-                placeholder="e.g. Quotes a price without checking the pricing tool"
+                placeholder={t("setup.eGQuotesPrice")}
               />
               {errors.questions?.[index]?.instruction?.message && (
                 <p role="alert" className="mt-1 text-sm text-destructive">
@@ -59,7 +60,7 @@ export function ExpectationsFields() {
                 </p>
               )}
             </div>
-            <Button variant="ghost" size="icon" aria-label={`Remove check ${index + 1}`} onClick={() => remove(index)}>
+            <Button variant="ghost" size="icon" aria-label={t("setup.removeCheckValue0", { value0: index + 1 })} onClick={() => remove(index)}>
               <X className="size-4" />
             </Button>
           </div>

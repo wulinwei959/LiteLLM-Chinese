@@ -1,6 +1,7 @@
 import { memo, useId } from "react";
 import { cn } from "../../../lib/cva.config";
 import styles from "./LensIntroduction.module.css";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const dotColors = ["#27b6e8", "#8b5cf6", "#ec6f93", "#e3a42b", "#2aa889"];
 
@@ -22,21 +23,22 @@ const swarmRows = Array.from({ length: 15 }, (_, row) => ({
 const organizedColumns = Array.from({ length: 60 }, (_, column) => column - 10);
 
 export const GatewayFlow = memo(function GatewayFlow({ standalone = false }: { standalone?: boolean }) {
+  const t = useLensTranslate();
   const id = useId();
   return (
     <div className="mt-5 sm:mt-6">
       <div className="grid grid-cols-3 gap-3 font-mono text-[10px] sm:text-[11px]">
         <div>
-          <p className="font-semibold">Agent swarms</p>
-          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">Every run, every recorded step</p>
+          <p className="font-semibold">{t("onboarding.agentSwarms")}</p>
+          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">{t("onboarding.everyRunEveryRecorded")}</p>
         </div>
         <div className="text-center">
-          <p className="font-semibold text-[#0017b7] dark:text-[#8b9bff]">{standalone ? "Lens" : "LiteLLM gateway"}</p>
-          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">One place, your infrastructure</p>
+          <p className="font-semibold text-[#0017b7] dark:text-[#8b9bff]">{standalone ? "Lens" : t("onboarding.liteLLMGateway")}</p>
+          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">{t("onboarding.onePlaceInfrastructure")}</p>
         </div>
         <div className="text-right">
-          <p className="font-semibold">{standalone ? "Investigations" : "Lens"}</p>
-          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">Find what needs fixing</p>
+          <p className="font-semibold">{standalone ? t("tabs.investigations") : "Lens"}</p>
+          <p className="mt-0.5 hidden leading-4 text-muted-foreground sm:block">{t("onboarding.findNeedsFixing")}</p>
         </div>
       </div>
       <svg
@@ -160,8 +162,7 @@ export const GatewayFlow = memo(function GatewayFlow({ standalone = false }: { s
         <circle cx="500" cy="80" r="2" fill="currentColor" />
       </svg>
       <p className="ml-auto w-1/2 text-center font-mono text-[10px] text-[#0017b7] sm:text-[11px] dark:text-[#8b9bff]">
-        Insights for the next run
-      </p>
+        {t("onboarding.insightsNextRun")}</p>
     </div>
   );
 });

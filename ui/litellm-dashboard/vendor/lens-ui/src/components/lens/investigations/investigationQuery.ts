@@ -5,12 +5,13 @@ import { ALL_OPERATORS, type FieldSpec, type QueryLanguage } from "../../shared/
 import { scopeLabel } from "../model/format";
 import type { Lens } from "../model/types";
 import { runStatus } from "../model/status";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const INVESTIGATION_FIELDS = {
-  name: { group: "Investigation", icon: SquareChevronRight, suggestValues: true },
-  agent: { group: "Investigation", icon: Bot, suggestValues: true },
-  status: { group: "Latest run", icon: CircleDashed, suggestValues: true },
-  schedule: { group: "Investigation", icon: CalendarClock, suggestValues: true },
+  name: { get group() { return lensTranslate("investigations.investigation"); }, icon: SquareChevronRight, suggestValues: true },
+  agent: { get group() { return lensTranslate("investigations.investigation"); }, icon: Bot, suggestValues: true },
+  status: { get group() { return lensTranslate("investigations.latestRun"); }, icon: CircleDashed, suggestValues: true },
+  schedule: { get group() { return lensTranslate("investigations.investigation"); }, icon: CalendarClock, suggestValues: true },
 } as const satisfies Record<string, FieldSpec>;
 
 export type InvestigationField = keyof typeof INVESTIGATION_FIELDS;

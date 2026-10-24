@@ -1,6 +1,7 @@
 import type { ApiClient } from "../../../../lib/http/client";
 
 import type { EvalDefinition, EvalRun, EvalRunFilter, EvalSpec, RunCase } from "./types";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface EvalRunsApi {
   list(filter: EvalRunFilter): Promise<readonly EvalRun[]>;
@@ -39,7 +40,7 @@ export function liveEvalRunsApi(
       }),
     runCase: (runId, caseId) =>
       apiClient.get<RunCase>(
-        `${evalRunPath(runId)}/cases/${encodeURIComponent(caseId)}`,
+        lensTranslate("evals.value0CasesValue1", { value0: evalRunPath(runId), value1: encodeURIComponent(caseId) }),
         {
           accessToken,
           headers: CONTRACT,

@@ -5,26 +5,28 @@ import { cn } from "../../../../../lib/cva.config";
 import { FieldTree } from "./FieldTree";
 import { MessageList } from "./Messages";
 import { fieldNode, toolAction, toolResult, type FieldNode } from "./payload";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 export function ToolText({ text, label }: { text: string; label: string }) {
+  const t = useLensTranslate();
   const [expanded, setExpanded] = useState(false);
   const preview = text.split("\n").slice(0, 8).join("\n").slice(0, 1200);
   const truncated = preview.length < text.length;
   return (
     <div className="min-w-0">
       <pre className="whitespace-pre-wrap break-words font-mono text-xs leading-5 wrap-anywhere">
-        {expanded ? text : preview || "No output recorded"}
+        {expanded ? text : preview || t("traces.outputRecorded")}
         {!expanded && truncated && "\n…"}
       </pre>
       {truncated && (
         <button
           type="button"
           aria-expanded={expanded}
-          aria-label={`${expanded ? "Collapse" : "Expand"} ${label}`}
+          aria-label={`${expanded ? t("traces.collapse") : t("traces.expand")} ${label}`}
           onClick={() => setExpanded((value) => !value)}
           className="mt-2 rounded-sm text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring"
         >
-          {expanded ? "Show less" : `Show full ${label} (${text.length.toLocaleString()} characters)`}
+          {expanded ? t("traces.showLess") : t("traces.showFullValue0Value1", { value0: label, value1: text.length.toLocaleString() })}
         </button>
       )}
     </div>
@@ -59,11 +61,12 @@ export function ToolArguments({ args }: { args: unknown }) {
 }
 
 export function ToolOutput({ result, failed = false }: { result: string; failed?: boolean }) {
+  const t = useLensTranslate();
   const { body, metadata } = toolResult(result);
   return (
     <div
       role="group"
-      aria-label={failed ? "Failed tool result" : "Tool result"}
+      aria-label={failed ? t("traces.failedToolResult") : t("traces.toolResult")}
       className={cn("min-w-0 space-y-3", failed && "text-destructive")}
     >
       <ToolValue node={body} label="result" />

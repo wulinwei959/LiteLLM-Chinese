@@ -6,6 +6,7 @@ import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { cn } from "../../lib/cva.config";
 import { Button } from "./button";
 import { XIcon } from "lucide-react";
+import { useLensTranslate } from "../../host/useLensTranslate";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -46,6 +47,7 @@ function SheetContent({
   side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
 }) {
+  const t = useLensTranslate();
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -65,7 +67,7 @@ function SheetContent({
             render={<Button variant="ghost" className="absolute top-4 right-4" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t("investigations.close")}</span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>

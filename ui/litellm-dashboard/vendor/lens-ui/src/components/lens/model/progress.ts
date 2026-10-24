@@ -1,5 +1,6 @@
 import type { Job } from "./types";
 import { durationText } from "./format";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export function analysisProgress(job: Job) {
   const {
@@ -13,63 +14,63 @@ export function analysisProgress(job: Job) {
   if (job.status === "queued") {
     return {
       step: -1,
-      title: "Queued for your worker",
+      title: lensTranslate("model.queuedWorker"),
       done: 0,
       total: 0,
-      detail: "The worker picks up queued investigations automatically.",
+      detail: lensTranslate("model.workerPicksUpQueued"),
     };
   }
   if (job.stage === "Grouping observations") {
     return {
       step: 1,
-      title: "Finding patterns",
+      title: lensTranslate("model.findingPatterns"),
       done: grouped_batches,
       total: grouping_batches,
       detail: grouping_batches
-        ? `${grouped_batches} of ${grouping_batches} observation batches compared`
-        : `Comparing observations across ${screened} reviewed runs`,
+        ? lensTranslate("model.value0Value1ObservationBatches", { value0: grouped_batches, value1: grouping_batches })
+        : lensTranslate("model.comparingObservationsAcrossValue0", { value0: screened }),
     };
   }
   if (job.stage === "Checking original evidence") {
     return {
       step: 2,
-      title: "Checking evidence",
+      title: lensTranslate("model.checkingEvidence"),
       done: investigated,
       total: candidates,
       detail: candidates
-        ? `${investigated} of ${candidates} patterns checked against the original activity`
-        : `${investigated} patterns checked against the original activity`,
+        ? lensTranslate("model.value0Value1PatternsChecked", { value0: investigated, value1: candidates })
+        : lensTranslate("model.value0PatternsCheckedAgainst", { value0: investigated }),
     };
   }
   if (!selected) {
     return {
       step: -1,
-      title: "Preparing activity",
+      title: lensTranslate("model.preparingActivity"),
       done: 0,
       total: 0,
-      detail: "Loading the runs selected for this investigation.",
+      detail: lensTranslate("model.loadingRunsSelectedInvestigation"),
     };
   }
   return {
     step: 0,
-    title: "Reviewing activity",
+    title: lensTranslate("model.reviewingActivity"),
     done: screened,
     total: selected,
-    detail: `${screened} of ${selected} selected runs reviewed`,
+    detail: lensTranslate("model.value0Value1SelectedRuns", { value0: screened, value1: selected }),
   };
 }
 
 type Coverage = Job["coverage"];
 
 export const ANALYSIS_STAGES = [
-  { label: "Review runs", weight: 0.6, done: (c: Coverage) => c.screened, total: (c: Coverage) => c.selected },
+  { get label() { return lensTranslate("model.reviewRuns"); }, weight: 0.6, done: (c: Coverage) => c.screened, total: (c: Coverage) => c.selected },
   {
-    label: "Find patterns",
+    get label() { return lensTranslate("model.findPatterns"); },
     weight: 0.2,
     done: (c: Coverage) => c.grouped_batches,
     total: (c: Coverage) => c.grouping_batches,
   },
-  { label: "Check evidence", weight: 0.2, done: (c: Coverage) => c.investigated, total: (c: Coverage) => c.candidates },
+  { get label() { return lensTranslate("model.checkEvidence"); }, weight: 0.2, done: (c: Coverage) => c.investigated, total: (c: Coverage) => c.candidates },
 ] as const;
 
 export interface StageProgress {

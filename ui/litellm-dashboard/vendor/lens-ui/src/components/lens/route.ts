@@ -3,16 +3,17 @@
 import { parseAsBoolean, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { useCallback } from "react";
 import { OPEN_TRACE_PARSERS, RUN_FILTER_PARSERS } from "./traces/routing";
+import { lensTranslate } from "../../host/lensTranslate";
 
 export const LENS_TABS = {
-  home: "Home",
-  agents: "Agents",
-  traces: "Traces",
-  findings: "Findings",
-  investigations: "Investigations",
-  datasets: "Datasets",
-  evals: "Evals",
-  settings: "Settings",
+  get home() { return lensTranslate("tabs.home"); },
+  get agents() { return lensTranslate("tabs.agents"); },
+  get traces() { return lensTranslate("tabs.traces"); },
+  get findings() { return lensTranslate("tabs.findings"); },
+  get investigations() { return lensTranslate("tabs.investigations"); },
+  get datasets() { return lensTranslate("tabs.datasets"); },
+  get evals() { return lensTranslate("tabs.evals"); },
+  get settings() { return lensTranslate("tabs.settings"); },
 } as const;
 export type LensTab = keyof typeof LENS_TABS;
 const lensTabs = Object.keys(LENS_TABS) as LensTab[];

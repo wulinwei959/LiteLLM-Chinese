@@ -5,6 +5,7 @@ import type { TraceQueryBody } from "../../types";
 import { isNegatedOp, valueMatcher } from "../../../../shared/search/language";
 import type { SearchFilter, SearchQuery } from "../../../../shared/search/searchQuery";
 import type { RunField } from "./runQuery";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 const RUN_ROWS = `SELECT TraceId AS trace_id, any(RootName) AS name, any(RootInput) AS input, sum(ErrorCount) AS errors,
        if(ifNull(any(RootStatus), '') IN ('STATUS_CODE_ERROR', 'error'), 'error', 'ok') AS status,
@@ -19,8 +20,8 @@ const likeLiteral = (value: string): string => value.replace(/[\\%_]/g, (char) =
 /** `*` is the only glob, as in the list filter. */
 const likePattern = (value: string): string => likeLiteral(value).replaceAll("*", "%");
 
-const matches = (column: string, pattern: string): string => `${column} ILIKE ${sqlString(pattern)}`;
-const anyMatches = (column: string, pattern: string): string => `arrayExists(x -> ${matches("x", pattern)}, ${column})`;
+const matches = (column: string, pattern: string): string => lensTranslate("traces.value0ILIKEValue1", { value0: column, value1: sqlString(pattern) });
+const anyMatches = (column: string, pattern: string): string => lensTranslate("traces.arrayExistsXValue0Value1", { value0: matches("x", pattern), value1: column });
 
 const STATUS_PREDICATES = { error: "status = 'error'", ok: "status = 'ok'" } as const;
 
@@ -49,7 +50,7 @@ const textPredicate = (term: string): string => {
 
 function filterPredicate(filter: SearchFilter<RunField>): string {
   const predicate = FIELD_PREDICATES[filter.field](filter.value);
-  return isNegatedOp(filter.op) ? `NOT (${predicate})` : predicate;
+  return isNegatedOp(filter.op) ? lensTranslate("traces.nOTValue0", { value0: predicate }) : predicate;
 }
 
 const timeBound = (range: TimeWindow | undefined): string =>
@@ -64,7 +65,7 @@ export const runPredicates = (query: SearchQuery<RunField>): string[] => [
 
 /** The runs list as a trace query: one row per trace from the per-key rollup, filtered like the list. */
 export function runQuerySql(query: SearchQuery<RunField>, range?: TimeWindow): string {
-  const having = [timeBound(range), ...runPredicates(query)].join("\n   AND ");
+  const having = [timeBound(range), ...runPredicates(query)].join(lensTranslate("traces.aND"));
   return `${RUN_ROWS}\nHAVING ${having}\nORDER BY min(StartTs) DESC\nLIMIT 100`;
 }
 

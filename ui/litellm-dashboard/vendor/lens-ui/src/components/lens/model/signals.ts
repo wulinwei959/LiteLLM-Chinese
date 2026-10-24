@@ -1,4 +1,5 @@
 import type { AnalysisModelInfo, SignalConfig } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export const SYSTEM_ONE_MODE = "evaluation";
 
@@ -20,55 +21,50 @@ export interface LibrarySignal {
 export const SIGNAL_LIBRARY: readonly LibrarySignal[] = [
   {
     id: "user_frustration",
-    name: "User frustration",
+    get name() { return lensTranslate("model.userFrustration"); },
     summary: "annoyed, complaining or giving up",
-    question:
-      "Does the user show frustration, annoyance or dissatisfaction with the agent in this run, for example complaints, irritated corrections, all caps, profanity, or giving up on the task?",
+    get question() { return lensTranslate("model.userShowFrustrationAnnoyance"); },
   },
   {
     id: "missing_capability",
-    name: "Missing capability",
-    summary: "asked for something the agent can't do",
-    question:
-      "Does the user ask for something the agent cannot do in this run, so that the agent refuses, says it lacks a tool, permission, integration or data source, or fails because the capability does not exist?",
+    get name() { return lensTranslate("model.missingCapability"); },
+    get summary() { return lensTranslate("model.askedSomethingAgentT"); },
+    get question() { return lensTranslate("model.userAskSomethingAgent"); },
   },
   {
     id: "repeated_request",
-    name: "Repeated request",
-    summary: "had to ask for the same thing again",
-    question:
-      "Does the user ask for the same thing more than once in this run, usually because the agent did not deliver it the first time?",
+    get name() { return lensTranslate("model.repeatedRequest"); },
+    get summary() { return lensTranslate("model.hadAskSameThing"); },
+    get question() { return lensTranslate("model.userAskSameThing"); },
   },
   {
     id: "asked_for_human",
-    name: "Asked for a human",
+    get name() { return lensTranslate("model.askedHuman"); },
     summary: "wants a person, not the agent",
-    question: "Does the user ask to talk to a human, a support person or a manager instead of the agent in this run?",
+    get question() { return lensTranslate("model.userAskTalkHuman"); },
   },
   {
     id: "tool_failure",
-    name: "Tool failure",
-    summary: "a tool or step failed and stayed broken",
-    question:
-      "Does a tool call or step fail in this run with an error, exception or timeout that the agent does not recover from?",
+    get name() { return lensTranslate("model.toolFailure"); },
+    get summary() { return lensTranslate("model.toolStepFailedStayed"); },
+    get question() { return lensTranslate("model.toolCallStepFail"); },
   },
   {
     id: "refused_request",
-    name: "Refused request",
-    summary: "declined a reasonable ask",
-    question: "Does the agent refuse or decline a reasonable, allowed user request in this run?",
+    get name() { return lensTranslate("model.refusedRequest"); },
+    get summary() { return lensTranslate("model.declinedReasonableAsk"); },
+    get question() { return lensTranslate("model.agentRefuseDeclineReasonable"); },
   },
   {
     id: "made_up_answer",
-    name: "Made-up answer",
-    summary: "facts or links with no source",
-    question:
-      "Does the agent state facts, numbers, links or tool results in this run that are not supported by the conversation or by any tool output?",
+    get name() { return lensTranslate("model.madeUpAnswer"); },
+    get summary() { return lensTranslate("model.factsLinksSource"); },
+    get question() { return lensTranslate("model.agentStateFactsNumbers"); },
   },
   {
     id: "task_abandoned",
-    name: "Task abandoned",
-    summary: "run ended without what was asked",
-    question: "Does the run end without the user getting what they asked for?",
+    get name() { return lensTranslate("model.taskAbandoned"); },
+    get summary() { return lensTranslate("model.runEndedWithoutAsked"); },
+    get question() { return lensTranslate("model.runEndWithoutUser"); },
   },
 ];

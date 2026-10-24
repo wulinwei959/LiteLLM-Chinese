@@ -27,6 +27,8 @@ import { useLensRoute, useListSearchRoute } from "../route";
 import { FINDING_PANEL_WIDTH_KEY } from "../storage";
 import { LensPageHeader } from "../ui/LensPageHeader";
 import { filterInvestigations, INVESTIGATION_INDEX, INVESTIGATION_QUERY } from "./investigationQuery";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const ACTION =
   "inline-flex size-7 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50";
@@ -38,7 +40,7 @@ export type InvestigationRow =
   | { readonly kind: "finding"; readonly lens: Lens; readonly finding: Finding };
 
 export const investigationRowKey = (row: InvestigationRow): string =>
-  row.kind === "investigation" ? `investigation:${row.lens.id}` : `finding:${findingKey(row.lens, row.finding)}`;
+  row.kind === "investigation" ? lensTranslate("investigations.investigationValue0", { value0: row.lens.id }) : lensTranslate("investigations.findingValue0", { value0: findingKey(row.lens, row.finding) });
 
 interface ListContextValue {
   readonly now: number;
@@ -59,7 +61,7 @@ function useList(): ListContextValue {
 
 type Cell = CellContext<InvestigationRow, unknown>;
 
-const ROW_LABEL = { investigation: "Investigation details", finding: "Finding details" } as const;
+const ROW_LABEL = { get investigation() { return lensTranslate("investigations.investigationDetails"); }, get finding() { return lensTranslate("investigations.findingDetails"); } } as const;
 
 function NameCell({ row: { original: item } }: Cell) {
   return (
@@ -111,7 +113,7 @@ function FindingCount({ row: { original: item } }: Cell) {
   if (count === 0) return null;
   return (
     <span
-      title={`${count} open ${count === 1 ? "finding" : "findings"}`}
+      title={lensTranslate("investigations.openFindingsCount", { value0: count })}
       className="inline-flex min-w-5 justify-center rounded border border-violet-200 bg-violet-50 px-1.5 font-mono text-xs text-violet-700 tabular-nums dark:border-violet-400/30 dark:bg-violet-400/10 dark:text-violet-300"
     >
       {count}
@@ -129,8 +131,8 @@ function ActionsCell({ row: { original: item } }: Cell) {
     <span className="flex items-center justify-end gap-0.5">
       <button
         type="button"
-        aria-label={`Run ${settings.name} now`}
-        title={demo ? "Turn off Demo data to run an investigation" : "Run now"}
+        aria-label={lensTranslate("investigations.runValue0Now", { value0: settings.name })}
+        title={demo ? lensTranslate("investigations.turnOffDemoData") : lensTranslate("investigations.runNow")}
         disabled={readOnly}
         onClick={(event) => {
           event.stopPropagation();
@@ -142,8 +144,8 @@ function ActionsCell({ row: { original: item } }: Cell) {
       </button>
       <button
         type="button"
-        aria-label={`Edit ${settings.name}`}
-        title={demo ? "Turn off Demo data to edit an investigation" : "Edit"}
+        aria-label={lensTranslate("investigations.editValue0", { value0: settings.name })}
+        title={demo ? lensTranslate("investigations.turnOffDemoDataToEditAnInvestigation") : lensTranslate("investigations.edit")}
         disabled={readOnly}
         onClick={(event) => {
           event.stopPropagation();
@@ -158,15 +160,15 @@ function ActionsCell({ row: { original: item } }: Cell) {
 }
 
 const COLUMNS: ColumnDef<InvestigationRow>[] = [
-  { id: "name", header: "Investigation", cell: NameCell },
-  { id: "agent", size: 160, header: "Agent", cell: AgentCell },
-  { id: "schedule", size: 180, header: "Schedule", cell: ScheduleCell },
-  { id: "status", size: 200, header: "Last run", cell: StatusCell },
-  { id: "findings", size: 64, header: "Open", cell: FindingCount, meta: { numeric: true } },
+  { id: "name", get header() { return lensTranslate("investigations.investigation"); }, cell: NameCell },
+  { id: "agent", size: 160, get header() { return lensTranslate("agents.agent"); }, cell: AgentCell },
+  { id: "schedule", size: 180, get header() { return lensTranslate("investigations.schedule"); }, cell: ScheduleCell },
+  { id: "status", size: 200, get header() { return lensTranslate("investigations.lastRun"); }, cell: StatusCell },
+  { id: "findings", size: 64, get header() { return lensTranslate("datasets.open"); }, cell: FindingCount, meta: { numeric: true } },
   {
     id: "actions",
     size: 76,
-    header: "Actions",
+    get header() { return lensTranslate("investigations.actions"); },
     cell: ActionsCell,
     meta: { headerClassName: "sr-only", className: "pl-0 pr-3" },
   },
@@ -196,6 +198,7 @@ export function InvestigationList({
   actions,
   children,
 }: InvestigationListProps) {
+  const t = useLensTranslate();
   const [search, setSearch] = useListSearchRoute();
   const { demo } = useLensRoute();
   const now = useNow(15000);
@@ -224,9 +227,9 @@ export function InvestigationList({
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
         <LensPageHeader
-          section="04 / CONTINUOUS FEEDBACK"
-          title="Investigations"
-          description="Focused checks that turn agent runs into your next fix."
+          section={t("investigations.04CONTINUOUSFEEDBACK")}
+          title={t("tabs.investigations")}
+          description={t("investigations.focusedChecksTurnAgent")}
           actions={actions}
         />
         <div className="lens-toolbar flex min-h-11 shrink-0 flex-wrap items-center gap-2 border-b border-border p-3">
@@ -236,15 +239,15 @@ export function InvestigationList({
             values={itemValues(INVESTIGATION_INDEX, lenses)}
             value={search}
             onValueChange={setSearch}
-            label="Search investigations"
+            label={t("investigations.searchInvestigations")}
           >
-            <SearchBox.Input className="rounded-md font-mono text-xs" placeholder="Search investigations" />
+            <SearchBox.Input className="rounded-md font-mono text-xs" placeholder={t("investigations.searchInvestigations")} />
             <SearchBox.Suggestions />
           </SearchBox.Root>
         </div>
         <ListContext.Provider value={{ now, connected, readOnly, demo, onEdit, onRunNow }}>
           <InspectorTable.Root table={table}>
-            <InspectorTable.Grid aria-label="Investigations" className="lens-table text-xs md:min-w-[860px]">
+            <InspectorTable.Grid aria-label={t("tabs.investigations")} className="lens-table text-xs md:min-w-[860px]">
               <InspectorTable.Header />
               <InspectorTable.Body<InvestigationRow> rowHeight={() => (desktop ? INVESTIGATION_HEIGHT : 48)}>
                 {(row) => (
@@ -262,8 +265,7 @@ export function InvestigationList({
             </InspectorTable.Grid>
             {!shown.length && (
               <div className="lens-empty-state py-16 text-center font-mono text-xs text-muted-foreground">
-                No investigations match your search.
-              </div>
+                {t("investigations.investigationsMatchSearch")}</div>
             )}
           </InspectorTable.Root>
         </ListContext.Provider>

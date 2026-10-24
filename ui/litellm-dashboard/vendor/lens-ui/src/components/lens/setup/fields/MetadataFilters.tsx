@@ -7,8 +7,10 @@ import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
 import type { InvestigationInput } from "../investigationSchema";
 import type { ScopeOptions } from "../useMatchingActivity";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export function MetadataFilters({ attributes, keys }: Pick<ScopeOptions, "attributes" | "keys">) {
+  const t = useLensTranslate();
   const id = useId();
   const {
     control,
@@ -24,14 +26,14 @@ export function MetadataFilters({ attributes, keys }: Pick<ScopeOptions, "attrib
           <div className="flex gap-2">
             <Input
               {...register(`selection.filters.${index}.key`)}
-              aria-label={`Metadata key ${index + 1}`}
+              aria-label={t("setup.metadataKeyValue0", { value0: index + 1 })}
               list={`${id}-keys`}
-              placeholder="Metadata key"
+              placeholder={t("setup.metadataKey")}
             />
             <Button
               variant="ghost"
               size="icon"
-              aria-label={`Remove condition ${index + 1}`}
+              aria-label={t("setup.removeConditionValue0", { value0: index + 1 })}
               onClick={() => remove(index)}
             >
               <X className="size-4" />
@@ -44,9 +46,9 @@ export function MetadataFilters({ attributes, keys }: Pick<ScopeOptions, "attrib
           )}
           <Input
             {...register(`selection.filters.${index}.value`)}
-            aria-label={`Metadata value ${index + 1}`}
+            aria-label={t("setup.metadataValueValue0", { value0: index + 1 })}
             list={`${id}-values-${index}`}
-            placeholder="Equals"
+            placeholder={t("setup.equals")}
           />
           {errors.selection?.filters?.[index]?.value?.message && (
             <p role="alert" className="text-sm text-destructive">
@@ -68,8 +70,7 @@ export function MetadataFilters({ attributes, keys }: Pick<ScopeOptions, "attrib
         ))}
       </datalist>
       <Button variant="outline" size="sm" disabled={filters.length >= 8} onClick={() => append({ key: "", value: "" })}>
-        <Plus className="size-3" /> Add condition
-      </Button>
+        <Plus className="size-3" /> {t("setup.addCondition")}</Button>
     </>
   );
 }

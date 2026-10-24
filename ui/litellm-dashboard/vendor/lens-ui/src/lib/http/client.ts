@@ -1,3 +1,4 @@
+import { lensTranslate } from "../../host/lensTranslate";
 /**
  * The single HTTP client for the dashboard. This is the only file allowed to
  * call fetch() directly (enforced by the no-restricted-syntax lint rule and its
@@ -164,7 +165,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       headers["Content-Type"] = "application/json";
     }
     if (accessToken) {
-      const headerName = getAuthHeaderName ? getAuthHeaderName() : "Authorization";
+      const headerName = getAuthHeaderName ? getAuthHeaderName() : lensTranslate("investigations.authorization");
       headers[headerName] = `Bearer ${accessToken}`;
     }
     if (extraHeaders) {
@@ -188,7 +189,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         errorBody = JSON.parse(raw);
         message = deriveErrorMessage(errorBody);
       } catch {
-        message = raw || `HTTP ${response.status}`;
+        message = raw || lensTranslate("lib.hTTPValue0", { value0: response.status });
       }
       onError?.(message);
       throw new ApiError(message, response.status, errorBody, retryAfterMs(response.headers));
@@ -204,8 +205,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     try {
       return JSON.parse(text) as T;
     } catch {
-      const type = response.headers.get("content-type") ?? "an unknown content type";
-      throw new ApiError(`Expected JSON from ${path} but the server returned ${type}`, response.status, text);
+      const type = response.headers.get("content-type") ?? lensTranslate("lib.unknownContentType");
+      throw new ApiError(lensTranslate("lib.expectedJSONValue0Server", { value0: path, value1: type }), response.status, text);
     }
   }
 

@@ -10,6 +10,7 @@ import type { LensList } from "../model/types";
 import { STANDALONE_DOCS_URL, useLensHost } from "../../../host/LensHost";
 import { DeploymentAnalysis } from "./worker/DeploymentAnalysis";
 import { LensPageHeader } from "../ui/LensPageHeader";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const TRACING_DOCS = "https://docs.litellm.ai/docs/proxy/lens";
 
@@ -20,12 +21,13 @@ function TracingSection({
   enabled: boolean;
   onConnectProject?: () => void;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   return (
     <SettingsSection
-      heading="Tracing"
+      heading={t("onboarding.tracing")}
       icon={<Activity aria-hidden="true" className="size-4" />}
-      description="Where your agents send runs so Lens can read them."
+      description={t("settings.agentsSendRunsLens")}
     >
       <SettingsCard className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 text-sm">
@@ -34,7 +36,7 @@ function TracingSection({
             className="inline-flex items-center gap-2 font-mono text-xs"
           >
             <StatusDot state={enabled ? "ok" : "off"} />
-            {enabled ? "Tracing enabled" : "Tracing is not enabled"}
+            {enabled ? t("onboarding.tracingEnabled2") : t("onboarding.tracingEnabled")}
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -44,8 +46,7 @@ function TracingSection({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            Docs
-            <ArrowUpRight aria-hidden="true" className="size-3" />
+            {t("onboarding.docs")}<ArrowUpRight aria-hidden="true" className="size-3" />
           </a>
           <Button
             variant="outline"
@@ -53,8 +54,7 @@ function TracingSection({
             onClick={onConnectProject}
             disabled={!onConnectProject}
           >
-            Connect project
-          </Button>
+            {t("agents.connectProject")}</Button>
         </div>
       </SettingsCard>
     </SettingsSection>
@@ -70,12 +70,13 @@ export function LensSettings({
   workerReadyAction?: ReactNode;
   onConnectProject?: () => void;
 }) {
+  const t = useLensTranslate();
   return (
-    <div aria-label="Settings" role="region" className="flex w-full flex-col">
+    <div aria-label={t("tabs.settings")} role="region" className="flex w-full flex-col">
       <LensPageHeader
-        section="07 / CONFIGURATION"
-        title="Settings"
-        description="Wire up your agents. Tune what Lens watches."
+        section={t("settings.07CONFIGURATION")}
+        title={t("tabs.settings")}
+        description={t("settings.wireUpAgentsTune")}
       />
       <div className="mx-auto w-full max-w-6xl divide-y divide-border px-4 py-5 sm:px-6">
         <TracingSection
@@ -84,9 +85,9 @@ export function LensSettings({
         />
         <SignalSettings />
         <SettingsSection
-          heading="Analysis"
+          heading={t("settings.analysis")}
           icon={<Cpu aria-hidden="true" className="size-4" />}
-          description="Lens runs investigations using your configured models."
+          description={t("settings.lensRunsInvestigationsUsing")}
         >
           <DeploymentAnalysis
             workers={list.workers}

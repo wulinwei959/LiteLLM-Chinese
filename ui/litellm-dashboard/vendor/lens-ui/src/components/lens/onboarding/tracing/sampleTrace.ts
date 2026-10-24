@@ -1,3 +1,4 @@
+import { lensTranslate } from "../../../../host/lensTranslate";
 const NS_PER_MS = BigInt(1_000_000);
 
 export const SAMPLE_TRACE_SERVICE = "litellm-sample-agent";
@@ -20,8 +21,8 @@ interface SampleSpan {
 export function sampleTraceExport(nowMs: number): { traceId: string; body: object } {
   const traceId = randomHexId(16);
   const agentId = randomHexId(8);
-  const question = "What is the weather in San Francisco?";
-  const answer = "It is 18°C and sunny in San Francisco.";
+  const question = lensTranslate("onboarding.weatherSanFrancisco");
+  const answer = lensTranslate("onboarding.18CSunnySan");
   const spans: readonly (SampleSpan & { id: string })[] = [
     {
       id: agentId,
@@ -47,7 +48,7 @@ export function sampleTraceExport(nowMs: number): { traceId: string; body: objec
         str("gen_ai.agent.name", "weather_agent"),
         str("gen_ai.request.model", "sample-model"),
         str("gen_ai.input.messages", messages("user", question)),
-        str("gen_ai.output.messages", messages("assistant", "Calling get_weather(city=San Francisco)")),
+        str("gen_ai.output.messages", messages("assistant", lensTranslate("onboarding.callingGetWeatherCity"))),
       ],
     },
     {
@@ -59,7 +60,7 @@ export function sampleTraceExport(nowMs: number): { traceId: string; body: objec
       attributes: [
         str("gen_ai.operation.name", "execute_tool"),
         str("gen_ai.agent.name", "weather_agent"),
-        str("gen_ai.tool.call.arguments", JSON.stringify({ city: "San Francisco" })),
+        str("gen_ai.tool.call.arguments", JSON.stringify({ city: lensTranslate("onboarding.sanFrancisco") })),
         str("gen_ai.tool.call.result", JSON.stringify({ temp_c: 18, sky: "sunny" })),
       ],
     },

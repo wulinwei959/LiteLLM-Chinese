@@ -10,6 +10,8 @@ import type { LensReadiness } from "../hooks/useLensReadiness";
 import { initialSetupStep } from "../model/readiness";
 import { StepIndicator, type StepState } from "../ui/StepIndicator";
 import { useOnboarding } from "./OnboardingContext";
+import { useLensTranslate } from "../../../host/useLensTranslate";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 type StepProps = {
   state: LensReadiness;
@@ -29,7 +31,7 @@ function StorageStep({ state, goTo, storageReady }: StepProps) {
     return (
       <>
         <TracingSetupFields
-          detail="Tracing is not enabled"
+          detail={lensTranslate("onboarding.tracingEnabled")}
           accessToken={accessToken}
           onOpenTrace={openTrace}
           onCheck={state.refresh}
@@ -42,10 +44,9 @@ function StorageStep({ state, goTo, storageReady }: StepProps) {
   return (
     <div className="space-y-4">
       <p role="status" className="text-sm text-success">
-        Trace storage is connected
-      </p>
+        {lensTranslate("onboarding.traceStorageConnected")}</p>
       <Button onClick={() => goTo(1)}>
-        Continue to your agent <ArrowRight aria-hidden="true" className="size-4" />
+        {lensTranslate("onboarding.continueAgent")}<ArrowRight aria-hidden="true" className="size-4" />
       </Button>
       <ActivityContinuation state={state} />
     </div>
@@ -53,19 +54,19 @@ function StorageStep({ state, goTo, storageReady }: StepProps) {
 }
 
 function ActivityContinuation({ state }: { state: LensReadiness }) {
+  const t = useLensTranslate();
   const { connect, create } = useOnboarding();
   const locked = useLocked();
   if (!state.activityReady) return null;
   return (
     <div className="mt-4">
       <Button onClick={state.connected ? create : connect} disabled={locked}>
-        {state.connected ? "Continue to investigation" : "Configure analysis"}
+        {state.connected ? t("onboarding.continueInvestigation") : t("tabs.configureAnalysis")}
         <ArrowRight aria-hidden="true" className="size-4" />
       </Button>
       {state.requestsReady && !state.tracesReady && (
         <p className="mt-2 text-xs text-muted-foreground">
-          Request logs are already available. You can investigate them now and add agent traces later.
-        </p>
+          {t("onboarding.requestLogsAlreadyAvailable")}</p>
       )}
     </div>
   );
@@ -92,8 +93,7 @@ function AgentStep({ state }: StepProps) {
       </div>
       {state.tracesReady && (
         <p role="status" className="text-sm text-success">
-          Your first trace is ready. Continue setup so Lens can investigate your agent’s behavior.
-        </p>
+          {lensTranslate("onboarding.firstTraceReadyContinue")}</p>
       )}
       <ActivityContinuation state={state} />
     </>
@@ -107,14 +107,14 @@ function AnalysisStep({ state }: StepProps) {
     <div className="space-y-4">
       <p role="status" className="text-sm text-muted-foreground">
         {state.connected
-          ? "Analysis is configured. You’re ready to create an investigation."
-          : "Add a provider key and model to your Lens deployment. Choose the model and spending limit when you create an investigation."}
+          ? lensTranslate("onboarding.analysisConfiguredReReady")
+          : lensTranslate("onboarding.addProviderKeyModel")}
       </p>
       {!state.activityReady && (
-        <p className="text-sm text-muted-foreground">Send a trace before starting your first investigation.</p>
+        <p className="text-sm text-muted-foreground">{lensTranslate("onboarding.sendTraceBeforeStarting")}</p>
       )}
       <Button onClick={state.connected ? create : connect} disabled={!state.activityReady || locked}>
-        {state.connected ? "Continue to investigation" : "Configure analysis"}
+        {state.connected ? lensTranslate("onboarding.continueInvestigation") : lensTranslate("tabs.configureAnalysis")}
         <ArrowRight aria-hidden="true" className="size-4" />
       </Button>
     </div>
@@ -127,16 +127,13 @@ function InvestigationStep({ state }: StepProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm leading-6 text-muted-foreground">
-        Choose the activity to review and describe how your agent should behave. Lens will show findings with evidence
-        and suggested changes.
-      </p>
+        {lensTranslate("onboarding.chooseActivityReviewDescribe")}</p>
       {!state.ready && (
         <p className="text-sm text-muted-foreground">
-          Recorded activity and an analysis model are required before you can run an investigation.
-        </p>
+          {lensTranslate("onboarding.recordedActivityAnalysisModel")}</p>
       )}
       <Button onClick={create} disabled={!state.ready || locked}>
-        New investigation <ArrowRight aria-hidden="true" className="size-4" />
+        {lensTranslate("workspace.newInvestigation")}<ArrowRight aria-hidden="true" className="size-4" />
       </Button>
     </div>
   );
@@ -151,26 +148,26 @@ interface StepDefinition {
 
 const STEPS: readonly StepDefinition[] = [
   {
-    title: "Install Lens",
-    description: "Enable Lens in your Helm or Docker deployment.",
+    get title() { return lensTranslate("onboarding.installLens"); },
+    get description() { return lensTranslate("onboarding.enableLensHelmDocker"); },
     complete: (_state, storageReady) => storageReady,
     Content: StorageStep,
   },
   {
-    title: "Send your first trace",
-    description: "Capture your agent’s inputs, outputs, and tool calls.",
+    get title() { return lensTranslate("onboarding.sendFirstTrace"); },
+    get description() { return lensTranslate("onboarding.captureAgentSInputs"); },
     complete: (state) => state.tracesReady,
     Content: AgentStep,
   },
   {
-    title: "Configure analysis",
-    description: "Choose an analysis model and spending limit.",
+    get title() { return lensTranslate("tabs.configureAnalysis"); },
+    get description() { return lensTranslate("onboarding.chooseAnalysisModelSpending"); },
     complete: (state) => state.connected,
     Content: AnalysisStep,
   },
   {
-    title: "Run your first investigation",
-    description: "Describe the expected behavior and review a sample of activity.",
+    get title() { return lensTranslate("onboarding.runFirstInvestigation"); },
+    get description() { return lensTranslate("onboarding.describeExpectedBehaviorReview"); },
     complete: (state) => state.hasInvestigations,
     Content: InvestigationStep,
   },

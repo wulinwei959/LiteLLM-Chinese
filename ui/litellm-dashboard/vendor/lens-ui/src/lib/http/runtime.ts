@@ -1,4 +1,5 @@
 import { resolveApiBase } from "./resolveApiBase";
+import { lensTranslate } from "../../host/lensTranslate";
 
 /**
  * Runtime request config the typed client reads on every call. The values are
@@ -20,7 +21,7 @@ import { resolveApiBase } from "./resolveApiBase";
 type Getter<T> = () => T;
 
 let baseUrlGetter: Getter<string> = () => resolveApiBase({ explicitBase: process.env.NEXT_PUBLIC_BASE_URL });
-let authHeaderNameGetter: Getter<string> = () => "Authorization";
+let authHeaderNameGetter: Getter<string> = () => lensTranslate("investigations.authorization");
 let authTokenGetter: Getter<string | null> = () => null;
 let errorHandler: (message: string) => void = () => {};
 

@@ -1,4 +1,5 @@
 import type { Finding, Job, Lens } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export type Step = Job["steps"][number];
 export type Priority = NonNullable<Finding["priority"]>;
@@ -125,7 +126,7 @@ export function findFinding(lenses: readonly Lens[], key: string): OwnedFinding 
 export function stepLine(step: Step): string {
   if (step.kind !== "model") return step.label;
   const tokens = step.prompt_tokens + step.completion_tokens;
-  const size = tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k tok` : `${tokens} tok`;
+  const size = tokens >= 1000 ? lensTranslate("model.value0kTok", { value0: (tokens / 1000).toFixed(1) }) : lensTranslate("model.value0Tok", { value0: tokens });
   return `${step.label} · ${size} · $${step.cost.toFixed(4)}`;
 }
 
@@ -138,15 +139,15 @@ export function modelsUsed(steps: readonly Step[]): string[] {
 }
 
 function nextRunLabel(msUntil: number): string {
-  if (msUntil <= 0) return "due now";
-  if (msUntil < 60_000) return "next in <1m";
-  return `next in ${Math.ceil(msUntil / 60_000)}m`;
+  if (msUntil <= 0) return lensTranslate("model.dueNow");
+  if (msUntil < 60_000) return lensTranslate("model.next1m");
+  return lensTranslate("model.nextValue0m", { value0: Math.ceil(msUntil / 60_000) });
 }
 
 export function scheduleLabel(lens: Lens, now: number): string {
   if (!lens.settings.enabled) return "paused";
   const every = lens.settings.interval_minutes;
-  const cadence = every % 60 === 0 ? `every ${every / 60}h` : `every ${every}m`;
+  const cadence = every % 60 === 0 ? lensTranslate("model.everyValue0h", { value0: every / 60 }) : lensTranslate("model.everyValue0m", { value0: every });
   const next = Date.parse(lens.next_run_at) - now;
   return `${cadence} · ${nextRunLabel(next)}`;
 }

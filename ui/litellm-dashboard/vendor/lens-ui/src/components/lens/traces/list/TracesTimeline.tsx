@@ -9,6 +9,7 @@ import { Timeline, TIMELINE_BUCKETS, type TimeBucket } from "../../../shared/tim
 import type { TraceSummary } from "../types";
 import { traceAgentNames } from "../utils";
 import styles from "../TraceAppearance.module.css";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 /** Run counts per equal-width time bucket across the window; runs outside it are dropped. */
 export function bucketRuns(runs: readonly TraceSummary[], range: TimeWindow, buckets = TIMELINE_BUCKETS): TimeBucket[] {
@@ -41,12 +42,13 @@ interface TracesTimelineProps {
 const RUN_NOUN = { singular: "run", plural: "runs" };
 
 export function TracesTimeline({ runs, range, selection, onSelect }: TracesTimelineProps) {
+  const t = useLensTranslate();
   const buckets = useMemo(() => bucketRuns(runs, range), [runs, range]);
   return (
-    <section className={styles.timeline} aria-label="Run activity">
+    <section className={styles.timeline} aria-label={t("traces.runActivity")}>
       <div className={styles.timelineLabel}>
-        <span className="lens-section-label">Run activity</span>
-        <span>Drag to zoom</span>
+        <span className="lens-section-label">{t("traces.runActivity")}</span>
+        <span>{t("traces.dragZoom")}</span>
       </div>
       <Timeline buckets={buckets} selection={selection} onSelect={onSelect} noun={RUN_NOUN} />
     </section>

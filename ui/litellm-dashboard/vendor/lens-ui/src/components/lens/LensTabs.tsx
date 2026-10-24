@@ -17,6 +17,8 @@ import { useWorkerConnected } from "./hooks/useWorkerConnected";
 import type { InvestigationActivity } from "./model/status";
 import type { LensList } from "./model/types";
 import type { LensTab } from "./route";
+import { useLensTranslate } from "../../host/useLensTranslate";
+import { lensTranslate } from "../../host/lensTranslate";
 
 interface LensTabsProps {
   readonly activity: InvestigationActivity;
@@ -27,16 +29,17 @@ interface LensTabsProps {
 }
 
 const NAVIGATION_ITEMS = [
-  { value: "home", label: "Home", icon: House },
-  { value: "agents", label: "Agents", icon: Bot },
-  { value: "traces", label: "Traces", icon: Activity },
-  { value: "findings", label: "Findings", icon: Sparkles },
-  { value: "investigations", label: "Investigations", icon: ScanSearch },
-  { value: "datasets", label: "Datasets", icon: Database },
-  { value: "evals", label: "Evals", icon: FlaskConical },
+  { value: "home", get label() { return lensTranslate("tabs.home"); }, icon: House },
+  { value: "agents", get label() { return lensTranslate("tabs.agents"); }, icon: Bot },
+  { value: "traces", get label() { return lensTranslate("tabs.traces"); }, icon: Activity },
+  { value: "findings", get label() { return lensTranslate("tabs.findings"); }, icon: Sparkles },
+  { value: "investigations", get label() { return lensTranslate("tabs.investigations"); }, icon: ScanSearch },
+  { value: "datasets", get label() { return lensTranslate("tabs.datasets"); }, icon: Database },
+  { value: "evals", get label() { return lensTranslate("tabs.evals"); }, icon: FlaskConical },
 ] as const;
 
 export function LensTabs({ activity, workers, onNavigate, orientation, collapsed = false }: LensTabsProps) {
+  const t = useLensTranslate();
   const connected = useWorkerConnected(workers);
   const vertical = orientation === "vertical";
   const item = (value: LensTab, label: string, Icon: LucideIcon, status?: string) => (
@@ -46,7 +49,7 @@ export function LensTabs({ activity, workers, onNavigate, orientation, collapsed
       title={status ?? (collapsed ? label : undefined)}
       onClick={() => onNavigate(value)}
       aria-description={
-        value === "investigations" && activity !== "idle" ? `An investigation is ${activity}` : undefined
+        value === "investigations" && activity !== "idle" ? t("tabs.investigationValue0", { value0: activity }) : undefined
       }
       className={cn(
         "flex-none gap-2.5 text-[13px] font-medium text-muted-foreground data-active:text-foreground data-active:shadow-none",
@@ -91,7 +94,7 @@ export function LensTabs({ activity, workers, onNavigate, orientation, collapsed
       )}
     >
       {NAVIGATION_ITEMS.map(({ value, label, icon }) => item(value, label, icon))}
-      {workers && item("settings", "Settings", Settings, connected ? "Analysis configured" : "Configure analysis")}
+      {workers && item("settings", t("tabs.settings"), Settings, connected ? t("tabs.analysisConfigured") : t("tabs.configureAnalysis"))}
     </TabsList>
   );
 }

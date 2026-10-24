@@ -22,6 +22,8 @@ import {
   type StripState,
 } from "../../model/live";
 import type { Review } from "../../model/types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 const RECENT = 3;
 const MARK = { issue: "●", clear: "✓", unknown: "–" } as const;
@@ -65,9 +67,9 @@ function RecentLine({ review, now, onOpen }: { review: Review; now: number; onOp
 }
 
 function issueLabel({ count, scope }: IssueCount): string {
-  const noun = count === 1 ? "issue" : "issues";
-  if (scope === "findings") return `${count} ${noun} found`;
-  const flagged = `${count} ${count === 1 ? "trace" : "traces"} flagged`;
+  const noun = count === 1 ? lensTranslate("investigations.issueSingular") : lensTranslate("investigations.issuePlural");
+  if (scope === "findings") return lensTranslate("investigations.value0Value1Found", { value0: count, value1: noun });
+  const flagged = lensTranslate("investigations.value0Value1Flagged", { value0: count, value1: count === 1 ? lensTranslate("investigations.traceSingular") : lensTranslate("investigations.tracePlural") });
   return scope ? `${flagged} ${scope}` : flagged;
 }
 
@@ -98,12 +100,13 @@ export function LiveStrip({
   onOpen: () => void;
   onClose: () => void;
 }) {
+  const t = useLensTranslate();
   const now = useNow(5000);
   const recent = newestFirst(reviews, RECENT);
   const finished = state.kind === "done" || state.kind === "failed";
   return (
     <section
-      aria-label="Live trace results"
+      aria-label={t("investigations.liveTraceResults")}
       onClick={onOpen}
       className="flex cursor-pointer flex-wrap items-start gap-x-6 gap-y-2 rounded-md bg-muted/30 px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50"
     >
@@ -111,13 +114,12 @@ export function LiveStrip({
         <div className="flex flex-col gap-1">
           <ModelName model={model} />
           <span className="tabular-nums">
-            {reviewed} of {selected} traces · {issueLabel(issues)} · {money(cost)}
-          </span>
+            {t("investigations.value0Value1TracesValue2", { value0: reviewed, value1: selected, value2: issueLabel(issues), value3: money(cost) })}</span>
           {(reused > 0 || reusable > 0) && (
             <span>
               {finished
-                ? `${reused} reused without review cost · ${Math.max(0, reviewed - reused)} newly reviewed`
-                : `${reusable} eligible for reuse · ${Math.max(0, selected - reusable)} need review`}
+                ? t("investigations.value0ReusedWithoutReview", { value0: reused, value1: Math.max(0, reviewed - reused) })
+                : t("investigations.value0EligibleReuseValue1", { value0: reusable, value1: Math.max(0, selected - reusable) })}
             </span>
           )}
         </div>
@@ -131,8 +133,7 @@ export function LiveStrip({
           }}
         >
           <PanelRight />
-          View run
-          <ArrowRight />
+          {t("investigations.viewRun")}<ArrowRight />
         </Button>
       </div>
       <div className="min-w-0 flex-1">
@@ -152,7 +153,7 @@ export function LiveStrip({
           </p>
         )}
         {recent.length > 0 && state.kind !== "waiting" && (
-          <ol aria-label="Recently reviewed traces" className="flex flex-col">
+          <ol aria-label={t("investigations.recentlyReviewedTraces")} className="flex flex-col">
             {recent.map((review) => (
               <RecentLine key={reviewKey(review)} review={review} now={now} onOpen={onOpen} />
             ))}
@@ -162,7 +163,7 @@ export function LiveStrip({
       <Button
         variant="ghost"
         size="icon-xs"
-        aria-label="Hide live trace results"
+        aria-label={t("investigations.hideLiveTraceResults")}
         className="shrink-0"
         onClick={(event) => {
           event.stopPropagation();

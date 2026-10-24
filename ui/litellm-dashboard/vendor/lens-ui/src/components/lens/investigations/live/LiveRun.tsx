@@ -20,6 +20,7 @@ import { useQueueReason, type QueueContext } from "../useQueueReason";
 import { LiveDrawer } from "./LiveDrawer";
 import { LiveStrip } from "./LiveStrip";
 import { useStripOpen } from "./useLivePanels";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const MAX_LANES = 4;
 
@@ -34,6 +35,7 @@ export function LiveRun({
   name: string;
   queue?: QueueContext;
 }) {
+  const t = useLensTranslate();
   const reason = useQueueReason(job, queue);
   const [stripOpen, setStripOpen] = useStripOpen();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -72,8 +74,7 @@ export function LiveRun({
           onClick={() => setStripOpen(true)}
           className="self-start text-xs text-muted-foreground hover:text-foreground"
         >
-          Show live trace results
-        </button>
+          {t("investigations.showLiveTraceResults")}</button>
       )}
       <LiveDrawer
         open={drawerOpen}

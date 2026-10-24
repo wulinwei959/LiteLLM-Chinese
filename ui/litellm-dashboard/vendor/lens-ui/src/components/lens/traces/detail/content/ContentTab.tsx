@@ -10,6 +10,7 @@ import { ToolArguments } from "./ToolContent";
 import { payloadView, toolInput } from "./payload";
 import { Section } from "./Section";
 import { ErrorBlock, StoredDiagnostic } from "./SpanError";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 const STATUS_TEXT = "px-4 py-2 text-sm text-muted-foreground";
 const COLLAPSE_INPUT_ABOVE = 8;
@@ -57,7 +58,7 @@ function PayloadSection({
       defaultOpen={!count || count <= COLLAPSE_INPUT_ABOVE}
     >
       {(mode) => {
-        if (mode === "Raw") return <TextBody text={prettyPayload(raw)} format="code" />;
+        if (mode === "traces.raw") return <TextBody text={prettyPayload(raw)} format="code" />;
         if (span.type === "tool" && role === "input") return <ToolArguments args={toolInput(raw, content)} />;
         return <Payload view={view} name={span.name} failed={span.status === "error"} />;
       }}
@@ -74,6 +75,7 @@ interface ContentTabProps {
 
 /** The error first (if any), then collapsible Input and Output. */
 export function ContentTab({ accessToken, traceId, traceRef, span }: ContentTabProps) {
+  const t = useLensTranslate();
   const detailQuery = useSpanDetail(accessToken, traceId, span.span_id, traceRef);
   const detail = detailQuery.data;
   const empty = detail && !detail.input && !detail.output;
@@ -93,16 +95,16 @@ export function ContentTab({ accessToken, traceId, traceRef, span }: ContentTabP
           )}
         </div>
       )}
-      {detailQuery.isLoading && <div className={STATUS_TEXT}>Loading span…</div>}
-      {detailQuery.isError && <div className={STATUS_TEXT}>Could not load span: {detailQuery.error.message}</div>}
+      {detailQuery.isLoading && <div className={STATUS_TEXT}>{t("traces.loadingSpan")}</div>}
+      {detailQuery.isError && <div className={STATUS_TEXT}>{t("traces.couldLoadSpanValue0", { value0: detailQuery.error.message })}</div>}
       {detail?.input ? (
-        <PayloadSection title="Input" raw={detail.input} content={detail.input_ui} span={span} role="input" />
+        <PayloadSection title={t("datasets.input")} raw={detail.input} content={detail.input_ui} span={span} role="input" />
       ) : null}
       {detail?.output ? (
-        <PayloadSection title="Output" raw={detail.output} content={detail.output_ui} span={span} role="output" />
+        <PayloadSection title={t("datasets.output")} raw={detail.output} content={detail.output_ui} span={span} role="output" />
       ) : null}
       {empty && span.status !== "error" && (
-        <div className="py-12 text-center text-sm text-muted-foreground">No content recorded for this span.</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">{t("traces.contentRecordedSpan")}</div>
       )}
     </div>
   );

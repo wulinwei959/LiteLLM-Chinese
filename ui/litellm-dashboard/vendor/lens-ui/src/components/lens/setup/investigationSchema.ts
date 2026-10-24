@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { Settings } from "../model/types";
 import { normalizeFilters } from "./filters";
 import { initialWatches, isWatch, watchChecks } from "../model/watches";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 const selectionFields = {
   source: z.enum(["traces", "requests", "both"]),
@@ -36,14 +37,14 @@ function validateFilters(draft: InvestigationDraft, ctx: z.RefinementCtx) {
     if (!filter.key.trim()) {
       ctx.addIssue({
         code: "custom",
-        message: "Choose a key and value for every condition, or remove it",
+        message: lensTranslate("setup.chooseKeyValueEvery"),
         path: ["selection", "filters", index, "key"],
       });
     }
     if (!filter.value.trim()) {
       ctx.addIssue({
         code: "custom",
-        message: "Choose a key and value for every condition, or remove it",
+        message: lensTranslate("setup.chooseKeyValueEvery"),
         path: ["selection", "filters", index, "value"],
       });
     }
@@ -54,7 +55,7 @@ function validateManualSelection(draft: InvestigationDraft, ctx: z.RefinementCtx
   if (draft.manualSelection && !draft.selection.execution_ids.length) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose at least one run or turn off individual selection",
+      message: lensTranslate("setup.chooseLeastOneRun"),
       path: ["selection", "execution_ids"],
     });
   }
@@ -66,7 +67,7 @@ function validateSampleWindow(draft: InvestigationDraft, ctx: z.RefinementCtx) {
   if (!Number.isInteger(hours) || hours < 1) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose a time range of at least 1 hour",
+      message: lensTranslate("setup.chooseTimeRangeLeast"),
       path: ["selection", "lookback_hours"],
     });
   }
@@ -74,14 +75,14 @@ function validateSampleWindow(draft: InvestigationDraft, ctx: z.RefinementCtx) {
   if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose a sampling percentage greater than 0 and up to 100",
+      message: lensTranslate("setup.chooseSamplingPercentageGreater"),
       path: ["selection", "sample_percent"],
     });
   }
   if (selection.sample_size != null && (!Number.isInteger(selection.sample_size) || selection.sample_size < 1)) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose a positive maximum or leave it blank for no limit",
+      message: lensTranslate("setup.choosePositiveMaximumLeave"),
       path: ["selection", "sample_size"],
     });
   }
@@ -91,7 +92,7 @@ function validateBudgetAndSchedule(draft: InvestigationDraft, ctx: z.RefinementC
   if (!Number.isFinite(draft.budget) || draft.budget <= 0) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose a monthly limit greater than zero",
+      message: lensTranslate("setup.chooseMonthlyLimitGreater"),
       path: ["budget"],
     });
   }
@@ -100,7 +101,7 @@ function validateBudgetAndSchedule(draft: InvestigationDraft, ctx: z.RefinementC
   if (draft.repeat && intervalInvalid) {
     ctx.addIssue({
       code: "custom",
-      message: "Choose a repeat interval of at least 1 minute",
+      message: lensTranslate("setup.chooseRepeatIntervalLeast"),
       path: ["interval"],
     });
   }
@@ -111,7 +112,7 @@ function validateExpectations(draft: InvestigationDraft, ctx: z.RefinementCtx) {
   if (!draft.context.trim() && !checks.length && !draft.watching.length) {
     ctx.addIssue({
       code: "custom",
-      message: "Describe the expected behavior or pick something to watch for",
+      message: lensTranslate("setup.describeExpectedBehaviorPick"),
       path: ["context"],
     });
   }
@@ -119,7 +120,7 @@ function validateExpectations(draft: InvestigationDraft, ctx: z.RefinementCtx) {
     if (check.instruction.trim() && check.instruction.trim().length < 3) {
       ctx.addIssue({
         code: "custom",
-        message: "Use at least three characters for each check",
+        message: lensTranslate("setup.useLeastThreeCharacters"),
         path: ["questions", index, "instruction"],
       });
     }
@@ -223,7 +224,7 @@ export function investigationSettings(
   initial: Settings | undefined,
   model: string,
 ): Settings {
-  const suggestedName = draft.questions[0]?.instruction || draft.context.split("\n")[0] || "Investigation";
+  const suggestedName = draft.questions[0]?.instruction || draft.context.split("\n")[0] || lensTranslate("investigations.investigation");
   return {
     ...initial,
     ...draft.selection,

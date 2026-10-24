@@ -8,6 +8,7 @@ import { FoldChevron } from "../../ui/Collapse";
 import { Markdown } from "./Markdown";
 import { MessageList } from "./Messages";
 import type { FieldEntry, FieldNode } from "./payload";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 const LONG_TEXT_CHARS = 90;
 const OPEN_CHILD_LIMIT = 8;
@@ -79,6 +80,7 @@ function Children({ node, depth, mono }: { node: FieldNode; depth: number; mono:
 }
 
 function FieldRow({ name, node, depth, mono }: { name: string; node: FieldNode; depth: number; mono: boolean }) {
+  const t = useLensTranslate();
   const [open, setOpen] = useState(() => startsOpen(node, depth));
   const monoValue = mono || ID_KEY.test(name);
   if ((node.kind === "scalar" || node.kind === "text") && isInline(node)) {
@@ -99,7 +101,7 @@ function FieldRow({ name, node, depth, mono }: { name: string; node: FieldNode; 
       <button
         type="button"
         aria-expanded={open}
-        aria-label={`${open ? "Collapse" : "Expand"} ${name}`}
+        aria-label={`${open ? t("traces.collapse") : t("traces.expand")} ${name}`}
         onClick={() => setOpen((value) => !value)}
         className={cn(
           ROW,

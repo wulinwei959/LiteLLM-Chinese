@@ -27,6 +27,7 @@ import { RunPicker } from "./RunPicker";
 import { FindingsTab } from "./FindingsTab";
 import { CriteriaTab } from "./CriteriaTab";
 import { HistoryTab } from "./HistoryTab";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 export type InvestigationDetailProps = InvestigationIntents & {
   readonly lens: Lens;
@@ -49,6 +50,7 @@ export function InvestigationDetail({
   onReviewFinding,
   ...intents
 }: InvestigationDetailProps) {
+  const t = useLensTranslate();
   const isLive = useTracesLive();
   const { section, setSection } = useSectionRoute();
   const { setKind, setStatus } = useFindingFilters();
@@ -73,7 +75,7 @@ export function InvestigationDetail({
       <section className="min-w-0 space-y-5">
         <div className="flex flex-wrap justify-between gap-3 border-b pb-4">
           <div className="min-w-0">
-            <p className="lens-section-label mb-2 font-mono text-[10px] text-muted-foreground">Investigation</p>
+            <p className="lens-section-label mb-2 font-mono text-[10px] text-muted-foreground">{t("investigations.investigation")}</p>
             <h2 className="font-mono text-lg font-medium break-words">{lens.settings.name}</h2>
             <InvestigationSummary lens={lens} />
           </div>
@@ -81,8 +83,8 @@ export function InvestigationDetail({
             {isLive && (
               <CopyButton
                 variant="action"
-                label="Copy for agent"
-                copiedLabel="Command copied"
+                label={t("investigations.copyAgent")}
+                copiedLabel={t("investigations.commandCopied")}
                 value={investigationHandoffText(getProxyBaseUrl(), lens.id, batchId, getAuthHeaderName())}
               />
             )}
@@ -112,25 +114,22 @@ export function InvestigationDetail({
         <Tabs value={section} onValueChange={setSection} key={lens.id}>
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b">
             <TabsList variant="line">
-              <TabsTrigger value="findings">Findings</TabsTrigger>
-              <TabsTrigger value="checks">Criteria</TabsTrigger>
+              <TabsTrigger value="findings">{t("tabs.findings")}</TabsTrigger>
+              <TabsTrigger value="checks">{t("investigations.criteria")}</TabsTrigger>
               <TabsTrigger value="runs">{sourceLabels[batchSettings?.source ?? "traces"]}</TabsTrigger>
-              <TabsTrigger value="activity">History</TabsTrigger>
+              <TabsTrigger value="activity">{t("investigations.history")}</TabsTrigger>
             </TabsList>
           </div>
           {snapshot.error && (
             <p role="alert" className="text-sm text-destructive">
-              Could not load this run.{" "}
+              {t("investigations.couldLoadRun")}{" "}
               <Button variant="link" onClick={snapshot.refetch}>
-                Retry
-              </Button>
+                {t("investigations.retry")}</Button>
             </p>
           )}
           {missingSnapshot && section !== "activity" && (
             <p className="text-sm text-muted-foreground">
-              This older batch predates saved result snapshots. Its findings remain available under All accumulated
-              findings.
-            </p>
+              {t("investigations.olderBatchPredatesSaved")}</p>
           )}
           <FindingsTab lens={lens} job={job} findings={batchFindings}>
             <FindingPanel

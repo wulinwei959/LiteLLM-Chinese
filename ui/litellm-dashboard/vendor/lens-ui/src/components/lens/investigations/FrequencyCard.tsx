@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { dayLabel, type Frequency, percentLabel } from "../model/frequency";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const AFFECTED = "var(--finding-affected)";
 const UNAFFECTED = "var(--finding-unaffected)";
@@ -9,34 +10,33 @@ const TICK = { fontSize: 11, fill: "var(--muted-foreground)" };
 const TOP_RADIUS: [number, number, number, number] = [3, 3, 0, 0];
 
 function Legend() {
+  const t = useLensTranslate();
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] text-muted-foreground">
       <span className="flex items-center gap-1.5">
         <span aria-hidden="true" className="size-2 rounded-sm bg-finding-affected" />
-        Affected
-      </span>
+        {t("investigations.affected")}</span>
       <span className="flex items-center gap-1.5">
         <span aria-hidden="true" className="size-2 rounded-sm bg-finding-unaffected" />
-        Unaffected
-      </span>
+        {t("investigations.unaffected")}</span>
     </div>
   );
 }
 
 export function FrequencyCard({ frequency }: { frequency: Frequency }) {
+  const t = useLensTranslate();
   const percent = percentLabel(frequency.affected, frequency.total);
   const data = frequency.days.map((d) => ({ ...d, label: dayLabel(d.day) }));
   const range = data.length > 0 ? `${data[0].label} – ${data[data.length - 1].label}` : null;
   return (
-    <section aria-label="Frequency" className="space-y-4 rounded-lg border border-t-2 border-t-indigo-400 bg-card p-4">
+    <section aria-label={t("investigations.frequency")} className="space-y-4 rounded-lg border border-t-2 border-t-indigo-400 bg-card p-4">
       <div aria-live="polite" className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="lens-section-label mb-2 font-mono text-[10px] font-medium text-muted-foreground">Frequency</h3>
+          <h3 className="lens-section-label mb-2 font-mono text-[10px] font-medium text-muted-foreground">{t("investigations.frequency")}</h3>
           <p className="text-3xl leading-tight font-medium tracking-tight text-primary tabular-nums">
             {percent ?? "—"}
             <span className="mt-2 block font-mono text-[11px] font-normal tracking-normal text-muted-foreground">
-              {frequency.affected} of {frequency.total} traces affected
-            </span>
+              {t("investigations.value0Value1TracesAffected", { value0: frequency.affected, value1: frequency.total })}</span>
           </p>
         </div>
         {range && (
@@ -67,10 +67,10 @@ export function FrequencyCard({ frequency }: { frequency: Frequency }) {
                   boxShadow: "var(--finding-ring)",
                 }}
               />
-              <Bar dataKey="affected" name="Affected" stackId="traces" fill={AFFECTED} isAnimationActive={false} />
+              <Bar dataKey="affected" name={t("investigations.affected")} stackId="traces" fill={AFFECTED} isAnimationActive={false} />
               <Bar
                 dataKey="unaffected"
-                name="Unaffected"
+                name={t("investigations.unaffected")}
                 stackId="traces"
                 fill={UNAFFECTED}
                 radius={TOP_RADIUS}
@@ -82,7 +82,7 @@ export function FrequencyCard({ frequency }: { frequency: Frequency }) {
       )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Legend />
-        <p className="text-xs text-muted-foreground">Share of traces sampled by the reporting investigations</p>
+        <p className="text-xs text-muted-foreground">{t("investigations.shareTracesSampledReporting")}</p>
       </div>
     </section>
   );

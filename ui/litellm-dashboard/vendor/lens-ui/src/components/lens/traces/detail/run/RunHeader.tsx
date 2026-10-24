@@ -33,22 +33,25 @@ import type { SignalFlag, Trace } from "../../types";
 import { SignalPills } from "../../ui/SignalPills";
 import { fmtMs, fmtTok, traceAgentNames, traceDisplayName } from "../../utils";
 import styles from "../../TraceAppearance.module.css";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
 type Summary = Trace["summary"];
 
 function statusLabel(failed: boolean, errors: number): string {
-  if (errors === 0) return failed ? "Errors recorded" : "Recorded";
-  const stepErrors = `${errors.toLocaleString()} step ${errors === 1 ? "error" : "errors"}`;
-  return failed ? stepErrors : `Recorded · ${stepErrors}`;
+  if (errors === 0) return failed ? lensTranslate("traces.errorsRecorded") : lensTranslate("traces.recorded");
+  const stepErrors = lensTranslate("traces.value0StepValue1", { value0: errors.toLocaleString(), value1: errors === 1 ? "error" : "errors" });
+  return failed ? stepErrors : lensTranslate("traces.recordedValue0", { value0: stepErrors });
 }
 
 /** One pill for how the run went, so a failure is stated once instead of as a pill, a stat and a red icon. */
 function StatusPill({ summary }: { summary: Summary }) {
+  const t = useLensTranslate();
   const failed = summary.status === "error";
   const label = statusLabel(failed, summary.error_count);
   return (
     <span
-      title="Status of received spans. More spans may still arrive."
+      title={t("traces.statusReceivedSpansMore")}
       className={cn(
         "inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-[11px] font-medium",
         failed ? "bg-destructive/10 text-destructive" : "bg-trace-ok text-trace-ok-glyph",
@@ -62,11 +65,12 @@ function StatusPill({ summary }: { summary: Summary }) {
 
 /** Duration, steps, tokens and cost as one quiet line; cost is left out when nothing was priced. */
 function Totals({ summary }: { summary: Summary }) {
+  const t = useLensTranslate();
   const cost = runCost(summary);
   const parts = [
     fmtMs(summary.duration_ms),
-    `${summary.span_count.toLocaleString()} steps`,
-    `${fmtTok(summary.input_tokens + summary.output_tokens)} tokens`,
+    t("traces.value0Steps", { value0: summary.span_count.toLocaleString() }),
+    t("traces.value0Tokens", { value0: fmtTok(summary.input_tokens + summary.output_tokens) }),
     cost && [cost.label, cost.partial?.long].filter(Boolean).join(" · "),
   ].filter(Boolean);
   return <span className="font-mono text-[11px] text-foreground tabular-nums">{parts.join(" · ")}</span>;
@@ -89,6 +93,7 @@ function RunIcon({ summary }: { summary: Summary }) {
 
 /** "Copy for agent" up front; the link and dataset actions sit behind its chevron. */
 function RunActions({ summary, handoff }: { summary: Summary; handoff: TraceHandoff }) {
+  const t = useLensTranslate();
   const canAddToDataset = useCanAddToDataset();
   const [copied, setCopied] = useState(false);
   const [addingToDataset, setAddingToDataset] = useState(false);
@@ -103,12 +108,12 @@ function RunActions({ summary, handoff }: { summary: Summary; handoff: TraceHand
           onClick={async () => setCopied(await copyToClipboard(handoff.text, handoff.copied))}
         >
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-          {copied ? "Copied" : "Copy for agent"}
+          {copied ? t("onboarding.copied") : t("investigations.copyAgent")}
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="outline" size="icon-xs" className="h-7 w-7 shadow-none" aria-label="More run actions" />
+              <Button variant="outline" size="icon-xs" className="h-7 w-7 shadow-none" aria-label={t("traces.moreRunActions")} />
             }
           >
             <ChevronDown className="size-3" />
@@ -116,17 +121,15 @@ function RunActions({ summary, handoff }: { summary: Summary; handoff: TraceHand
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem
               onClick={() =>
-                void copyToClipboard(traceShareUrl(traceRefOf(summary), window.location), "Trace link copied")
+                void copyToClipboard(traceShareUrl(traceRefOf(summary), window.location), t("traces.traceLinkCopied"))
               }
             >
               <Link />
-              Copy link
-            </DropdownMenuItem>
+              {t("traces.copyLink")}</DropdownMenuItem>
             {canAddToDataset && (
               <DropdownMenuItem onClick={() => setAddingToDataset(true)}>
                 <DatabaseZap />
-                Add run to dataset
-              </DropdownMenuItem>
+                {t("traces.addRunDataset")}</DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -168,12 +171,13 @@ export function RunHeader({
   onLiveChange,
   signals = [],
 }: RunHeaderProps) {
+  const t = useLensTranslate();
   const { summary } = trace;
   return (
     <header className={cn(styles.detailHeader, "flex shrink-0 flex-col gap-2 border-b px-4 pt-3 pb-2.5")}>
       <div className="flex min-w-0 items-center gap-2">
         {!embedded && (
-          <Button variant="ghost" size="icon-xs" onClick={onBack} aria-label="Back to runs">
+          <Button variant="ghost" size="icon-xs" onClick={onBack} aria-label={t("traces.backRuns")}>
             <ArrowLeft className="size-4" />
           </Button>
         )}
@@ -181,7 +185,7 @@ export function RunHeader({
         <h1 className="min-w-0 shrink truncate font-mono text-sm font-semibold">{traceDisplayName(summary)}</h1>
         {summary.source?.user && <RunUser user={summary.source.user} />}
         {summary.source && <RunSourceLink source={summary.source} />}
-        <IdChip value={summary.trace_id} label="Copy trace ID" />
+        <IdChip value={summary.trace_id} label={t("traces.copyTraceID")} />
         <div className="ml-auto flex shrink-0 items-center gap-0.5">
           <Button
             variant="ghost"
@@ -189,8 +193,8 @@ export function RunHeader({
             aria-pressed={live}
             disabled={!canLive}
             onClick={onLiveChange}
-            aria-label="Live updates"
-            title={live ? "Live: refreshes every 30s. Click to pause." : "Paused. Click to follow live."}
+            aria-label={t("traces.liveUpdates")}
+            title={live ? t("traces.liveRefreshesEvery30s") : t("traces.pausedClickFollowLive")}
             className="font-mono text-[11px] text-muted-foreground"
           >
             <span
@@ -199,15 +203,14 @@ export function RunHeader({
                 live ? "bg-trace-ok-glyph motion-safe:animate-pulse" : "bg-muted-foreground/50",
               )}
             />
-            Live
-          </Button>
+            {t("traces.live")}</Button>
           <Button
             variant="ghost"
             size="icon-xs"
             disabled={refreshing}
             onClick={onRefresh}
-            aria-label="Refresh run"
-            title="Refresh"
+            aria-label={t("traces.refreshRun")}
+            title={t("traces.refresh")}
             className="mr-1 text-muted-foreground"
           >
             <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
@@ -220,17 +223,15 @@ export function RunHeader({
         {signals.length > 0 && <SignalPills flags={signals} showScore className="flex-wrap" />}
         <Totals summary={summary} />
         <TabsList
-          aria-label="Trace view"
+          aria-label={t("traces.traceView")}
           className={cn(styles.viewTabs, "ml-auto rounded-md border bg-background/70 group-data-horizontal/tabs:h-7")}
         >
           <TabsTrigger value="steps" className="gap-1.5 rounded-sm px-2.5 font-mono text-[11px]">
             <ListTree className="size-3.5" />
-            Steps
-          </TabsTrigger>
+            {t("traces.steps")}</TabsTrigger>
           <TabsTrigger value="thread" className="gap-1.5 rounded-sm px-2.5 font-mono text-[11px]">
             <MessagesSquare className="size-3.5" />
-            Thread
-          </TabsTrigger>
+            {t("traces.thread")}</TabsTrigger>
         </TabsList>
       </div>
     </header>

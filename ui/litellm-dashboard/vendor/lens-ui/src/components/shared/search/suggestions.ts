@@ -1,5 +1,6 @@
 import { type FieldClause, languageFields, languageOps, parseQuery, type QueryLanguage } from "./language";
 import type { FieldValues } from "./valueSource";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 export interface Suggestion<F extends string> {
   readonly id: string;
@@ -79,7 +80,7 @@ function fieldMenu<F extends string>(
     items: fields
       .filter((field) => language.fields[field].group === heading)
       .map((field) => ({
-        id: `field:${field}`,
+        id: lensTranslate("sharedSearch.fieldValue0", { value0: field }),
         label: field,
         field,
         from,
@@ -104,7 +105,7 @@ function valueMenu<F extends string>(
     .filter((value) => value.toLowerCase().includes(needle))
     .slice(0, MAX_VALUES)
     .map((value) => ({
-      id: `value:${value}`,
+      id: lensTranslate("sharedSearch.valueValue0", { value0: value }),
       label: value,
       field: clause.field,
       from,

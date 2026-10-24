@@ -15,21 +15,23 @@ import { type Lens, type Finding, type Job } from "../../model/types";
 import { ownedFindingKey } from "../FindingDetails";
 import { FINDING_PANEL_WIDTH_KEY } from "../../storage";
 import { useFindingFilters, useFindingRoute } from "../../route";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 const priorityColors = { high: "bg-destructive", medium: "bg-warning", low: "bg-muted-foreground" };
 function emptyFindingTitle(active: boolean, scanned: boolean, status?: string) {
-  if (status === "failed" || status === "cancelled") return "No findings from this run";
-  if (active) return "Your findings will appear here";
-  if (status === "completed") return "No matching findings from this run";
-  return scanned ? "No matching findings" : "Ready for the first analysis";
+  if (status === "failed" || status === "cancelled") return lensTranslate("investigations.findingsRun");
+  if (active) return lensTranslate("investigations.findingsAppear");
+  if (status === "completed") return lensTranslate("investigations.matchingFindingsRun");
+  return scanned ? lensTranslate("investigations.matchingFindings") : lensTranslate("investigations.readyFirstAnalysis");
 }
 
 function emptyFindingDescription(active: boolean, job?: Job) {
-  if (active) return "Lens is reviewing the selected activity.";
+  if (active) return lensTranslate("investigations.lensReviewingSelectedActivity");
   if (job?.status === "completed" && (job.coverage.reused ?? 0) > 0) {
-    return "Previously reviewed traces were reused. Choose All accumulated findings to see earlier findings.";
+    return lensTranslate("investigations.previouslyReviewedTracesReused");
   }
-  return "Findings reflect the runs analyzed, not a guarantee about all activity.";
+  return lensTranslate("investigations.findingsReflectRunsAnalyzed");
 }
 
 export interface FindingsTabProps {
@@ -41,6 +43,7 @@ export interface FindingsTabProps {
 }
 
 export function FindingsTab({ lens, job, findings, children }: FindingsTabProps) {
+  const t = useLensTranslate();
   const { kind, setKind, status, setStatus } = useFindingFilters();
   const { findingId, setFindingId } = useFindingRoute();
   const active = activeJob(lens.jobs) !== undefined;
@@ -59,30 +62,28 @@ export function FindingsTab({ lens, job, findings, children }: FindingsTabProps)
     >
       <TabsContent value="findings" className="pt-4 space-y-4">
         <div className="lens-toolbar flex flex-wrap items-center justify-between gap-3 rounded-md border p-2">
-          <div className="flex gap-1" aria-label="Finding category">
+          <div className="flex gap-1" aria-label={t("investigations.findingCategory")}>
             <Button size="sm" variant={kind === "issue" ? "secondary" : "ghost"} onClick={() => setKind("issue")}>
-              Needs attention ({openCount("issue")})
-            </Button>
+              {t("investigations.needsAttentionValue0", { value0: openCount("issue") })}</Button>
             <Button size="sm" variant={kind === "pattern" ? "secondary" : "ghost"} onClick={() => setKind("pattern")}>
-              Patterns ({openCount("pattern")})
-            </Button>
+              {t("investigations.patternsValue0", { value0: openCount("pattern") })}</Button>
           </div>
           <select
-            aria-label="Finding status"
+            aria-label={t("investigations.findingStatus")}
             className="rounded-md border bg-background px-2 py-1 font-mono text-[11px]"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           >
-            <option value="open">Open</option>
-            <option value="resolved">Resolved</option>
-            <option value="dismissed">Dismissed</option>
-            <option value="all">All statuses</option>
+            <option value="open">{t("datasets.open")}</option>
+            <option value="resolved">{t("investigations.resolved")}</option>
+            <option value="dismissed">{t("investigations.dismissed")}</option>
+            <option value="all">{t("investigations.allStatuses")}</option>
           </select>
         </div>
         <p className="text-xs text-muted-foreground">
           {kind === "issue"
-            ? "Problems worth investigating, highest priority first."
-            : "Useful behavior and trends. These do not necessarily need a fix."}
+            ? t("investigations.problemsWorthInvestigatingHighest")
+            : t("investigations.usefulBehaviorTrendsNecessarily")}
         </p>
         <div className="lens-panel divide-y overflow-hidden rounded-lg border bg-card">
           {visible.map((f) => (
@@ -99,15 +100,15 @@ export function FindingsTab({ lens, job, findings, children }: FindingsTabProps)
               <span
                 data-state={f.priority ?? "medium"}
                 className={cn("mt-1 size-2 shrink-0 rounded-full", priorityColors[f.priority ?? "medium"])}
-                aria-label={`${f.priority} priority`}
+                aria-label={t("investigations.value0Priority", { value0: f.priority })}
               />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{f.title}</p>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
                 <p className="mt-2 font-mono text-[10px] text-muted-foreground">
                   {f.occurrences?.length ?? 0} affected {f.occurrences?.length === 1 ? "trace" : "traces"} ·{" "}
-                  {(f.investigation_runs?.length ?? 0) > 1 && `${f.investigation_runs.length} investigation runs · `}
-                  {f.kind === "issue" ? `${f.priority} priority` : "Pattern"}
+                  {(f.investigation_runs?.length ?? 0) > 1 && t("investigations.value0InvestigationRuns", { value0: f.investigation_runs.length })}
+                  {f.kind === "issue" ? t("investigations.value0Priority", { value0: f.priority }) : t("investigations.pattern")}
                 </p>
               </div>
               <ChevronRight className="size-4 shrink-0 text-muted-foreground" />

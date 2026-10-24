@@ -1,4 +1,5 @@
 import type { EvalRun, Summary } from "./types";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export type GateTone = "passed" | "failed" | "pending" | "errored";
 
@@ -12,13 +13,13 @@ export const passedLabel = (summary: Summary): string =>
   `${summary.passed}/${summary.total}`;
 
 export const deltaLabel = (summary: Summary): string => {
-  if (summary.baseline_run_id === null) return "No baseline";
+  if (summary.baseline_run_id === null) return lensTranslate("evals.noBaseline");
   if (summary.regressions.length === 0 && summary.fixed.length === 0)
-    return "No change";
+    return lensTranslate("evals.change");
   const parts = [];
   if (summary.regressions.length)
-    parts.push(`${summary.regressions.length} regressed`);
-  if (summary.fixed.length) parts.push(`${summary.fixed.length} fixed`);
+    parts.push(lensTranslate("evals.value0Regressed", { value0: summary.regressions.length }));
+  if (summary.fixed.length) parts.push(lensTranslate("evals.value0Fixed", { value0: summary.fixed.length }));
   return parts.join(" · ");
 };
 

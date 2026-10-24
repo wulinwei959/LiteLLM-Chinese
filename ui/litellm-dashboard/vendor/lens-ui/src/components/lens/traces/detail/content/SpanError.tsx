@@ -17,8 +17,10 @@ import type { ErrorSource } from "../../tree";
 import type { Span, SpanErrorPage } from "../../types";
 import { errorSource } from "../../utils";
 import { TextBody } from "./PayloadBody";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../../host/lensTranslate";
 
-const ERROR_SOURCE_LABEL: Record<ErrorSource, string> = { tool: "Tool", model: "Model", litellm: "LiteLLM" };
+const ERROR_SOURCE_LABEL: Record<ErrorSource, string> = { get tool() { return lensTranslate("traces.tool"); }, get model() { return lensTranslate("investigations.model"); }, litellm: "LiteLLM" };
 const TRACEBACK_MARKER = "Traceback (most recent call last):";
 
 /** Exporters record `repr(exc)` + traceback with no separator; keep the exception line. */
@@ -29,11 +31,12 @@ export const errorHeadline = (error: string): string =>
 const errorReason = (headline: string): string => /^([A-Za-z_][\w.]*)\(/.exec(headline)?.[1] ?? "error";
 
 export function ErrorBlock({ span }: { span: Span }) {
+  const t = useLensTranslate();
   const source = errorSource(span);
   if (!source) return null;
-  const headline = errorHeadline(span.error ?? "") || "Span reported an error status.";
+  const headline = errorHeadline(span.error ?? "") || t("traces.spanReportedErrorStatus");
   return (
-    <section aria-label="Error" className="rounded-lg border border-destructive/40 bg-destructive/5 px-3.5 py-3">
+    <section aria-label={t("investigations.error")} className="rounded-lg border border-destructive/40 bg-destructive/5 px-3.5 py-3">
       <div className="flex items-center gap-2 text-sm font-semibold text-destructive">
         <TriangleAlert className="size-4" />
         {ERROR_SOURCE_LABEL[source]} · {errorReason(headline)}
@@ -54,6 +57,7 @@ interface DiagnosticProps {
 
 /** The full stored error, fetched only on request and paged section by section. */
 export function StoredDiagnostic({ accessToken, traceId, traceRef, span }: DiagnosticProps) {
+  const t = useLensTranslate();
   const traces = useTracesApi(accessToken);
   const [opened, setOpened] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -69,29 +73,25 @@ export function StoredDiagnostic({ accessToken, traceId, traceRef, span }: Diagn
   const query = useQuery(queryOptions);
   const failure = query.error ? classifyTraceReadFailure(query.error) : null;
   return (
-    <section aria-label="Stored diagnostic" className="flex flex-col items-start gap-2">
-      {span.error_truncated && <p className="text-xs text-muted-foreground">Error preview truncated</p>}
+    <section aria-label={t("traces.storedDiagnostic")} className="flex flex-col items-start gap-2">
+      {span.error_truncated && <p className="text-xs text-muted-foreground">{t("traces.errorPreviewTruncated")}</p>}
       {!opened && (
         <Button variant="outline" size="xs" onClick={() => setOpened(true)}>
-          View stored diagnostic
-        </Button>
+          {t("traces.viewStoredDiagnostic")}</Button>
       )}
       {opened && query.isPending && (
         <p role="status" className="text-xs text-muted-foreground">
-          Loading diagnostic…
-        </p>
+          {t("traces.loadingDiagnostic")}</p>
       )}
       {failure && (
         <div role="alert" className="flex items-center gap-2 text-xs">
-          Could not load diagnostic: {failure.message}
+          {t("traces.couldLoadDiagnostic")}{failure.message}
           {isRetryableTraceRead(failure) || !cursor ? (
             <Button variant="outline" size="xs" onClick={() => query.refetch()}>
-              Retry
-            </Button>
+              {t("investigations.retry")}</Button>
           ) : (
             <Button variant="outline" size="xs" onClick={() => setCursor(null)}>
-              Back to beginning
-            </Button>
+              {t("traces.backBeginning")}</Button>
           )}
         </div>
       )}
@@ -101,19 +101,16 @@ export function StoredDiagnostic({ accessToken, traceId, traceRef, span }: Diagn
             <TextBody text={query.data.message} format="code" />
           </div>
           <p className="text-xs text-muted-foreground">
-            {cursor ? "Continuation" : "Beginning"} of stored diagnostic ({query.data.total_chars.toLocaleString()}{" "}
-            characters)
-          </p>
+            {cursor ? t("traces.continuation") : t("traces.beginning")} of stored diagnostic ({query.data.total_chars.toLocaleString()}{" "}
+            {t("traces.characters")}</p>
           <div className="flex gap-2">
             {query.data.next_cursor && (
               <Button variant="outline" size="xs" onClick={() => setCursor(query.data.next_cursor)}>
-                Next section
-              </Button>
+                {t("investigations.nextSection")}</Button>
             )}
             {cursor && (
               <Button variant="outline" size="xs" onClick={() => setCursor(null)}>
-                Back to beginning
-              </Button>
+                {t("traces.backBeginning")}</Button>
             )}
           </div>
         </>

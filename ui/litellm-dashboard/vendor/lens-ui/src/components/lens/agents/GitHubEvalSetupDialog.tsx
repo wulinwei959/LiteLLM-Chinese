@@ -18,6 +18,7 @@ import {
 import type { EvalDefinition } from "../evals/runs/types";
 import { getRequestBaseUrl } from "../../../lib/http/runtime";
 import { VerifyGitHub, WorkflowSetup } from "./GitHubWorkflowSetup";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 interface GitHubEvalSetupDialogProps {
   readonly agent: string;
@@ -28,17 +29,15 @@ interface GitHubEvalSetupDialogProps {
 }
 
 export function GitHubEvalSetupDialog(props: GitHubEvalSetupDialogProps) {
+  const t = useLensTranslate();
   return (
     <Dialog open onOpenChange={props.onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-2xl">
         <DialogHeader className="pr-6">
           <DialogTitle className="flex items-center gap-2">
-            <Github aria-hidden="true" className="size-5" /> Set up PR evals
-          </DialogTitle>
+            <Github aria-hidden="true" className="size-5" /> {t("agents.setUpPREvals")}</DialogTitle>
           <DialogDescription>
-            Run evals for <span className="font-medium text-foreground">{props.agent}</span> on pull requests and get a
-            Lens report in GitHub
-          </DialogDescription>
+            {t("agents.runEvals")}<span className="font-medium text-foreground">{props.agent}</span> {t("agents.pullRequestsGetLens")}</DialogDescription>
         </DialogHeader>
         <GitHubSetup {...props} />
       </DialogContent>
@@ -53,6 +52,7 @@ function GitHubSetup({
   onOpenChange,
   onOpenDatasets,
 }: GitHubEvalSetupDialogProps) {
+  const t = useLensTranslate();
   const evals = useEvals();
   const datasets = useDatasets();
   const [step, setStep] = useState<"repository" | "workflow" | "verify">("repository");
@@ -79,9 +79,9 @@ function GitHubSetup({
   const prepare = () => {
     const repo = parseGitHubRepository(repository);
     if (!repo.ok) return setError(repo.error);
-    if (!selected) return setError("Choose or create an eval for this agent");
+    if (!selected) return setError(t("agents.chooseCreateEvalAgent"));
     const dataset = datasets.data?.find((item) => item.id === selected.spec.dataset_id);
-    if (!dataset) return setError("The eval’s dataset is unavailable. Check dataset access and try again");
+    if (!dataset) return setError(t("agents.evalSDatasetUnavailable"));
     const parsedTask = task.trim() ? parseTaskImport(task) : null;
     if (parsedTask && !parsedTask.ok) return setError(parsedTask.error);
     try {
@@ -95,7 +95,7 @@ function GitHubSetup({
         ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
       ) {
         return setError(
-          "Enter a reachable HTTPS Lens URL without credentials or query parameters. GitHub-hosted runners cannot reach localhost",
+          t("agents.enterReachableHTTPSLens"),
         );
       }
       setTarget({
@@ -111,7 +111,7 @@ function GitHubSetup({
       setError(null);
       setStep("workflow");
     } catch {
-      setError("Enter the HTTPS address of your Lens deployment");
+      setError(t("agents.enterHTTPSAddressLens"));
     }
   };
   if (creating)
@@ -127,7 +127,7 @@ function GitHubSetup({
     );
   return (
     <div className="min-w-0 space-y-5">
-      <ol aria-label="GitHub setup progress" className="flex items-center gap-3 border-b pb-4 text-xs">
+      <ol aria-label={t("agents.gitHubSetupProgress")} className="flex items-center gap-3 border-b pb-4 text-xs">
         {(["repository", "workflow", "verify"] as const).map((item, index) => (
           <li
             key={item}
@@ -141,9 +141,9 @@ function GitHubSetup({
             </span>
             {
               {
-                repository: "Choose repository",
-                workflow: "Set up workflow",
-                verify: "Verify PR eval",
+                repository: t("agents.chooseRepository2"),
+                workflow: t("agents.setUpWorkflow"),
+                verify: t("agents.verifyPREval"),
               }[item]
             }
           </li>
@@ -157,28 +157,26 @@ function GitHubSetup({
             prepare();
           }}
         >
-          <Field label="GitHub repository" id="github-repository">
+          <Field label={t("agents.gitHubRepository")} id="github-repository">
             <Input
               id="github-repository"
               autoFocus
-              placeholder="owner/repository or GitHub URL"
+              placeholder={t("agents.ownerRepositoryGitHubURL")}
               value={repository}
               readOnly={Boolean(connectedRepository)}
               onChange={(event) => setRepoInput(event.target.value)}
               required
             />
           </Field>
-          <Field label="Eval to run" id="github-eval">
+          <Field label={t("agents.evalRun")} id="github-eval">
             {evals.isPending ? (
               <p role="status" className="text-sm text-muted-foreground">
-                Loading evals…
-              </p>
+                {t("agents.loadingEvals")}</p>
             ) : evals.error ? (
               <p role="alert" className="text-sm text-destructive">
-                Could not load evals{" "}
+                {t("agents.couldLoadEvals")}{" "}
                 <Button type="button" variant="link" onClick={() => void evals.refetch()}>
-                  Try again
-                </Button>
+                  {t("agents.tryAgain")}</Button>
               </p>
             ) : selected ? (
               <Select value={selected.name} onValueChange={(name) => name && setEvalName(name)}>
@@ -195,23 +193,21 @@ function GitHubSetup({
               </Select>
             ) : (
               <div className="rounded-lg border border-dashed p-4 text-sm">
-                <p className="font-medium">Add an eval for {agent}</p>
-                <p className="mt-1 text-muted-foreground">Choose saved cases and the checks this agent should pass</p>
+                <p className="font-medium">{t("agents.addEvalValue0", { value0: agent })}</p>
+                <p className="mt-1 text-muted-foreground">{t("agents.chooseSavedCasesChecks")}</p>
                 {datasets.data?.length ? (
                   <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => setCreating(true)}>
-                    Create eval
-                  </Button>
+                    {t("agents.createEval")}</Button>
                 ) : onOpenDatasets ? (
                   <Button type="button" variant="outline" size="sm" className="mt-3" onClick={onOpenDatasets}>
-                    Create a dataset first
-                  </Button>
+                    {t("agents.createDatasetFirst")}</Button>
                 ) : (
-                  <p className="mt-2 text-muted-foreground">Create a dataset in Datasets, then return here</p>
+                  <p className="mt-2 text-muted-foreground">{t("agents.createDatasetDatasetsReturn")}</p>
                 )}
               </div>
             )}
           </Field>
-          <Field label="Lens URL" id="github-lens-url">
+          <Field label={t("agents.lensURL")} id="github-lens-url">
             <Input
               id="github-lens-url"
               type="url"
@@ -221,13 +217,12 @@ function GitHubSetup({
               required
             />
             <p className="text-xs text-muted-foreground">
-              Use the Lens API address your GitHub runner can reach, without /ui
-            </p>
+              {t("agents.useLensAPIAddress")}</p>
           </Field>
           <details className="rounded-lg border p-3 text-sm">
-            <summary className="cursor-pointer font-medium">Agent runtime</summary>
+            <summary className="cursor-pointer font-medium">{t("agents.agentRuntime")}</summary>
             <div className="mt-3 space-y-3">
-              <Field label="Existing eval task (optional)" id="github-task">
+              <Field label={t("agents.existingEvalTaskOptional")} id="github-task">
                 <Input
                   id="github-task"
                   placeholder="my_agent.evals:task"
@@ -235,11 +230,9 @@ function GitHubSetup({
                   onChange={(event) => setTask(event.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  An async Python function that accepts a Lens case and returns its trace. Leave blank to get an adapter
-                  template
-                </p>
+                  {t("agents.asyncPythonFunctionAccepts")}</p>
               </Field>
-              <Field label="Install and start your agent (optional)" id="github-install">
+              <Field label={t("agents.installStartAgentOptional")} id="github-install">
                 <Input
                   id="github-install"
                   placeholder="e.g. npm ci"
@@ -247,17 +240,15 @@ function GitHubSetup({
                   onChange={(event) => setInstallCommand(event.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Runs before the eval in GitHub Actions. Add runtime credentials as GitHub secrets
-                </p>
+                  {t("agents.runsBeforeEvalGitHub")}</p>
               </Field>
             </div>
           </details>
           {datasets.error && (
             <p role="alert" className="text-sm text-destructive">
-              Could not load datasets{" "}
+              {t("agents.couldLoadDatasets")}{" "}
               <Button type="button" variant="link" onClick={() => void datasets.refetch()}>
-                Try again
-              </Button>
+                {t("agents.tryAgain")}</Button>
             </p>
           )}
           {error && (
@@ -267,10 +258,9 @@ function GitHubSetup({
           )}
           <div className="flex items-center justify-between gap-4 border-t pt-4">
             <p className="max-w-xs text-xs text-muted-foreground">
-              Runs in your repository’s GitHub Actions. You review and commit the setup files
-            </p>
+              {t("agents.runsRepositorySGitHub")}</p>
             <Button type="submit" disabled={!selected || datasets.isPending || Boolean(evals.error || datasets.error)}>
-              Continue <ArrowRight aria-hidden="true" className="size-4" />
+              {t("agents.continue")}<ArrowRight aria-hidden="true" className="size-4" />
             </Button>
           </div>
         </form>
@@ -289,8 +279,7 @@ function GitHubSetup({
             )}
             <div className="flex justify-between border-t pt-4">
               <Button variant="ghost" onClick={() => setStep(step === "verify" ? "workflow" : "repository")}>
-                <ArrowLeft aria-hidden="true" className="size-4" /> Back
-              </Button>
+                <ArrowLeft aria-hidden="true" className="size-4" /> {t("agents.back")}</Button>
               {step === "workflow" && (
                 <Button
                   onClick={() => {
@@ -298,7 +287,7 @@ function GitHubSetup({
                     void runs.refetch();
                   }}
                 >
-                  I’ve added the workflow <ArrowRight aria-hidden="true" className="size-4" />
+                  {t("agents.iVeAddedWorkflow")}<ArrowRight aria-hidden="true" className="size-4" />
                 </Button>
               )}
             </div>

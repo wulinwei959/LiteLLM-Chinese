@@ -5,6 +5,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { cn } from "../../../../lib/cva.config";
 
 import { grownGroups, share, type Conclusion } from "../../model/live";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
 
 const FLASH_MS = 150;
 
@@ -35,11 +36,12 @@ export const ConclusionsPanel = memo(function ConclusionsPanel({
   selected: string | null;
   onSelect: (key: string | null) => void;
 }) {
+  const t = useLensTranslate();
   const flashing = useFlashing(groups);
-  if (!groups.length) return <p className="text-xs text-muted-foreground">No observations flagged yet.</p>;
+  if (!groups.length) return <p className="text-xs text-muted-foreground">{t("investigations.observationsFlaggedYet")}</p>;
   return (
     <div className="flex flex-col gap-1.5">
-      <ol aria-label="Observations by check" className="flex flex-col gap-1.5">
+      <ol aria-label={t("investigations.observationsCheck")} className="flex flex-col gap-1.5">
         {groups.map((group) => {
           const active = selected === group.key;
           return (
@@ -81,7 +83,7 @@ export const ConclusionsPanel = memo(function ConclusionsPanel({
                       {group.count}
                     </span>
                     {group.noted > 0 && (
-                      <span className="text-xs tabular-nums text-muted-foreground">{group.noted} noted</span>
+                      <span className="text-xs tabular-nums text-muted-foreground">{t("investigations.value0Noted", { value0: group.noted })}</span>
                     )}
                   </span>
                 </span>

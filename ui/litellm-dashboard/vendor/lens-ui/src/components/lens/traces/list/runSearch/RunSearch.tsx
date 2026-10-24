@@ -9,8 +9,7 @@ import { SearchBox } from "../../../../shared/search/SearchBox";
 import { itemValues } from "../../../../shared/search/valueSource";
 import { RUN_INDEX, RUN_QUERY } from "./runQuery";
 import { runQueryCommand } from "./runSql";
-
-const COPY_HINT = "Copy this list as a curl call to the trace query API, which takes full SQL over the same rows.";
+import { useLensTranslate } from "../../../../../host/useLensTranslate";
 
 interface RunSearchProps {
   value: string;
@@ -24,6 +23,7 @@ interface RunSearchProps {
 
 /** The runs list query box: free text plus `key:value` filters over run fields, copyable as a trace query. */
 export function RunSearch({ value, onChange, runs, range, busy = false }: RunSearchProps) {
+  const t = useLensTranslate();
   const command = useMemo(() => runQueryCommand(range), [range]);
   return (
     <SearchBox.Root
@@ -31,16 +31,16 @@ export function RunSearch({ value, onChange, runs, range, busy = false }: RunSea
       values={itemValues(RUN_INDEX, runs)}
       value={value}
       onValueChange={onChange}
-      label="Search runs"
+      label={t("traces.searchRuns")}
       className="h-10 min-w-0 basis-full sm:w-auto sm:basis-0"
     >
       <SearchBox.Input
         className="h-full overflow-hidden rounded-none border-0 px-3 whitespace-nowrap focus-within:bg-muted/40 focus-within:ring-0 dark:bg-transparent"
-        placeholder="Search input or trace ID"
+        placeholder={t("traces.searchInputTraceID")}
         busy={busy}
       />
       <SearchBox.Suggestions>
-        <SearchBox.CopyCommand title={COPY_HINT} command={command} />
+        <SearchBox.CopyCommand title={t("shared.copyCurlListHint")} command={command} />
       </SearchBox.Suggestions>
     </SearchBox.Root>
   );

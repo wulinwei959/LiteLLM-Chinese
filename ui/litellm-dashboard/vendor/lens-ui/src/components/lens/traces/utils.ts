@@ -4,6 +4,7 @@
  */
 import { type ErrorSource, type SpanTreeState, type TreeRow } from "./tree";
 import type { Span, TraceMessage, TraceSummary, TraceToolCall } from "./types";
+import { lensTranslate } from "../../../host/lensTranslate";
 
 /* ------------------------------------------------------------------ */
 /*  Formatting                                                         */
@@ -15,7 +16,7 @@ export const traceAgentNames = (trace: TraceSummary): readonly string[] =>
 export const fmtMs = (ms: number): string => {
   if (ms >= 60_000) return `${(ms / 60_000).toFixed(1)}m`;
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-  return `${Math.max(ms, 0).toFixed(ms < 10 ? 1 : 0)}ms`;
+  return lensTranslate("evals.value0ms", { value0: Math.max(ms, 0).toFixed(ms < 10 ? 1 : 0) });
 };
 
 export const fmtTok = (n: number): string => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
@@ -328,7 +329,7 @@ const parseLangchainMessage = (value: object): TraceMessage | null => {
 };
 
 const parseToolCall = (call: unknown): TraceToolCall => {
-  const unknownCall = { name: "Tool call", args: call };
+  const unknownCall = { name: lensTranslate("traces.toolCall"), args: call };
   if (!call || typeof call !== "object") return unknownCall;
   const fn: unknown = Reflect.get(call, "function");
   const source = fn && typeof fn === "object" ? fn : call;

@@ -10,6 +10,8 @@ import { shortSha } from "./format";
 import { CriticalTag } from "./RunBadges";
 import { compareSteps, unchangedSteps, type ComparedStep } from "./steps";
 import type { CaseDiff, RunCase, TrialSteps } from "./types";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export interface CaseCompareProps {
   readonly diff: CaseDiff;
@@ -28,6 +30,7 @@ export function CaseCompare({
   candidateVersion,
   regressed,
 }: CaseCompareProps) {
+  const t = useLensTranslate();
   const baseline = useRunCase(baselineRunId, diff.case_id);
   const candidate = useRunCase(runId, diff.case_id);
   const [trialIndex, setTrialIndex] = useState(0);
@@ -47,7 +50,7 @@ export function CaseCompare({
     ? diagnose(candidate.data, baseline.data ?? null)
     : null;
   return (
-    <section aria-label="Case comparison" className="flex flex-col">
+    <section aria-label={t("evals.caseComparison")} className="flex flex-col">
       <header className="border-b px-3 py-2">
         <div className="flex items-center gap-2">
           <h4 className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
@@ -59,18 +62,18 @@ export function CaseCompare({
           </span>
         </div>
         <p
-          aria-label="Diagnosis"
+          aria-label={t("evals.diagnosis")}
           className={cn(
             "mt-1 font-mono text-xs",
             regressed ? "text-destructive" : "text-success",
           )}
         >
-          {regressed ? "✕ regressed: " : "✓ fixed: "}
+          {regressed ? t("evals.regressed") : t("evals.fixed")}
           {diagnosis
             ? diagnosis.headline
             : candidate.error
               ? candidate.error.message
-              : "reading traces…"}
+              : t("evals.readingTraces")}
         </p>
         {diagnosis && diagnosis.details.length > 1 && (
           <ul className="mt-0.5 font-mono text-[11px] text-muted-foreground">
@@ -96,7 +99,7 @@ export function CaseCompare({
           steps={compared.baseline}
           state={
             baselineRunId === null
-              ? "No baseline run"
+              ? t("evals.baselineRun")
               : baseline.error?.message ??
                 (baseline.isLoading ? "loading" : null)
           }
@@ -125,10 +128,11 @@ function TrialTabs({
   selected: number;
   onSelect: (index: number) => void;
 }) {
+  const t = useLensTranslate();
   return (
     <div
       role="tablist"
-      aria-label="Trials"
+      aria-label={t("evals.trials")}
       className="flex border-b font-mono text-xs"
     >
       {trials.map((trial, index) => {
@@ -153,8 +157,7 @@ function TrialTabs({
                 failed ? "bg-destructive" : "bg-success",
               )}
             />
-            trial {trial.trial}
-          </button>
+            {t("evals.trialValue0", { value0: trial.trial })}</button>
         );
       })}
     </div>
@@ -171,8 +174,9 @@ interface TraceProps {
 }
 
 function Trace({ title, version, runCase, trial, steps, state }: TraceProps) {
+  const t = useLensTranslate();
   return (
-    <section aria-label={`${title} trace`} className="min-w-0">
+    <section aria-label={t("evals.value0Trace", { value0: title })} className="min-w-0">
       <h5 className="flex items-center gap-2 border-b bg-muted/30 px-3 py-1 font-mono text-[11px]">
         <span className="text-foreground uppercase">{title}</span>
         {version && (
@@ -189,7 +193,7 @@ function Trace({ title, version, runCase, trial, steps, state }: TraceProps) {
       </h5>
       {trial && trial.checks.length > 0 && (
         <ul
-          aria-label={`${title} checks`}
+          aria-label={t("evals.value0Checks", { value0: title })}
           className="flex flex-wrap gap-x-3 border-b px-3 py-1 font-mono text-[11px]"
         >
           {trial.checks.map((check) => (
@@ -206,8 +210,7 @@ function Trace({ title, version, runCase, trial, steps, state }: TraceProps) {
       )}
       {trial?.error && (
         <p className="border-b px-3 py-1 font-mono text-[11px] text-warning">
-          error: {trial.error}
-        </p>
+          {t("evals.errorValue0", { value0: trial.error })}</p>
       )}
       {state ? (
         <p className="px-3 py-3 font-mono text-xs text-muted-foreground">
@@ -227,11 +230,11 @@ const CHANGE_ROW: Record<ComparedStep["change"], string> = {
 };
 
 function Waterfall({ steps }: { steps: readonly ComparedStep[] }) {
+  const t = useLensTranslate();
   if (steps.length === 0)
     return (
       <p className="px-3 py-3 font-mono text-xs text-muted-foreground">
-        No tool calls
-      </p>
+        {t("evals.toolCalls")}</p>
     );
   const start = Math.min(...steps.map(({ step }) => step.start_ns));
   const end = Math.max(
@@ -239,7 +242,7 @@ function Waterfall({ steps }: { steps: readonly ComparedStep[] }) {
   );
   const span = Math.max(end - start, 1);
   return (
-    <ol aria-label="Tool calls" className="font-mono text-xs">
+    <ol aria-label={t("datasets.toolCalls")} className="font-mono text-xs">
       {steps.map(({ step, change }, index) => {
         const duration = Math.max(step.end_ns - step.start_ns, 0);
         return (
@@ -299,6 +302,6 @@ function Waterfall({ steps }: { steps: readonly ComparedStep[] }) {
 
 const formatDuration = (ns: number): string => {
   const ms = ns / 1e6;
-  if (ms < 1000) return `${Math.round(ms)}ms`;
+  if (ms < 1000) return lensTranslate("evals.value0ms", { value0: Math.round(ms) });
   return `${(ms / 1000).toFixed(ms < 10_000 ? 2 : 1)}s`;
 };

@@ -6,6 +6,7 @@ import anthropicLogo from "../../../../public/assets/logos/anthropic.svg";
 import openaiLogo from "../../../../public/assets/logos/openai_small.svg";
 import { briefMarkdown } from "../model/findings";
 import { type IssueBrief } from "../model/types";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 const AGENTS = [
   { name: "Claude Code", logo: anthropicLogo.src },
@@ -29,10 +30,11 @@ const markdown: Components = {
 };
 
 export function IssueBrief({ title, brief }: { title: string; brief: IssueBrief }) {
+  const t = useLensTranslate();
   const [copied, setCopied] = useState<string | null>(null);
   const source = briefMarkdown(title, brief);
   const copy = async (agent: string) => {
-    if (await copyToClipboard(source, `Copied for ${agent}`)) {
+    if (await copyToClipboard(source, t("investigations.copiedValue0", { value0: agent }))) {
       setCopied(agent);
       window.setTimeout(() => setCopied(null), COPIED_RESET_MS);
     }
@@ -42,13 +44,13 @@ export function IssueBrief({ title, brief }: { title: string; brief: IssueBrief 
       <div className="lens-toolbar flex h-10 items-center gap-2 border-b border-border px-3">
         <FileCode2 aria-hidden="true" className="size-3.5 text-violet-500 dark:text-violet-300" />
         <span className="font-mono text-xs text-muted-foreground">issue-brief.md</span>
-        <span className="mr-1 ml-auto font-mono text-[10px] text-muted-foreground">Copy for</span>
+        <span className="mr-1 ml-auto font-mono text-[10px] text-muted-foreground">{t("investigations.copy")}</span>
         {AGENTS.map((agent) => (
           <button
             key={agent.name}
             type="button"
             onClick={() => void copy(agent.name)}
-            aria-label={`Copy for ${agent.name}`}
+            aria-label={t("investigations.copyValue0", { value0: agent.name })}
             className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-background px-2 text-xs font-medium hover:bg-muted"
           >
             {copied === agent.name ? (

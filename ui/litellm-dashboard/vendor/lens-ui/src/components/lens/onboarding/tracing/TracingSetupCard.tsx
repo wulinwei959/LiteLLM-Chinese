@@ -30,25 +30,27 @@ import { STANDALONE_DOCS_URL, useLensHost } from "../../../../host/LensHost";
 import { SetupAgentPrompt } from "../SetupAgentPrompt";
 import { projectTracingInstructions } from "../setupPrompt";
 import { connectionAuthStatus } from "../connectionErrors";
+import { useLensTranslate } from "../../../../host/useLensTranslate";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 const COPIED_RESET_MS = 1500;
 const DOCS_URL = "https://docs.litellm.ai/docs/proxy/lens";
 const DEPLOYMENT_URL = `${DOCS_URL}/deployment`;
 const EXAMPLE_MODEL = "openai/gpt-6.1-sol";
 const SAMPLE_TRACE_POLL_MS = 1000;
-export const TRACING_KEY_REQUEST = { name: "Agent tracing" } as const;
+export const TRACING_KEY_REQUEST = { get name() { return lensTranslate("onboarding.agentTracing"); } } as const;
 const SAMPLE_TRACE_POLL_ATTEMPTS = 15;
 
 type Installer = "pip" | "uv";
 
 const PY_INSTALL: Record<Installer, (packages: string) => string> = {
   pip: (packages) => `pip install ${packages}`,
-  uv: (packages) => `uv add ${packages}`,
+  uv: (packages) => lensTranslate("onboarding.uvAddValue0", { value0: packages }),
 };
 
 export const tracingEnvSnippet = (proxyUrl: string, tracingKey: string | null = null): string =>
   [
-    `export LITELLM_TRACING_KEY="${tracingKey ?? "<your tracing key>"}"`,
+    `export LITELLM_TRACING_KEY="${tracingKey ?? lensTranslate("onboarding.yourTracingKey")}"`,
     `export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="${proxyUrl}/v1/traces"`,
     `export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer $LITELLM_TRACING_KEY"`,
     'export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"',
@@ -64,19 +66,19 @@ export const codingAgentPrompt = (
   standalone = false,
 ): string =>
   [
-    `Send this ${guide.label} project's OpenTelemetry traces to ${standalone ? "Lens" : "LiteLLM"}.`,
+    lensTranslate("onboarding.sendValue0ProjectS", { value0: guide.label, value1: standalone ? "Lens" : "LiteLLM" }),
     standalone
-      ? "Keep the existing model configuration, authentication, and application behavior. Never hardcode keys. Keep model calls pointed at the existing provider and read the dedicated tracing key from LITELLM_TRACING_KEY. Lens receives traces, not model requests."
-      : "Keep the existing model configuration, authentication, and application behavior. Never hardcode keys. Read the model key from LITELLM_API_KEY and the dedicated tracing key from LITELLM_TRACING_KEY.",
-    "Set the trace destination wherever this project loads environment variables:",
+      ? lensTranslate("onboarding.keepExistingModelConfiguration")
+      : lensTranslate("onboarding.keepTheExistingModelConfigurationAuthenticationAndApplicatio"),
+    lensTranslate("onboarding.setTraceDestinationWherever"),
     tracingEnvSnippet(traceUrl),
-    guide.install ?? `Install and enable the ${guide.plugin?.label}: ${guide.plugin?.url}`,
+    guide.install ?? lensTranslate("onboarding.installEnableValue0Value1", { value0: guide.plugin?.label, value1: guide.plugin?.url }),
     guide.plugin?.instruction ??
-      "Initialize OpenTelemetry before creating the agent. If the app already configures a tracer provider, keep it and point its exporter at the destination above instead.",
-    "Adapt this example to the existing application, replacing research_agent with the agent's name:",
+      lensTranslate("onboarding.initializeOpenTelemetryBeforeCreating"),
+    lensTranslate("onboarding.adaptExampleExistingApplication"),
     standalone ? standaloneFrameworkSnippet(guide, traceUrl) : frameworkSnippet(guide, proxyUrl, model, traceUrl),
     guide.note ?? "",
-    "Run the agent once and confirm its named run appears in Lens > Traces.",
+    lensTranslate("onboarding.runAgentOnceConfirm"),
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -88,9 +90,9 @@ export const maskSecret = (secret: string): string =>
   secret.length > 10 ? `${secret.slice(0, 5)}${"•".repeat(16)}${secret.slice(-4)}` : "•".repeat(secret.length);
 
 export const otlpEndpoints = (proxyUrl: string): readonly (readonly [string, string, boolean])[] => [
-  ["Traces endpoint", `${proxyUrl}/v1/traces`, true],
-  ["Auth header", "Authorization: Bearer <Lens tracing key>", true],
-  ["Protocol", "OTLP/HTTP (protobuf or JSON)", false],
+  [lensTranslate("onboarding.tracesEndpoint"), `${proxyUrl}/v1/traces`, true],
+  [lensTranslate("onboarding.authHeader"), "Authorization: Bearer <Lens tracing key>", true],
+  [lensTranslate("onboarding.protocol"), lensTranslate("onboarding.oTLPHTTPProtobufJSON"), false],
 ];
 
 export function CodeBlock({
@@ -98,7 +100,7 @@ export function CodeBlock({
   display = code,
   tabs,
   wrap = false,
-  copyLabel = "Copy",
+  copyLabel = lensTranslate("onboarding.copy"),
 }: {
   code: string;
   display?: string;
@@ -106,6 +108,7 @@ export function CodeBlock({
   wrap?: boolean;
   copyLabel?: string;
 }) {
+  const t = useLensTranslate();
   const [copied, setCopied] = useState(false);
   useTimeout(() => setCopied(false), copied ? COPIED_RESET_MS : null);
   const copy = async () => setCopied(await copyToClipboard(code));
@@ -118,8 +121,8 @@ export function CodeBlock({
           variant="ghost"
           size="icon-sm"
           onClick={() => void copy()}
-          aria-label={copied ? "Copied to clipboard" : copyLabel}
-          title={copied ? "Copied to clipboard" : copyLabel}
+          aria-label={copied ? t("onboarding.copiedClipboard") : copyLabel}
+          title={copied ? t("onboarding.copiedClipboard") : copyLabel}
           className="ml-auto size-11 text-muted-foreground hover:text-foreground sm:size-8"
         >
           {copied ? <Check aria-hidden className="size-3.5" /> : <Copy aria-hidden className="size-3.5" />}
@@ -193,10 +196,10 @@ type SendState =
   | { kind: "failed"; message: string };
 
 const SEND_LABEL: Record<Exclude<SendState["kind"], "ready">, string> = {
-  idle: "Send a test trace",
-  sending: "Sending…",
-  waiting: "Waiting for it to arrive…",
-  failed: "Send a test trace",
+  get idle() { return lensTranslate("onboarding.sendTestTrace"); },
+  get sending() { return lensTranslate("onboarding.sending"); },
+  get waiting() { return lensTranslate("onboarding.waitingArrive"); },
+  get failed() { return lensTranslate("onboarding.sendTestTrace"); },
 };
 
 const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -223,6 +226,7 @@ function SendTestTrace({
   tracingKey: string | null;
   onOpenTrace: (trace: TraceSummary) => void;
 }) {
+  const t = useLensTranslate();
   const [state, setState] = useState<SendState>({ kind: "idle" });
   const send = async () => {
     setState({ kind: "sending" });
@@ -239,7 +243,7 @@ function SendTestTrace({
       };
       await client.post("/v1/traces", options);
     } catch {
-      setState({ kind: "failed", message: "Could not send the test trace." });
+      setState({ kind: "failed", message: t("onboarding.couldSendTestTrace") });
       return;
     }
     setState({ kind: "waiting" });
@@ -249,7 +253,7 @@ function SendTestTrace({
         ? { kind: "ready", trace }
         : {
             kind: "failed",
-            message: "Sent, but it has not shown up yet. Check again in a moment.",
+            message: t("onboarding.sentShownUpYet"),
           },
     );
   };
@@ -257,10 +261,9 @@ function SendTestTrace({
     return (
       <div className="flex flex-wrap items-center gap-3">
         <span role="status" className="inline-flex items-center gap-1 text-sm text-emerald-700 dark:text-emerald-400">
-          <Check aria-hidden="true" className="size-4" /> Test trace received
-        </span>
+          <Check aria-hidden="true" className="size-4" /> {t("onboarding.testTraceReceived")}</span>
         <Button onClick={() => onOpenTrace(state.trace)}>
-          View trace <ArrowRight aria-hidden="true" className="size-4" />
+          {t("investigations.viewTrace")}<ArrowRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
     );
@@ -292,26 +295,25 @@ function TraceReceipt({
   checking: boolean;
   onCheck: () => void;
 }) {
+  const t = useLensTranslate();
   const missingAfterCheck = checked && !checking && !connected;
   return (
-    <section className="mt-6 border-t pt-6" aria-label="Trace connection status">
+    <section className="mt-6 border-t pt-6" aria-label={t("onboarding.traceConnectionStatus")}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p role="status" className="text-sm font-medium">
-            {connected ? "Traces connected" : "Waiting for your first trace"}
+            {connected ? t("onboarding.tracesConnected") : t("onboarding.waitingFirstTrace")}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">Run your agent once. Its traces will appear here.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("onboarding.runAgentOnceTraces")}</p>
         </div>
         <Button variant="outline" onClick={onCheck} disabled={checking}>
           {checking && <Loader2 aria-hidden="true" className="size-4 animate-spin" />}
-          {checking ? "Checking…" : "Check for traces"}
+          {checking ? t("onboarding.checking") : t("onboarding.checkTraces")}
         </Button>
       </div>
       {missingAfterCheck && (
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          No traces received yet. Check the Lens URL and tracing key in your agent’s environment, then check its logs
-          for export errors.
-        </p>
+          {t("onboarding.tracesReceivedYetCheck")}</p>
       )}
     </section>
   );
@@ -330,6 +332,7 @@ export function TracingKey({
   name?: string;
   compact?: boolean;
 }) {
+  const t = useLensTranslate();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
   const [pendingActivation, setPendingActivation] = useState(false);
@@ -347,7 +350,7 @@ export function TracingKey({
       setPendingActivation(!result.active);
       onCreated(result.key, result.active);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not create a key");
+      setError(cause instanceof Error ? cause.message : t("onboarding.couldCreateKey"));
     } finally {
       setCreating(false);
     }
@@ -357,19 +360,15 @@ export function TracingKey({
       <div className="space-y-2">
         {pendingActivation && (
           <p role="status" className="text-sm text-muted-foreground">
-            Key saved. Lens has not confirmed it yet. Once the service is connected, keys sync within 30 seconds.
-          </p>
+            {t("onboarding.keySavedLensConfirmed")}</p>
         )}
-        <CodeBlock code={tracingKey} display={maskSecret(tracingKey)} tabs={<FileLabel>Your tracing key</FileLabel>} />
+        <CodeBlock code={tracingKey} display={maskSecret(tracingKey)} tabs={<FileLabel>{t("onboarding.tracingKey2")}</FileLabel>} />
         <p className="text-sm text-muted-foreground">
           {compact ? (
-            "Copy and save this key before leaving. It only sends traces; keep your model credentials unchanged."
+            t("onboarding.copySaveKeyBefore")
           ) : (
             <>
-              Hidden for safety. Copy copies the full key, and the environment step below includes it. This key can only
-              send traces and check delivery. Your agent still needs its own key for model calls. Save this key before
-              leaving the page.
-            </>
+              {t("onboarding.hiddenSafetyCopyCopies")}</>
           )}
         </p>
       </div>
@@ -383,9 +382,8 @@ export function TracingKey({
         ) : (
           <KeyRound aria-hidden="true" className="size-4" />
         )}
-        Generate tracing key
-      </Button>
-      <span className="text-sm text-muted-foreground">Use a dedicated Lens key for tracing.</span>
+        {t("onboarding.generateTracingKey")}</Button>
+      <span className="text-sm text-muted-foreground">{t("onboarding.useDedicatedLensKey")}</span>
       {error && (
         <p role="alert" className="text-sm text-destructive">
           {error}
@@ -396,6 +394,7 @@ export function TracingKey({
 }
 
 function EndpointValue({ value }: { value: string }) {
+  const t = useLensTranslate();
   const [copied, setCopied] = useState(false);
   useTimeout(() => setCopied(false), copied ? COPIED_RESET_MS : null);
   const copy = async () => setCopied(await copyToClipboard(value));
@@ -403,7 +402,7 @@ function EndpointValue({ value }: { value: string }) {
     <button
       type="button"
       onClick={() => void copy()}
-      aria-label={`Copy ${value}`}
+      aria-label={t("agents.copyValue0", { value0: value })}
       className="group inline-flex min-w-0 items-center gap-2 text-left font-mono text-xs text-foreground"
     >
       <span className="break-all">{value}</span>
@@ -417,13 +416,13 @@ function EndpointValue({ value }: { value: string }) {
 }
 
 export function Endpoints({ proxyUrl, children }: { proxyUrl: string; children?: React.ReactNode }) {
+  const t = useLensTranslate();
   return (
     <section className="mt-6" aria-labelledby="otel-endpoints">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 id="otel-endpoints" className="inline-flex items-center gap-2 text-sm font-medium">
           <img src={otelLogo.src} alt="" className="size-5" />
-          Connection details
-        </h3>
+          {t("onboarding.connectionDetails")}</h3>
         {children}
       </div>
       <dl className="mt-3 grid gap-x-6 gap-y-3 rounded-md border bg-muted/30 p-4 md:grid-cols-2">
@@ -441,8 +440,8 @@ export function Endpoints({ proxyUrl, children }: { proxyUrl: string; children?:
 }
 
 function setupTitle(enabled: boolean, connected: boolean) {
-  if (!enabled) return "Set up Lens";
-  return connected ? "Connect another agent" : "Connect your agent";
+  if (!enabled) return lensTranslate("onboarding.setUpLens");
+  return connected ? lensTranslate("onboarding.connectAnotherAgent") : lensTranslate("onboarding.connectAgent");
 }
 
 interface ConnectAgentProps {
@@ -484,46 +483,42 @@ function EnableTracing({
   checking: boolean;
   onCheck: () => void;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const configured = connection.configured ?? connection.connected;
   if (standalone)
     return (
       <div className="space-y-4">
-        <p className="text-sm font-medium">Check the Lens connection</p>
+        <p className="text-sm font-medium">{t("onboarding.checkLensConnection")}</p>
         <p className="text-sm leading-6 text-muted-foreground">
           {!connection.connected
-            ? "Lens is unavailable. Check the service logs and retry."
+            ? t("onboarding.lensIsUnavailableCheckTheServiceLogsAnd")
             : !connection.status.storage_ready
-              ? "Lens cannot reach its trace storage. Check that ClickHouse is running with the bundled configuration."
-              : "Set LENS_PUBLIC_URL to the address your agents can reach, then restart Lens."}
+              ? t("onboarding.lensCannotReachTrace")
+              : t("onboarding.setLENSPUBLICURL")}
         </p>
         <a href={STANDALONE_DOCS_URL} target="_blank" rel="noreferrer" className="text-sm underline underline-offset-4">
-          Deployment guide
-        </a>
+          {t("onboarding.deploymentGuide")}</a>
         <Button variant="outline" onClick={onCheck} disabled={checking}>
-          {checking ? "Checking…" : "Check setup"}
+          {checking ? t("onboarding.checking") : t("onboarding.checkSetup")}
         </Button>
       </div>
     );
-  let message = "Lens is connected. Set its public tracing address so your agents know where to send traces.";
+  let message = t("onboarding.lensConnectedSetPublic");
   if (!configured) {
-    message =
-      "Enable Lens in your existing Helm or Docker deployment. It runs alongside LiteLLM and stores your traces.";
+    message = t("onboarding.enableLensExistingHelmDocker");
   } else if (!connection.connected) {
-    message =
-      "Lens is configured, but LiteLLM cannot reach it. Check that the Lens service is running and both services use the same service secret.";
+    message = t("onboarding.lensConfiguredLiteLLMUnreachable");
   } else if (!connection.status.storage_ready) {
-    message = "Lens is connected, but its trace storage is unavailable. Check the ClickHouse connection.";
+    message = t("onboarding.lensConnectedTracingStorageUnavailable");
   }
   return (
     <div className="space-y-4">
-      <p className="text-sm font-medium">{configured ? "Check the Lens connection" : "Install Lens"}</p>
+      <p className="text-sm font-medium">{configured ? t("onboarding.checkLensConnection") : t("onboarding.installLens")}</p>
       <p className="text-sm leading-6 text-muted-foreground">{message}</p>
       {!configured && (
         <p className="text-sm text-muted-foreground">
-          Use a Lens release supported by this LiteLLM integration. The deployment connects the services and supplies
-          trace storage.
-        </p>
+          {t("onboarding.useLensReleaseSupported")}</p>
       )}
       <div className="flex flex-wrap gap-3">
         <a
@@ -532,7 +527,7 @@ function EnableTracing({
           target="_blank"
           rel="noreferrer"
         >
-          Helm setup <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          {t("onboarding.helmSetup")}<ArrowUpRight aria-hidden="true" className="size-3.5" />
         </a>
         <a
           className="inline-flex items-center gap-1 text-sm underline underline-offset-4"
@@ -540,12 +535,12 @@ function EnableTracing({
           target="_blank"
           rel="noreferrer"
         >
-          Docker setup <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          {t("onboarding.dockerSetup")}<ArrowUpRight aria-hidden="true" className="size-3.5" />
         </a>
       </div>
       <Button variant="outline" onClick={onCheck} disabled={checking}>
         {checking && <Loader2 aria-hidden="true" className="size-4 animate-spin" />}
-        {checking ? "Checking…" : "Check setup"}
+        {checking ? t("onboarding.checking") : t("onboarding.checkSetup")}
       </Button>
     </div>
   );
@@ -558,7 +553,7 @@ export function CodingAgentSetup({
   model = EXAMPLE_MODEL,
   instructions: providedInstructions,
   onCopied,
-  heading = "Connect your project",
+  heading = lensTranslate("onboarding.connectProject"),
   embedded = false,
 }: {
   proxyUrl: string;
@@ -570,6 +565,7 @@ export function CodingAgentSetup({
   heading?: string;
   embedded?: boolean;
 }) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const [copied, setCopied] = useState<string | null>(null);
   const instructions =
@@ -600,7 +596,7 @@ export function CodingAgentSetup({
         </div>
         <div className={embedded ? "pt-3" : "p-4"}>
           <p className="text-[13px] leading-5 text-muted-foreground">
-            {embedded ? "Paste the setup instructions into your coding agent, inside your project." : "Paste these instructions into Claude Code or Codex in your project to connect its traces to Lens."}
+            {embedded ? t("onboarding.pasteSetupInstructionsCoding") : t("onboarding.pasteInstructionsClaudeCode")}
           </p>
           <Button className="mt-3 min-h-11 sm:min-h-9" onClick={() => void copy()}>
             {copied === instructions ? (
@@ -608,10 +604,10 @@ export function CodingAgentSetup({
             ) : (
               <Copy aria-hidden="true" className="size-4" />
             )}
-            {copied === instructions ? "Copied" : "Copy setup instructions"}
+            {copied === instructions ? t("onboarding.copied") : t("onboarding.copySetupInstructions")}
           </Button>
           <details className="mt-3">
-            <summary className="w-fit cursor-pointer text-xs text-muted-foreground">View instructions</summary>
+            <summary className="w-fit cursor-pointer text-xs text-muted-foreground">{t("onboarding.viewInstructions")}</summary>
             <pre className="mt-3 max-h-56 overflow-auto whitespace-pre-wrap rounded-md bg-muted/40 p-3 text-xs leading-5">
               <code>{instructions}</code>
             </pre>
@@ -638,6 +634,7 @@ function ConnectAgent({
   tracingKey,
   setTracingKey,
 }: ConnectAgentProps) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const proxyUrl = getProxyBaseUrl().replace(/\/$/, "");
   const connection = useLensService(accessToken);
@@ -654,28 +651,25 @@ function ConnectAgent({
     return (
       <p role="status" className="text-sm text-muted-foreground">
         {connection.isPending
-          ? "Checking Lens connection…"
+          ? t("onboarding.checkingLensConnection")
           : standalone
-            ? "Set LENS_PUBLIC_URL to the Lens address your agents can reach, then restart Lens."
-            : "Set LITELLM_LENS_PUBLIC_URL on LiteLLM to the Lens address your agents can reach, then restart LiteLLM."}
+            ? t("onboarding.setLENSPUBLICURLToTheLensAddress")
+            : t("onboarding.setLITELLMLENSPUBLIC")}
       </p>
     );
   return (
     <>
       {!connection.data?.connected && (
         <p role="alert" className="text-sm text-destructive">
-          The Lens service is unavailable. Check the service URL and shared secret.
-        </p>
+          {t("onboarding.lensServiceUnavailableCheck")}</p>
       )}
       {connection.data?.connected && !connection.data.status.storage_ready && (
         <p role="alert" className="text-sm text-destructive">
-          Lens is connected, but ClickHouse is unavailable.
-        </p>
+          {t("onboarding.lensConnectedClickHouseUnavailable")}</p>
       )}
       <div className="mt-6 space-y-2">
         <label id="tracing-framework" className="block text-sm font-medium">
-          Your agent framework
-        </label>
+          {t("onboarding.agentFramework")}</label>
         <Select
           value={framework}
           onValueChange={(value) => {
@@ -699,20 +693,20 @@ function ConnectAgent({
         </Select>
       </div>
 
-      <Step title="Create a tracing key">
+      <Step title={t("onboarding.createTracingKey")}>
         {canMintTracingKey && !readOnly ? (
           <TracingKey accessToken={accessToken} tracingKey={tracingKey} onCreated={setTracingKey} />
         ) : (
           <p className="text-sm text-muted-foreground">
             {standalone
-              ? "Ask your Lens administrator for a dedicated tracing key."
-              : "Ask your proxy admin for a dedicated Lens tracing key."}
+              ? t("onboarding.askLensAdministratorDedicated")
+              : t("onboarding.askProxyAdminDedicated")}
           </p>
         )}
       </Step>
       <div className="mt-6 border-t pt-6">
         {install && (
-          <Step title="Install dependencies">
+          <Step title={t("onboarding.installDependencies")}>
             <CodeBlock
               code={install}
               wrap
@@ -727,9 +721,9 @@ function ConnectAgent({
           </Step>
         )}
         {guide.plugin && (
-          <Step title="Enable the plugin">
+          <Step title={t("onboarding.enablePlugin")}>
             <p className="text-sm leading-6 text-muted-foreground">
-              Install and enable the{" "}
+              {t("onboarding.installEnable")}{" "}
               <a className="underline underline-offset-4" href={guide.plugin.url} target="_blank" rel="noreferrer">
                 {guide.plugin.label}
               </a>
@@ -737,44 +731,42 @@ function ConnectAgent({
             </p>
           </Step>
         )}
-        <Step title="Configure environment">
+        <Step title={t("onboarding.configureEnvironment")}>
           <p className="mb-3 text-sm leading-6 text-muted-foreground">
             {standalone ? (
               <>
-                Tracing uses <code>LITELLM_TRACING_KEY</code>. Keep your agent’s existing provider credentials
-                {guide.existingModel ? (
+                {t("onboarding.tracingUses")}<code>LITELLM_TRACING_KEY</code>{t("onboarding.keepAgentSExisting")}{guide.existingModel ? (
                   "."
                 ) : (
                   <>
-                    ; this example reads <code>{directModelConnection(guide).key}</code>.
+                    {t("onboarding.exampleReads")}<code>{directModelConnection(guide).key}</code>.
                   </>
                 )}
               </>
             ) : tracingKey ? (
               <>
-                Tracing uses the key above. Set <code>LITELLM_API_KEY</code> to a key with model access.
+                {t("onboarding.tracingUsesKeyAbove")}<code>LITELLM_API_KEY</code> to a key with model access.
               </>
             ) : (
               <>
-                Set <code>LITELLM_TRACING_KEY</code> to a Lens tracing key and keep <code>LITELLM_API_KEY</code> for
+                {t("onboarding.set")}<code>LITELLM_TRACING_KEY</code> {t("onboarding.lensTracingKeyKeep")}<code>LITELLM_API_KEY</code> for
                 model calls.
               </>
             )}
           </p>
           <CodeBlock
-            copyLabel="Copy tracing configuration"
+            copyLabel={t("onboarding.copyTracingConfiguration")}
             code={tracingEnvSnippet(traceUrl, tracingKey)}
             display={tracingEnvSnippet(traceUrl, tracingKey && maskSecret(tracingKey))}
-            tabs={<FileLabel>Shell</FileLabel>}
+            tabs={<FileLabel>{t("onboarding.shell")}</FileLabel>}
             wrap
           />
         </Step>
-        <Step title="Run your agent">
+        <Step title={t("onboarding.runAgent")}>
           <p className="mb-3 text-sm leading-6 text-muted-foreground">
-            {guide.existingModel ? "Keep your existing model settings. " : "Save and run this example. "}
-            Replace <code>research_agent</code> with your agent’s name.
-            {!guide.existingModel &&
-              (standalone ? " This example calls the provider directly." : " Use a model configured on this proxy.")}
+            {guide.existingModel ? t("onboarding.keepExistingModelSettings") : t("onboarding.saveRunExample")}
+            {t("onboarding.replace")}<code>research_agent</code> {t("onboarding.agentSName")}{!guide.existingModel &&
+              (standalone ? t("onboarding.exampleCallsProviderDirectly") : t("onboarding.useModelConfiguredProxy"))}
           </p>
           <CodeBlock code={quickstart} tabs={<FileLabel>{guide.fileName}</FileLabel>} wrap />
           {guide.note && <p className="mt-3 text-sm leading-6 text-muted-foreground">{guide.note}</p>}
@@ -782,21 +774,21 @@ function ConnectAgent({
             <div className="mt-3">
               <CodeBlock
                 code={guide.language === "typescript" ? "npx tsx agent.mts" : "python agent.py"}
-                tabs={<FileLabel>Shell</FileLabel>}
+                tabs={<FileLabel>{t("onboarding.shell")}</FileLabel>}
               />
             </div>
           )}
           <a
             href={
               standalone
-                ? `${STANDALONE_DOCS_URL}#record-your-first-trace`
-                : `${DOCS_URL}/first-trace?framework=${guide.id}`
+                ? t("onboarding.value0RecordFirstTrace", { value0: STANDALONE_DOCS_URL })
+                : t("onboarding.value0FirstTraceFramework", { value0: DOCS_URL, value1: guide.id })
             }
             className="mt-3 inline-flex items-center gap-1 text-sm underline underline-offset-4"
             target="_blank"
             rel="noreferrer"
           >
-            View in docs <ArrowUpRight aria-hidden="true" className="size-3.5" />
+            {t("onboarding.viewDocs")}<ArrowUpRight aria-hidden="true" className="size-3.5" />
           </a>
         </Step>
       </div>
@@ -836,6 +828,7 @@ export function TracingSetupFields({
   readOnly = false,
   canMintTracingKey = false,
 }: TracingSetupProps) {
+  const t = useLensTranslate();
   const [framework, setFramework] = useState(FRAMEWORKS[0].id);
   const [installer, setInstaller] = useState<Installer>("pip");
   const [tracingKey, setTracingKey] = useState<string | null>(null);
@@ -849,18 +842,15 @@ export function TracingSetupFields({
   if (connection.isPending)
     return (
       <p role="status" className="text-sm text-muted-foreground">
-        Checking Lens connection…
-      </p>
+        {t("onboarding.checkingLensConnection")}</p>
     );
   if (!connection.data)
     return (
       <div className="space-y-3">
         <p role="alert" className="text-sm text-muted-foreground">
-          Could not check the Lens connection.
-        </p>
+          {t("onboarding.couldCheckLensConnection")}</p>
         <Button variant="outline" onClick={check}>
-          Try again
-        </Button>
+          {t("agents.tryAgain")}</Button>
       </div>
     );
   if (!connection.data.connected || !connection.data.status.storage_ready || !connection.data.url)
@@ -886,6 +876,7 @@ export function TracingSetupFields({
 }
 
 export function TracingSetupCard(props: TracingSetupProps) {
+  const t = useLensTranslate();
   const standalone = useLensHost().surface === "standalone";
   const connection = useLensService(props.accessToken);
   const enabled = Boolean(connection.data?.connected && connection.data.status.storage_ready && connection.data.url);
@@ -900,7 +891,7 @@ export function TracingSetupCard(props: TracingSetupProps) {
           ) : (
             <span aria-hidden="true" className="size-1.5 rounded-full bg-muted-foreground/50" />
           )}
-          {enabled ? "Tracing enabled" : "Setup required"}
+          {enabled ? t("onboarding.tracingEnabled2") : t("onboarding.setupRequired")}
         </span>
         <a
           className="ml-auto inline-flex shrink-0 items-center gap-1 text-sm underline underline-offset-4"
@@ -908,15 +899,15 @@ export function TracingSetupCard(props: TracingSetupProps) {
           target="_blank"
           rel="noreferrer"
         >
-          Docs <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          {t("onboarding.docs")}<ArrowUpRight aria-hidden="true" className="size-3.5" />
         </a>
       </div>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {enabled
           ? standalone
-            ? "Send your agent’s runs to Lens to see its inputs, outputs, and tool calls."
-            : "Send your agent’s runs to LiteLLM to see its inputs, outputs, and tool calls."
-          : "Connect Lens to start recording your agent’s runs."}
+            ? t("onboarding.sendAgentSRuns")
+            : t("onboarding.sendYourAgentSRunsToLiteLLMTo")
+          : t("onboarding.connectLensStartRecording")}
       </p>
       <SetupAgentPrompt goal="tracing" connection={connection.data} />
       <TracingSetupFields {...props} />

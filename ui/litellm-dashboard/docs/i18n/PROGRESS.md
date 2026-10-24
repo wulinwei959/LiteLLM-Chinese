@@ -5281,3 +5281,17 @@ python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2,
 顺手清掉第 531 簇落地时带进门禁的账。`vendor/lens-ui/src/index.ts` 的 `LensTranslate` 从 `./host/useLensTranslate` 导出而类型实际住在 `./host/lensTranslate`，全量 tsc 的 TS2724 由此而来，改从 `lensTranslate` 导出（连带 `lensTranslate`、`registerLensTranslator`），全量归零。`scripts/lens-localize.mjs` 两处 ESLint error 实弹修复：`add` 的 `shape` 参数并进选项包（max-params 5→4，调用点 12 处同步改 `{ shape: "…", … }`），排序比较器提成 `byFileThenLine`（no-nested-ternary）；四条预算超额（no-console 13→11、complexity 141→139、no-large-inline-object-arg 482→476、no-long-condition-chain 207→200，均为 531 簇落地时未对账）也由该文件归还：`isDataLiteral` 拆成 `DATA_TRUE_PARENT_KINDS`/`TYPE_CHECK_KINDS`/`STRING_HELPER_CALLS` 集合与 `isDataCallArgument` 帮助函数，`collect` 的 `visit` 拆为 merged-run/attr/prop/cond/tpl/expr 八个子 helper，console 输出改 `process.stdout.write`。重构以行为回归钉住：`collect()` 输出快照（7710 sites，`/tmp/opencode/lens-sites-before.json` 与改后逐条比对）零增零删，工具改写能力未变，改写动作本身留给下一簇的 lens 主体
 
 验证：四条受影响测试 59 例全绿（`DocsMenu.test` 默认按钮断言翻 `/文档/i`、`ModelInsightsView.test` 三处 tab name 翻「令牌数/对数/请求数/花费」），i18n 守卫 5 文件 23 例绿，`check:dead-keys` 0，全量 `tsc --noEmit` 0 错，`typecheck` 0 错，`npm run build` exit 0，`npx eslint .` 0 error、九条 lint 预算全部回线内，目录两侧 +4 至 11881。本簇零渲染缺陷；lens 86 条从下一簇开始按批量工具撤基线
+
+## 2026-10-24 第 533 簇：lens 追踪观察页批量接入，基线撤到 60 条
+
+lens 主体落地。第 531 簇备好的 `scripts/lens-localize.mjs` 按 catalog 与 skip 名单（106 条）对 `vendor/lens-ui/src` 执行 `--apply`，改写 166 个源文件；10 处手工位点接线（CasePanel/Section/RunSearch/LensIntroduction/DurationInput/toast.ts/LiveStrip/FindingsView/FindingDetails/InvestigationList）与宿主 `EmbeddedLens.tsx`（`useTranslations("lens")` 挂进 `LensHostProvider`）。目录两侧各 +1474 至 13355 叶，lens 命名空间 50 个顶层区 1503 键，键树无差集；同值 52 条全是机读面与代码语料（`scorers.*` 路径片段、`Gate({value0})` 一类代码样例、Slack/Discord/GitHub 品牌词），全库同值仍 185
+
+三条消息语法修到 parity 绿：`onboarding.yourTracingKey` 的裸尖括号加 ICU 引号（`'<your tracing key>'`），`evals.minValue0` 的代码样例花括号加引号转义（`min='{'{value0}'}'`），`investigations.showHiddenValue0Examples` 把 `Show` 移出 ICU 复数结构使 `#` 紧跟 `{`（zh 侧本就合规）
+
+死键判定器此前只扫 `src`（`git ls-files src`），vendor 的 `t("ns.key")` 相对路径全部漏判，lens 全库 1293 键被误报死。文件清单补 `vendor/lens-ui/src`，其字面量经 verbatim 兜底救活；真死键剩 6 个，全是藏在 ICU 参数值里的英文字面量（`agents.appMayBeenRemoved`、`agents.gatePassed`、`agents.gateFailedReviewResult`、`investigations.value0NeedsFix`/`value0NeedFix`、`evals.modelValue0`），逐处在源码改成按 key 取译，顺带消掉了页面上会露出的英文 fallback
+
+批量工具的抽取口径覆盖不到「字符串赋给变量」形态，`TracingSetupCard` 的三条 message 分支整句漏抽（含 532 复跑基线里的 "Enable Lens in your existing Helm or Docker deployment…"）。新开 3 键（`enableLensExistingHelmDocker`、`lensConfiguredLiteLLMUnreachable`、`lensConnectedTracingStorageUnavailable`）接线；全 vendor 扫「四词以上英文原始字面量」复核，其余命中皆判非 UI（演示语料 `scenarios.ts`/`fixtures.ts`、喂编码智能体的 prompt `setupPrompt.ts`、代码样例 `connectSnippets.ts`、生成的 OpenAPI 类型），与第 531 簇的 skip 判定一致
+
+渲染扫描揪出 lens 页整页崩溃：`SignalSettings.tsx` 在模块顶层用 `SIGNAL_LIBRARY.map(...question)` 建 `Set`，getter 在 import 期触发、早于宿主注册翻译器，报 `needs a translator: register one before the package renders`。改成惰性函数调用，全 vendor 搜同型隐患仅此一处。lens 基线 86 撤到 8，剩余 8 条全是入门页示例追踪时间轴的 span 标识符（`research_agent`/`search_docs`/`run_benchmark`/`plan`/`answer` 等），判数据保留；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词。38 页 0 渲染错误、0 新发现
+
+验证：i18n 守卫（messagesParity 8 例、missing-keys）绿，`typecheck` 与全量 `tsc --noEmit` 0 错（vendor 改动后 `npm install` 刷新 file: 依赖拷贝），`npm run build` exit 0，`check:dead-keys` 0，`npm run scan:rendered` 0 渲染错误 0 新发现

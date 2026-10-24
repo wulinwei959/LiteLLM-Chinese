@@ -1,5 +1,6 @@
 import type { SignalConfig } from "../../model/types";
 import { SIGNAL_LIBRARY } from "../../model/signals";
+import { lensTranslate } from "../../../../host/lensTranslate";
 
 export const MAX_SIGNALS = 20;
 const MAX_NAME = 60;
@@ -49,7 +50,7 @@ const slug = (name: string): string => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
-  const lettered = /^[a-z]/.test(words) ? words : `signal_${words}`.replace(/_+$/, "");
+  const lettered = /^[a-z]/.test(words) ? words : lensTranslate("settings.signalValue0", { value0: words }).replace(/_+$/, "");
   return lettered.slice(0, MAX_ID);
 };
 
@@ -76,13 +77,13 @@ const rowProblems = (row: SignalRow, duplicateName: boolean): RowProblems => {
   const name = row.name.trim();
   const question = row.question.trim();
   const nameProblem = [
-    !name ? "Name the signal" : undefined,
-    name.length > MAX_NAME ? `Keep the name under ${MAX_NAME} characters` : undefined,
-    duplicateName ? "Another signal has this name" : undefined,
+    !name ? lensTranslate("settings.nameSignal") : undefined,
+    name.length > MAX_NAME ? lensTranslate("settings.keepNameUnderValue0", { value0: MAX_NAME }) : undefined,
+    duplicateName ? lensTranslate("settings.anotherSignalName") : undefined,
   ].find((problem) => problem !== undefined);
   const questionProblem = [
-    question.length < 3 ? "Ask a yes or no question about the run" : undefined,
-    question.length > MAX_QUESTION ? `Keep the question under ${MAX_QUESTION} characters` : undefined,
+    question.length < 3 ? lensTranslate("settings.askYesQuestionAbout") : undefined,
+    question.length > MAX_QUESTION ? lensTranslate("settings.keepQuestionUnderValue0", { value0: MAX_QUESTION }) : undefined,
   ].find((problem) => problem !== undefined);
   return { name: nameProblem, question: questionProblem };
 };
@@ -101,8 +102,8 @@ export function draftProblems(draft: SignalDraft): DraftProblems {
   const threshold =
     Number.isInteger(thresholdPercent) && thresholdPercent >= 5 && thresholdPercent <= 95
       ? undefined
-      : "Use a whole number from 5 to 95";
-  const signals = draft.rows.length > MAX_SIGNALS ? `Use at most ${MAX_SIGNALS} signals` : undefined;
+      : lensTranslate("settings.useWholeNumber5");
+  const signals = draft.rows.length > MAX_SIGNALS ? lensTranslate("settings.useMostValue0Signals", { value0: MAX_SIGNALS }) : undefined;
   return { threshold, signals, rows, any: Boolean(threshold || signals || rows.size) };
 }
 

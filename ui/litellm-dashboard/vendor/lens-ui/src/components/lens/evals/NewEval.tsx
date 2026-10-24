@@ -12,6 +12,7 @@ import { useDatasets } from "../datasets/api";
 import { LensPageHeader } from "../ui/LensPageHeader";
 import { buildEvalSpec, EMPTY_DRAFT, type NewEvalDraft } from "./newEvalSpec";
 import { useSaveEval } from "./runs/api";
+import { useLensTranslate } from "../../../host/useLensTranslate";
 
 export function NewEval({
   onCancel,
@@ -22,6 +23,7 @@ export function NewEval({
   onSaved: (name: string) => void;
   initialAgent?: string;
 }) {
+  const t = useLensTranslate();
   const datasets = useDatasets();
   const save = useSaveEval();
   const [draft, setDraft] = useState<NewEvalDraft>({ ...EMPTY_DRAFT, agent: initialAgent });
@@ -43,17 +45,16 @@ export function NewEval({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <LensPageHeader
-        section="06 / REGRESSION LAB"
-        title="New eval"
-        description="Turn real agent runs into your next release check."
+        section={t("evals.06REGRESSIONLAB")}
+        title={t("evals.newEval")}
+        description={t("evals.turnRealAgentRuns")}
         actions={
           <Button variant="outline" size="sm" onClick={onCancel}>
-            <ChevronLeft /> Evals
-          </Button>
+            <ChevronLeft /> {t("tabs.evals")}</Button>
         }
       />
       <form
-        aria-label="New eval"
+        aria-label={t("evals.newEval")}
         className="min-h-0 flex-1 overflow-y-auto"
         onSubmit={(event) => {
           event.preventDefault();
@@ -61,8 +62,8 @@ export function NewEval({
         }}
       >
         <div className="mx-auto my-5 grid max-w-3xl gap-4 px-4 text-sm">
-          <Section title="Eval">
-            <Field label="Name">
+          <Section title={t("evals.eval")}>
+            <Field label={t("datasets.name")}>
               <Input
                 className="font-mono"
                 placeholder="agent-regressions"
@@ -70,7 +71,7 @@ export function NewEval({
                 onChange={(event) => set({ name: event.target.value })}
               />
             </Field>
-            <Field label="Dataset">
+            <Field label={t("datasets.dataset")}>
               <Select
                 items={items}
                 value={draft.datasetId || null}
@@ -79,8 +80,8 @@ export function NewEval({
                   set({ datasetId: next ?? "", agent: draft.agent || dataset?.agent_name || "" });
                 }}
               >
-                <SelectTrigger aria-label="Dataset" className="w-full font-mono text-xs">
-                  <SelectValue placeholder={datasets.isPending ? "Loading datasets…" : "Pick a dataset"} />
+                <SelectTrigger aria-label={t("datasets.dataset")} className="w-full font-mono text-xs">
+                  <SelectValue placeholder={datasets.isPending ? t("datasets.loadingDatasets") : t("evals.pickDataset")} />
                 </SelectTrigger>
                 <SelectContent>
                   {items.map((item) => (
@@ -91,7 +92,7 @@ export function NewEval({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Agent">
+            <Field label={t("agents.agent")}>
               <Input
                 readOnly={Boolean(initialAgent)}
                 value={draft.agent}
@@ -99,62 +100,62 @@ export function NewEval({
               />
             </Field>
           </Section>
-          <Section title="Scorers">
+          <Section title={t("evals.scorers")}>
             <Toggle
-              label="Task completed"
+              label={t("evals.taskCompleted")}
               checked={draft.taskCompleted}
               onChange={(taskCompleted) => set({ taskCompleted })}
             />
-            <Toggle label="Tool order" checked={draft.calledBefore} onChange={(calledBefore) => set({ calledBefore })}>
+            <Toggle label={t("evals.toolOrder")} checked={draft.calledBefore} onChange={(calledBefore) => set({ calledBefore })}>
               <div className="flex items-center gap-2 font-mono text-xs">
                 <Input
-                  aria-label="First tool"
+                  aria-label={t("evals.firstTool")}
                   placeholder="run_tests"
                   value={draft.first}
                   onChange={(event) => set({ first: event.target.value })}
                 />
                 <span className="text-muted-foreground">before</span>
                 <Input
-                  aria-label="Then tool"
+                  aria-label={t("evals.tool")}
                   placeholder="open_pr"
                   value={draft.then}
                   onChange={(event) => set({ then: event.target.value })}
                 />
               </div>
             </Toggle>
-            <Toggle label="LLM judge" checked={draft.judge} onChange={(judge) => set({ judge })}>
+            <Toggle label={t("evals.lLMJudge")} checked={draft.judge} onChange={(judge) => set({ judge })}>
               <Textarea
-                aria-label="Judge question"
-                placeholder="Did the agent complete the user's request?"
+                aria-label={t("evals.judgeQuestion")}
+                placeholder={t("evals.didAgentCompleteUser")}
                 value={draft.prompt}
                 onChange={(event) => set({ prompt: event.target.value })}
               />
             </Toggle>
           </Section>
-          <Section title="Gate">
+          <Section title={t("evals.gate")}>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-              <Field label="Trials">
+              <Field label={t("evals.trials")}>
                 <Input
                   inputMode="numeric"
                   value={draft.trials}
                   onChange={(event) => set({ trials: event.target.value })}
                 />
               </Field>
-              <Field label="Max regressions">
+              <Field label={t("evals.maxRegressions")}>
                 <Input
                   inputMode="numeric"
                   value={draft.regressions}
                   onChange={(event) => set({ regressions: event.target.value })}
                 />
               </Field>
-              <Field label="Max critical">
+              <Field label={t("evals.maxCritical")}>
                 <Input
                   inputMode="numeric"
                   value={draft.critical}
                   onChange={(event) => set({ critical: event.target.value })}
                 />
               </Field>
-              <Field label="Min pass %">
+              <Field label={t("evals.minPass")}>
                 <Input
                   inputMode="decimal"
                   placeholder="off"
@@ -162,7 +163,7 @@ export function NewEval({
                   onChange={(event) => set({ passRate: event.target.value })}
                 />
               </Field>
-              <Field label="Max $/case">
+              <Field label={t("evals.maxCase")}>
                 <Input
                   inputMode="decimal"
                   placeholder="off"
@@ -179,11 +180,9 @@ export function NewEval({
               </p>
             )}
             <Button type="button" variant="outline" size="sm" onClick={onCancel}>
-              Cancel
-            </Button>
+              {t("datasets.cancel")}</Button>
             <Button type="submit" size="sm" disabled={save.isPending}>
-              Create eval
-            </Button>
+              {t("agents.createEval")}</Button>
           </div>
         </div>
       </form>
