@@ -3,6 +3,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createTranslator } from "next-intl";
 import en from "@/messages/en.json";
+import zh from "@/messages/zh-CN.json";
 import { exportMultiToPDF, exportMultiToCSV } from "./multi_export_utils";
 import type { MultiModelResult } from "./types";
 import type { CostEstimateResponse } from "../types";
@@ -214,7 +215,7 @@ describe("exportMultiToCSV", () => {
   });
 
   it("should create an object URL and revoke it after download", () => {
-    exportMultiToCSV(makeMultiResult());
+    exportMultiToCSV(makeMultiResult(), t);
     expect(window.URL.createObjectURL).toHaveBeenCalledTimes(1);
     expect(window.URL.revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
   });
@@ -229,7 +230,7 @@ describe("exportMultiToCSV", () => {
     });
 
     const today = new Date().toISOString().split("T")[0];
-    exportMultiToCSV(makeMultiResult());
+    exportMultiToCSV(makeMultiResult(), t);
 
     expect(createdAnchors[0].download).toBe(`cost_estimate_multi_model_${today}.csv`);
   });
@@ -244,7 +245,7 @@ describe("exportMultiToCSV", () => {
       }
     } as unknown as typeof Blob;
 
-    exportMultiToCSV(makeMultiResult());
+    exportMultiToCSV(makeMultiResult(), t);
     globalThis.Blob = OriginalBlob;
 
     expect(csvContent).toContain("Model");
@@ -263,10 +264,30 @@ describe("exportMultiToCSV", () => {
       }
     } as unknown as typeof Blob;
 
-    exportMultiToCSV(makeMultiResult());
+    exportMultiToCSV(makeMultiResult(), t);
     globalThis.Blob = OriginalBlob;
 
-    expect(csvContent).toContain("COMBINED TOTALS");
+    expect(csvContent).toContain("Combined Totals");
+  });
+
+  it("should localise the summary labels with the translator it is given", () => {
+    let csvContent = "";
+    const OriginalBlob = globalThis.Blob;
+    globalThis.Blob = class extends OriginalBlob {
+      constructor(parts?: BlobPart[], options?: BlobPropertyBag) {
+        super(parts, options);
+        if (typeof parts?.[0] === "string") csvContent = parts[0];
+      }
+    } as unknown as typeof Blob;
+
+    const zhT = createTranslator({ locale: "zh-CN", messages: zh, namespace: "costTracking" });
+    exportMultiToCSV(makeMultiResult(), zhT);
+    globalThis.Blob = OriginalBlob;
+
+    expect(csvContent).toContain("合计总额");
+    expect(csvContent).toContain("每次请求合计");
+    expect(csvContent).toContain("多模型成本估算报告");
+    expect(csvContent).not.toContain("COMBINED TOTALS");
   });
 
   it("should create a blob with the correct CSV mime type", () => {
@@ -279,7 +300,7 @@ describe("exportMultiToCSV", () => {
       }
     } as unknown as typeof Blob;
 
-    exportMultiToCSV(makeMultiResult());
+    exportMultiToCSV(makeMultiResult(), t);
     globalThis.Blob = OriginalBlob;
 
     expect(capturedType).toBe("text/csv;charset=utf-8;");
@@ -314,7 +335,7 @@ describe("exportMultiToCSV", () => {
       }
     } as unknown as typeof Blob;
 
-    exportMultiToCSV(multiResult);
+    exportMultiToCSV(multiResult, t);
     globalThis.Blob = OriginalBlob;
 
     // CSV should have metadata rows but no model data row for gpt-4

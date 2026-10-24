@@ -5258,6 +5258,7 @@
     "teamUserSpend": {
       "selectTeamHint": "Select a team to see spend per user",
       "noUserSpend": "No user spend in this range",
+      "noUser": "(no user)",
       "title": "Spend Per User Within Team",
       "subtitle": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
       "downloadCsv": "Download CSV",
@@ -10159,6 +10160,7 @@
         "heading": "LLM Cost Estimate Report",
         "modelsConfigured": "{count, plural, one {# model configured} other {# models configured}}",
         "combinedTotals": "Combined Totals",
+      "generatedAt": "Generated",
         "totalPerRequest": "Total Per Request",
         "totalDaily": "Total Daily",
         "totalMonthly": "Total Monthly",

@@ -42,10 +42,10 @@ const buildColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUserSpendR
   },
   {
     header: t("user"),
-    accessorFn: userLabel,
+    accessorFn: (row) => userLabel(row, t("noUser")),
     id: "user",
     meta: QUIET_HEADER,
-    cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original)}</span>,
+    cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original, t("noUser"))}</span>,
   },
   {
     header: t("spend"),
@@ -100,7 +100,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
           variant="outline"
           size="xs"
           disabled={!data || rows.length === 0}
-          onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data), teamUserSpendCsvFileName(data))}
+          onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data, t("noUser")), teamUserSpendCsvFileName(data))}
         >
           <Download />
           {t("downloadCsv")}

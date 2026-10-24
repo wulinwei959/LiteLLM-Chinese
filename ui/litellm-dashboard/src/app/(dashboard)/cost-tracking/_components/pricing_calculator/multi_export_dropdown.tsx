@@ -35,7 +35,7 @@ const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({ multiResult }
           <FileText />
           {t("asPdf")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => exportMultiToCSV(multiResult)}>
+        <DropdownMenuItem onClick={() => exportMultiToCSV(multiResult, ctT)}>
           <FileSpreadsheet />
           {t("asCsv")}
         </DropdownMenuItem>

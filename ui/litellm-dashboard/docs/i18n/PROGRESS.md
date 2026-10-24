@@ -5081,3 +5081,20 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 一处口径教训：先前用 grep 估出"19 处吃默认值"，实际其中 12 处命中的是各文件自己的同名局部函数。`public_model_hub.tsx:269` 的局部 `copyToClipboard` 已经在用 `t("copiedToClipboard")`，`A2AMetrics.tsx:83` 的局部版本只写剪贴板、不弹文案，都不该改。编译器口径比正则可靠，这类"默认参数"面应直接删默认值让 tsc 定位。
 
 测试：`dataUtils.test.ts` 的 11 处单参调用补上消息、3 处英文断言翻面（改前该文件是唯一的 `"Copied to clipboard"` 字面量持有者）。验证为 `ModelHubTable`/`ModelHubTableColumns`/`TeamInfo`（含 integration）/`model_info_view`/`onboarding_link`/`guardrail_info`/`dataUtils` 加 i18n 守卫共 13 个文件 455 例通过、3 例预期失败，`tsc --project tsconfig.production.json` 0 错，改动文件 prettier 合规（`ModelHubTable.tsx`、`model_info_view.tsx`、`onboarding_link.tsx` 在 HEAD 就未格式化，只把手工换行对齐 prettier 形状，不做无关收口）。
+
+## 2026-10-24 第 517 簇：导出文档维度收口
+
+先把活项清单里的 7 个导出文件逐个读完，按"给人看"与"给程序解析"分类，结论是四个文件本来就达标，真正的缺口只有两处。
+
+判定结果：`teamsCsvExport.ts`（列头与文件名）、`GuardrailViewer.tsx`（只下原始 JSON，界面文案早已接 `logs.guardrail.*`）、`bulk_create_users_button.tsx`（导出结果的 snake_case 键名与文件名，另加 `requiredColumns`/`validRoles` 校验用值）、`ROICalculatorViews.tsx`（列头与 `litellm-roi.csv`，界面已接 `roiCalculator`）四类串都是 B 类数据交换，翻了反而破坏下游解析，不接线。`ComplianceUI.tsx` 的模板 CSV 与结果 CSV 表头、`pass/fail/yes/no` 回填值、与后端对齐的 `EU AI Act`/`GDPR`/`Subliminal Techniques` 枚举同判 B，仅样例行里的示例 prompt 属边缘，判留（中文样例会让被测行为变形）。
+
+两处真缺口：
+
+1. `multi_export_utils.ts` 的 `exportMultiToCSV`。同文件的 PDF 早已按首参注入 `CostTrackingTranslator`，CSV 却漏了，标题、生成时间与六行汇总标签都是硬编码英文。改法是同样注入 translator，标题取 `multiExport.report.documentTitle`、六行汇总复用既有的 `combinedTotals`/`totalPerRequest`/`totalDaily`/`totalMonthly`/`marginPerRequest`/`dailyMargin`/`monthlyMargin`，只新增一枚 `generatedAt`（生成时间）。表头 12 列是机读行，留英文并就地注明理由。调用方 `multi_export_dropdown.tsx` 传 `ctT`。
+2. `teamUserSpend.ts` 的 `NO_USER_LABEL = "(no user)"`。它同屏两用：既是界面用户列的兜底，又进 CSV，还兼任 tanstack 的 `accessorFn` 排序键。因此不走 `documentElement.lang` 那套调用期查表（语言切换会让排序键文本抖动），改成 `userLabel(row, noUserLabel)` 与 `buildTeamUserSpendCsv(response, noUserLabel)` 显式传参，`TeamUserSpendCard.tsx` 三处传 `t("noUser")`，新键落在既有命名空间 `usage.teamUserSpend`（与语义不同的 `noUserSpend` 并存）。
+
+测试：`multi_export_utils.test.ts` 的 6 处 `exportMultiToCSV` 补传 translator，`COMBINED TOTALS` 断言改成目录实际值 `Combined Totals`，另加一例用 zh  translator 断言"合计总额""每次请求合计""多模型成本估算报告"入表且英文大写标题不再出现；`teamUserSpend.test.ts` 的 6 处调用补占位标签、占位断言改为断言调用方传入的文案被用上。
+
+验证：tsc 0 错、dead keys 0、i18n 守卫通过、`multi_export_utils`+`teamUserSpend`+`EntityUsage`+`pricing_calculator`+i18n 共 15 个文件 224 例通过、en/zh 叶子各 11838 且完全一致（本簇新增 `costTracking.multiExport.report.generatedAt` 与 `usage.teamUserSpend.noUser` 两键）、`multi_export_utils.ts` prettier 合规（两份目录在 HEAD 就非 prettier 合规，本次只做同风格插行）。
+
+另案（不属汉化账）：`bulk_create_users_button.tsx:597` 的"下载 CSV 模板"按钮只有文案与图标，没有 `onClick`，点了不做事，是功能缺陷，需另开一单确认模板内容后补行为。

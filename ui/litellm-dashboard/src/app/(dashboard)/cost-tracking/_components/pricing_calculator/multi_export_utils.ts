@@ -252,24 +252,28 @@ export const exportMultiToPDF = (multiResult: MultiModelResult, t: CostTrackingT
   };
 };
 
-export const exportMultiToCSV = (multiResult: MultiModelResult): void => {
+export const exportMultiToCSV = (multiResult: MultiModelResult, t: CostTrackingTranslator): void => {
   const validEntries = multiResult.entries.filter((e) => e.result !== null);
 
-  const rows: string[][] = [["LLM Multi-Model Cost Estimate Report"], ["Generated", new Date().toLocaleString()], [""]];
+  const rows: string[][] = [
+    [t("multiExport.report.documentTitle")],
+    [t("multiExport.report.generatedAt"), new Date().toLocaleString()],
+    [""],
+  ];
 
   // Summary section
   rows.push(
-    ["COMBINED TOTALS"],
-    ["Total Per Request", multiResult.totals.cost_per_request.toString()],
-    ["Total Daily", multiResult.totals.daily_cost?.toString() || "-"],
-    ["Total Monthly", multiResult.totals.monthly_cost?.toString() || "-"],
-    ["Margin Per Request", multiResult.totals.margin_per_request.toString()],
-    ["Daily Margin", multiResult.totals.daily_margin?.toString() || "-"],
-    ["Monthly Margin", multiResult.totals.monthly_margin?.toString() || "-"],
+    [t("multiExport.report.combinedTotals")],
+    [t("multiExport.report.totalPerRequest"), multiResult.totals.cost_per_request.toString()],
+    [t("multiExport.report.totalDaily"), multiResult.totals.daily_cost?.toString() || "-"],
+    [t("multiExport.report.totalMonthly"), multiResult.totals.monthly_cost?.toString() || "-"],
+    [t("multiExport.report.marginPerRequest"), multiResult.totals.margin_per_request.toString()],
+    [t("multiExport.report.dailyMargin"), multiResult.totals.daily_margin?.toString() || "-"],
+    [t("multiExport.report.monthlyMargin"), multiResult.totals.monthly_margin?.toString() || "-"],
     [""],
   );
 
-  // Summary table header
+  // Table headers stay English: a CSV column line is parsed by downstream tools, not read as copy.
   rows.push([
     "Model",
     "Provider",

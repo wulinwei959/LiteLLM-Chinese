@@ -5258,6 +5258,7 @@
     "teamUserSpend": {
       "selectTeamHint": "选择一个团队以查看各用户花费",
       "noUserSpend": "此范围内无用户花费",
+      "noUser": "（无用户）",
       "title": "团队内各用户消费",
       "subtitle": "按消费日志中每条请求归因，包含不经过虚拟密钥的 JWT/SSO 流量",
       "downloadCsv": "下载 CSV",
@@ -10155,6 +10156,7 @@
         "heading": "LLM 成本估算报告",
         "modelsConfigured": "已配置 {count} 个模型",
         "combinedTotals": "合计总额",
+      "generatedAt": "生成时间",
         "totalPerRequest": "每次请求合计",
         "totalDaily": "每日合计",
         "totalMonthly": "每月合计",
