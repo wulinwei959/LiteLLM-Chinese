@@ -5294,4 +5294,4 @@ lens 主体落地。第 531 簇备好的 `scripts/lens-localize.mjs` 按 catalog
 
 渲染扫描揪出 lens 页整页崩溃：`SignalSettings.tsx` 在模块顶层用 `SIGNAL_LIBRARY.map(...question)` 建 `Set`，getter 在 import 期触发、早于宿主注册翻译器，报 `needs a translator: register one before the package renders`。改成惰性函数调用，全 vendor 搜同型隐患仅此一处。lens 基线 86 撤到 8，剩余 8 条全是入门页示例追踪时间轴的 span 标识符（`research_agent`/`search_docs`/`run_benchmark`/`plan`/`answer` 等），判数据保留；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词。38 页 0 渲染错误、0 新发现
 
-验证：i18n 守卫（messagesParity 8 例、missing-keys）绿，`typecheck` 与全量 `tsc --noEmit` 0 错（vendor 改动后 `npm install` 刷新 file: 依赖拷贝），`npm run build` exit 0，`check:dead-keys` 0，`npm run scan:rendered` 0 渲染错误 0 新发现
+验证：i18n 守卫（messagesParity 8 例、missing-keys）绿，`typecheck` 与全量 `tsc --noEmit` 0 错（vendor 改动后 `npm install` 刷新 file: 依赖拷贝），`npm run build` exit 0，`check:dead-keys` 0，`npm run scan:rendered` 0 渲染错误 0 新发现，`npx eslint .` 0 error、九条 lint 预算全部回线内（no-console 11/11 与 no-long-condition-chain 200/200 顶格无余量，complexity 与 no-large-inline-object-arg 各剩 1 条余量）
