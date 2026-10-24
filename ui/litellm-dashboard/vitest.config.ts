@@ -14,6 +14,8 @@ const staticImageData: Plugin = {
 
 const sharedViteConfig = {
   plugins: [staticImageData],
+  // Vite binds by name by default, which fails the name lookup inside the CI job container.
+  server: { host: "127.0.0.1" },
   resolve: { alias: { "@": resolve(__dirname, "src"), "@tests": resolve(__dirname, "tests") } },
   define: { "import.meta.vitest": "undefined" },
   esbuild: { jsx: "automatic", jsxImportSource: "react" } as const,
