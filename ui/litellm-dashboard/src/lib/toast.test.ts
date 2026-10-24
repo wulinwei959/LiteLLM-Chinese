@@ -12,7 +12,9 @@ const sonner = vi.hoisted(() => ({
 vi.mock("sonner", () => ({ toast: sonner }));
 vi.unmock("@/lib/toast");
 
-import { toast } from "./toast";
+import enMessages from "@/messages/en.json";
+import zhMessages from "@/messages/zh-CN.json";
+import { TOAST_TITLE_CATEGORIES, toast } from "./toast";
 
 const lastCall = (fn: ReturnType<typeof vi.fn>) => fn.mock.calls.at(-1) as [unknown, Record<string, unknown>];
 
@@ -179,5 +181,15 @@ describe("toast", () => {
       toast.fromError(new ApiError("x", 500, "x"), { durationMs: 10000 });
       expect(lastCall(sonner.error)[1].duration).toBe(10000);
     });
+  });
+});
+
+describe("toast title catalog coverage", () => {
+  it("carries every producible title category in both locales", () => {
+    expect(TOAST_TITLE_CATEGORIES.length).toBeGreaterThan(0);
+    const missing = TOAST_TITLE_CATEGORIES.filter(
+      (category) => !enMessages.toast[category] || !zhMessages.toast[category],
+    );
+    expect(missing).toEqual([]);
   });
 });

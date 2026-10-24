@@ -39,7 +39,20 @@ const currentUiLocale = (): UiLocale =>
 export const toastMessage = (key: string): string =>
   TOAST_MESSAGES[currentUiLocale()][key] ?? TOAST_MESSAGES[DEFAULT_UI_LOCALE][key] ?? key;
 
-const PROXY_TYPE_CATEGORIES: Readonly<Record<string, string>> = {
+type ToastTitleCategory =
+  | "auth"
+  | "budget"
+  | "conflict"
+  | "forbidden"
+  | "generic"
+  | "notFound"
+  | "rateLimit"
+  | "request"
+  | "server"
+  | "service"
+  | "validation";
+
+const PROXY_TYPE_CATEGORIES: Readonly<Record<string, ToastTitleCategory>> = {
   budget_exceeded: "budget",
   no_db_connection: "service",
   expired_key: "auth",
@@ -51,7 +64,7 @@ const PROXY_TYPE_CATEGORIES: Readonly<Record<string, string>> = {
   team_member_already_in_team: "conflict",
 };
 
-const STATUS_CATEGORIES: Readonly<Record<number, string>> = {
+const STATUS_CATEGORIES: Readonly<Record<number, ToastTitleCategory>> = {
   400: "request",
   401: "auth",
   403: "forbidden",
@@ -63,6 +76,11 @@ const STATUS_CATEGORIES: Readonly<Record<number, string>> = {
 };
 
 const WARNING_CATEGORIES: ReadonlySet<string> = new Set(["budget", "rateLimit"]);
+
+// Toast titles are looked up by these keys, so the `toast` namespace must carry all of them.
+export const TOAST_TITLE_CATEGORIES: readonly ToastTitleCategory[] = Array.from(
+  new Set([...Object.values(PROXY_TYPE_CATEGORIES), ...Object.values(STATUS_CATEGORIES), "server", "generic"]),
+);
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
