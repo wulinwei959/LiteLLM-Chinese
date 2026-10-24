@@ -59,7 +59,6 @@ jobs:
         if: steps.changes.outputs.decision != 'skip'
         env:
           CI: "true"
-          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
@@ -71,9 +70,8 @@ jobs:
             exit 0
           fi
 
-          merge_base=$(gh api "repos/${{ github.repository }}/compare/${BASE_SHA}...${HEAD_SHA}?per_page=1" --jq '.merge_base_commit.sha')
-          test -n "$merge_base"
-          git fetch --no-tags --depth=1 origin "$merge_base" "$HEAD_SHA"
+          git fetch --no-tags --depth=200 origin "$BASE_SHA" "$HEAD_SHA"
+          merge_base=$(git merge-base "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || echo "$BASE_SHA")
           changed_files=()
           while IFS= read -r f; do
             changed_files+=("$f")

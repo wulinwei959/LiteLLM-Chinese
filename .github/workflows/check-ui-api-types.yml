@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - "litellm_**"
+  push:
+    branches:
+      - main
+
+env:
+  UV_DEFAULT_INDEX: https://pypi.tuna.tsinghua.edu.cn/simple/
 
 permissions:
   contents: read
@@ -29,16 +35,27 @@ jobs:
         id: changes
         run: |
           set -euo pipefail
-          if ! base="$(git rev-parse --verify --quiet HEAD^2 >/dev/null && git rev-parse HEAD^1)"; then
-            echo "Not a pull request merge commit, running the full check."
+          if base="$(git rev-parse --verify --quiet HEAD^2 >/dev/null && git rev-parse HEAD^1)"; then
+            scope="pull request"
+            files="$(git diff --name-only "$base" HEAD)"
+          elif git rev-parse --verify --quiet HEAD^1 >/dev/null; then
+            scope="push"
+            files="$(git diff --name-only HEAD^1 HEAD)"
+          else
+            echo "Shallow history unavailable, running the full check."
             echo "relevant=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          files="$(git diff --name-only "$base" HEAD)"
+          if [ -z "$files" ]; then
+            echo "No files changed in this $scope, nothing to verify."
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if grep -Eq '^(litellm/(proxy|types)/|ui/litellm-dashboard/(src/lib/http/schema\.d\.ts|scripts/gen-api-types\.mjs|package(-lock)?\.json)$|\.github/workflows/check-ui-api-types\.yml$)' <<< "$files"; then
+            echo "Relevant changes in this $scope, verifying."
             echo "relevant=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No proxy, types or generator changes in this pull request, nothing to verify."
+            echo "No proxy, types or generator changes in this $scope, nothing to verify."
             echo "relevant=false" >> "$GITHUB_OUTPUT"
           fi
 
