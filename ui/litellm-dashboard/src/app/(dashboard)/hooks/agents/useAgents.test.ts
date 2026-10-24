@@ -22,38 +22,39 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 // Import actual roles instead of mocking them
 
 // Mock data
-const mockAgents: Agent[] = [
-  makeAgent({
-    agent_id: "agent-1",
-    agent_name: "Test Agent 1",
-    litellm_params: {
-      model: "gpt-3.5-turbo",
-      api_key: "test-key-1",
-    },
-    agent_card_params: {
-      description: "A test agent for unit testing",
-    },
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-01T00:00:00Z",
-    created_by: "user-1",
-    updated_by: "user-1",
-  }),
-  makeAgent({
-    agent_id: "agent-2",
-    agent_name: "Test Agent 2",
-    litellm_params: {
-      model: "claude-3",
-      api_key: "test-key-2",
-    },
-    agent_card_params: {
-      description: "Another test agent",
-    },
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-01T00:00:00Z",
-    created_by: "user-2",
-    updated_by: "user-2",
-  }),
-];
+const agentOneSpec: Parameters<typeof makeAgent>[0] = {
+  agent_id: "agent-1",
+  agent_name: "Test Agent 1",
+  litellm_params: {
+    model: "gpt-3.5-turbo",
+    api_key: "test-key-1",
+  },
+  agent_card_params: {
+    description: "A test agent for unit testing",
+  },
+  created_at: "2024-01-01T00:00:00Z",
+  updated_at: "2024-01-01T00:00:00Z",
+  created_by: "user-1",
+  updated_by: "user-1",
+};
+
+const agentTwoSpec: Parameters<typeof makeAgent>[0] = {
+  agent_id: "agent-2",
+  agent_name: "Test Agent 2",
+  litellm_params: {
+    model: "claude-3",
+    api_key: "test-key-2",
+  },
+  agent_card_params: {
+    description: "Another test agent",
+  },
+  created_at: "2024-01-01T00:00:00Z",
+  updated_at: "2024-01-01T00:00:00Z",
+  created_by: "user-2",
+  updated_by: "user-2",
+};
+
+const mockAgents: Agent[] = [makeAgent(agentOneSpec), makeAgent(agentTwoSpec)];
 
 const mockAgentsResponse: AgentsResponse = {
   agents: mockAgents,

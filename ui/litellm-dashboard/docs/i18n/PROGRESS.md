@@ -5165,7 +5165,7 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 
 真缺陷与认证类型同源：`CredentialModal.integration.test.tsx` 的 3 例同样按英文名查 combobox，连同 6 处 `name: "Auth Type:"` 与 3 处 `/^Auth Type:/` 一起翻成「认证类型：」，该文件与 `edit_auto_router_modal.integration` 合跑 100 例全绿。`add_agent_form.integration` 与 `edit_auto_router_modal.integration` 各 1 例单跑全绿，与判定账里同名的整机负载抖动同源（本轮合跑耗时 1046 秒）。
 
-lint 预算两处超标不在本簇账内：`local/no-large-inline-object-arg` 484 对上限 477、`local/no-long-condition-chain` 201 对上限 200。本簇清理前后的两次全仓计数完全一致（484 与 201），说明这两笔是 v1.107 同步带进来的继承债，需要单独一簇按规则逐处收敛，不能靠调高上限解决。
+lint 预算两处超标查清并已修回：`local/no-large-inline-object-arg` 484 对上限 477、`local/no-long-condition-chain` 201 对上限 200。归因做法是在 `fc664c04`（把棘轮同步到合并后实数的那次提交）建一个游离 worktree、软链同一份 `node_modules`，用同规则两次全仓 JSON 报告按文件差分，得到净增只有 8 条，且全部落在汉化批次自己写的代码上（`NotificationsBell` 的 ICU 参数、`CredentialsTable` 的列参数、`useAgents.test` 的两枚夹具、`authorizedSession`/`estimateLabel`/`expect.objectContaining` 的内联入参，以及 `key_edit_view` 里"清除团队"的三元链）。按规则建议逐处改成具名变量，`key_edit_view` 那处改成早返回辅助函数 `teamClearIsVisible`，实测降到 476 与 200，`check-lint-budgets.mjs` 全绿。这里也留一条方法教训：差分两份报告时 `filePath` 的根路径不同（worktree 与主检出），必须先归一成仓库相对路径再比，否则每个文件都会同时出现正负增量、净数看着像没变。
 
 两条口径教训：`scripts/check-dead-keys.mjs` 取文件走 `git ls-files`，新建模块必须先 `git add`，否则 `nav.oldUsage`、`nav.workflowRuns` 这类只在新文件里出现的键会被判成死键；要看某文件的 `max-lines` 真实计数，可以用 `--rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'` 逼它打印，不必为了复算去改配置。
 

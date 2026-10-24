@@ -67,7 +67,13 @@ describe("ROI calculator display helpers", () => {
   it("labels estimates and filters PRs by title, repository, number, or login", () => {
     const matchingPull = pull({});
     expect(estimateLabel(t, matchingPull.estimate)).toBe("4.5 小时");
-    expect(estimateLabel(t, { status: "needs_review", hours: null, reasoning: "", cached: false })).toBe("需审核");
+    const needsReview: Parameters<typeof estimateLabel>[1] = {
+      status: "needs_review",
+      hours: null,
+      reasoning: "",
+      cached: false,
+    };
+    expect(estimateLabel(t, needsReview)).toBe("需审核");
     expect(filterPulls([matchingPull], "ROUTING")).toEqual([matchingPull]);
     expect(filterPulls([matchingPull], "nobody")).toEqual([]);
   });

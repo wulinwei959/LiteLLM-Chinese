@@ -38,7 +38,7 @@ describe("TopKeyView", () => {
   const mockKeyInfoV1Call = vi.mocked(networking.keyInfoV1Call);
   const mockTransformKeyInfo = vi.mocked(transformKeyInfo.transformKeyInfo);
 
-  const mockAuth = authorizedSession({
+  const mockAuthSpec: Parameters<typeof authorizedSession>[0] = {
     token: "mock-token",
     accessToken: "test-token",
     userId: "user-1",
@@ -46,7 +46,8 @@ describe("TopKeyView", () => {
     userRole: "admin",
     premiumUser: true,
     disabledPersonalKeyCreation: false,
-  });
+  };
+  const mockAuth = authorizedSession(mockAuthSpec);
 
   const mockSetTopKeysLimit = vi.fn();
 

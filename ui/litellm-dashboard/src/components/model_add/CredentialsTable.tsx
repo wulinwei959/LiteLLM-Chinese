@@ -44,8 +44,9 @@ const CredentialsTable: React.FC<CredentialsTableProps> = ({
   const commonT = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
+  const columnArgs = { t, commonT, canModifyCredentials, onEdit, onDelete };
   const columns = useMemo(
-    () => getCredentialsTableColumns({ t, commonT, canModifyCredentials, onEdit, onDelete }),
+    () => getCredentialsTableColumns(columnArgs),
     [t, commonT, canModifyCredentials, onEdit, onDelete],
   );
 

@@ -123,17 +123,18 @@ describe("JEV classifier editor", () => {
     expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("6");
     expect(screen.getByRole("switch", { name: "分类器熔断器" })).not.toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Probe current config" }));
+    const opensourceExpected = {
+      model: "jev-test",
+      timeout_ms: 4200,
+      circuit_breaker_enabled: false,
+      circuit_breaker_cooldown_seconds: 50,
+    };
     expect(testAutoRouterRouting).toHaveBeenCalledWith(
       "token",
       expect.objectContaining({
         complexity_router_config: expect.objectContaining({
           classifier_type: "oss_classifier",
-          opensource_classifier_config: expect.objectContaining({
-            model: "jev-test",
-            timeout_ms: 4200,
-            circuit_breaker_enabled: false,
-            circuit_breaker_cooldown_seconds: 50,
-          }),
+          opensource_classifier_config: expect.objectContaining(opensourceExpected),
           tiers: expect.objectContaining({ QUICK: ["fast"] }),
         }),
       }),

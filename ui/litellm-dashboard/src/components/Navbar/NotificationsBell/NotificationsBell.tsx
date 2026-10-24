@@ -42,15 +42,16 @@ const upgradeAnnouncement = (
   if (!currentVersion || !latestRelease || !isNewerVersion(currentVersion, latestRelease.version)) {
     return null;
   }
+  const upgradeDescriptionArgs = {
+    features: latestRelease.new_features,
+    bugFixes: latestRelease.bug_fixes,
+    updates: latestRelease.other_updates,
+    current: currentVersion,
+  };
   return {
     readKey: `litellm:upgradeBannerDismissed:${latestRelease.version}`,
     title: t("upgradeTitle", { version: latestRelease.version }),
-    description: t("upgradeDescription", {
-      features: latestRelease.new_features,
-      bugFixes: latestRelease.bug_fixes,
-      updates: latestRelease.other_updates,
-      current: currentVersion,
-    }),
+    description: t("upgradeDescription", upgradeDescriptionArgs),
     linkLabel: t("viewReleaseNotes"),
     href: latestRelease.release_url,
   };

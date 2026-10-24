@@ -93,6 +93,12 @@ interface KeyEditViewProps {
 
 const sessionKey = (keyData: KeyResponse) => keyData.token || keyData.token_id;
 
+const teamClearIsVisible = (value: unknown, projectBound: boolean): boolean => {
+  if (typeof value !== "string") return false;
+  if (value === "") return false;
+  return !projectBound;
+};
+
 export const KeyEditView = (props: KeyEditViewProps) => <KeyEditSession key={sessionKey(props.keyData)} {...props} />;
 
 function KeyEditSession({
@@ -779,7 +785,7 @@ function KeyEditSession({
                     ))}
                   </SelectContent>
                 </Select>
-                {typeof value === "string" && value !== "" && !hasProject && (
+                {teamClearIsVisible(value, hasProject) && (
                   <Button
                     type="button"
                     variant="ghost"
