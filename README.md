@@ -81,7 +81,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
-| CI | UI 侧四个工作流：`test-litellm-ui-lint`（改动文件 prettier + eslint、lint 预算、knip、死键）、`test-litellm-ui-unit`、`test-litellm-ui-build`、`check-ui-api-types` |
+| CI | UI 侧四个工作流：`test-litellm-ui-lint`（改动文件 prettier + eslint、lint 预算、knip、死键）、`test-litellm-ui-unit`、`test-litellm-ui-build`、`check-ui-api-types`。上游其余 40 个工作流已在私有镜像上经 API 停用（Scorecard/zizmor/CodeQL 需要 GHAS 或公开仓库、基线发布与 Python 全量矩阵依赖上游资产与密钥），上游同步带入新工作流文件时默认为启用状态，需再手动关 |
 
 ## 怎么验证
 
