@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        uses: ./.github/actions/vendor/checkout
         with:
           fetch-depth: 1
           persist-credentials: false
@@ -39,7 +39,7 @@ jobs:
 
       - name: Setup Node.js
         if: steps.changes.outputs.decision != 'skip'
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: ./.github/actions/vendor/setup-node
         with:
           node-version-file: ui/litellm-dashboard/.nvmrc
           cache: "npm"
