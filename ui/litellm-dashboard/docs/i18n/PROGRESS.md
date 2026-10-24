@@ -4260,7 +4260,12 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 2026-10-24 更新：本节往后的段落是各簇逐次追加的执行记录，新旧混杂，读优先级以下面这份只列活项的清单为准。上游同步按维护者决定暂缓，不在清单内
 
-2026-10-24 第 529 簇后清单清零，没有活项。上游同步按维护者决定暂缓，不在清单内。曾经的三条去向：中英同值与 placeholder 判定账在第 527 簇收口（五档判定落进 `GLOSSARY.md`）；lint 预算余量在第 528 簇收口（两条顶格规则降存量并锁棘轮）；`max-lines` 18 个巨型文件在第 529 簇收口（拆 1 退线，其余 17 个按归属记判定账保留豁免，理由见该簇）
+2026-10-24 第 530 簇重新立账：渲染扫描从 15 页扩到 38 页主路由后，运行期暴露出一批静态口径看不见的真账。活项两条
+
+1. **lens 页整体未翻（基线 86 条）**。`/lens` 追踪观察页是扫描扩面撞出来的最大一片：说明句（"so you know what happened and what to change"）、空态、基准测试与 ClickHouse 接入指引整页都是英文，说明这个功能上线时没进汉化批次。逐块接键、按 WORKFLOW 第五步同步断言，接完一块从基线撤一块
+2. **小页零头甄别（基线其余 76 条）**。`model-insights` 5 条疑似真漏（Spend、Requests、Log 这类表头），`admin-panel` 3 条与 `cost-tracking` 的 Docs 待看，`api-reference` 31 条与 `transform-request` 20 条以代码语料为主但各夹着几句真文案（如 Read More、LiteLLM Proxy is OpenAI compatible），`ui-theme` 5 条是文件名与 Logo 类 token。逐页判定，真漏接键、机读面进 `ALLOWED_ENGLISH` 并写理由
+
+上游同步按维护者决定暂缓，不在清单内。此前三条活项的去向：中英同值与 placeholder 判定账在第 527 簇收口（五档判定落进 `GLOSSARY.md`）；lint 预算余量在第 528 簇收口（两条顶格规则降存量并锁棘轮）；`max-lines` 18 个巨型文件在第 529 簇收口（拆 1 退线，其余 17 个按归属记判定账保留豁免，理由见该簇）
 
 从这份清单里摘掉的十一条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过；批量建用户的 CSV 列名四处并列事实已在第 526 簇收成 `bulkUsersCsvTemplate.ts` 单一来源，改列名现为编译错；同值与 placeholder 判定账已在第 527 簇读完归档（真漏 3 处接掉、8 个真死键清掉、死键判定器修一处自引用误判）；lint 预算两条顶格规则已在第 528 簇降存量（prefer-screen-queries 18 到 0、no-console 16 到 11）并同步下调棘轮上限；`max-lines` 巨型文件账已在第 529 簇收口（usage.tsx 拆出两个模块退线，余 17 个记判定账）
 2026-10-20 追加（承 382-391 error-fallback 维度收口）：`playground/llm_calls/a2a_send_message.tsx` 专项已于 391 接其硬编回退子集——流式 `makeA2AStreamMessageRequest`（唯一 caller CompareUI:584）的 :296 "No response body" 复用 orphan `t("llmCalls.a2a.noResponseBody")`、:384 "Unknown A2A error" 接新键 `t("llmCalls.a2a.unknownA2AError")`，两串皆不含 "JSON" 故 `includes("JSON")` 流式解析错误判别逐 locale 不破、a2a 无单测但以 tsc 校签名位移 + 全 playground 168 例回归绿验 caller；非流式函数与流式内 server-detail/jsonRpc/`HTTP ${status}`/a2aError/errorMessage 动态透传判保留（后端串非 UI）。a2a 专项据此收口、无余留硬编 UI 英文待接；其余 error-fallback 漏已 382-389 接净、吞者（fetch_agents/prompts-utils/UITheme）入判定账。注：本节原 2026-10-13 文字（toast.fromError 355/handleError/copyToClipboard 三阻塞片）已于 380/381 接净、`useXxx` hooks error 已于 386 收口，相关「列入判定账」表述作废
@@ -5258,3 +5263,13 @@ python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2,
 本簇退线的是超线幅度最小的 `old-usage/_components/usage.tsx`（846 行，超 46）：组件内的日期与取数帮助函数（`formatDate`、`fillMissingDates`、`fetchAndSetData`、`valueFormatter`、`isAdminOrAdminViewer`）拆成 `usageHelpers.ts`，内联的 `TeamSpendBarList` 连同 `TeamSpendTotal` 类型拆成 `TeamSpendBarList.tsx`，真实行数降到 752。顺带 `usageHelpers` 里 `formatDate` 的两个 `let` 被 eslint --fix 成 `const`（原文件里它们被抑制基线盖着），`npx eslint . --prune-suppressions` 清掉该文件的 max-lines 豁免并把 prefer-const 计数从 6 降到 4。行为不变的验证：`legacyPageRoutes` 与 `leftnav` 53 例全绿、`npx tsc --noEmit` 0 错、九条预算全过、`npm run build` 退出 0
 
 其余 17 个记判定账、保留豁免，理由有三：它们全部是上游既有的巨型文件；拆分唯一收益是消一条 lint 豁免，代价是每次上游同步的三方合并都要在这些文件上重新对齐结构（`networking.tsx` 6807 行、`ChatUI.tsx` 2121 行、`TeamInfo.tsx` 2558 行这类是同步冲突的重灾区）；且其中 6 个超 1400 行的拆分本身就是多簇工程。日后若某个文件因功能改动被打开，可顺手拆出已内联的单元再退线（`CreateMCPServer.tsx` 已有 `createServerPayload.ts` 的先例可循），不做主动的纯拆分
+
+## 2026-10-24 第 530 簇：渲染扫描扩到 38 页，运行期重新立账
+
+静态口径在 525 到 529 簇已经全部归档，活项清零，按 README"口径要定期拿新形态去撞"的路线把渲染扫描从 15 页扩到 38 页主路由（`rendered-ui-fixtures.mjs` 的 `PAGES`）。这一扩撞出了两样东西
+
+**六页崩溃**。stub 代理对未登记路径回 `{}`，六个页面拿它当数组或对象直接崩进 Next 错误页（`mcp-servers` 的 `healthStatuses.map`、`access-groups` 的 `mcpServersData.map`、`caching` 的 `buildInitialValues` 读 `values["url"]`、`model-insights` 两处、`logging-and-alerts` 的 EmailEventSettings、`skills` 的 `plugins.length`）。定位手段是把 `pageerror` 日志带上调用栈前两帧、给未命中 stub 的请求加 `[stub-miss]` stderr 输出，两条都保留为常设诊断。修法全部落在 stub 侧（`/v1/mcp/server`、`/alerting/settings`、`/cache/settings`、`/coordination_redis/settings`、`/v1/traces`、`/email/event_settings` 等 20 多个端点补最小形状），页面代码一行未动：这些形状本来就是真实代理会返回的
+
+**真账 160 条进基线**。38 页全部渲染后，英文残留从原来的 2 条涨到 162 条。最大一片是 lens 追踪观察页 86 条，整页没进过汉化批次；其余是 api-reference 31（代码语料为主）、transform-request 20（curl 示例）、model-insights 5（表头疑似真漏）等零头，明细在基线文件里按页可数。这 162 条全部进基线，语义是"已知且记账"，不是"可接受"：lens 接完一块就撤一块，小页甄别完把真漏接掉、机读面进 `ALLOWED_ENGLISH`。两条活项见本节顶部的清单
+
+**验证**。`npm run scan:rendered` 38 页 0 渲染错误、0 条新发现；改动全在 `scripts/` 两个模块与基线文件，`npx eslint` 0 告警、prettier 干净；不动消息目录与组件，其余门禁不受影响

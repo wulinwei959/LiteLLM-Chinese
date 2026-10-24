@@ -114,6 +114,7 @@ const main = async () => {
       if (request.resourceType() !== "xhr" && request.resourceType() !== "fetch") return route.continue();
       if (url.origin !== new URL(proxyUrl).origin) return route.continue();
       const stub = stubFor(API_STUBS, url.pathname);
+      if (stub === undefined) console.warn(`[stub-miss] ${url.pathname}`);
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(stub ?? {}) });
     });
   }
@@ -128,7 +129,15 @@ const main = async () => {
       if (IGNORED_CONSOLE.some((pattern) => pattern.test(message.text()))) return;
       errors.push(`console: ${message.text().slice(0, 200)}`);
     };
-    const onPageError = (error) => errors.push(`pageerror: ${String(error).slice(0, 200)}`);
+    const onPageError = (error) => {
+      const stack = typeof error === "object" && error !== null && error.stack ? String(error.stack) : String(error);
+      const at = stack
+        .split("\n")
+        .filter((line) => /at /.test(line))
+        .slice(0, 2)
+        .join(" | ");
+      errors.push(`pageerror: ${String(error).slice(0, 160)} @ ${at.slice(0, 220)}`);
+    };
     page.on("console", onConsole);
     page.on("pageerror", onPageError);
 

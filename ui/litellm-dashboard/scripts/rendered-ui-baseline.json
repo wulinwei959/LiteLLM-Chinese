@@ -9,6 +9,806 @@
       "page": "model-health",
       "kind": "english",
       "text": "systemone"
+    },
+    {
+      "page": "skills",
+      "kind": "english",
+      "text": "Claude Code"
+    },
+    {
+      "page": "skills",
+      "kind": "english",
+      "text": "claude-code"
+    },
+    {
+      "page": "skills",
+      "kind": "english",
+      "text": "marketplace.json"
+    },
+    {
+      "page": "telemetry",
+      "kind": "english",
+      "text": "Telemetry"
+    },
+    {
+      "page": "caching",
+      "kind": "english",
+      "text": "Anthropic"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "english",
+      "text": "UTC"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "english",
+      "text": "token"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "english",
+      "text": "Docs"
+    },
+    {
+      "page": "model-insights",
+      "kind": "english",
+      "text": "Linear"
+    },
+    {
+      "page": "model-insights",
+      "kind": "english",
+      "text": "Log"
+    },
+    {
+      "page": "model-insights",
+      "kind": "english",
+      "text": "Requests"
+    },
+    {
+      "page": "model-insights",
+      "kind": "english",
+      "text": "Spend"
+    },
+    {
+      "page": "model-insights",
+      "kind": "english",
+      "text": "session"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Access to its configuration"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "After an order lookup times out"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Agent swarms"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Agents"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "An administrator can configure analysis and run investigations."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "An analysis model"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Before you start"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Capture your agent"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Check setup"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Choose an analysis model and spending limit."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Claims numbers it never measured"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Configure analysis"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Copy a prompt for your coding agent. It checks your setup and asks only for missing choices."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Datasets"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Demo data"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Describe the expected behavior and review a sample of activity."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Docker or Kubernetes"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Docker setup"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Docs"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Each step checks your connection"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Enable Lens in your Helm or Docker deployment."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Enable Lens in your existing Helm or Docker deployment. It runs alongside LiteLLM and stores your traces."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Error"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Evals"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Every run"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Failed"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Find what needs fixing"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Findings"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "For investigations"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Get Lens running"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Helm setup"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "High priority"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Home"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Included"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Insights for the next run"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Install Lens"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Investigations"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Lens findings"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "LiteLLM gateway"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Medium priority"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Next step"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "One place"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Promises to follow up"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Report the failed benchmark instead of estimating."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Reports a speedup even though the benchmark failed."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Run your first investigation"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Sample trace"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Send your first trace"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Set it up for me"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Set up Lens"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "The column store is"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "The gateway that helps your agents improve"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Trace storage"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Traces"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Tracing"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Turn recorded agent runs into findings linked to the exact steps"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Use a Lens release supported by this LiteLLM integration. The deployment connects the services and supplies trace storage."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Use your existing deployment"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "View prompt"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "Your infrastructure stores the traces. Investigation content is sent to your selected model provider."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "after tracing is connected"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "agent"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "and tool calls."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "answer"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "benchmark"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "benchmark runner unavailable"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "docs"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "every recorded step"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "faster than the row store for your workload."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "linked runs"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "ll see when it"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "or use your own ClickHouse"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "output"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "outputs"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "plan"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "research"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "run"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "s inputs"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "s working."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "sample runs reviewed"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "search"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "so you"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "so you know what happened and what to change."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "the agent promises to check and ends the run."
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "then stops"
+    },
+    {
+      "page": "lens",
+      "kind": "english",
+      "text": "your infrastructure"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "english",
+      "text": "CyberArk Conjur"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "english",
+      "text": "Hashicorp Vault"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "english",
+      "text": "SCIM"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "Authorization"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "Bearer sk-xxx'"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "Content-Type"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "X POST"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "You are a helpful assistant."
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "api.openai.com"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "application"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "chat"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "completions"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "content"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "curl"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "gpt-"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "https"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "issue"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "json'"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "messages"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "model"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "role"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "system"
+    },
+    {
+      "page": "transform-request",
+      "kind": "english",
+      "text": "temperature"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "english",
+      "text": "Logo"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "english",
+      "text": "ico"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "english",
+      "text": "logo"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "english",
+      "text": "png"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "english",
+      "text": "svg"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "english",
+      "text": "CloudZero"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "english",
+      "text": "MS Teams"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "Langchain Py"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "LiteLLM Proxy is OpenAI compatible"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "LlamaIndex"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "OpenAI Python SDK"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "Read More"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "api"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "base"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "client"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "client.chat.completions.create"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "content"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "docs"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "docs.litellm.ai"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "gpt-"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "https"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "import openai"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "key"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "keys"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "messages"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "model"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "model to send to the proxy"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "openai.OpenAI"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "print"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "proxy"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "response"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "role"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "this is a test request"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "turbo"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "url"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "user"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "write a short poem"
+    },
+    {
+      "page": "api-reference",
+      "kind": "english",
+      "text": "your"
     }
   ]
 }

@@ -80,7 +80,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件）；预算九条全过，`no-large-inline-object-arg` 476/477、`no-long-condition-chain` 200/200、`no-console` 11/11（第 528 簇自研脚本清零后锁进棘轮）、`testing-library/prefer-screen-queries` 0/0（同簇清零） |
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
-| 实机 | `npm run scan:rendered` 在 15 个页面 0 渲染错误、除基线两枚端点路径外 0 处英文（2026-10-24 在第 524 簇之后复跑过，与第 515 簇首跑逐页一致） |
+| 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误（第 530 簇扩面，此前 15 页）；英文残留 162 条按页记账在基线里，最大一片是未翻的 lens 追踪观察页 86 条，已列为下簇施工对象 |
 | CI | UI 侧四个工作流：`test-litellm-ui-lint`（改动文件 prettier + eslint、lint 预算、knip、死键）、`test-litellm-ui-unit`、`test-litellm-ui-build`、`check-ui-api-types` |
 
 ## 怎么验证
@@ -111,6 +111,7 @@ npm run build
 
 - **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉
 - **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
+- **lens 追踪观察页整体未翻（第 530 簇的运行期发现）**。渲染扫描扩到 38 页后，`/lens` 一页撞出 86 条英文，说明句、空态与接入指引整页没进过汉化批次，是当前最大的真账。其余小页零头 76 条按页甄别：真漏接键，机读面进 `ALLOWED_ENGLISH`。逐页明细在 `rendered-ui-baseline.json`
 - **17 个上游巨型文件保留 `max-lines` 豁免（第 529 簇的判定账）**。实测它们在上游 `v1.107.0` 树上就已全部超线，拆分的收益只有消一条 lint 豁免，代价是每次上游同步都要在这些文件上重新对齐结构。我们自己的批次撑过线的 4 个已在第 523/524 簇拆完退线，第 529 簇又把超线幅度最小的 `old-usage/usage.tsx` 拆到 752 行退线。日后因功能改动打开哪个文件，顺手拆出内联单元即可
 - **lint 棘轮纪律**。`no-long-condition-chain` 200/200 与 `no-large-inline-object-arg` 476/477 仍顶格，新增写法会把门禁改红；收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限。`no-console` 11/11 与 `prefer-screen-queries` 0/0 的余量已在第 528 簇腾出并锁死
 

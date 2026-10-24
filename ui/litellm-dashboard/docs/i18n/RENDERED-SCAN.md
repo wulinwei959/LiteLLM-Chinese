@@ -2,7 +2,11 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-24 第 525 簇之后当天（同日第 524 簇之后也跑过一次，两次逐页一致），15 个页面各 0 个渲染错误，只有 `model-health`（`/models-and-endpoints?tab=health`）剩基线里的 2 处端点路径段，其余 14 页 0 处英文，与第 515 簇首跑那轮的结论逐页一致，中间两簇的文件级拆分没有改变渲染结果。
+最近一次复跑：2026-10-24 第 530 簇。这一簇把扫描面从 15 页扩到 38 页主路由（`PAGES` 列表见 `rendered-ui-fixtures.mjs`），并给 stub 代理补了 20 多个端点的最小形状（`/v1/mcp/server`、`/alerting/settings`、`/cache/settings`、`/coordination_redis/settings`、`/v1/traces` 这类），其中 6 个页面此前在空 stub 下直接崩进 Next 错误页，错误页的 "Back/Reload" 假英文会污染结果；现在 38 页全部渲染出真实内容。诊断手段也进了一步：`pageerror` 会带上调用栈前两帧、未命中 stub 的请求路径会以 `[stub-miss]` 打到 stderr，这两条是本次定位 6 处崩溃的手段，保留为常设行为
+
+基线因此从 2 条涨到 162 条。这不是门禁变松，而是新页面的真账第一次被看见：lens（追踪观察页）86 条、api-reference 31 条（多为代码语料）、transform-request 20 条（curl 示例）、model-insights 5 条、其余零头见基线文件。Lens 是下一个施工对象，接完它的键就从基线里撤
+
+（沿革记录）第 525 簇复跑时是 15 个页面，各 0 个渲染错误，只有 `model-health` 剩基线里的 2 处端点路径段，与第 515 簇首跑那轮的结论逐页一致，中间两簇的文件级拆分没有改变渲染结果
 
 页面清单新增 `search-tools`、`roi-calculator` 与 `model-health`。`model-health` 靠 URL 参数 `?tab=health` 直达页内 tab（`useUrlTab` 的键就是 `tab`），不需要脚本支持点击。首轮撞出 `proxyConfigData.find is not a function`，成因仍是桩代理对未登记路径回 `{}`，补 `/models/list`（两行模型，一行带健康记录、一行不带，用来同时覆盖日期列与"无"哨兵列）、`/health/latest`、`/config/list`（数组）三个桩后归零。同轮扫出两处真缺陷：`DecisionModelsBanner` 的 `orTry` 词条本身已是完整句（en ", or try them in the Decisions playground."），JSX 却又硬拼一个 `playground.{" "}` 文本节点，两种语言都会重复渲染句尾，且 JSX 那个多余的 `, ` 与词条前导逗号叠成双逗号；顺带把 zh 的 `orTry` 从"决策 playground"改成侧栏既有术语"决策演练场"。正文里剩下的 `GitHub` 与 `GitHub Enterprise` 是产品名，进 `ALLOWED_ENGLISH`。ROI 页第一次扫时撞出 `Cannot read properties of undefined (reading 'length')`，原因是桩代理对未登记的 `/roi-calculator/*` 一律回 `{}`，补进四个桩（settings、report、sync、repositories，字段按 `schema.d.ts` 的 `ROISettingsResponse`/`ROISyncStatus`/`ROIReportResponse`/`ROIRepositoriesResponse` 对齐）后归零。正文里剩下的 `GitHub` 与 `GitHub Enterprise` 是产品名，进 `ALLOWED_ENGLISH`
 
