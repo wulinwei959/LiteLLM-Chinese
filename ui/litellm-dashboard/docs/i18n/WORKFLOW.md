@@ -33,7 +33,7 @@
 替换的对象要想清楚。只替换**传给组件的字符串**，不要替换组件本身。列定义里
 
 ```tsx
-header: ({ column }) => <DataTableSortHeader column={column} title="Name" />
+header: ({ column }) => <DataTableSortHeader column={column} title="Name" />;
 ```
 
 要改成 `title={t("name")}`，写成 `header: t("name")` 会把 `DataTableSortHeader` 整个丢掉，表头不再可点击排序，而且只有断言排序的测试才会暴露这个问题
@@ -171,12 +171,12 @@ Failed to update MCP Server{suffix}
 
 消息里的尖括号与花括号都要用单引号括起来，否则 `t()` 在渲染时抛错
 
-| 场景                   | 写法                                                    |
-| ---------------------- | ------------------------------------------------------- |
-| RFC 里的尖括号         | `api://'<app-id>'/.default`                             |
-| 内嵌 JSON 示例         | `(e.g. '{'"organization": "my-org"'}')`                 |
-| 富文本                 | `请查看 <link>文档</link>`，用 `t.rich` 渲染            |
-| 所有格里的撇号         | `caller's` 直接写，不会被当成引号                        |
+| 场景           | 写法                                         |
+| -------------- | -------------------------------------------- |
+| RFC 里的尖括号 | `api://'<app-id>'/.default`                  |
+| 内嵌 JSON 示例 | `(e.g. '{'"organization": "my-org"'}')`      |
+| 富文本         | `请查看 <link>文档</link>`，用 `t.rich` 渲染 |
+| 所有格里的撇号 | `caller's` 直接写，不会被当成引号            |
 
 富文本标签名有白名单（`strong, b, i, em, link, code, br, claude, codex, docslink, issuelink`），`messagesParity` 会拒掉别的尖括号，比如自造的 `<v>`；样式留在 JSX formatter 里，`t.rich` 传入的 formatter 键名必须与标签名一致
 
@@ -201,4 +201,3 @@ Failed to update MCP Server{suffix}
 文件超 `max-lines`（800 行，跳过空行与注释）时按数据层或子组件拆文件，不要往 `eslint-suppressions.json` 里塞新条目。拆的时候只搬移、不改行为，搬完逐行核对与新模块等价（允许多出一个 `export` 关键字），消费方的 import 一起改指新模块，不给旧文件留 re-export 的兼容层。`.tsx` 文件名受 `local/filename-pascal-case` 约束，含 JSX 的数据模块只能叫 PascalCase；纯 `.ts` 模块沿用既有的小写命名即可。本轮按此处理的例子是 `modelInfoEditFields.ts`、`KeyEditViewControls.tsx` 里的 `KeyThroughputAndEstimateFields`、`LeftnavMenuGroups.tsx`、`GuardrailCustomCodeCard.tsx` 与 `GuardrailIdCopyButton.tsx`
 
 规则预算（`eslint-budgets.json`）的涨落要归因到文件。规则建议的修法几乎都是"把内联对象提成具名变量"，条件链则改成早返回的辅助函数，别为了过门禁去调上限
-

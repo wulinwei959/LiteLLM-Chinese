@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { useMarginConfig } from "./use_margin_config";
 import { toast } from "@/lib/toast";
@@ -27,8 +27,7 @@ vi.mock("@/components/provider_info_helpers", () => ({
   },
 }));
 
-const wrapper = ({ children }: { children: ReactNode }) =>
-  React.createElement(LocaleProvider, { locale: "zh-CN" }, children);
+const wrapper = ({ children }: { children: ReactNode }) => <LocaleProvider locale="zh-CN">{children}</LocaleProvider>;
 
 describe("useMarginConfig", () => {
   beforeEach(() => {

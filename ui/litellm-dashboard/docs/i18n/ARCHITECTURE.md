@@ -10,30 +10,30 @@
 
 ## 文件职责
 
-| 文件                                         | 职责                                                                                   |
-| -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `src/lib/i18n/locales.ts`                    | 纯函数层：支持的语言常量、类型守卫、语言标签归一、初始语言决策                         |
-| `src/contexts/LocaleContext.tsx`             | 运行时层：读 `localStorage`、订阅变更、挂 `NextIntlClientProvider`、暴露 `useUiLocale` |
-| `src/components/shared/LanguageSwitcher.tsx` | 唯一的选择器 UI，挂在 `UserDropdown` 与 `SidebarAccountMenu` 两处                      |
-| `src/lib/i18n/format.ts`                     | 格式化层：按当前 UI locale 格式化日期、时间、数字与货币                                |
-| `src/messages/en.json`                       | 英语目录，同时是类型的真身（见"类型增强"）                                             |
-| `src/messages/zh-CN.json`                    | 中文目录，键树必须与 `en.json` 逐条一致                                                |
-| `src/lib/i18n/next-intl.d.ts`                | 三行模块增强，把 `Messages` 收敛成 `en.json` 的形状                                    |
-| `src/lib/i18n/translators.ts`                | 每个命名空间一个具体翻译器类型，供 props 与函数参数使用                                |
-| `src/lib/i18n/messagesParity.test.ts`        | 守卫：两侧键树一致、占位符一致、ICU 语法合法                                           |
-| `src/lib/i18n/missingKeys.test.ts`           | 守卫：代码里 `t("x")` 引用的键在 `en.json` 里真的存在                                  |
-| `src/lib/i18n/locales.test.ts`               | 守卫：语言解析与回退规则                                                               |
-| `src/lib/i18n/format.test.tsx`               | 守卫：格式化按当前 locale 走，无效日期不抛                                             |
-| `scripts/dead-keys.py`                       | 判定器：找出 `en.json` 里代码从未引用的键                                              |
-| `scripts/dead-key-lib.mjs`                   | 判定器的可单测部分：输出解析、新增死键与已解决死键两个方向                             |
-| `scripts/check-dead-keys.mjs`                | 门禁：死键集合对基线做棘轮，新增即失败                                                 |
-| `dead-keys-baseline.json`                    | 死键基线，当前为空集                                                                   |
-| `tests/dead-key-lib.test.ts`                 | 判定器判定逻辑的单测                                                                   |
-| `tests/test-utils.tsx`                       | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                |
-| `tests/i18nStub.ts`                          | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                       |
-| `tests/mocks/authorizedSession.ts`           | 测试侧的 auth session 工厂，给打桩 `useAuthorized` 的用例用                            |
-| `scripts/scan-english.mjs`                     | 静态扫描器：AST 口径找英文字面量（jsx 文本、四个属性、toast、throw，宽口径含模板串）                                      |
-| `scripts/rendered-ui-scan.mjs`                 | 渲染扫描器：驱动真浏览器逐页取 DOM，查目录与调用点都抓不到的运行期故障与残留英文，基线在 `scripts/rendered-ui-baseline.json`       |
+| 文件                                         | 职责                                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/i18n/locales.ts`                    | 纯函数层：支持的语言常量、类型守卫、语言标签归一、初始语言决策                                                               |
+| `src/contexts/LocaleContext.tsx`             | 运行时层：读 `localStorage`、订阅变更、挂 `NextIntlClientProvider`、暴露 `useUiLocale`                                       |
+| `src/components/shared/LanguageSwitcher.tsx` | 唯一的选择器 UI，挂在 `UserDropdown` 与 `SidebarAccountMenu` 两处                                                            |
+| `src/lib/i18n/format.ts`                     | 格式化层：按当前 UI locale 格式化日期、时间、数字与货币                                                                      |
+| `src/messages/en.json`                       | 英语目录，同时是类型的真身（见"类型增强"）                                                                                   |
+| `src/messages/zh-CN.json`                    | 中文目录，键树必须与 `en.json` 逐条一致                                                                                      |
+| `src/lib/i18n/next-intl.d.ts`                | 三行模块增强，把 `Messages` 收敛成 `en.json` 的形状                                                                          |
+| `src/lib/i18n/translators.ts`                | 每个命名空间一个具体翻译器类型，供 props 与函数参数使用                                                                      |
+| `src/lib/i18n/messagesParity.test.ts`        | 守卫：两侧键树一致、占位符一致、ICU 语法合法                                                                                 |
+| `src/lib/i18n/missingKeys.test.ts`           | 守卫：代码里 `t("x")` 引用的键在 `en.json` 里真的存在                                                                        |
+| `src/lib/i18n/locales.test.ts`               | 守卫：语言解析与回退规则                                                                                                     |
+| `src/lib/i18n/format.test.tsx`               | 守卫：格式化按当前 locale 走，无效日期不抛                                                                                   |
+| `scripts/dead-keys.py`                       | 判定器：找出 `en.json` 里代码从未引用的键                                                                                    |
+| `scripts/dead-key-lib.mjs`                   | 判定器的可单测部分：输出解析、新增死键与已解决死键两个方向                                                                   |
+| `scripts/check-dead-keys.mjs`                | 门禁：死键集合对基线做棘轮，新增即失败                                                                                       |
+| `dead-keys-baseline.json`                    | 死键基线，当前为空集                                                                                                         |
+| `tests/dead-key-lib.test.ts`                 | 判定器判定逻辑的单测                                                                                                         |
+| `tests/test-utils.tsx`                       | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                                                      |
+| `tests/i18nStub.ts`                          | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                                                             |
+| `tests/mocks/authorizedSession.ts`           | 测试侧的 auth session 工厂，给打桩 `useAuthorized` 的用例用                                                                  |
+| `scripts/scan-english.mjs`                   | 静态扫描器：AST 口径找英文字面量（jsx 文本、四个属性、toast、throw，宽口径含模板串）                                         |
+| `scripts/rendered-ui-scan.mjs`               | 渲染扫描器：驱动真浏览器逐页取 DOM，查目录与调用点都抓不到的运行期故障与残留英文，基线在 `scripts/rendered-ui-baseline.json` |
 
 ## 语言怎么定下来
 
@@ -65,21 +65,21 @@
 
 顶层 38 个命名空间，按功能域切分，不是按文件切分。`mcpServers` 最大，因为 MCP 服务器是功能最多的路由
 
-| 命名空间            | 归属                                       |
-| ------------------- | ------------------------------------------ |
-| `common`            | 跨页面通用的按钮、状态、回退文案            |
-| `nav`、`breadcrumb` | 导航结构                                    |
-| `viewSwitcher`      | 旧版与新版的视图切换                        |
-| `login`、`onboarding`、`ssoEnabledNotice`、`changePassword` | 认证与首次进入 |
-| `virtualKeys`、`teams`、`users`、`organizations`、`budgets`、`projects`、`access-groups` | 身份与权限管理 |
-| `models`            | 模型与端点，含 `autoRouters` 子命名空间      |
-| `mcpServers`        | MCP 服务器全线，最大的一个                  |
-| `guardrails`、`guardrailsMonitor`、`policies` | 安全与合规                    |
-| `usage`、`costTracking`、`costOptimization` | 用量与成本                      |
-| `prompts`、`skills`、`memory`、`workflows`、`agents` | 智能体相关功能      |
-| `vectorStores`、`searchTools`、`caching`、`tagManagement` | 数据与检索      |
-| `playground`、`apiReference` 等 | 工具与参考页                     |
-| `logs`、`adminPanel`、`uiTheme`、`routerSettings`、`transformRequest` | 运维与系统设置 |
+| 命名空间                                                                                 | 归属                                    |
+| ---------------------------------------------------------------------------------------- | --------------------------------------- |
+| `common`                                                                                 | 跨页面通用的按钮、状态、回退文案        |
+| `nav`、`breadcrumb`                                                                      | 导航结构                                |
+| `viewSwitcher`                                                                           | 旧版与新版的视图切换                    |
+| `login`、`onboarding`、`ssoEnabledNotice`、`changePassword`                              | 认证与首次进入                          |
+| `virtualKeys`、`teams`、`users`、`organizations`、`budgets`、`projects`、`access-groups` | 身份与权限管理                          |
+| `models`                                                                                 | 模型与端点，含 `autoRouters` 子命名空间 |
+| `mcpServers`                                                                             | MCP 服务器全线，最大的一个              |
+| `guardrails`、`guardrailsMonitor`、`policies`                                            | 安全与合规                              |
+| `usage`、`costTracking`、`costOptimization`                                              | 用量与成本                              |
+| `prompts`、`skills`、`memory`、`workflows`、`agents`                                     | 智能体相关功能                          |
+| `vectorStores`、`searchTools`、`caching`、`tagManagement`                                | 数据与检索                              |
+| `playground`、`apiReference` 等                                                          | 工具与参考页                            |
+| `logs`、`adminPanel`、`uiTheme`、`routerSettings`、`transformRequest`                    | 运维与系统设置                          |
 
 命名空间可以嵌套，`models.autoRouters` 与 `usage.aiChat` 就是例子。嵌套会让键树更长，但能让一个页面的键自成一块，读起来比平铺清楚
 

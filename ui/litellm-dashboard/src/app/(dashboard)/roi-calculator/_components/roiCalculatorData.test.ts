@@ -86,11 +86,14 @@ it("exports precise spend, cohort eligibility and safely quoted CSV values", () 
     effort_basis: "without_ai",
     people: [
       {
+        id: "person-1",
         email: '=HYPERLINK("bad")',
         logins: ["alice", "bob"],
+        match_methods: ["profile email"],
         spend: 0.0001,
         hours: 4,
         prs: 1,
+        estimated_prs: 0,
         pending_prs: 0,
         eligible: true,
         cost_per_hour: 0.000025,
