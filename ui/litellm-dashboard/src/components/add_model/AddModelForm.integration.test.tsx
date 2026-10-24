@@ -650,7 +650,7 @@ describe("AddModelForm", () => {
       await user.click(screen.getByRole("button", { name: "创建凭据" }));
       const dialog = await screen.findByRole("dialog");
       expect(within(dialog).getByPlaceholderText("选择提供商")).toHaveValue(Providers.MICROSOFT_365_COPILOT);
-      expect(within(dialog).getByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
+      expect(within(dialog).getByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
         "OAuth token exchange (on-behalf-of)",
       );
       await chooseSelectOption(
@@ -714,11 +714,11 @@ describe("AddModelForm", () => {
       const props = await renderAsAdmin();
       await chooseSelectOption(
         user,
-        screen.getByRole("combobox", { name: "Auth Type:" }),
+        screen.getByRole("combobox", { name: "认证类型：" }),
         "Static delegated access token",
       );
       await waitFor(() =>
-        expect(screen.getByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Static delegated access token"),
+        expect(screen.getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Static delegated access token"),
       );
       fireEvent.change(screen.getByLabelText("Delegated Access Token"), { target: { value: "delegated-token" } });
       props.handleOk.mockImplementation(async () => {
@@ -740,13 +740,13 @@ describe("AddModelForm", () => {
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
-      await chooseSelectOption(user, screen.getByRole("combobox", { name: "Auth Type:" }), "Per-user GitHub OAuth");
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "认证类型：" }), "Per-user GitHub OAuth");
       await user.click(screen.getByRole("button", { name: "创建凭据" }));
       const dialog = await screen.findByRole("dialog");
       const providerSelect = within(dialog).getByPlaceholderText("选择提供商");
       expect(providerSelect).toHaveValue(Providers.GITHUB_COPILOT);
       expect(providerSelect).toBeDisabled();
-      expect(within(dialog).getByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Per-user GitHub OAuth");
+      expect(within(dialog).getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Per-user GitHub OAuth");
       fireEvent.change(within(dialog).getByLabelText("凭据名称："), {
         target: { value: "github-per-user" },
       });
@@ -793,7 +793,7 @@ describe("AddModelForm", () => {
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
-      expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Shared device login");
+      expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Shared device login");
       expect(screen.queryByRole("button", { name: "创建凭据" })).not.toBeInTheDocument();
       fireEvent.change(screen.getByLabelText("API Key"), { target: { value: "shared-device-token" } });
       props.handleOk.mockImplementation(async () => {

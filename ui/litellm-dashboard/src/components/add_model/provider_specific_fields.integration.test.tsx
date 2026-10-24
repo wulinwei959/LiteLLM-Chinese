@@ -62,7 +62,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Per-user GitHub OAuth");
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Per-user GitHub OAuth");
     expect(screen.getByRole("button", { name: "创建凭据" })).toBeInTheDocument();
     expect(screen.getByTestId("github-copilot-auth-type")).toBeEmptyDOMElement();
     await userEvent.click(screen.getByRole("button", { name: "创建凭据" }));
