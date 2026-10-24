@@ -351,7 +351,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
   // Test guardrail using backend endpoint
   const handleTest = async () => {
     if (!accessToken) {
-      setTestResult({ error: "No access token available" });
+      setTestResult({ error: t("testNoAccessToken") });
       return;
     }
 
@@ -364,7 +364,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
       try {
         parsedInput = JSON.parse(testInput);
       } catch (e) {
-        setTestResult({ error: "Invalid test input JSON" });
+        setTestResult({ error: t("testInvalidInputJson") });
         setIsTesting(false);
         return;
       }
@@ -406,7 +406,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
     } catch (error) {
       console.error("Failed to test custom code:", error);
       setTestResult({
-        error: error instanceof Error ? error.message : "Failed to test custom code",
+        error: error instanceof Error ? error.message : t("testFailed"),
       });
     } finally {
       setIsTesting(false);

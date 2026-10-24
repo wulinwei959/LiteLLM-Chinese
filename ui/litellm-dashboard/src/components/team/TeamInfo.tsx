@@ -730,7 +730,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       const response = await teamInfoCall(accessToken, teamId);
       setTeamData(response);
     } catch (error) {
-      toast.fromError("Failed to load team information");
+      toast.error(t("loadTeamInfoFailed"));
       console.error("Error fetching team info:", error);
     } finally {
       setLoading(false);
@@ -742,7 +742,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
     try {
       setTeamData(await teamInfoCall(accessToken, teamId));
     } catch {
-      toast.fromError("Failed to load team information");
+      toast.error(t("loadTeamInfoFailed"));
     } finally {
       void queryClient.invalidateQueries({ queryKey: teamMemberBudgetQueryKey(teamId) });
     }
@@ -847,7 +847,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       let errMsg = t("infoFailedToAddTeamMember");
 
       if (error?.raw?.detail?.error?.includes("Assigning team admins is a premium feature")) {
-        errMsg = "Assigning admins is an enterprise-only feature. Please upgrade your LiteLLM plan to enable this.";
+        errMsg = t("assignAdminsEnterpriseHint");
       } else if (error?.message) {
         errMsg = error.message;
       }
@@ -893,7 +893,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
     } catch (error: any) {
       let errMsg = t("infoFailedToUpdateTeamMember");
       if (error?.raw?.detail?.includes("Assigning team admins is a premium feature")) {
-        errMsg = "Assigning admins is an enterprise-only feature. Please upgrade your LiteLLM plan to enable this.";
+        errMsg = t("assignAdminsEnterpriseHint");
       } else if (error?.message) {
         errMsg = error.message;
       }
@@ -1668,10 +1668,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                         <FormField
                           control={form.control}
                           name="default_team_member_models"
-                          label={labelWithHint(
-                            "Default Model Access",
-                            "Optional. If set, new members can only access these models by default. Must be a subset of the team's models above. Leave empty to give all members access to all team models.",
-                          )}
+                          label={labelWithHint(t("defaultMemberModelsLabel"), t("defaultMemberModelsHint"))}
                         >
                           {({ id, value, onChange }) => (
                             <MultiSelect

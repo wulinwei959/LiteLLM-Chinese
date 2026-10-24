@@ -2275,6 +2275,10 @@
     "deleteFailed": "Failed to delete the model"
   },
   "teams": {
+    "loadTeamInfoFailed": "Failed to load team information",
+    "assignAdminsEnterpriseHint": "Assigning admins is an enterprise-only feature. Please upgrade your LiteLLM plan to enable this.",
+    "defaultMemberModelsLabel": "Default Model Access",
+    "defaultMemberModelsHint": "Optional. If set, new members can only access these models by default. Must be a subset of the team's models above. Leave empty to give all members access to all team models.",
     "title": "Teams",
     "subtitle": "Manage teams, their members, and their model access",
     "createTeam": "Create Team",
@@ -3432,6 +3436,9 @@
     "notAvailable": "n/a"
   },
   "guardrails": {
+    "testNoAccessToken": "No access token available",
+    "testInvalidInputJson": "Invalid test input JSON",
+    "testFailed": "Failed to test custom code",
     "title": "Guardrails",
     "selectGuardrailsPlaceholder": "Select guardrails",
     "premiumGuardrailPlaceholder": "Setting guardrails is a premium feature.",
@@ -4770,6 +4777,7 @@
     "phPolicyNameExample": "e.g., global-baseline, healthcare-compliance"
   },
   "adminPanel": {
+    "allIpAllowed": "All IP Addresses Allowed",
     "title": "Admin Settings",
     "tabs": {
       "general": "General",
@@ -10849,6 +10857,7 @@
     "contentLabel": "Content ({type})"
   },
   "modelHub": {
+    "toastLinkNameExists": "A link with this display name already exists",
     "reachableDescription": "Server responded. Authentication and tools were not checked",
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
     "showingAgents": "Showing {shown} of {total, plural, one {# agent} other {# agents}}",

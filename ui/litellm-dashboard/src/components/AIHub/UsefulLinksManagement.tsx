@@ -124,7 +124,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
 
     // Check for duplicate display names
     if (links.some((link) => link.displayName === newLink.displayName)) {
-      toast.fromError("A link with this display name already exists");
+      toast.error(t("toastLinkNameExists"));
       return;
     }
 
@@ -160,7 +160,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
 
     // Check for duplicate display names (excluding current link)
     if (links.some((link) => link.id !== editingLink.id && link.displayName === editingLink.displayName)) {
-      toast.fromError("A link with this display name already exists");
+      toast.error(t("toastLinkNameExists"));
       return;
     }
 

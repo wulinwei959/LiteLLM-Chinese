@@ -297,7 +297,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
                   <TableBody>
                     {allowedIPs.map((ip, index) => (
                       <TableRow key={index}>
-                        <TableCell>{ip}</TableCell>
+                        <TableCell>{ip === all_ip_address_allowed ? t("allIpAllowed") : ip}</TableCell>
                         <TableCell className="text-right">
                           {ip !== all_ip_address_allowed && (
                             <Button onClick={() => handleDeleteIP(ip)} variant="destructive" size="sm">

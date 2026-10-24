@@ -213,7 +213,7 @@ describe("AdminPanel", () => {
       const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
+        expect(screen.getByText("允许全部 IP 地址")).toBeInTheDocument();
       });
     });
 
@@ -245,7 +245,7 @@ describe("AdminPanel", () => {
       const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
+        expect(screen.getByText("允许全部 IP 地址")).toBeInTheDocument();
       });
       const deleteButtons = screen.queryAllByRole("button", { name: /删除/ });
       expect(deleteButtons.length).toBe(0);

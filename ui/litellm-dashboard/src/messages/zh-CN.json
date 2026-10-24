@@ -2275,6 +2275,10 @@
     "deleteFailed": "删除模型失败"
   },
   "teams": {
+    "loadTeamInfoFailed": "加载团队信息失败",
+    "assignAdminsEnterpriseHint": "指派管理员是企业版专属功能，请升级 LiteLLM 套餐后再启用。",
+    "defaultMemberModelsLabel": "默认模型访问范围",
+    "defaultMemberModelsHint": "可选。设置后，新成员默认只能访问这些模型，必须是上方团队模型的子集。留空则所有成员可访问全部团队模型。",
     "title": "团队",
     "subtitle": "管理团队、其成员及其模型访问权限",
     "createTeam": "创建团队",
@@ -3432,6 +3436,9 @@
     "notAvailable": "不适用"
   },
   "guardrails": {
+    "testNoAccessToken": "没有可用的访问令牌",
+    "testInvalidInputJson": "测试输入不是合法的 JSON",
+    "testFailed": "自定义代码测试失败",
     "title": "护栏",
     "selectGuardrailsPlaceholder": "选择护栏",
     "premiumGuardrailPlaceholder": "配置护栏是高级功能。",
@@ -4770,6 +4777,7 @@
     "phPolicyNameExample": "例如 global-baseline、healthcare-compliance"
   },
   "adminPanel": {
+    "allIpAllowed": "允许全部 IP 地址",
     "title": "管理员设置",
     "tabs": {
       "general": "通用",
@@ -10845,6 +10853,7 @@
     "contentLabel": "内容（{type}）"
   },
   "modelHub": {
+    "toastLinkNameExists": "已存在相同显示名的链接",
     "reachableDescription": "服务器已响应，未检查认证与工具",
     "showingModels": "已显示 {shown}，共 {total} 个模型",
     "showingAgents": "已显示 {shown}，共 {total} 个智能体",
