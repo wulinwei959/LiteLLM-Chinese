@@ -43,14 +43,14 @@ it("renders the published Lens settings and uses the gateway session, prefix, an
   renderWithProviders(<EmbeddedLens accessToken="gateway-session" userRole="Admin" readOnly={false} />, {
     searchParams: "?tab=settings",
   });
-  expect(await screen.findByRole("heading", { name: "Add an analysis provider" })).toBeVisible();
-  expect(screen.getByRole("link", { name: "Configure analysis models" })).toHaveAttribute(
+  expect(await screen.findByRole("heading", { name: "添加分析提供商" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "配置分析模型" })).toHaveAttribute(
     "href",
     "https://github.com/BerriAI/lens/blob/main/docs/analysis.md",
   );
-  expect(screen.getByText("Tracing enabled")).toBeVisible();
-  const analysis = within(screen.getByRole("region", { name: "Analysis" }));
-  const copyPrompt = analysis.getByRole("button", { name: "Set it up for me" });
+  expect(screen.getByText("追踪已启用")).toBeVisible();
+  const analysis = within(screen.getByRole("region", { name: "分析" }));
+  const copyPrompt = analysis.getByRole("button", { name: "帮我设置" });
   await user.click(copyPrompt);
   const prompt = await navigator.clipboard.readText();
   expect(prompt).toContain("I opened Lens from an existing LiteLLM admin dashboard.");
@@ -58,8 +58,8 @@ it("renders the published Lens settings and uses the gateway session, prefix, an
   expect(prompt).toContain("Configure Lens investigations");
   expect(prompt).not.toContain("standalone Lens app");
   expect(prompt).not.toContain("gateway-session");
-  expect(copyPrompt).toHaveTextContent("Prompt copied");
-  expect(analysis.getByRole("button", { name: "Check configuration" })).toBeVisible();
+  expect(copyPrompt).toHaveTextContent("提示词已复制");
+  expect(analysis.getByRole("button", { name: "检查配置" })).toBeVisible();
   expect(network).toHaveBeenCalled();
 });
 
@@ -71,8 +71,8 @@ it("opens the packaged demo trace and preserves its shareable selection in the g
     onUrlUpdate,
   });
   await user.click(await screen.findByText("Where is order #1042?"));
-  const details = await screen.findByRole("complementary", { name: "Trace details" });
-  expect(await within(details).findByRole("tab", { name: "Thread" })).toBeVisible();
+  const details = await screen.findByRole("complementary", { name: "追踪详情" });
+  expect(await within(details).findByRole("tab", { name: "线程" })).toBeVisible();
   const query = new URLSearchParams(String(onUrlUpdate.mock.lastCall?.[0].queryString));
   expect(query.get("demo")).toBe("true");
   expect(query.get("trace")).toBeTruthy();
@@ -102,19 +102,19 @@ it("keeps manual installation on the unconfigured gateway landing and copies its
   });
   renderWithProviders(<EmbeddedLens accessToken="gateway-session" userRole="Admin" readOnly={false} />);
 
-  const setup = within(await screen.findByRole("region", { name: "Get Lens running" }));
-  expect(setup.getByRole("button", { name: /Install Lens/ })).toHaveAttribute("aria-expanded", "true");
-  expect(await setup.findByRole("link", { name: "Helm setup" })).toHaveAttribute(
+  const setup = within(await screen.findByRole("region", { name: "让 Lens 跑起来" }));
+  expect(setup.getByRole("button", { name: /安装 Lens/ })).toHaveAttribute("aria-expanded", "true");
+  expect(await setup.findByRole("link", { name: "Helm 设置" })).toHaveAttribute(
     "href",
     "https://docs.litellm.ai/docs/proxy/lens/deployment/kubernetes#existing-deployment",
   );
-  expect(setup.getByRole("link", { name: "Docker setup" })).toHaveAttribute(
+  expect(setup.getByRole("link", { name: "Docker 设置" })).toHaveAttribute(
     "href",
     "https://docs.litellm.ai/docs/proxy/lens/deployment/docker-compose",
   );
-  expect(setup.getByRole("button", { name: "Check setup" })).toBeEnabled();
+  expect(setup.getByRole("button", { name: "检查设置" })).toBeEnabled();
 
-  await user.click(setup.getByRole("button", { name: "Set it up for me" }));
+  await user.click(setup.getByRole("button", { name: "帮我设置" }));
   const prompt = await navigator.clipboard.readText();
   expect(prompt).toContain("existing LiteLLM admin dashboard");
   expect(prompt).toContain('LiteLLM API base: "https://gateway.test/prefix"');
