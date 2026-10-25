@@ -79,6 +79,7 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_BUILD_JOBS: "4"
   CARGO_NET_OFFLINE: "true"
+  TIKTOKEN_CACHE_DIR: /home/runner/.cache/tiktoken
 
 jobs:
   rust-lint:
