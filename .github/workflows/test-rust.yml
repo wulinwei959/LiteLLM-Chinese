@@ -91,7 +91,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - run: rustup toolchain install --no-self-update
+      - name: Ensure the pinned Rust toolchain is available
+        run: |
+          if [ ! -d "$HOME/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu" ]; then
+            rustup toolchain install --no-self-update
+          fi
 
       - run: cargo fmt --all --check
 
@@ -131,7 +135,11 @@ jobs:
           uv sync --frozen --no-install-project
           echo "PYTHONPATH=$PWD/.venv/lib/$(ls .venv/lib)/site-packages" >> "$GITHUB_ENV"
 
-      - run: rustup toolchain install --no-self-update
+      - name: Ensure the pinned Rust toolchain is available
+        run: |
+          if [ ! -d "$HOME/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu" ]; then
+            rustup toolchain install --no-self-update
+          fi
 
       - name: Check for the baked cargo-nextest
         id: nextest
@@ -191,7 +199,11 @@ jobs:
         with:
           version: "0.10.9"
 
-      - run: rustup toolchain install --no-self-update
+      - name: Ensure the pinned Rust toolchain is available
+        run: |
+          if [ ! -d "$HOME/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu" ]; then
+            rustup toolchain install --no-self-update
+          fi
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
