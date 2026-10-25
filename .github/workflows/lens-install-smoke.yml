@@ -25,7 +25,12 @@ concurrency:
 
 jobs:
   build-images:
-    runs-on: ubuntu-latest-16-cores
+    # This workflow needs Docker build/save/load, ghcr.io pulls, cosign
+    # verification, and kind/kubectl/helm downloads that the LAN Gitea runner
+    # cannot provide. Parked so manual triggers see a skipped job rather than
+    # an endless queue or a mid-step failure.
+    if: ${{ false }}
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -88,7 +93,8 @@ jobs:
 
   helm-install:
     needs: build-images
-    runs-on: ubuntu-latest-16-cores
+    if: ${{ false }}
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
