@@ -17,6 +17,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  CARGO_BUILD_JOBS: "4"
+
 jobs:
   rust-bridge:
     name: rust-bridge
@@ -1130,7 +1133,7 @@ jobs:
         if: steps.changes.outputs.decision != 'skip'
         env:
           CI: "true"
-        run: npm run test:types
+        run: npm run test:types -- --maxWorkers=4
 
       - name: Run UI unit tests (Vitest)
         if: steps.changes.outputs.decision != 'skip'
@@ -1140,7 +1143,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          full_suite() { npm run test -- --run --pool forks --maxWorkers=14; }
+          full_suite() { npm run test -- --run --pool forks --maxWorkers=4; }
 
           if [ -z "$BASE_SHA" ]; then
             echo "Push to $GITHUB_REF_NAME: running the full suite"
@@ -1170,7 +1173,7 @@ jobs:
 
           echo "Pull request: running tests related to ${#changed_files[@]} changed UI files"
           npm run test -- related "${changed_files[@]}" --run --passWithNoTests \
-            --pool forks --maxWorkers=14
+            --pool forks --maxWorkers=4
   docs:
     name: docs
     permissions:
