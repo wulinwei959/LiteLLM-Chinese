@@ -123,11 +123,12 @@ def test_in_memory_cache_ttl():
     - if ttl is not set, it will be set to default ttl
     - if object expires, the ttl is also removed
     """
-    in_memory_cache = InMemoryCache()
+    now = [1_000.0]
+    in_memory_cache = InMemoryCache(clock=lambda: now[0])
 
     in_memory_cache.set_cache(key="my-fake-key", value="my-fake-value", ttl=10)
     initial_ttl_time = in_memory_cache.ttl_dict["my-fake-key"]
-    assert initial_ttl_time is not None
+    assert initial_ttl_time == 1_010.0
 
     in_memory_cache.set_cache(key="my-fake-key", value="my-fake-value-2", ttl=10)
     new_ttl_time = in_memory_cache.ttl_dict["my-fake-key"]
@@ -136,9 +137,10 @@ def test_in_memory_cache_ttl():
     ## On object expiration, the ttl should be removed
     in_memory_cache.set_cache(key="new-fake-key", value="new-fake-value", ttl=1)
     new_ttl_time = in_memory_cache.ttl_dict["new-fake-key"]
-    assert new_ttl_time is not None
-    time.sleep(1)
+    assert new_ttl_time == 1_001.0
+    now[0] += 2
     cached_obj = in_memory_cache.get_cache(key="new-fake-key")
+    assert cached_obj is None
     new_ttl_time = in_memory_cache.ttl_dict.get("new-fake-key")
     assert new_ttl_time is None
 
@@ -149,12 +151,13 @@ def test_in_memory_cache_ttl_allow_override():
     - if ttl is not set, it will be set to default ttl
     - if object expires, the ttl is also removed
     """
-    in_memory_cache = InMemoryCache()
+    now = [1_000.0]
+    in_memory_cache = InMemoryCache(clock=lambda: now[0])
     ## On object expiration, but no get_cache, the override should be allowed
     in_memory_cache.set_cache(key="new-fake-key", value="new-fake-value", ttl=1)
     initial_ttl_time = in_memory_cache.ttl_dict["new-fake-key"]
-    assert initial_ttl_time is not None
-    time.sleep(1)
+    assert initial_ttl_time == 1_001.0
+    now[0] += 2
 
     in_memory_cache.set_cache(key="new-fake-key", value="new-fake-value-2", ttl=1)
     new_ttl_time = in_memory_cache.ttl_dict["new-fake-key"]
