@@ -1,6 +1,7 @@
 name: LiteLLM Rust
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - "litellm-rust/**"
