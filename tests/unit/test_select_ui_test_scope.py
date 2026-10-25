@@ -29,7 +29,7 @@ SCOPE_SCRIPT = REPO_ROOT / ".github" / "scripts" / "select_ui_test_scope.sh"
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "test-unit.yml"
 STEP_NAME = "Run UI unit tests (Vitest)"
 
-FULL_SUITE_ARGV = ["run", "test", "--", "--run", "--pool", "forks", "--maxWorkers=4"]
+FULL_SUITE_ARGV = ["run", "test", "--", "--run", "--pool", "forks", "--maxWorkers=14"]
 
 NON_SRC_FILES = [
     "package.json",
@@ -139,7 +139,7 @@ def _related_argv(changed: list[str]) -> list[str]:
         "--passWithNoTests",
         "--pool",
         "forks",
-        "--maxWorkers=4",
+        "--maxWorkers=14",
     ]
 
 
