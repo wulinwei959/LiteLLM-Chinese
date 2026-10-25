@@ -142,7 +142,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     expect(screen.queryByText("模型访问组")).not.toBeInTheDocument();
     openAutoRouterAdvanced("Affinity");
     await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(modelPatchUpdateCall).toHaveBeenLastCalledWith(
@@ -190,7 +190,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     const threshold = screen.getByRole("textbox", { name: "成功阈值" });
     expect(threshold).toHaveValue("0.91");
     fireEvent.change(threshold, { target: { value: raw } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     if (raw === "") expect(savedConfig()).not.toHaveProperty("heuristic_v2_success_threshold");
@@ -254,7 +254,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.88" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.queryByRole("textbox", { name: "成功阈值" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).toMatchObject({ classifier_type: "heuristic", heuristic_v2_success_threshold: 0.88 });
@@ -270,7 +270,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "清除启发式 v2 阈值" }));
     expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).not.toHaveProperty("heuristic_v2_success_threshold");
@@ -284,7 +284,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     renderModal();
 
     await screen.findByRole("combobox", { name: "分类频率" });
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -308,7 +308,7 @@ describe("EditAutoRouterModal keyword matching", () => {
 
     renderModal();
     await screen.findByRole("combobox", { name: "分类频率" });
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(validateAutoRouterConfig).toHaveBeenCalled());
@@ -343,7 +343,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     );
 
     await screen.findByRole("combobox", { name: "分类频率" });
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalled());
@@ -421,7 +421,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     );
     await user.click(await screen.findByText('创建 "chargeback"'));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     expect(screen.queryByText("至少需要一个关键词")).not.toBeInTheDocument();
   });
 });
@@ -463,7 +463,7 @@ describe("EditAutoRouterModal advanced field round trips", () => {
     openAutoRouterAdvanced("Response Format");
     const maxTokensSwitch = screen.getByRole("switch", { name: "按层级模型的输出上限限制 max_tokens" });
     await user.click(maxTokensSwitch);
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
 
@@ -487,7 +487,7 @@ describe("EditAutoRouterModal advanced field round trips", () => {
   it("preserves all stored advanced fields through an untouched save", async () => {
     const user = userEvent.setup();
     renderAdvancedModal();
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).toMatchObject({
@@ -540,7 +540,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     expect(screen.getByDisplayValue("5")).toBeInTheDocument();
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -572,7 +572,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     const input = await screen.findByLabelText("上下文窗口大小");
     fireEvent.change(input, { target: { value: "8" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -618,7 +618,7 @@ describe("EditAutoRouterModal assistant turns", () => {
     await screen.findByText("包含助手轮次");
     expect(screen.getByRole("switch", { name: "包含助手轮次" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -633,7 +633,7 @@ describe("EditAutoRouterModal assistant turns", () => {
     await screen.findByText("包含助手轮次");
     await user.click(screen.getByRole("switch", { name: "包含助手轮次" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -668,7 +668,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -682,7 +682,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个会话一次");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -696,7 +696,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Once per session");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -710,7 +710,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every request");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -724,7 +724,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every new user message");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -739,7 +739,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -753,7 +753,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every new user message");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -767,7 +767,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every request");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -799,7 +799,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -813,7 +813,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).not.toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -827,7 +827,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -841,7 +841,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByLabelText("固定状态在空闲后保留多久（秒）")).toHaveValue("300");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -857,7 +857,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     fireEvent.change(ttl, { target: { value: "300" } });
     fireEvent.blur(ttl);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -873,7 +873,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     fireEvent.change(ttl, { target: { value: "" } });
     fireEvent.blur(ttl);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -889,7 +889,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Modality Routing");
     expect(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -903,7 +903,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Modality Routing");
     await user.click(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -920,7 +920,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
       "true",
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -969,7 +969,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
     expect(await screen.findByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /路由到默认模型/ })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -984,7 +984,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(await screen.findByRole("radio", { name: /使用启发式评分/ }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -997,7 +997,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(await screen.findByRole("button", { name: "重置为默认" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1058,7 +1058,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithStoredPin("out-of-band-default");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1082,7 +1082,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue(STORED_CONFIG.tiers.MEDIUM[0]);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: STORED_CONFIG.tiers.MEDIUM[0] });
@@ -1099,7 +1099,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).not.toHaveProperty("default_model");
@@ -1117,7 +1117,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("claude-sonnet-4");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: "claude-sonnet-4" });
@@ -1150,7 +1150,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("blob-pin");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: "blob-pin" });
@@ -1180,7 +1180,7 @@ describe("EditAutoRouterModal default model", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith(expect.stringContaining("简单或中等层级")));
@@ -1194,7 +1194,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedDefaultModel()).toBe(STORED_CONFIG.tiers.MEDIUM[0]);
@@ -1240,7 +1240,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     const user = userEvent.setup();
     renderWithStoredTier("MEDIUM");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1253,7 +1253,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     await openPlanModePanel(user);
     await user.click(await screen.findByRole("switch", { name: "将计划模式请求路由到最低层级" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1308,7 +1308,7 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
     renderCustomModal();
 
     await screen.findByText("SECURITY_REVIEW层级");
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
 
@@ -1326,7 +1326,7 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
     renderCustomModal();
 
     await screen.findByText("SECURITY_REVIEW层级");
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
 
@@ -1370,7 +1370,7 @@ describe("EditAutoRouterModal prompt compression", () => {
 
     openAutoRouterAdvanced("Compression");
     await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() =>
@@ -1405,7 +1405,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     await user.click(screen.getByRole("combobox", { name: "路由决策的压缩" }));
     await user.click(screen.getByRole("option", { name: "无（不做压缩）" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1416,7 +1416,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     const user = userEvent.setup();
     renderWithStoredCompression();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1432,7 +1432,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     const user = userEvent.setup();
     renderWithStoredCompression(stored);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1466,7 +1466,7 @@ describe("EditAutoRouterModal prompt compression", () => {
       auto_router_model_compression: "none",
     });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(await screen.findByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1513,7 +1513,7 @@ describe("EditAutoRouterModal classifier vision", () => {
     expect(screen.getByRole("switch", { name: "使用图片进行分类" })).toBeChecked();
     expect(screen.getByLabelText("每次请求的最大图片数")).toHaveValue("2");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1526,7 +1526,7 @@ describe("EditAutoRouterModal classifier vision", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(screen.getByRole("switch", { name: "使用图片进行分类" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1541,7 +1541,7 @@ describe("EditAutoRouterModal availability checks", () => {
     vi.mocked(apiClient.post).mockResolvedValue({ allowances: [], error: null });
     const user = userEvent.setup();
     renderModal();
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     let complete: ((result: unknown) => void) | undefined;
     vi.mocked(apiClient.post).mockImplementationOnce(
       () =>
@@ -1560,7 +1560,7 @@ describe("EditAutoRouterModal availability checks", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Custom tiers have no available allowance");
     expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "恢复默认值" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 15000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
   });
