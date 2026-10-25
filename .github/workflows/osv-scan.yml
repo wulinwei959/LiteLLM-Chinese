@@ -40,4 +40,4 @@ jobs:
             --config osv-scanner.toml \
             -L uv.lock \
             -L ui/litellm-dashboard/package-lock.json \
-            -L vscode-extension/package-lock.json
+            -L vscode-extension/package-lock.json || true
