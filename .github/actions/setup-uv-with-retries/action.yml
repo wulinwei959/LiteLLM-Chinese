@@ -28,42 +28,18 @@ runs:
           echo "UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple"
         } >> "$GITHUB_ENV"
 
-    - name: Restore the uv download cache
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-      with:
-        # uv stores every wheel it fetches here, content-addressed. Warming it once
-        # lets later jobs build their venv from local files instead of re-downloading
-        # from files.pythonhosted.org on the LAN runner. actions/cache saves this back
-        # at the end of the job, after the caller's `uv sync` has populated it.
-        path: ~/.cache/uv
-        key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-
-
-    - name: Install uv (attempt 1)
-      id: attempt-1
-      continue-on-error: true
+    - name: Install uv
       shell: bash
-      run: python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==${{ inputs.version }}"
-
-    - name: Wait before attempt 2
-      if: steps.attempt-1.outcome == 'failure'
-      shell: bash
-      run: sleep 15
-
-    - name: Install uv (attempt 2)
-      id: attempt-2
-      if: steps.attempt-1.outcome == 'failure'
-      continue-on-error: true
-      shell: bash
-      run: python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==${{ inputs.version }}"
-
-    - name: Wait before attempt 3
-      if: steps.attempt-2.outcome == 'failure'
-      shell: bash
-      run: sleep 30
-
-    - name: Install uv (attempt 3)
-      if: steps.attempt-2.outcome == 'failure'
-      shell: bash
-      run: python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==${{ inputs.version }}"
+      run: |
+        if command -v uv >/dev/null && [ "$(uv --version | awk '{print $2}')" = "${{ inputs.version }}" ]; then
+          echo "uv ${{ inputs.version }} is already available"
+          exit 0
+        fi
+        for attempt in 1 2 3; do
+          if python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==${{ inputs.version }}"; then
+            exit 0
+          fi
+          echo "uv install attempt ${attempt} failed"
+          sleep $((attempt * 15))
+        done
+        exit 1

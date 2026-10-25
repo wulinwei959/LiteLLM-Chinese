@@ -973,11 +973,6 @@ jobs:
         with:
           version: "0.10.9"
 
-      - name: Cache uv dependencies
-        if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
-        uses: ./.github/actions/cache-uv-downloads
-
       - name: Set up the Rust build
         if: steps.changes.outputs.decision != 'skip'
         timeout-minutes: 5
@@ -1212,28 +1207,6 @@ jobs:
         with:
           version: "0.10.9"
 
-      - name: Cache uv dependencies
-        if: steps.changes.outputs.decision != 'skip' && github.ref == 'refs/heads/main'
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
-      - name: Cache uv dependencies
-        if: steps.changes.outputs.decision != 'skip' && github.ref != 'refs/heads/main'
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
       - name: Cache the Rust build
         if: steps.changes.outputs.decision != 'skip'
         uses: ./.github/actions/cache-cargo-build
@@ -1275,6 +1248,7 @@ jobs:
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
         with:
           version: "3.11.1"
+          downloadBaseURL: http://192.168.3.6:3001/wulinwei959/helm/releases/download/v3.11.1/
 
       - name: Download and verify Helm Unit Test Plugin
         run: |
@@ -1415,11 +1389,6 @@ jobs:
         with:
           version: "0.10.9"
 
-      - name: Cache uv dependencies
-        if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
-        uses: ./.github/actions/cache-uv-downloads
-
       - name: Set up the Rust build
         if: steps.changes.outputs.decision != 'skip'
         timeout-minutes: 5
@@ -1447,6 +1416,11 @@ jobs:
         if: steps.changes.outputs.decision != 'skip'
         timeout-minutes: 5
         run: |
+          if command -v redis-server >/dev/null 2>&1 && redis-server --version | grep -q 'v=7.2.16'; then
+            echo "Using the redis-server baked into the runner image"
+            echo "$(dirname "$(command -v redis-server)")" >> "$GITHUB_PATH"
+            exit 0
+          fi
           mkdir -p "$RUNNER_TEMP/redis-bin"
           cid="$(docker create redis:7.2.16@sha256:0637954999d01b7c9ce9167db2da50656e2590d3b884f1c600c5f63bb6e6773c)"
           docker cp "${cid}:/usr/local/bin/redis-server" "$RUNNER_TEMP/redis-bin/redis-server"
