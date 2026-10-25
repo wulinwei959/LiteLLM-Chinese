@@ -215,7 +215,7 @@ describe("KeyActivityPanel", () => {
       resolveNextPage(pageResponse([pageRow("key-50"), pageRow("key-51")], 52, 50));
       await nextPage;
     });
-    expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /key-51/ }, { timeout: 15_000 })).toBeInTheDocument();
     expect(screen.queryByText("正在加载更多密钥...")).not.toBeInTheDocument();
   });
 
@@ -400,7 +400,7 @@ describe("KeyActivityPanel", () => {
     expect(fetchKeyPage).toHaveBeenCalledTimes(2);
 
     fireEvent.click(screen.getByRole("button", { name: "重试" }));
-    expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /key-51/ }, { timeout: 15_000 })).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(3);
     expect(fetchKeyPage).toHaveBeenNthCalledWith(3, 50, 50);
   });
@@ -433,7 +433,7 @@ describe("KeyActivityPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "清除密钥搜索" }));
     expect(await screen.findByText("无法加载更多密钥。")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "重试" }));
-    expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /key-51/ }, { timeout: 15_000 })).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(3);
     expect(fetchKeyPage).toHaveBeenNthCalledWith(3, 50, 50);
   });

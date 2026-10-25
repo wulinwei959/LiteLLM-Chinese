@@ -27,7 +27,7 @@ GitHub 官方 runner 调度正常，root 分片其余用例通过；该失败只
 
 - 运行：40229189629（push，main@08efc1f9），job `ui-unit-tests` 在 20m18s 处被取消
 - 现象：步骤 `Run UI unit tests (Vitest)` cancelled，正好落在 `timeout-minutes: 20`
-- 根因：上游 UI 工作流按 16 核大 runner 设计（`--maxWorkers=14`、20 分钟）；改成 2 核的 `ubuntu-latest` 后完整 Vitest 套件耗时超过 20 分钟。unit 工作流里的同名 ui-unit 恰好在 20 分钟内完成，属临界
+- 根因：上游 UI 工作流按 16 核大 runner 设计（`--maxWorkers=14`、20 分钟）；改成 4 核的 `ubuntu-latest` 后完整 Vitest 套件耗时超过 20 分钟。unit 工作流里的同名 ui-unit 恰好在 20 分钟内完成，属临界
 - 修复：`test-litellm-ui-unit.yml` 与 `test-unit.yml` 的 ui-unit 超时从 20 放宽到 35
 - 性质：免费标准 runner 与上游大 runner 的性能差异，不是测试或代码问题
 
@@ -38,7 +38,7 @@ GitHub 官方 runner 调度正常，root 分片其余用例通过；该失败只
   `waitFor(() => expect(保存更改按钮).toBeEnabled(), { timeout: 5000 })`；其余 13047 例通过
 - 对照：同一轮 40230891551 的 `unit / ui-unit` 跑的是同一份完整 Vitest 套件，24m38s 全绿
 - 根因：保存按钮要先等 `useAutoRouterAvailability` 的 300ms 防抖加一次 availability 请求返回，
-  在 `--maxWorkers=14` / 2 核 `ubuntu-latest` 的满载尾段，worker 会被长时间挤占，5 秒真实时钟
+  在 `--maxWorkers=14` / 4 核 `ubuntu-latest` 的满载尾段，worker 会被长时间挤占，5 秒真实时钟
   不一定够走完这一段。该预算此前已从默认 1s 提到 5s（`4550833`），本次是同一时序边缘在更慢的
   官方 runner 上再次出现，失败集合在两次相同套件之间漂移，说明与用例内容无关
 - 修复：把该文件 54 处保存按钮可用性等待统一从 5s 提到 15s，其余等待不动；本地复跑 66 例全绿
@@ -48,3 +48,17 @@ GitHub 官方 runner 调度正常，root 分片其余用例通过；该失败只
 
 25 个工作流的结构与上游一致，`unit` 主链路 55/55 全绿；独立 UI 工作流只剩上述 2 例时序假红，
 放宽等待预算后重跑验证。
+
+## 2026-10-26 unit / ui-unit：KeyActivityPanel 重试等待超时，并合并重复的 UI 套件
+
+- 运行：40233205062（push，main@03272491），job `ui-unit` 在 24m47s 处失败，步骤 `Run UI unit tests (Vitest)`
+- 现象：970 个文件里只挂 1 例，`KeyActivityPanel.integration.test.tsx:403` 的 `findByRole(/key-51/)` 等满 5 秒
+- 实据：失败文件 16 例耗时 65.2 秒，失败用例 17.9 秒，同文件相邻的同类用例 24.2 秒；同轮 `TeamInfo.integration.test.tsx` 19 例 137.7 秒，多个单例 8 到 11 秒
+- 对照：同一提交 40233205085（`UI Unit Tests`）跑同一份全量套件 19m05s 全绿，上一轮 `unit` 40230891551 也全绿，失败点在文件之间漂移
+- 根因：`--maxWorkers=14` 跑在 4 核免费 `ubuntu-latest` 上约 3.5 倍超配，满载尾段单次渲染被拉长到秒级，5 秒 `asyncUtilTimeout` 不够
+- 修复：该文件三处 `key-51` 等待（218、403、436 行）提到 15 秒；同时删除上游已移除的 `test-litellm-ui-unit.yml`，UI 全量套件只在 `unit / ui-unit` 跑一份，不再每轮 push 重复执行
+- 性质：测试等待预算不足，不是产品缺陷
+
+## 结论（第三轮）
+
+UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒后需重新跑 unit 验证。
