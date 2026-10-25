@@ -19,7 +19,7 @@ jobs:
   osv-scan:
     name: osv-scan
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     permissions:
       contents: read
     steps:
@@ -30,14 +30,14 @@ jobs:
       - name: Download osv-scanner v2.3.8
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/osv-scanner" \
-            http://192.168.3.6:3001/wulinwei959/osv-scanner/releases/download/v2.3.8/osv-scanner_linux_amd64
+            https://github.com/google/osv-scanner/releases/download/v2.3.8/osv-scanner_linux_amd64
           echo "bc98e15319ed0d515e3f9235287ba53cdc5535d576d24fd573978ecfe9ab92dc  $RUNNER_TEMP/osv-scanner" | sha256sum -c -
           chmod +x "$RUNNER_TEMP/osv-scanner"
 
       - name: Scan lockfiles
         run: |
-          "$RUNNER_TEMP/osv-scanner" scan source --offline \
+          "$RUNNER_TEMP/osv-scanner" scan source \
             --config osv-scanner.toml \
             -L uv.lock \
             -L ui/litellm-dashboard/package-lock.json \
-            -L vscode-extension/package-lock.json || true
+            -L vscode-extension/package-lock.json

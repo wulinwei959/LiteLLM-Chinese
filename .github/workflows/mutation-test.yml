@@ -22,7 +22,6 @@ concurrency:
 
 jobs:
   mutation:
-    if: ${{ false }}
     name: Run mutmut
     runs-on: ubuntu-latest
     # Whole-folder mutation against ~15 files / ~7.5k LOC can take hours.

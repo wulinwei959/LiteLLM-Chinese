@@ -47,10 +47,10 @@ concurrency:
 jobs:
   image-scan:
     name: image-scan
-    # LAN Gitea runner has no Docker daemon so this job cannot `docker build`.
-    # Parked to avoid red checks on every PR touching Dockerfiles.
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     permissions:
       contents: read
@@ -62,7 +62,7 @@ jobs:
       - name: Download Grype v0.114.0
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/grype.tar.gz" \
-            http://192.168.3.6:3001/wulinwei959/grype/releases/download/v0.114.0/grype_0.114.0_linux_amd64.tar.gz
+            https://github.com/anchore/grype/releases/download/v0.114.0/grype_0.114.0_linux_amd64.tar.gz
           echo "edda0968d8827daab01d32b3cd7de192ae0915005e7bbfcfef9e68e79bc43343  $RUNNER_TEMP/grype.tar.gz" | sha256sum -c -
           tar xzf "$RUNNER_TEMP/grype.tar.gz" -C "$RUNNER_TEMP" grype
           chmod +x "$RUNNER_TEMP/grype"
@@ -112,8 +112,10 @@ jobs:
 
   runtime-image:
     name: runtime-image (${{ matrix.dockerfile }})
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 45
     permissions:
       contents: read
@@ -148,8 +150,10 @@ jobs:
 
   migrations-image:
     name: migrations-image
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     permissions:
       contents: read
@@ -177,8 +181,10 @@ jobs:
 
   gateway-image:
     name: gateway-image
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     permissions:
       contents: read
@@ -206,8 +212,10 @@ jobs:
 
   ui-image:
     name: ui-image
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     permissions:
       contents: read
@@ -233,8 +241,10 @@ jobs:
 
   backend-image:
     name: backend-image
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     permissions:
       contents: read

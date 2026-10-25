@@ -23,11 +23,12 @@ jobs:
       - name: Fetch the pull request head and its merge base
         id: revisions
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          git fetch --no-tags --depth=200 origin "$BASE_SHA" "$HEAD_SHA"
-          merge_base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
+          merge_base="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${BASE_SHA}...${HEAD_SHA}" --jq '.merge_base_commit.sha')"
+          git fetch --no-tags --depth=1 origin "$merge_base" "$HEAD_SHA"
           echo "merge_base=$merge_base" >> "$GITHUB_OUTPUT"
       - name: Set up uv
         uses: ./.github/actions/setup-uv-with-retries

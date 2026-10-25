@@ -21,7 +21,17 @@ jobs:
       pull-requests: read
       actions: read
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
+    services:
+      redis:
+        image: redis@sha256:e2debfb7956fa12c7ddc79d7e645c8cf26b30c99a6e9161ea9bf4171e1668a5f
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -37,13 +47,14 @@ jobs:
       - name: Fetch gate base (merge-base with target branch)
         if: steps.changes.outputs.decision != 'skip'
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           retry() { "$@" || { sleep 15; "$@"; } || { sleep 30; "$@"; }; }
-          retry git fetch --no-tags --depth=200 origin "$BASE_SHA" "$HEAD_SHA"
-          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          MERGE_BASE=$(retry gh api "repos/${{ github.repository }}/compare/${BASE_SHA}...${HEAD_SHA}?per_page=1" --jq '.merge_base_commit.sha')
           test -n "$MERGE_BASE"
+          retry git fetch --no-tags --depth=1 origin "$MERGE_BASE"
           echo "GATE_BASE_SHA=$MERGE_BASE" >> "$GITHUB_ENV"
 
       - name: Set up Python
@@ -185,10 +196,7 @@ jobs:
           fi
 
       - name: Run the e2e harness tests
-        # LAN Gitea runner has no Docker daemon so the redis service this step
-        # relies on cannot start. The Docker-backed services above were removed
-        # and this step is parked until a non-Docker redis can be provisioned.
-        if: ${{ false }}
+        if: steps.changes.outputs.decision != 'skip'
         env:
           LITELLM_MASTER_KEY: sk-e2e-harness-tests-reach-no-proxy
           E2E_CACHE_TEST_REDIS_URL: redis://127.0.0.1:6379/0
@@ -220,7 +228,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -257,7 +265,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 8
     defaults:
       run:
         working-directory: ui/litellm-dashboard
@@ -282,9 +290,9 @@ jobs:
           # landed since, so a PR that touches no UI file still gets linted
           # against hundreds of other people's files. Diff the PR head against its
           # own merge base instead, which is exactly what this PR changed.
-          git fetch --no-tags --depth=200 origin "$BASE_SHA" "$HEAD_SHA"
-          merge_base=$(git merge-base "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || echo "$BASE_SHA")
+          merge_base=$(gh api "repos/${{ github.repository }}/compare/${BASE_SHA}...${HEAD_SHA}?per_page=1" --jq '.merge_base_commit.sha')
           test -n "$merge_base"
+          git fetch --no-tags --depth=1 origin "$merge_base" "$HEAD_SHA"
           : > "$RUNNER_TEMP/prettier_files.txt"
           : > "$RUNNER_TEMP/eslint_files.txt"
           while IFS= read -r f; do
@@ -350,7 +358,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -470,7 +478,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -638,7 +646,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -651,7 +659,7 @@ jobs:
 
       - name: Assert every test file and Dockerfile is invoked by a job
         run: |
-          python -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "pyyaml==6.0.3"
+          python -m pip install "pyyaml==6.0.3"
           python .github/scripts/assert_ci_coverage.py
 
       - name: Assert no -k expression deselects a file from every job that globs it
@@ -664,7 +672,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -687,7 +695,7 @@ jobs:
     needs: [python, secret-scan, ui, ui-api-types, code-quality, ci-coverage, semgrep]
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
     permissions: {}
     steps:
       - name: Require every lint job to succeed

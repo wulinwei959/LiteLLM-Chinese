@@ -1,9 +1,7 @@
 name: "Set up uv with retries"
 description: >-
-  Install uv from the package index, retrying the install so a transient index
-  failure gets fresh attempts. The upstream setup-uv action resolves its
-  release manifest from raw.githubusercontent.com, which this LAN runner cannot
-  reach reliably.
+  Install uv via astral-sh/setup-uv, retrying the full setup step so manifest
+  resolution and binary downloads get fresh attempts after transient failures.
 
 inputs:
   version:
@@ -13,35 +11,36 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Point uv at the reachable package mirror
-      shell: bash
-      run: |
-        lock="${GITHUB_WORKSPACE:-$PWD}/uv.lock"
-        if [ -f "$lock" ]; then
-          sed -i \
-            -e 's#https://files.pythonhosted.org#https://pypi.tuna.tsinghua.edu.cn#g' \
-            -e 's#https://pypi.org/simple#https://pypi.tuna.tsinghua.edu.cn/simple#g' \
-            "$lock"
-        fi
-        {
-          echo "UV_CACHE_DIR=$HOME/.cache/uv"
-          echo "UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple"
-        } >> "$GITHUB_ENV"
+    - name: Set up uv (attempt 1)
+      id: attempt-1
+      continue-on-error: true
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      with:
+        version: ${{ inputs.version }}
+        save-cache: ${{ github.ref == 'refs/heads/main' }}
 
-    - name: Install uv
+    - name: Wait before attempt 2
+      if: steps.attempt-1.outcome == 'failure'
       shell: bash
-      env:
-        UV_VERSION: ${{ inputs.version }}
-      run: |
-        if command -v uv >/dev/null && [ "$(uv --version | awk '{print $2}')" = "$UV_VERSION" ]; then
-          echo "uv $UV_VERSION is already available"
-          exit 0
-        fi
-        for attempt in 1 2 3; do
-          if python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==$UV_VERSION"; then
-            exit 0
-          fi
-          echo "uv install attempt ${attempt} failed"
-          sleep $((attempt * 15))
-        done
-        exit 1
+      run: sleep 15
+
+    - name: Set up uv (attempt 2)
+      id: attempt-2
+      if: steps.attempt-1.outcome == 'failure'
+      continue-on-error: true
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      with:
+        version: ${{ inputs.version }}
+        save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+    - name: Wait before attempt 3
+      if: steps.attempt-2.outcome == 'failure'
+      shell: bash
+      run: sleep 30
+
+    - name: Set up uv (attempt 3)
+      if: steps.attempt-2.outcome == 'failure'
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      with:
+        version: ${{ inputs.version }}
+        save-cache: ${{ github.ref == 'refs/heads/main' }}

@@ -25,7 +25,7 @@ jobs:
   provider-checks:
     name: gofmt, vet, build, test
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: terraform/provider
@@ -60,7 +60,7 @@ jobs:
   endpoint-drift:
     name: Provider endpoints vs proxy OpenAPI schema
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:

@@ -15,11 +15,8 @@ concurrency:
 jobs:
   dashboard-build:
     name: dashboard-build
-    # LAN Gitea runner has no Docker daemon so this job cannot start services
-    # containers or run `docker build/run`. Parked to avoid red checks.
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -31,9 +28,8 @@ jobs:
 
   core-checks:
     name: py${{ matrix.python-version }}
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -97,9 +93,8 @@ jobs:
 
   all-extras:
     name: all-extras-py${{ matrix.python-version }}
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -130,10 +125,8 @@ jobs:
 
   windows-sdk:
     name: windows-sdk
-    # This instance has no Windows runner, so the job is parked instead of queueing forever.
-    if: ${{ false }}
     runs-on: windows-2025
-    timeout-minutes: 25
+    timeout-minutes: 10
     env:
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
     defaults:
@@ -163,9 +156,8 @@ jobs:
 
   proxy-build-from-pip:
     name: proxy-build-from-pip
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     services:
       postgres:
         image: postgres:14@sha256:6a70deda415ec296f977890e11aba04a0db9f632a362e3fce45e845e3db74f26
@@ -273,10 +265,10 @@ jobs:
 
   smoke-passed:
     name: smoke passed
-    if: ${{ false }}
     needs: [dashboard-build, core-checks, all-extras, windows-sdk, proxy-build-from-pip]
+    if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
     permissions: {}
     steps:
       - name: Require every smoke job to succeed
