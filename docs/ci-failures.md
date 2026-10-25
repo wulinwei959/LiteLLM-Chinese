@@ -22,3 +22,11 @@ GitHub 官方 runner 调度正常，root 分片其余用例通过；该失败只
 - 根因：大规格 runner 仅对付费/组织账户开放，公开个人仓库没有该标签的 runner，任务会一直处于 queued
 - 修复：把 `test-unit.yml`、`test-litellm-ui-unit.yml`、`test-e2e-redis-chaos.yml`、`lens-install-smoke.yml` 中 5 处 `ubuntu-latest-16-cores` 改为 `ubuntu-latest`
 - 性质：fork 沿用了上游的大 runner 配置，迁移到公开免费仓库后不可用，与代码无关
+
+## 2026-10-25 UI Unit Tests：切换 ubuntu-latest 后 20 分钟超时
+
+- 运行：40229189629（push，main@08efc1f9），job `ui-unit-tests` 在 20m18s 处被取消
+- 现象：步骤 `Run UI unit tests (Vitest)` cancelled，正好落在 `timeout-minutes: 20`
+- 根因：上游 UI 工作流按 16 核大 runner 设计（`--maxWorkers=14`、20 分钟）；改成 2 核的 `ubuntu-latest` 后完整 Vitest 套件耗时超过 20 分钟。unit 工作流里的同名 ui-unit 恰好在 20 分钟内完成，属临界
+- 修复：`test-litellm-ui-unit.yml` 与 `test-unit.yml` 的 ui-unit 超时从 20 放宽到 35
+- 性质：免费标准 runner 与上游大 runner 的性能差异，不是测试或代码问题

@@ -19,7 +19,7 @@ concurrency:
 jobs:
   ui-unit-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: ui/litellm-dashboard
