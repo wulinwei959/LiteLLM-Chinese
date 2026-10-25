@@ -154,7 +154,9 @@ jobs:
         working-directory: .
         run: uv run scripts/generate_trace_types.py --check
 
-      - run: cargo nextest run --workspace --locked
+      # testcontainers needs host Docker networking, which the dind-in-dind
+      # LAN runner cannot provide; keep it on GitHub-hosted runners.
+      - run: cargo nextest run --workspace --locked -E 'not test(real_prisma_migrations_apply_to_a_fresh_postgres)' 
 
       - run: cargo test --workspace --doc --locked
 
