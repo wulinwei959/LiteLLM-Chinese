@@ -13,9 +13,20 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Export UV_CACHE_DIR
+    - name: Point uv at the reachable package mirror
       shell: bash
-      run: echo "UV_CACHE_DIR=$HOME/.cache/uv" >> "$GITHUB_ENV"
+      run: |
+        lock="${GITHUB_WORKSPACE:-$PWD}/uv.lock"
+        if [ -f "$lock" ]; then
+          sed -i \
+            -e 's#https://files.pythonhosted.org#https://pypi.tuna.tsinghua.edu.cn#g' \
+            -e 's#https://pypi.org/simple#https://pypi.tuna.tsinghua.edu.cn/simple#g' \
+            "$lock"
+        fi
+        {
+          echo "UV_CACHE_DIR=$HOME/.cache/uv"
+          echo "UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple"
+        } >> "$GITHUB_ENV"
 
     - name: Restore the uv download cache
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
