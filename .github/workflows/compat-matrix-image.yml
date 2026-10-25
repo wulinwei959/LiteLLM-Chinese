@@ -17,6 +17,9 @@ concurrency:
 jobs:
   compat-matrix-image:
     name: compat-matrix-image
+    # LAN Gitea runner has no Docker daemon so `docker build` and `docker run`
+    # cannot execute. Parked to avoid red checks on PRs touching the cron VM.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

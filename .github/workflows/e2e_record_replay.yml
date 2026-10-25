@@ -20,10 +20,9 @@ permissions:
 jobs:
   record:
     name: "Record the e2e suite against real providers"
-    if: >-
-      (github.event_name != 'schedule' || github.repository == 'BerriAI/litellm') &&
-      (github.event.schedule == '0 8 * * 6' ||
-       (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'record'))
+    # LAN Gitea runner has no Docker daemon so the postgres service cannot start.
+    # Also needs real provider API keys that this fork does not hold. Parked.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     services:
@@ -114,10 +113,8 @@ jobs:
 
   replay:
     name: "Replay the e2e suite from the pinned bundle with zero egress"
-    if: >-
-      (github.event_name != 'schedule' || github.repository == 'BerriAI/litellm') &&
-      (github.event.schedule == '0 8 * * 1-5' ||
-       (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'replay'))
+    # LAN Gitea runner has no Docker daemon so the postgres service cannot start. Parked.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:

@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   weekly-load-anomaly:
-    if: github.event_name != 'schedule' || github.repository == 'BerriAI/litellm'
+    # LAN Gitea runner has no Docker daemon so the postgres service cannot start.
+    # Also needs real provider API keys that this fork does not hold. Parked.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     services:
