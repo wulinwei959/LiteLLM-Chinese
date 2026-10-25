@@ -7,6 +7,7 @@ import fnmatch
 import io
 import json
 import os
+import subprocess
 import zipfile
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
@@ -15,6 +16,16 @@ from typing import Final, NamedTuple, NoReturn
 import pytest
 
 import lint_base_counts as counts
+
+
+@pytest.fixture
+def github_origin(tmp_path: Path) -> Path:
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    subprocess.run(
+        ["git", "-C", str(tmp_path), "remote", "add", "origin", "https://github.com/BerriAI/litellm.git"],
+        check=True,
+    )
+    return tmp_path
 
 _CHECKER: Final = counts.Checker("basedpyright", ("f1", "f2"))
 _OTHER_CHECKER: Final = counts.Checker("ruff-strict", ("f1", "f2"))
@@ -308,19 +319,23 @@ def _live_listing() -> Mapping[str, object]:
     return {"artifacts": [{"expired": False, "archive_download_url": "https://api.github.com/x/zip"}]}
 
 
-def test_fetcher_returns_counts_from_a_matching_artifact(capsys: pytest.CaptureFixture[str]) -> None:
+def test_fetcher_returns_counts_from_a_matching_artifact(
+    capsys: pytest.CaptureFixture[str], github_origin: Path
+) -> None:
     payload: Final = {"base_point": "abc123", "counts": {"reportAny": 3}}
     fetched: Final = counts.fetch_ci_base_counts(
-        _CHECKER, "abc123", gh=_gh_stub(_live_listing(), _artifact_zip(payload))
+        _CHECKER, "abc123", gh=_gh_stub(_live_listing(), _artifact_zip(payload)), cwd=github_origin
     )
     assert fetched == {"reportAny": 3}
     assert "fetched from CI artifact" in capsys.readouterr().err
 
 
-def test_fetcher_asks_for_the_artifact_named_by_the_checker_and_base_point() -> None:
+def test_fetcher_asks_for_the_artifact_named_by_the_checker_and_base_point(github_origin: Path) -> None:
     seen: Final[list[tuple[str, ...]]] = []
     payload: Final = {"base_point": "abc123", "counts": {"reportAny": 3}}
-    counts.fetch_ci_base_counts(_CHECKER, "abc123", gh=_gh_stub(_live_listing(), _artifact_zip(payload), seen))
+    counts.fetch_ci_base_counts(
+        _CHECKER, "abc123", gh=_gh_stub(_live_listing(), _artifact_zip(payload), seen), cwd=github_origin
+    )
     listing_request: Final = seen[0][-1]
     assert f"name={_CHECKER.artifact_name('abc123')}" in listing_request
     assert seen[1][-1] == "https://api.github.com/x/zip"
@@ -381,15 +396,15 @@ def test_emit_refuses_to_publish_empty_counts(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
-def test_emitted_file_is_the_one_the_fetcher_looks_up(tmp_path: Path) -> None:
+def test_emitted_file_is_the_one_the_fetcher_looks_up(tmp_path: Path, github_origin: Path) -> None:
     written: Final = counts.emit_counts(_CHECKER, {"reportAny": 3}, tmp_path, "deadbeef")
     payload: Final = json.loads(written.read_text())
     assert counts.counts_for_base(payload, "deadbeef") == {"reportAny": 3}
     assert counts.counts_for_base(payload, "someothersha") is None
     listing_zip: Final = _artifact_zip(payload)
-    assert counts.fetch_ci_base_counts(_CHECKER, "deadbeef", gh=_gh_stub(_live_listing(), listing_zip)) == {
-        "reportAny": 3
-    }
+    assert counts.fetch_ci_base_counts(
+        _CHECKER, "deadbeef", gh=_gh_stub(_live_listing(), listing_zip), cwd=github_origin
+    ) == {"reportAny": 3}
 
 
 class _History(NamedTuple):

@@ -29,7 +29,7 @@ SCOPE_SCRIPT = REPO_ROOT / ".github" / "scripts" / "select_ui_test_scope.sh"
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "test-unit.yml"
 STEP_NAME = "Run UI unit tests (Vitest)"
 
-FULL_SUITE_ARGV = ["run", "test", "--", "--run", "--pool", "forks", "--maxWorkers=14"]
+FULL_SUITE_ARGV = ["run", "test", "--", "--run", "--pool", "forks", "--maxWorkers=4"]
 
 NON_SRC_FILES = [
     "package.json",
@@ -97,7 +97,11 @@ def _run_step(tmp_path: Path, changed: list[str], base_sha: str = "basesha") -> 
     npm_log = tmp_path / "npm.log"
 
     _stub(bin_dir, "gh", 'echo "mergebasesha"')
-    _stub(bin_dir, "git", 'if [ "$1" = diff ]; then cat "$CHANGED_FILES"; fi')
+    _stub(
+        bin_dir,
+        "git",
+        'if [ "$1" = diff ]; then cat "$CHANGED_FILES"; elif [ "$1" = merge-base ]; then printf "mergebasesha"; fi',
+    )
     _stub(bin_dir, "npm", 'printf "%s\\n" "$@" >>"$NPM_LOG"; printf "\\0" >>"$NPM_LOG"')
 
     step = tmp_path / "step.sh"
@@ -135,7 +139,7 @@ def _related_argv(changed: list[str]) -> list[str]:
         "--passWithNoTests",
         "--pool",
         "forks",
-        "--maxWorkers=14",
+        "--maxWorkers=4",
     ]
 
 
