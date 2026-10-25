@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -11,7 +11,7 @@ import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import DocumentMetadata from "@/components/shared/DocumentMetadata";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = localFont({ src: "./fonts/Inter-latin.woff2", weight: "100 900", display: "swap" });
 
 export const metadata: Metadata = {
   title: "LiteLLM Dashboard",
