@@ -62,7 +62,7 @@ jobs:
       - name: Download Grype v0.114.0
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/grype.tar.gz" \
-            https://github.com/anchore/grype/releases/download/v0.114.0/grype_0.114.0_linux_amd64.tar.gz
+            http://192.168.3.6:3001/wulinwei959/grype/releases/download/v0.114.0/grype_0.114.0_linux_amd64.tar.gz
           echo "edda0968d8827daab01d32b3cd7de192ae0915005e7bbfcfef9e68e79bc43343  $RUNNER_TEMP/grype.tar.gz" | sha256sum -c -
           tar xzf "$RUNNER_TEMP/grype.tar.gz" -C "$RUNNER_TEMP" grype
           chmod +x "$RUNNER_TEMP/grype"
