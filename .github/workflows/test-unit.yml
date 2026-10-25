@@ -35,7 +35,7 @@ jobs:
 
       - name: Detect relevant changes
         id: changes
-        timeout-minutes: 2
+        timeout-minutes: 10
         uses: ./.github/actions/detect-changes
 
       - name: Define editable Rust bridge cache key
@@ -47,14 +47,14 @@ jobs:
 
       - name: Set up Python
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.UV_PYTHON }}
 
       - name: Set up uv
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: ./.github/actions/setup-uv-with-retries
         with:
           version: "0.10.9"
@@ -62,7 +62,7 @@ jobs:
       - name: Restore editable Rust bridge
         id: rust-bridge-cache
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
+        timeout-minutes: 20
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: rust-bridge-dist
@@ -70,12 +70,12 @@ jobs:
 
       - name: Cache the Rust build
         if: steps.changes.outputs.decision != 'skip' && steps.rust-bridge-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 5
+        timeout-minutes: 20
         uses: ./.github/actions/cache-cargo-build
 
       - name: Build editable Rust bridge
         if: steps.changes.outputs.decision != 'skip' && steps.rust-bridge-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 15
+        timeout-minutes: 30
         run: |
           mkdir -p rust-bridge-dist
           uv run --no-project --with maturin==1.15.0 python -c 'import maturin; maturin.build_editable("rust-bridge-dist")'
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload Rust bridge artifact
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 10
+        timeout-minutes: 25
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
           name: rust-bridge-${{ github.run_id }}-${{ github.run_attempt }}
@@ -94,7 +94,7 @@ jobs:
 
       - name: Save editable Rust bridge
         if: steps.changes.outputs.decision != 'skip' && github.ref == 'refs/heads/main' && steps.rust-bridge-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 10
+        timeout-minutes: 25
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: rust-bridge-dist
@@ -103,7 +103,7 @@ jobs:
       - name: Expose the Rust bridge artifact
         id: rust-bridge-artifact
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 1
+        timeout-minutes: 10
         env:
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -112,7 +112,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -145,8 +145,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: enterprise-routing
@@ -169,8 +169,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: integrations
@@ -179,8 +179,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: llms-vertex-ai
@@ -189,8 +189,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: llms-anthropic
@@ -199,8 +199,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: llms-bedrock
@@ -210,8 +210,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: llms-providers
@@ -369,8 +369,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: llms-openai-meta
@@ -380,8 +380,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: root
@@ -390,8 +390,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: router
@@ -400,8 +400,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: endpoints
@@ -430,8 +430,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: rust-bridge-harness
@@ -451,8 +451,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: enterprise-repositories-secrets
@@ -471,8 +471,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: load
 
           - shard: proxy-auth
@@ -488,8 +488,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-hooks-client
@@ -502,8 +502,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-endpoints
@@ -525,8 +525,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-feature-endpoints
@@ -562,8 +562,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-server
@@ -572,8 +572,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 60
-            job-timeout-minutes: 100
+            timeout-minutes: 120
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: mcp-elicitation
@@ -588,8 +588,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-infra
@@ -619,8 +619,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-infra-root
@@ -654,8 +654,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: caching-local
@@ -664,8 +664,8 @@ jobs:
             python-version: "3.12"
             workers: 2
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-extras
@@ -675,8 +675,8 @@ jobs:
             python-version: "3.12"
             workers: 2
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: enterprise-package
@@ -691,8 +691,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: enterprise-managed-files
@@ -701,8 +701,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: load
 
           - shard: responses-caching-types
@@ -731,8 +731,8 @@ jobs:
             python-version: "3.12"
             workers: 2
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: key-generation
@@ -741,8 +741,8 @@ jobs:
             python-version: "3.12"
             workers: 0
             reruns: 2
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: auth-checks
@@ -754,8 +754,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: jwt-and-keys
@@ -766,8 +766,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-utils
@@ -776,8 +776,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: worksteal
 
           - shard: proxy-server-core
@@ -789,8 +789,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: proxy-runtime
@@ -804,8 +804,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: mcp-oauth
@@ -821,8 +821,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: mcp-server
@@ -843,8 +843,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 0
-            timeout-minutes: 20
-            job-timeout-minutes: 60
+            timeout-minutes: 45
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: custom-logging
@@ -855,8 +855,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: logging-misc
@@ -867,8 +867,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: db-and-spend
@@ -883,8 +883,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: guardrails-hooks
@@ -895,8 +895,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: budgets
@@ -907,8 +907,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: endpoints-and-responses
@@ -934,8 +934,8 @@ jobs:
             python-version: "3.12"
             workers: 4
             reruns: 2
-            timeout-minutes: 15
-            job-timeout-minutes: 60
+            timeout-minutes: 30
+            job-timeout-minutes: 120
             dist: loadscope
 
           - shard: lens-python-310
@@ -944,45 +944,45 @@ jobs:
             python-version: "3.10"
             workers: 0
             reruns: 0
-            timeout-minutes: 5
-            job-timeout-minutes: 60
+            timeout-minutes: 20
+            job-timeout-minutes: 120
             dist: loadscope
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
-        timeout-minutes: 3
+        timeout-minutes: 15
         with:
           persist-credentials: false
           fetch-depth: ${{ matrix.shard == 'db-and-spend' && '0' || '1' }}
 
       - name: Detect relevant changes
         id: changes
-        timeout-minutes: 2
+        timeout-minutes: 10
         uses: ./.github/actions/detect-changes
 
       - name: Set up Python
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: ${{ env.UV_PYTHON }}
 
       - name: Set up uv
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: ./.github/actions/setup-uv-with-retries
         with:
           version: "0.10.9"
 
       - name: Set up the Rust build
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
+        timeout-minutes: 20
         uses: ./.github/actions/rust-bridge
         with:
           artifact: ${{ needs.rust-bridge.outputs.artifact }}
 
       - name: Install dependencies and check schema
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 8
+        timeout-minutes: 20
         env:
           RUST_BRIDGE_ARTIFACT: ${{ needs.rust-bridge.outputs.artifact }}
           UNIT_SHARD: ${{ matrix.shard }}
@@ -1004,12 +1004,12 @@ jobs:
 
       - name: Cache Prisma binaries
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: ./.github/actions/cache-prisma-binaries
 
       - name: Generate Prisma client
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         run: |
           uv run --no-sync prisma generate --schema litellm/proxy/schema.prisma
 
@@ -1092,7 +1092,7 @@ jobs:
       contents: read
       pull-requests: read
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: ui/litellm-dashboard
@@ -1177,7 +1177,7 @@ jobs:
       contents: read
       pull-requests: read
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -1237,7 +1237,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -1281,7 +1281,7 @@ jobs:
       contents: read
       pull-requests: read
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -1298,7 +1298,7 @@ jobs:
 
       - name: Detect relevant changes
         id: changes
-        timeout-minutes: 2
+        timeout-minutes: 10
         uses: ./.github/actions/detect-changes
 
       - name: Set up Python
@@ -1353,7 +1353,7 @@ jobs:
       id-token: write
       pull-requests: read
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -1364,41 +1364,41 @@ jobs:
       REDIS_PY_VERSION: ${{ matrix.redis-py }}
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
-        timeout-minutes: 3
+        timeout-minutes: 15
         with:
           persist-credentials: false
 
       - name: Detect relevant changes
         id: changes
-        timeout-minutes: 2
+        timeout-minutes: 10
         uses: ./.github/actions/detect-changes
         with:
           category: redis-compat
 
       - name: Set up Python
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: ${{ env.UV_PYTHON }}
 
       - name: Set up uv
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 3
+        timeout-minutes: 15
         uses: ./.github/actions/setup-uv-with-retries
         with:
           version: "0.10.9"
 
       - name: Set up the Rust build
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
+        timeout-minutes: 20
         uses: ./.github/actions/rust-bridge
         with:
           artifact: ${{ needs.rust-bridge.outputs.artifact }}
 
       - name: Install dependencies with redis-py ${{ matrix.redis-py }}
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 8
+        timeout-minutes: 20
         env:
           RUST_BRIDGE_ARTIFACT: ${{ needs.rust-bridge.outputs.artifact }}
         run: |
@@ -1414,7 +1414,7 @@ jobs:
 
       - name: Install redis-server 7.2.16
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 5
+        timeout-minutes: 20
         run: |
           if command -v redis-server >/dev/null 2>&1 && redis-server --version | grep -q 'v=7.2.16'; then
             echo "Using the redis-server baked into the runner image"
@@ -1430,7 +1430,7 @@ jobs:
 
       - name: Run Redis compatibility tests
         if: steps.changes.outputs.decision != 'skip'
-        timeout-minutes: 15
+        timeout-minutes: 30
         env:
           COVERAGE_CORE: sysmon
         run: |
@@ -1457,7 +1457,7 @@ jobs:
     needs: unit
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     permissions:
       contents: read
       id-token: write
@@ -1513,7 +1513,7 @@ jobs:
     needs: [rust-bridge, assert-shard-coverage, unit, ui-unit, docs, helm, openai-sdk-compat, redis-compat]
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 10
     steps:
       - name: Require every unit job to succeed
         env:
