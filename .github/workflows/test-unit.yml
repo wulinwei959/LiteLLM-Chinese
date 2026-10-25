@@ -89,7 +89,8 @@ jobs:
           cp litellm/rust_bridge/_native.abi3.so rust-bridge-dist/litellm/rust_bridge/_native.abi3.so
 
       - name: Upload Rust bridge artifact
-        if: steps.changes.outputs.decision != 'skip'
+        # Gitea 没有 GitHub artifact API；跳过以免 Save coverage 重试 5 次后失败
+        if: false
         timeout-minutes: 25
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
@@ -1085,7 +1086,8 @@ jobs:
           exit "$status"
 
       - name: Save coverage report
-        if: always() && steps.changes.outputs.decision != 'skip'
+        # Gitea 没有 GitHub artifact API；跳过以免 5 次 JSON 重试后失败
+        if: false
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: coverage-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}

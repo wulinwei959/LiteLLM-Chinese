@@ -56,6 +56,8 @@ jobs:
         run: npm run package
 
       - name: Upload VSIX
+        # Gitea 没有 GitHub artifact API；跳过以免 5 次 JSON 重试后失败
+        if: false
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: litellm-vscode
