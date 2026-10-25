@@ -156,7 +156,7 @@ jobs:
 
       # testcontainers needs host Docker networking, which the dind-in-dind
       # LAN runner cannot provide; keep it on GitHub-hosted runners.
-      - run: cargo nextest run --workspace --locked -E 'not test(real_prisma_migrations_apply_to_a_fresh_postgres)' 
+      - run: cargo nextest run --workspace --locked -E 'not test(real_prisma_migrations_apply_to_a_fresh_postgres) and not (package(litellm-storage-clickhouse) and binary(migrations)) and not (package(litellm-spend-clickhouse) and binary(storage))' 
 
       - run: cargo test --workspace --doc --locked
 
