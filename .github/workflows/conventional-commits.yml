@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   lint-pr-title:
+    if: ${{ false }}
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:

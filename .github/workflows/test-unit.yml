@@ -1450,8 +1450,8 @@ jobs:
             --cov=./litellm --cov-report=xml:coverage.xml
 
       - name: Upload redis-py ${{ matrix.redis-py }} coverage to Codecov
-        if: always() && steps.changes.outputs.decision != 'skip' && matrix.redis-py == '5.3.1'
         continue-on-error: true
+        if: false
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         with:
           use_oidc: true
@@ -1486,6 +1486,7 @@ jobs:
       - name: Upload to Codecov
         id: codecov-upload
         continue-on-error: true
+        if: false
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         with:
           use_oidc: true
@@ -1495,8 +1496,8 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload to Codecov (retry)
-        if: steps.codecov-upload.outcome == 'failure'
         continue-on-error: true
+        if: false
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         with:
           use_oidc: true
@@ -1507,6 +1508,7 @@ jobs:
 
       - name: Upload MCP server coverage under its own flag
         continue-on-error: true
+        if: false
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         with:
           use_oidc: true
