@@ -131,7 +131,15 @@ jobs:
 
       - run: rustup toolchain install --no-self-update
 
+      - name: Check for the baked cargo-nextest
+        id: nextest
+        run: |
+          if cargo nextest --version 2>/dev/null | grep -q '0.9.143'; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: taiki-e/install-action@d438492cf8a250514fa2d34b30bc3c0dc37c65ff # v2.87.8
+        if: steps.nextest.outputs.present != 'true'
         with:
           tool: cargo-nextest@0.9.143
 
