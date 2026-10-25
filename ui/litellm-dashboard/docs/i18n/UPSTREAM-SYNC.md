@@ -173,7 +173,7 @@ theirs = upstream/main 的内容 （上游的新版）
 - 两侧都改的走 `git merge-file`
 - 上游搬过家的文件跟着重命名走，`git diff -M` 认出 old→new 后把我们的改动合并到新路径下，汉化随代码一起搬
 - 二进制文件不做合并，直接取上游那份
-- `--keep` 保留 fork 自有的基础设施（我们的 4 个 UI 工作流、`check-ui-api-types.yml`）
+- `--keep` 保留 fork 自有的基础设施（我们的 2 个 UI 工作流：`test-litellm-ui-lint.yml` 死键门禁与 `test-litellm-ui-build.yml` 构建检查）
 
 ### 实际数字
 

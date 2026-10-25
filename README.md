@@ -2,7 +2,7 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 的活动远端只有 LAN Gitea（GitHub 镜像已冻结：Actions 全停、不再推送），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
+**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 的活动远端是 GitHub 公开仓库（LAN Gitea 已弃用），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
 上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
 
 ## 背景
@@ -81,7 +81,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
-| CI | 跑在 LAN Gitea 的自建 act_runner 上，工作流文件仍在 `.github/workflows/`（Gitea 兼容读取）：UI 四件套（lint 含 budgets/knip/死键、unit、build、check-ui-api-types）+ push 触发已适配。上游其余 40 个工作流在 Gitea 侧经 API 停用（Scorecard/zizmor/CodeQL 需 GHAS 或公开仓库、基线发布与 Python 全量矩阵依赖上游资产与密钥），上游同步带入新工作流文件时默认为启用状态，需再手动关；GitHub 侧 Actions 已全部停用，镜像不再推送 |
+| CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
 
 ## 怎么验证
 

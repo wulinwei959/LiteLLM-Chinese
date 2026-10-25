@@ -196,7 +196,7 @@
 
 门禁行为实测：向 `toast` 命名空间注入一枚探测键，脚本报「1 new dead message keys」并以退出码 1 失败；移除后恢复绿色。
 
-CI 侧接在 `test-litellm-ui-lint.yml` 的 knip 死代码检查之后，用 `npm run check:dead-keys`。该工作流只在 PR 改了 UI 文件时跑，而死键的来源正是 `src/messages` 下的目录文件与组件代码，落在同一覆盖范围内。
+CI 侧由 `test-litellm-ui-lint.yml` 单独执行 `npm run check:dead-keys`，只在 PR 改了 UI 文件时跑，而死键的来源正是 `src/messages` 下的目录文件与组件代码，落在同一覆盖范围内。lint、预算与 knip 由 `test-linting.yml` 的 `ui` job 承担，死键门禁不再依附 knip。
 
 新增 `tests/dead-key-lib.test.ts` 七例，覆盖输出解析、新增死键与已解决死键两个方向。
 

@@ -121,7 +121,7 @@
 
 字符串字面量必须逐引号扫描，不能用「一对引号」的正则。`LensSetup.tsx` 的 `t("investigation")` 曾因此被漏判成死键，差点误删，tsc 立刻报出 17 条新错
 
-门禁 `scripts/check-dead-keys.mjs` 沿用仓库既有的「预算 + 棘轮」范式（对照 `check-lint-budgets.mjs` 与 `eslint-budgets.json`）：`dead-keys-baseline.json` 记录已确认的死键集合，新增死键即失败并列出键名，基线里已解决的条目提示刷新基线（`npm run check:dead-keys:write`）。CI 侧接在 `test-litellm-ui-lint.yml` 的 knip 死代码检查之后
+门禁 `scripts/check-dead-keys.mjs` 沿用仓库既有的「预算 + 棘轮」范式（对照 `check-lint-budgets.mjs` 与 `eslint-budgets.json`）：`dead-keys-baseline.json` 记录已确认的死键集合，新增死键即失败并列出键名，基线里已解决的条目提示刷新基线（`npm run check:dead-keys:write`）。CI 侧由 `test-litellm-ui-lint.yml` 在 PR 改动 UI 文件时单独执行，lint、预算与 knip 归 `test-linting.yml` 的 `ui` job
 
 判定逻辑抽在 `scripts/dead-key-lib.mjs` 里，输出解析、新增死键、已解决死键三个方向各有单测在 `tests/dead-key-lib.test.ts`
 
