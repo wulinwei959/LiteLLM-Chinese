@@ -30,13 +30,15 @@ runs:
 
     - name: Install uv
       shell: bash
+      env:
+        UV_VERSION: ${{ inputs.version }}
       run: |
-        if command -v uv >/dev/null && [ "$(uv --version | awk '{print $2}')" = "${{ inputs.version }}" ]; then
-          echo "uv ${{ inputs.version }} is already available"
+        if command -v uv >/dev/null && [ "$(uv --version | awk '{print $2}')" = "$UV_VERSION" ]; then
+          echo "uv $UV_VERSION is already available"
           exit 0
         fi
         for attempt in 1 2 3; do
-          if python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==${{ inputs.version }}"; then
+          if python3 -m pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple "uv==$UV_VERSION"; then
             exit 0
           fi
           echo "uv install attempt ${attempt} failed"
