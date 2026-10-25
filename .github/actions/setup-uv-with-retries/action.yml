@@ -13,6 +13,18 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Restore the uv download cache
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        # uv stores every wheel it fetches here, content-addressed. Warming it once
+        # lets later jobs build their venv from local files instead of re-downloading
+        # from files.pythonhosted.org on the LAN runner. actions/cache saves this back
+        # at the end of the job, after the caller's `uv sync` has populated it.
+        path: ~/.cache/uv
+        key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-
+
     - name: Install uv (attempt 1)
       id: attempt-1
       continue-on-error: true
