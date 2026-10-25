@@ -13,6 +13,10 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Export UV_CACHE_DIR
+      shell: bash
+      run: echo "UV_CACHE_DIR=$HOME/.cache/uv" >> "$GITHUB_ENV"
+
     - name: Restore the uv download cache
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
