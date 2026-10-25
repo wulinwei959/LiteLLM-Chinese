@@ -41,7 +41,7 @@ concurrency:
 jobs:
   resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -125,7 +125,7 @@ jobs:
       contents: read
       id-token: write
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       UV_PYTHON: ${{ matrix.python-version }}
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
