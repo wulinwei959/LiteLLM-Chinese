@@ -36,7 +36,7 @@ jobs:
 
       - name: Scan lockfiles
         run: |
-          "$RUNNER_TEMP/osv-scanner" scan source \
+          "$RUNNER_TEMP/osv-scanner" scan source --offline \
             --config osv-scanner.toml \
             -L uv.lock \
             -L ui/litellm-dashboard/package-lock.json \
