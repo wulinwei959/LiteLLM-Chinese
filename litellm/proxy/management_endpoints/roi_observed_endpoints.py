@@ -378,6 +378,7 @@ async def start_observed_sync(
     transport: Annotated[httpx.AsyncBaseTransport | None, Depends(get_observed_transport)],
     days: Annotated[int | None, Query(ge=1, le=366)] = None,
 ) -> ROISyncStatus:
+    """Start an observed-spend sync and return its 202 status while it runs in the background."""
     if not await _start_sync(repository, manager, transport, days=days):
         raise HTTPException(409, "A sync is already running.")
     return manager.status
@@ -465,6 +466,7 @@ async def start_observed_authorization(
     repository: Annotated[ConfigRepository, Depends(get_roi_config_repository)],
     install: bool = False,
 ) -> JSONResponse:
+    """Begin the OAuth authorization flow for a source provider and return its redirect URL."""
     config: Final = oauth_config(provider)
     if config is None:
         raise HTTPException(409, "Configure the provider app client ID, client secret, and PROXY_BASE_URL first.")

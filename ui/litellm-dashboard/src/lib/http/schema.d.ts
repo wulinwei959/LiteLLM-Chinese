@@ -14371,7 +14371,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Test Roi Calculator Connections */
+        /**
+         * Test Roi Calculator Connections
+         * @description Test the configured source and estimator connections before a sync.
+         */
         post: operations["test_roi_calculator_connections_roi_calculator_connections_test_post"];
         delete?: never;
         options?: never;
@@ -14474,7 +14477,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Start Observed Authorization */
+        /**
+         * Start Observed Authorization
+         * @description Begin the OAuth authorization flow for a source provider and return its redirect URL.
+         */
         post: operations["start_observed_authorization_roi_calculator_observed_oauth__provider__start_post"];
         delete?: never;
         options?: never;
@@ -14544,7 +14550,10 @@ export interface paths {
         /** Get Observed Sync */
         get: operations["get_observed_sync_roi_calculator_observed_sync_get"];
         put?: never;
-        /** Start Observed Sync */
+        /**
+         * Start Observed Sync
+         * @description Start an observed-spend sync and return its 202 status while it runs in the background.
+         */
         post: operations["start_observed_sync_roi_calculator_observed_sync_post"];
         /** Cancel Observed Sync */
         delete: operations["cancel_observed_sync_roi_calculator_observed_sync_delete"];
@@ -14614,7 +14623,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Reset Roi Calculator Setup */
+        /**
+         * Reset Roi Calculator Setup
+         * @description Reset ROI calculator setup, clearing selected repositories and the sync lock.
+         */
         post: operations["reset_roi_calculator_setup_roi_calculator_setup_reset_post"];
         delete?: never;
         options?: never;
@@ -14632,7 +14644,10 @@ export interface paths {
         /** Get Roi Calculator Sync Status */
         get: operations["get_roi_calculator_sync_status_roi_calculator_sync_get"];
         put?: never;
-        /** Start Roi Calculator Sync */
+        /**
+         * Start Roi Calculator Sync
+         * @description Start a ROI calculator estimation sync, returning 202 while it runs in the background.
+         */
         post: operations["start_roi_calculator_sync_roi_calculator_sync_post"];
         /** Cancel Roi Calculator Sync */
         delete: operations["cancel_roi_calculator_sync_roi_calculator_sync_delete"];
@@ -52823,13 +52838,16 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Successful Response */
+            /** @description The allowed-IP list was updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        message: string;
+                        status: string;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -59065,13 +59083,16 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Successful Response */
+            /** @description The allowed-IP list was updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": {
+                        message: string;
+                        status: string;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -71183,7 +71204,49 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "documents": [
+                 *         "BM25 is a ranking function.",
+                 *         "ColBERT is a late-interaction model."
+                 *       ],
+                 *       "model": "cohere/rerank-english-v3.0",
+                 *       "query": "What is BM25?",
+                 *       "top_n": 1
+                 *     }
+                 */
+                "application/json": {
+                    /** Documents */
+                    documents: (string | {
+                        [key: string]: unknown;
+                    })[];
+                    /** Instruction */
+                    instruction?: string | null;
+                    /** Max Chunks Per Doc */
+                    max_chunks_per_doc?: number | null;
+                    /** Max Tokens Per Doc */
+                    max_tokens_per_doc?: number | null;
+                    /** Max Tokens Per Query */
+                    max_tokens_per_query?: number | null;
+                    /** Model */
+                    model: string;
+                    /** Query */
+                    query: string;
+                    /** Rank Fields */
+                    rank_fields?: string[] | null;
+                    /** Return Documents */
+                    return_documents?: boolean | null;
+                    /** Top N */
+                    top_n?: number | null;
+                    /** Truncate Prompt Tokens */
+                    truncate_prompt_tokens?: number | null;
+                    /** Truncation Side */
+                    truncation_side?: ("left" | "right") | null;
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -72991,7 +73054,28 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "max_results": 5,
+                 *       "query": "latest developments in AI retrieval"
+                 *     }
+                 */
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -73042,7 +73126,28 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "max_results": 5,
+                 *       "query": "latest developments in AI retrieval"
+                 *     }
+                 */
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -82612,7 +82717,49 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "documents": [
+                 *         "BM25 is a ranking function.",
+                 *         "ColBERT is a late-interaction model."
+                 *       ],
+                 *       "model": "cohere/rerank-english-v3.0",
+                 *       "query": "What is BM25?",
+                 *       "top_n": 1
+                 *     }
+                 */
+                "application/json": {
+                    /** Documents */
+                    documents: (string | {
+                        [key: string]: unknown;
+                    })[];
+                    /** Instruction */
+                    instruction?: string | null;
+                    /** Max Chunks Per Doc */
+                    max_chunks_per_doc?: number | null;
+                    /** Max Tokens Per Doc */
+                    max_tokens_per_doc?: number | null;
+                    /** Max Tokens Per Query */
+                    max_tokens_per_query?: number | null;
+                    /** Model */
+                    model: string;
+                    /** Query */
+                    query: string;
+                    /** Rank Fields */
+                    rank_fields?: string[] | null;
+                    /** Return Documents */
+                    return_documents?: boolean | null;
+                    /** Top N */
+                    top_n?: number | null;
+                    /** Truncate Prompt Tokens */
+                    truncate_prompt_tokens?: number | null;
+                    /** Truncation Side */
+                    truncation_side?: ("left" | "right") | null;
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -82932,7 +83079,28 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "max_results": 5,
+                 *       "query": "latest developments in AI retrieval"
+                 *     }
+                 */
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -82983,7 +83151,28 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "max_results": 5,
+                 *       "query": "latest developments in AI retrieval"
+                 *     }
+                 */
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -85621,7 +85810,49 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "documents": [
+                 *         "BM25 is a ranking function.",
+                 *         "ColBERT is a late-interaction model."
+                 *       ],
+                 *       "model": "cohere/rerank-english-v3.0",
+                 *       "query": "What is BM25?",
+                 *       "top_n": 1
+                 *     }
+                 */
+                "application/json": {
+                    /** Documents */
+                    documents: (string | {
+                        [key: string]: unknown;
+                    })[];
+                    /** Instruction */
+                    instruction?: string | null;
+                    /** Max Chunks Per Doc */
+                    max_chunks_per_doc?: number | null;
+                    /** Max Tokens Per Doc */
+                    max_tokens_per_doc?: number | null;
+                    /** Max Tokens Per Query */
+                    max_tokens_per_query?: number | null;
+                    /** Model */
+                    model: string;
+                    /** Query */
+                    query: string;
+                    /** Rank Fields */
+                    rank_fields?: string[] | null;
+                    /** Return Documents */
+                    return_documents?: boolean | null;
+                    /** Top N */
+                    top_n?: number | null;
+                    /** Truncate Prompt Tokens */
+                    truncate_prompt_tokens?: number | null;
+                    /** Truncation Side */
+                    truncation_side?: ("left" | "right") | null;
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

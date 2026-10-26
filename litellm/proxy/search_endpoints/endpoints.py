@@ -7,12 +7,22 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import ORJSONResponse
 
 from litellm._logging import verbose_proxy_logger
+from litellm.llms.perplexity.search.transformation import PerplexitySearchRequest
 from litellm.proxy._types import *
 from litellm.proxy.auth.user_api_key_auth import UserAPIKeyAuth, user_api_key_auth
 from litellm.proxy.common_request_processing import ProxyBaseLLMRequestProcessing
+from litellm.proxy.common_utils.custom_openapi_spec import inline_request_body
 from litellm.proxy.route_llm_request import ProxyMissingRequiredParamError
 
 router: Final = APIRouter()
+
+_SEARCH_REQUEST_BODY: Final = inline_request_body(
+    PerplexitySearchRequest,
+    {
+        "query": "latest developments in AI retrieval",
+        "max_results": 5,
+    },
+)
 
 
 @router.post(
@@ -20,24 +30,28 @@ router: Final = APIRouter()
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["search"],
+    openapi_extra={"requestBody": _SEARCH_REQUEST_BODY},
 )
 @router.post(
     "/search/{search_tool_name}",
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["search"],
+    openapi_extra={"requestBody": _SEARCH_REQUEST_BODY},
 )
 @router.post(
     "/v1/search",
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["search"],
+    openapi_extra={"requestBody": _SEARCH_REQUEST_BODY},
 )
 @router.post(
     "/search",
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["search"],
+    openapi_extra={"requestBody": _SEARCH_REQUEST_BODY},
 )
 async def search(
     request: Request,

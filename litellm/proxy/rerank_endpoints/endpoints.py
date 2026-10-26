@@ -14,14 +14,26 @@ from litellm.proxy.common_request_processing import (
     log_llm_api_exception,
     resolve_litellm_call_id,
 )
+from litellm.proxy.common_utils.custom_openapi_spec import inline_request_body
 from litellm.proxy.common_utils.openai_error_payload import (
     error_status_code,
     litellm_call_id_headers,
     openai_error_param,
     openai_error_type,
 )
+from litellm.types.rerank import RerankRequest
 
 router: Final = APIRouter()
+
+_RERANK_REQUEST_BODY: Final = inline_request_body(
+    RerankRequest,
+    {
+        "model": "cohere/rerank-english-v3.0",
+        "query": "What is BM25?",
+        "documents": ["BM25 is a ranking function.", "ColBERT is a late-interaction model."],
+        "top_n": 1,
+    },
+)
 
 
 @router.post(
@@ -29,18 +41,21 @@ router: Final = APIRouter()
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["rerank"],
+    openapi_extra={"requestBody": _RERANK_REQUEST_BODY},
 )
 @router.post(
     "/v1/rerank",
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["rerank"],
+    openapi_extra={"requestBody": _RERANK_REQUEST_BODY},
 )
 @router.post(
     "/rerank",
     dependencies=[Depends(user_api_key_auth)],
     response_class=ORJSONResponse,
     tags=["rerank"],
+    openapi_extra={"requestBody": _RERANK_REQUEST_BODY},
 )
 async def rerank(
     request: Request,
