@@ -19,6 +19,12 @@ export function parseDeadKeysOutput(stdout) {
   return dead.sort();
 }
 
+const PYTHON_CANDIDATES = ["python3", "python"];
+
+export function selectPythonInterpreter(isAvailable) {
+  return PYTHON_CANDIDATES.find((candidate) => isAvailable(candidate)) ?? null;
+}
+
 export function findNewDeadKeys(dead, baseline) {
   const known = new Set(baseline);
   return dead.filter((key) => !known.has(key)).sort();

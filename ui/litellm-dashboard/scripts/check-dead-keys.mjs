@@ -3,14 +3,28 @@ import { readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
-import { findNewDeadKeys, findResolvedDeadKeys, parseDeadKeysOutput } from "./dead-key-lib.mjs";
+import {
+  findNewDeadKeys,
+  findResolvedDeadKeys,
+  parseDeadKeysOutput,
+  selectPythonInterpreter,
+} from "./dead-key-lib.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DASHBOARD_ROOT = join(HERE, "..");
 const BASELINE_PATH = join(DASHBOARD_ROOT, "dead-keys-baseline.json");
 const writeBaseline = process.argv.includes("--write");
 
-const scanner = spawnSync("python3", [join(HERE, "dead-keys.py")], {
+const python = selectPythonInterpreter(
+  (candidate) => spawnSync(candidate, ["--version"], { stdio: "ignore" }).status === 0,
+);
+
+if (python === null) {
+  process.stderr.write("dead-keys.py needs Python 3 on PATH as python3 or python.\n");
+  process.exit(1);
+}
+
+const scanner = spawnSync(python, [join(HERE, "dead-keys.py")], {
   cwd: DASHBOARD_ROOT,
   encoding: "utf-8",
 });

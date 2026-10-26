@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { findNewDeadKeys, findResolvedDeadKeys, parseDeadKeysOutput } from "../scripts/dead-key-lib.mjs";
+import {
+  findNewDeadKeys,
+  findResolvedDeadKeys,
+  parseDeadKeysOutput,
+  selectPythonInterpreter,
+} from "../scripts/dead-key-lib.mjs";
 
 const scannerOutput = `catalog=100 dead=3
 
@@ -22,6 +27,20 @@ describe("parseDeadKeysOutput", () => {
 
   it("ignores the summary line", () => {
     expect(parseDeadKeysOutput(scannerOutput)).not.toContain("catalog=100");
+  });
+});
+
+describe("selectPythonInterpreter", () => {
+  it("prefers python3 when both names resolve", () => {
+    expect(selectPythonInterpreter((candidate) => candidate === "python3" || candidate === "python")).toBe("python3");
+  });
+
+  it("falls back to python when python3 is unavailable", () => {
+    expect(selectPythonInterpreter((candidate) => candidate === "python")).toBe("python");
+  });
+
+  it("returns null when neither name resolves", () => {
+    expect(selectPythonInterpreter(() => false)).toBeNull();
   });
 });
 
