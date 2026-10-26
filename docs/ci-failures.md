@@ -85,3 +85,12 @@ UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒�
 本轮只改 CI 实际挂掉的这一处。套件里 `findBy...` 后接 `toHaveValue` 的写法还有若干处，其中输入框只在异步数据
 到位后才出现的，等元素即等价于等值，属正常用法；是否还有同族的"元素常驻但断言状态变化"需要按实际红灯再逐处判定，
 不做无证据的批量改写
+
+## 2026-10-26 修复验证：run 40259681120 全绿
+
+- 提交：`9d38b32c test(ui): 改密码用例改为按值轮询重置结果`，推 main 触发 unit 工作流，18m52s 完成
+- 结论：55 个 job 全部 success。`ui-unit` 13 个步骤逐条 success，其中 `Check for new English display strings`、
+  `Check Chinese coverage of the catalogs`、`Run UI unit tests (Vitest)`、`Run UI type tests (Vitest)` 均通过
+- 取证口径：以 `gh run view --json jobs` 的步骤结论为准。`gh run view --log` 拉 1.2 MB 作业日志时触发限流，
+  返回码 124 且落地 0 字节，步骤级结论不依赖该日志
+- 判定：第四轮的等待预算型假红与本轮的断言写法型假红都已消除，UI 套件在免费 4 核 runner 上恢复稳定
