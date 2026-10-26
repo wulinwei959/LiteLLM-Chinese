@@ -54,7 +54,12 @@ jobs:
             exit 1
           fi
           src_version=$(sed -n 's/^version = "\([^"]*\)"/\1/p' pyproject.toml | head -1)
-          official=$(gh api "repos/BerriAI/litellm/git/ref/tags/$tag" --jq .ref 2>/dev/null || echo "上游无此 tag")
+          official_ref=$(gh api "repos/BerriAI/litellm/git/ref/tags/$tag" --jq .ref 2>/dev/null || true)
+          if printf '%s' "$official_ref" | grep -q '^refs/tags/'; then
+            official="$official_ref"
+          else
+            official="上游无此 tag"
+          fi
           {
             echo "tag=$tag"
             echo "sync_branch_source=${latest:-手工指定}"
