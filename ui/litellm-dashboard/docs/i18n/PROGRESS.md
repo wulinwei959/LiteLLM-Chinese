@@ -5317,3 +5317,17 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 验证：新增 6 例单测，与 i18n 守卫合跑 65 例全绿；双向变异各改一枚唯一锚点，门禁分别以 exit 1 报出 `zh value carries no Chinese: common.configValueUpdated` 与 `en value carries Chinese: common.helpIcon`，还原后回到绿色；`knip:ci`、eslint、prettier 通过；消息目录未改，死键仍 0、静态英文基线仍 284
 
 同簇把统计口径对齐并写进 README 的验证一节。按 `i18n-file-inventory.mjs` 的枚举规则复跑，非测试 `.tsx` 955 个、接入 739 个、77.4%、未接入 216 个（199 零命中加 17 有证据，零命中里 `src/app` 路由 88 含 `page.tsx` 40、ui 原语 40、shared 容器 23、其余 48 散在 58 目录），旧记的 954 / 737 / 217 是口径未写明时的漏算。目录叶子按 `dead-keys.py` 的 `flat` 口径数组算一片得 13355，展开数组得 13363，同值 185 两法一致、键树差集 0。全量文件与用例数改为只认 CI `ui-unit` 实录，最近一次现跑 run 40271379757（b65856a5）为 973 个文件、13076 例，9 例既有预期失败、真红 0，`Type Errors` no errors，同轮 `ui-unit` 的静态英文与中文取值两道门禁步骤均 success
+
+## 2026-10-26 第 536 簇：渲染扫描复跑，补出界面主题页的真漏
+
+第 533 簇之后渲染面没有改动，但扫描本身在 Windows 上跑不起来，等于这层账一直没人复跑。本簇把扫描器改到能在原生 Windows 上跑，并借这次复跑补出一处真缺陷
+
+**扫描器可运行性**。三处改动：浏览器改由环境变量 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指定，不设时仍走 Playwright 自带的 Chromium，此前必须先 `playwright install` 而在国内网络下装不上；新增 `scripts/serve-export.mjs` 托管 `out/` 静态导出产物，绕开 Turbopack 开发服务器在 Windows 上 spawn 子进程失败（`0xc0000142`）以及 `output: export` 下 `next start` 不可用两件事；该服务器按真实部署形状工作，页面与资源出 `out/`，带 `Accept: application/json` 的请求转发给上游桩代理，因此页面路由与同名 API 路径（`/model-insights` 两者同名）不会互相顶掉
+
+**复跑结果**。38 页全部渲染，0 个渲染错误、0 条新发现，基线 60 条与第 533 簇逐条一致（lens 8 条入门页示例追踪的 span 标识符、api-reference 31 条代码语料、transform-request 20 条 curl 示例、model-insights 1 条 `session`）
+
+**真缺陷一处**。界面主题页的面包屑显示英文 "Theme"。顺着渲染结果查下去，`routeSegmentForPathname` 用字符串前缀匹配剥掉 UI base 路径（生产环境 base 是 `/ui`），`/ui-theme` 被判定为在 `/ui` 之下，切掉三个字符后剩下 `-theme`，路由匹配落空、面包屑退到 `prettify` 兜底，把 `-theme` 渲染成 " Theme"。该函数有六个调用点（面包屑、dashboard layout、CommandPalette 三处、`useUrlTab`），改一处全部受益。修法是把前缀匹配收紧成路径段匹配（base 之后必须是 `/` 或已是字符串末尾），并补两条回归测试钉住：`uiHref.test.ts` 断 `/ui-theme` 与 `/ui/ui-theme` 的段提取，`leftnav.test.ts` 断 `getBreadcrumb("/ui/ui-theme")` 归到设置分组
+
+这个缺陷不影响其他 37 页，因为只有以 `/ui` 开头的路由名会撞上（`/ui` 本身是首页，`/ui-hub` 不是真实路由）。它此前 8 个月里一直在生产环境里显示英文，只是没人把界面主题页的面包屑单独看过
+
+验证：两条回归测试回退修复后确实变红（`uiHref.test.ts` 与 `leftnav.test.ts` 合跑 58 例，回退后 1 例失败），修复后 58 例全绿；`npm run build` 退出 0；`npx tsc --noEmit` 只余 `tests/dead-key-lib.test.ts` 两处测试文件内的隐式 any（既有账）；渲染扫描 38 页 0 渲染错误、0 条新发现

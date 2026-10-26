@@ -97,12 +97,18 @@ const main = async () => {
   const proxyUrl = PROXY_URL || "http://localhost:4000";
   const stubServer = PROXY_URL ? null : await startStubProxy(new URL(proxyUrl).port || "4000");
 
-  const browser = await chromium.launch().catch((error) => {
-    throw new Error(
-      `Chromium could not start: ${String(error).split("\n")[0]}\n` +
-        "On Linux the browser needs system libraries; `npx playwright install --with-deps chromium` installs them.",
-    );
-  });
+  const browser = await chromium
+    .launch({
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+      headless: true,
+    })
+    .catch((error) => {
+      throw new Error(
+        `Chromium could not start: ${String(error).split("\n")[0]}\n` +
+          "On Linux the browser needs system libraries; `npx playwright install --with-deps chromium` installs them.\n" +
+          "On Windows without Playwright's own browser, point PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH at a local Chrome.",
+      );
+    });
   const context = await browser.newContext({ locale: "zh-CN", viewport: { width: 1440, height: 900 } });
   await context.addCookies([{ name: "token", value: await sessionToken(proxyUrl), url: BASE_URL }]);
   await context.addInitScript(() => window.localStorage.setItem("litellm-ui-locale", "zh-CN"));

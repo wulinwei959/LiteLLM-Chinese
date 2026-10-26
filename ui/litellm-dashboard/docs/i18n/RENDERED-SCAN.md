@@ -2,7 +2,9 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-24 第 533 簇。lens 追踪观察页批量接入完成：批量工具改写 vendor 166 个源文件、10 处手工位点接线，`SignalSettings.tsx` 一处在模块顶层解引用 getter 导致 lens 整页崩溃（`needs a translator: register one before the package renders`）改惰性求值修掉，`TracingSetupCard` 三条赋给变量的英文 message 分支漏抽、新开 3 键接线。基线从 138 撤到 60，38 页 0 渲染错误、0 条新发现。剩余 60 条按页是 lens 8（入门页示例追踪时间轴的 span 标识符，判数据保留）、api-reference 31、transform-request 20、model-insights 1（`session`，`session_id` API 字段词）；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词
+最近一次复跑：2026-10-26 第 536 簇。38 页全部渲染，0 个渲染错误、0 条新发现，基线 60 条与第 533 簇一致（lens 8 条 span 标识符、api-reference 31 条代码语料、transform-request 20 条 curl 示例、model-insights 1 条 `session`）。这一轮补的是扫描本身的可运行性与一处真缺陷：扫描器改用环境变量 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指向本机浏览器，不再要求先 `playwright install`；新增 `scripts/serve-export.mjs` 托管静态导出产物，绕开 Windows 上 Turbopack 开发服务器的子进程启动失败（`0xc0000142`）与 `output: export` 下 `next start` 不可用的问题。扫描出的真缺陷是 `routeSegmentForPathname` 用字符串前缀匹配剥掉 UI base 路径，`/ui-theme` 被切成 `-theme`，界面主题页的面包屑退化成英文 "Theme"
+
+（沿革）2026-10-24 第 533 簇。lens 追踪观察页批量接入完成：批量工具改写 vendor 166 个源文件、10 处手工位点接线，`SignalSettings.tsx` 一处在模块顶层解引用 getter 导致 lens 整页崩溃（`needs a translator: register one before the package renders`）改惰性求值修掉，`TracingSetupCard` 三条赋给变量的英文 message 分支漏抽、新开 3 键接线。基线从 138 撤到 60，38 页 0 渲染错误、0 条新发现。剩余 60 条按页是 lens 8（入门页示例追踪时间轴的 span 标识符，判数据保留）、api-reference 31、transform-request 20、model-insights 1（`session`，`session_id` API 字段词）；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词
 
 （沿革）第 532 簇把第 530 簇进基线的零头（除 lens 86、api-reference 31、transform-request 20 外的 25 条）逐条甄别完：6 条真漏接键（model-insights 的 Requests/Spend/Linear/Log、telemetry 的面包屑 Telemetry、cost-tracking 的 Docs 按钮默认值），18 条判技术 token 或品牌名进 `ALLOWED_ENGLISH`，`model-insights` 的 `session` 判保留（`session_id` API 字段词）。基线从 162 撤到 138，38 页 0 渲染错误、0 条新发现
 
@@ -23,6 +25,8 @@
 
 ## 怎么跑
 
+开发服务器跑起来之后：
+
 ```
 npm run dev            # 一个终端
 npm run scan:rendered  # 另一个终端
@@ -36,6 +40,22 @@ npx playwright install chromium
 ```
 
 Linux 上 Chromium 还要系统库，`npx playwright install --with-deps chromium` 会一并装上（要 sudo）。
+
+已经装了本机 Chrome 而不想下 Playwright 自带的浏览器时，指过去就行：
+
+```
+set PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+npm run scan:rendered
+```
+
+Windows 上 `npm run dev` 起不来时（Next 的 Turbopack 开发服务器在部分机器上 spawn 子进程会失败，报 `0xc0000142`），改用静态导出产物托管：
+
+```
+npm run build
+node scripts/serve-export.mjs 3000 http://localhost:4000
+```
+
+这个服务器按导出产物的真实形状工作：页面与资源从 `out/` 出，带 `Accept: application/json` 的请求转发给上游（默认是扫描脚本自起的桩代理），因此页面路由与同名 API 路径（例如 `/model-insights`）不会互相顶掉
 
 ## 怎么判
 

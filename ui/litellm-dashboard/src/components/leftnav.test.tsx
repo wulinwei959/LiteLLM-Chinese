@@ -797,6 +797,10 @@ describe("getBreadcrumb", () => {
     expect(getBreadcrumb("/ui/router-settings", mockNavT)).toEqual({ section: "设置", title: "路由设置" });
   });
 
+  it("resolves a route whose name starts with the base path name", () => {
+    expect(getBreadcrumb("/ui/ui-theme", mockNavT)).toEqual({ section: "设置", title: "UI Theme" });
+  });
+
   it("falls back to a prettified title with no section for unknown routes", () => {
     expect(getBreadcrumb("/ui/some-unknown-page", mockNavT)).toEqual({ section: null, title: "Some Unknown Page" });
   });

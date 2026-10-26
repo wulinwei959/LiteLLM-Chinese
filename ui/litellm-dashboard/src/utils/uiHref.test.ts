@@ -52,4 +52,9 @@ describe("routeSegmentForPathname", () => {
     expect(routeSegmentForPathname("/logs")).toBe("logs");
     expect(routeSegmentForPathname("/")).toBe("");
   });
+
+  it("keeps a route whose name starts with the base name", () => {
+    expect(routeSegmentForPathname("/ui-theme")).toBe("ui-theme");
+    expect(routeSegmentForPathname("/ui/ui-theme")).toBe("ui-theme");
+  });
 });
