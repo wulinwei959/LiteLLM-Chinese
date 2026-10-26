@@ -77,7 +77,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 批次 | 批次 0 到 14 是核心管理页，15 到 24 是长尾收尾。`PLAN.md` 的状态列写于各批次推进时点，已被第 513 到 524 簇的收口轮覆盖，当前进度一律以 `PROGRESS.md` 的逐簇账为准 |
 | 组件接入 | 2026-10-26 复跑，非测试 `.tsx` 955 个中 739 个接入翻译器，77.4%。未接入的 216 个已逐文件取证：199 个六个口径零命中（`src/app` 路由文件 88，其中 `page.tsx` 40、shadcn 原语 40、共享容器 23，其余 48 个散在 58 个目录），17 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md`；vendor 侧 lens-ui 包另经 `lens-localize` 批量接入 `lens` 命名空间（166 个源文件加 10 处手工位点，第 533 簇） |
 | 目录规模 | 中英各 13355 个叶子（`dead-keys.py` 的 `flat` 口径，数组算一片；展开数组则 13363），键树无差集；中英同值 185 个，两法一致，按五档判定（缩写单位、格式示例、品牌、协议枚举、含插值混排，见 `GLOSSARY.md` 的保留英文一节；lens 簇新增 52 条均为机读面与代码语料）；死键 0（死键判定器已补扫 vendor 树，0 是下限） |
-| 测试 | 全量测试数只取 CI `ui-unit` 实录，最近一次现跑是 run 40233205085（#394，main@03272491）：三 project 合跑 970 个文件、13056 例，9 例是仓库既有的预期失败，真红 0。此后新增三道目录门禁的库单测 3 个文件 15 例，总数以最近一次 `ui-unit` 实录为准；2026-10-26 复跑 i18n 守卫 6 个文件 59 例与门禁单测 3 个文件 15 例通过，`Type Errors` 报 no errors |
+| 测试 | 全量测试数只取 CI `ui-unit` 实录，最近一次是 run 40249622617（#400，main@4d02d8fd）：973 个文件、13076 例，其中 9 例是仓库既有的预期失败，真红 0，`Type Errors` 报 no errors；该轮 `ui-unit` 的静态英文与中文取值两道门禁步骤均 success。2026-10-26 本地复跑 i18n 守卫 6 个文件 59 例与三道门禁的库单测 3 个文件 15 例通过 |
 | 类型与构建 | `npm run typecheck` 0 错，`npm run build` 退出 0 |
 | Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件，2026-10-25 全量复核仍 0 error）；预算九条全过，`no-console` 11/11 与 `no-long-condition-chain` 200/200 顶格无余量，`no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各剩 1 条余量，`testing-library/prefer-screen-queries` 0/0 |
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0），`npm run check:english-leaks` 通过（基线 284 条 / 162 文件），`npm run check:zh-coverage` 通过（zh 无汉字 215 条、en 夹汉字 0 条） |
