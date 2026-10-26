@@ -746,6 +746,9 @@ from litellm.proxy.management_endpoints.prompt_caching_requests import (
 from litellm.proxy.management_endpoints.request_error_endpoints import (
     router as request_error_router,
 )
+from litellm.proxy.management_endpoints.roi_calculator_endpoints import (
+    router as roi_calculator_router,
+)
 from litellm.proxy.management_endpoints.router_settings_endpoints import (
     router as router_settings_router,
 )
@@ -21504,6 +21507,7 @@ app.include_router(team_callback_router)
 app.include_router(budget_management_router)
 app.include_router(model_management_router)
 app.include_router(model_access_group_management_router)
+app.include_router(roi_calculator_router)
 app.include_router(auto_router_management_router)
 app.include_router(tag_management_router)
 app.include_router(workflow_management_router)
