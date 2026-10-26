@@ -135,13 +135,18 @@ UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒�
   串行测试时间 11215 秒
 - 过程：先按折中方案降到 8（`b65856a5`，负载指数 2.0，job 超时 35 改 60）。run 406 的 `ui-unit`
   在 8 workers 下 21m22s 全绿，但把失败 job 单独重跑也能通过，说明失败与并发压力强相关、属随机错误
-- 决策：改为核数匹配的 4（负载指数 1.0），job `timeout-minutes` 提到 90（按串行 11215 秒推算
-  全量约 50-57 分钟，留出方差与 `npm ci`、typecheck、门禁的余量）；8 与 14 都只是降低引爆概率，
+- 决策：改为核数匹配的 4（负载指数 1.0），job `timeout-minutes` 提到 90；8 与 14 都只是降低引爆概率，
   只有 1.0 的负载指数才消除超配
 - 同步：`tests/unit/test_select_ui_test_scope.py` 的 `FULL_SUITE_ARGV` 与 related 期望两处同步改为 4，
   本地 19 例通过（该测试钉住 workflow 的 argv，历史第一轮红就是两者脱节）
-- 代价与后续：每轮 unit 的 UI 部分多花约 30 分钟；若之后要压缩时长，可考虑把 UI 套件拆成多 job
-  并行（按目录分片），而不是重新提高单 job 的 workers
+- 实测结果（run 408，`c7228ea9`）：55 个 job 全绿，`ui-unit` job 17m08s、Vitest 步 14m45s。
+  与另两档对比，同一套件三轮：14 workers 为 18m37s / Vitest 16m13s（另有 22-23 分钟的红灯轮），
+  8 workers 为 24m15s / 21m22s，4 workers 反而最快
+- 推算修正：改前预计 4 workers 需要 50-57 分钟，算法是拿 14 workers 下测得的串行 11215 秒除以 4。
+  该估计高估了，因为那些单文件时长本身被争抢放大；实测 4 workers 最优，说明 4 核上此套件在
+  负载指数 1.0 时吞吐最高，超配是负收益
+- 代价与后续：实际没有付出额外时长，无需拆 job；若未来套件继续膨胀，优先考虑按目录拆成多 job
+  并行，而不是提高单 job 的 workers
 - 审计结论：43 个工作流中 20 个已停用（上游发布/issue 自动化/需密钥），其余 runner 标签全部干净；
   OSV Scan 与 LiteLLM Rust 的历史失败是 10-20 至 10-24 账务窗口期的 runner 启动失败（annotation 为
   payment failed），非测试问题；`test-merge-smoke` 的 windows-sdk 与 `test-litellm-ui-build` 的 Docker
