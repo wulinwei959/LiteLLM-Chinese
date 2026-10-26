@@ -75,13 +75,13 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 项目 | 状态 |
 |---|---|
 | 批次 | 批次 0 到 14 是核心管理页，15 到 24 是长尾收尾。`PLAN.md` 的状态列写于各批次推进时点，已被第 513 到 524 簇的收口轮覆盖，当前进度一律以 `PROGRESS.md` 的逐簇账为准 |
-| 组件接入 | 非测试 `.tsx` 954 个中 737 个接入翻译器，77.3%。未接入的 217 个已逐文件取证：200 个六个口径零命中（路由页外壳 78、shadcn 原语 40、共享容器 23 等），17 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md`；vendor 侧 lens-ui 包另经 `lens-localize` 批量接入 `lens` 命名空间（166 个源文件加 10 处手工位点，第 533 簇） |
-| 目录规模 | 中英各 13355 个叶子，键树无差集；中英同值 185 个，按五档判定（缩写单位、格式示例、品牌、协议枚举、含插值混排，见 `GLOSSARY.md` 的保留英文一节；lens 簇新增 52 条均为机读面与代码语料）；死键 0（死键判定器已补扫 vendor 树，0 是下限） |
-| 测试 | 最近一次全量实录：三 project 合跑 970 个文件、13056 例，9 例是仓库既有的预期失败，真红 0（第 531 簇时点，此后未再全量现跑，按 AGENTS 约定全量交给 CI）；2026-10-25 复跑 i18n 守卫 6 个文件 59 例通过，`Type Errors` 报 no errors |
+| 组件接入 | 2026-10-26 复跑，非测试 `.tsx` 955 个中 739 个接入翻译器，77.4%。未接入的 216 个已逐文件取证：199 个六个口径零命中（`src/app` 路由文件 88，其中 `page.tsx` 40、shadcn 原语 40、共享容器 23，其余 48 个散在 58 个目录），17 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md`；vendor 侧 lens-ui 包另经 `lens-localize` 批量接入 `lens` 命名空间（166 个源文件加 10 处手工位点，第 533 簇） |
+| 目录规模 | 中英各 13355 个叶子（`dead-keys.py` 的 `flat` 口径，数组算一片；展开数组则 13363），键树无差集；中英同值 185 个，两法一致，按五档判定（缩写单位、格式示例、品牌、协议枚举、含插值混排，见 `GLOSSARY.md` 的保留英文一节；lens 簇新增 52 条均为机读面与代码语料）；死键 0（死键判定器已补扫 vendor 树，0 是下限） |
+| 测试 | 全量测试数只取 CI `ui-unit` 实录，最近一次现跑是 run 40233205085（#394，main@03272491）：三 project 合跑 970 个文件、13056 例，9 例是仓库既有的预期失败，真红 0。此后新增三道目录门禁的库单测 3 个文件 15 例，总数以最近一次 `ui-unit` 实录为准；2026-10-26 复跑 i18n 守卫 6 个文件 59 例与门禁单测 3 个文件 15 例通过，`Type Errors` 报 no errors |
 | 类型与构建 | `npm run typecheck` 0 错，`npm run build` 退出 0 |
 | Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件，2026-10-25 全量复核仍 0 error）；预算九条全过，`no-console` 11/11 与 `no-long-condition-chain` 200/200 顶格无余量，`no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各剩 1 条余量，`testing-library/prefer-screen-queries` 0/0 |
-| 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
-| i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
+| 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0），`npm run check:english-leaks` 通过（基线 284 条 / 162 文件），`npm run check:zh-coverage` 通过（zh 无汉字 215 条、en 夹汉字 0 条） |
+| i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors；另三门目录门禁的判定库单测 3 个文件 15 例 |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
 | CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/中文取值/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
 
@@ -101,7 +101,7 @@ npm run knip:ci
 npm run build
 ```
 
-几条口径要记住。不要裸跑全量 `npx vitest run`，那是 970 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键与英文基线门禁取文件都走 `git ls-files`，新建文件要先 `git add` 再跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
+几条口径要记住。不要裸跑全量 `npx vitest run`，那是 970 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键与英文基线门禁取文件都走 `git ls-files`，新建文件要先 `git add` 再跑。统计口径固定四条，复测照此执行：接入率用 `node scripts/i18n-file-inventory.mjs`，枚举 `src` 下 `.tsx` 并排除文件名含 `.test.` 的，接入判据是源码出现 `useTranslations(` 或 `getTranslations(`；目录叶子与同值按 `scripts/dead-keys.py` 的 `flat` 口径，数组算一片得 13355，展开数组得 13363，同值 185 两法一致；守卫与门禁单测数分别取 `npx vitest run src/lib/i18n src/lib/toast.test.ts` 与 `npx vitest run tests/english-scan-lib.test.ts tests/english-leaks-lib.test.ts tests/zh-coverage-lib.test.ts` 的用例数；全量文件与用例数只认 CI `ui-unit` 实录，不在本地现跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
 
 分 project 的入口是 `npm run test:unit`（node 环境）、`test:component`、`test:integration`（jsdom）、`test:types`。渲染扫描要先起 `npm run dev`（端口 3000），再跑 `npm run scan:rendered`，只有加 `--update-baseline` 才写基线。改了后端路由或响应模型，跑 `npm run gen:api` 重新生成 `src/lib/http/schema.d.ts`，那个文件不要手改
 
@@ -130,6 +130,6 @@ npm run build
 | [`ui/litellm-dashboard/docs/i18n/WORKFLOW.md`](ui/litellm-dashboard/docs/i18n/WORKFLOW.md) | 单批执行的七步流程、验证清单、编码约定与文件拆分口径 |
 | [`ui/litellm-dashboard/docs/i18n/FIXES.md`](ui/litellm-dashboard/docs/i18n/FIXES.md) | 缺陷八类的分类表、定位手段与踩坑记录 |
 | [`ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md`](ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md) | 渲染扫描的用法与判据 |
-| [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md) | 未接入翻译器的 217 个文件逐文件判定账，兼记扫描口径盲区、11 处真漏与 lens 簇尾账 |
+| [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md) | 未接入翻译器的 216 个文件逐文件判定账，兼记扫描口径盲区、11 处真漏与 lens 簇尾账 |
 | [`ui/litellm-dashboard/AGENTS.md`](ui/litellm-dashboard/AGENTS.md) | 该子项目的测试分层、断言约定与门禁说明 |
 | [`ui/litellm-dashboard/TRANSLATION_PLAN.md`](ui/litellm-dashboard/TRANSLATION_PLAN.md) | 历史计划与一手踩坑日志，进度部分已过期 |
