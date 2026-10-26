@@ -25,6 +25,8 @@
     "gen:api": "node scripts/gen-api-types.mjs",
     "check:dead-keys": "node scripts/check-dead-keys.mjs",
     "check:dead-keys:write": "node scripts/check-dead-keys.mjs --write",
+    "check:english-leaks": "node scripts/check-english-leaks.mjs",
+    "check:english-leaks:write": "node scripts/check-english-leaks.mjs --write",
     "scan:rendered": "node scripts/rendered-ui-scan.mjs"
   },
   "dependencies": {

@@ -148,7 +148,7 @@ export function usePlaygroundSend(deps: SendDeps) {
   const cancel = () => {
     if (!abortRef.current) return;
     stop();
-    toast.info("Request cancelled");
+    toast.info(t("chat.requestCancelled"));
   };
 
   const prepare = async (): Promise<PreparedRequest | null> => {

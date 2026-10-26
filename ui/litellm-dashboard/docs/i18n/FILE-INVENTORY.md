@@ -609,3 +609,7 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 | `vendor/.../settings/signals/SignalSettings.tsx:32` | 模块顶层 `new Set(SIGNAL_LIBRARY.map(...question))` 在翻译器注册前触发 getter，lens 页整页崩溃 | 改惰性函数 `LIBRARY_QUESTIONS()` |
 
 这批接线同时把死键判定器真死账清零：判定器此前只扫 `src`，lens 键全库误报 1293 条死，文件清单补 `vendor/lens-ui/src` 后剩的 6 条真死键即上表中间四行
+
+## 静态英文基线（2026-10-26 第 534 簇）
+
+默认四口径扫 `src` 下非测试 `.ts/.tsx` 得到 286 条命中，逐条分类后 1 条真漏已接，284 条判定保留冻结进 `english-leaks-baseline.json`（162 个文件）。本文件原有的 217 个未接入文件判定账不变；静态残留的机读冻结清单、五档判定与刷新方法见 [ENGLISH-BASELINE.md](./ENGLISH-BASELINE.md)

@@ -55,7 +55,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 
 ## 防回归的守卫
 
-`src/lib/i18n` 下五道，各管一个方向，缺一道就有盲区，另加 `src/lib/toast.test.ts` 里那一道动态取键的覆盖检查
+`src/lib/i18n` 下五道，各管一个方向，缺一道就有盲区，另加 `src/lib/toast.test.ts` 里那一道动态取键的覆盖检查。静态英文另有一道基线门禁 `check:english-leaks`，不在 Vitest 里，按 `english-leaks-baseline.json` 棘轮
 
 | 守卫 | 抓什么 |
 |---|---|
@@ -65,6 +65,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | `locales.test.ts` | 语言解析、三级回退链与中文标签归一 |
 | `format.test.tsx` | 格式化按当前 locale 走，无效日期不抛 |
 | `toast.test.ts` | `toastMessage(category)` 的键是运行期拼的，静态守卫看不见，这里断言由两张查找表派生出的 `TOAST_TITLE_CATEGORIES` 在中英两侧的 `toast` 命名空间都存在 |
+| `check:english-leaks` | 静态扫描 `src` 下非测试 `.ts/.tsx` 的 JSX 文本、14 个文案属性、toast 与 `new *Error`，按 `english-leaks-baseline.json` 棘轮，新增硬编码英文即红。分类与刷新方法见 [ENGLISH-BASELINE.md](ui/litellm-dashboard/docs/i18n/ENGLISH-BASELINE.md) |
 
 目录健康度还有两道：`npm run check:dead-keys` 抓"目录里有但代码没人用"的键（基线是空集，新增即红），`npm run knip:ci` 抓没有任何引用的死文件。代码形态由仓库自有的 lint 规则把关，`local/filename-pascal-case` 管 `.tsx` 文件名，`local/no-large-inline-object-arg` 与 `local/no-long-condition-chain` 进预算棘轮，`local/no-ad-hoc-z-index` 管层叠上下文
 
@@ -93,11 +94,12 @@ TMPDIR=/tmp/vitest_tmp npx vitest run <显式文件路径> --reporter=dot
 npx eslint .
 npx eslint . -f json -o /tmp/lint.json && node scripts/check-lint-budgets.mjs /tmp/lint.json eslint-budgets.json
 npm run check:dead-keys
+npm run check:english-leaks
 npm run knip:ci
 npm run build
 ```
 
-几条口径要记住。不要裸跑全量 `npx vitest run`，那是 970 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键门禁取文件走 `git ls-files`，新建模块要先 `git add` 再跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
+几条口径要记住。不要裸跑全量 `npx vitest run`，那是 970 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键与英文基线门禁取文件都走 `git ls-files`，新建文件要先 `git add` 再跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
 
 分 project 的入口是 `npm run test:unit`（node 环境）、`test:component`、`test:integration`（jsdom）、`test:types`。渲染扫描要先起 `npm run dev`（端口 3000），再跑 `npm run scan:rendered`，只有加 `--update-baseline` 才写基线。改了后端路由或响应模型，跑 `npm run gen:api` 重新生成 `src/lib/http/schema.d.ts`，那个文件不要手改
 
@@ -109,7 +111,7 @@ npm run build
 
 ## 剩余工作
 
-- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉
+- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉。第 534 簇把残留冻结成 `english-leaks-baseline.json`（284 条 / 162 文件），本地 `check:english-leaks` 已接，CI 挂载暂缓
 - **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
 - **唯一在案的活项是上游同步（按决定暂缓）**。这是英文重新进面的唯一通道：每一次 release 同步都会带回新的界面文案与结构，届时按 UPSTREAM-SYNC.md 的三件事重接（重测 lint 棘轮、`eslint . --prune-suppressions`、复跑死键门禁与渲染扫描）。除同步外，四条静态口径与渲染扫描的命中已全部接键或判定归册，逐页明细在 `rendered-ui-baseline.json`，没有未甄别的账
 - **17 个上游巨型文件保留 `max-lines` 豁免（第 529 簇的判定账）**。实测它们在上游 `v1.107.0` 树上就已全部超线，拆分的收益只有消一条 lint 豁免，代价是每次上游同步都要在这些文件上重新对齐结构。我们自己的批次撑过线的 4 个已在第 523/524 簇拆完退线，第 529 簇又把超线幅度最小的 `old-usage/usage.tsx` 拆到 752 行退线。日后因功能改动打开哪个文件，顺手拆出内联单元即可

@@ -1,0 +1,1424 @@
+{
+  "hits": [
+    {
+      "file": "src/app/(dashboard)/agents/_components/agent_card_discovery.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "Agent.Invoke"
+    },
+    {
+      "file": "src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"reason\": \"manual kill switch\"}"
+    },
+    {
+      "file": "src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/hooks/kill-agent"
+    },
+    {
+      "file": "src/app/(dashboard)/api-reference/_components/APIReferenceView.tsx",
+      "kind": "jsx",
+      "text": "Langchain Py"
+    },
+    {
+      "file": "src/app/(dashboard)/api-reference/_components/APIReferenceView.tsx",
+      "kind": "jsx",
+      "text": "LlamaIndex"
+    },
+    {
+      "file": "src/app/(dashboard)/api-reference/_components/APIReferenceView.tsx",
+      "kind": "jsx",
+      "text": "OpenAI Python SDK"
+    },
+    {
+      "file": "src/app/(dashboard)/caching/_components/response_time_indicator.tsx",
+      "kind": "jsx",
+      "text": "ms"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-optimization/_components/AutoRouterBenchmarksTab.tsx",
+      "kind": "jsx",
+      "text": "(UTC)"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-headroom-endpoint"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "claude-*"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-tracking/_components/how_it_works.tsx",
+      "kind": "jsx",
+      "text": "final_cost = base_cost × (1 - discount%/100)"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-tracking/_components/how_it_works.tsx",
+      "kind": "jsx",
+      "text": "x-litellm-response-cost"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-tracking/_components/how_it_works.tsx",
+      "kind": "jsx",
+      "text": "x-litellm-response-cost-discount-amount"
+    },
+    {
+      "file": "src/app/(dashboard)/cost-tracking/_components/how_it_works.tsx",
+      "kind": "jsx",
+      "text": "x-litellm-response-cost-original"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails-monitor/_components/EvaluationSettingsModal.tsx",
+      "kind": "jsx",
+      "text": "response_format: json_schema"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx",
+      "kind": "jsx",
+      "text": "&#x2715;"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx",
+      "kind": "prop:placeholder",
+      "text": "e.g., ID-[0-9]{6}"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx",
+      "kind": "prop:placeholder",
+      "text": "e.g., internal_id, employee_code"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "-&gt;"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "(post_call)"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "(pre_call)"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "(pre_mcp_call)"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "images"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "model"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "structured_messages"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "texts"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "tool_calls"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "jsx",
+      "text": "tools"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"texts\": [\"test message\"], ...}"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_card.tsx",
+      "kind": "jsx",
+      "text": "% &middot;"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_detail.tsx",
+      "kind": "jsx",
+      "text": "litellm/"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx",
+      "kind": "error",
+      "text": "execCommand failed"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx",
+      "kind": "jsx",
+      "text": "Enter"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx",
+      "kind": "jsx",
+      "text": "Shift+Enter"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"forbidden_topics\": [\"tax\", \"finance\"]}"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestResults.tsx",
+      "kind": "error",
+      "text": "execCommand failed"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/GuardrailTestResults.tsx",
+      "kind": "jsx",
+      "text": "ms"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx",
+      "kind": "jsx",
+      "text": "&quot;"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"description\": \"Detects PII in requests\"}"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"forward_api_key\": true, \"headers\": {\"X-Custom\": \"value\"}}"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-guardrail-api.com/v1/check"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx",
+      "kind": "prop:placeholder",
+      "text": "^email@.*$"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx",
+      "kind": "prop:placeholder",
+      "text": "^function$"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx",
+      "kind": "prop:placeholder",
+      "text": "^mcp__github_.*$"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx",
+      "kind": "prop:placeholder",
+      "text": "messages[0].content"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/accessGroups/useDeleteAccessGroup.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/accessGroups/useEditAccessGroup.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/budgets/useBudgets.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/cloudzero/useCloudZeroCreate.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/cloudzero/useCloudZeroDryRun.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/cloudzero/useCloudZeroExport.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/cloudzero/useCloudZeroSettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useCyberArkConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useDeleteCyberArkConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useDeleteHashicorpVaultConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useHashicorpVaultConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useUpdateCyberArkConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/configOverrides/useUpdateHashicorpVaultConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/currentUser/useCurrentUser.ts",
+      "kind": "error",
+      "text": "Current user response is empty"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/deploymentWarnings/useDeploymentWarnings.ts",
+      "kind": "error",
+      "text": "The proxy returned no deployment warnings payload"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/guardrails/useRegisterGuardrail.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/keys/useKeyInfo.ts",
+      "kind": "error",
+      "text": "Missing access token or key id"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/keys/useKeys.ts",
+      "kind": "error",
+      "text": "Access token required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/keys/useResetKeySpend.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/keys/useSetKeyBlockedState.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/mcpToolSearchSettings/useMCPToolSearchSettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/onboarding/useOnboarding.ts",
+      "kind": "error",
+      "text": "inviteId is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/organizations/useOrganizations.ts",
+      "kind": "error",
+      "text": "Missing auth or teamId"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/projects/useCreateProject.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/projects/useUpdateProject.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/proxyConfig/useProxyConfig.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/proxySettings/useProxySettings.ts",
+      "kind": "error",
+      "text": "Gateway changed while loading settings."
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/routerSettings/useUpdateRetryPolicy.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/sso/useEditSSOSettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/storeModelInDB/useStoreModelInDB.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/storeRequestInSpendLogs/useStoreRequestInSpendLogs.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/teams/useTeams.ts",
+      "kind": "error",
+      "text": "Missing auth or teamId"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/uiSettings/useUpdateUISettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/userBanner/useUpdateUserBanner.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/userBanner/useUserBanner.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/hooks/webSearchInterceptionSettings/useUpdateWebSearchInterceptionSettings.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://github.com/org/mcp-server"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-mcp-server.com"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://upstream.example.com"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://upstream.example.com/mcp"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://upstream.example.com/oauth2/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-org.okta.com/oauth2/v1/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "RS256"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "urn:ietf:params:oauth:token-type:id_token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_connect.tsx",
+      "kind": "jsx",
+      "text": "\"dev-group\""
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_connect.tsx",
+      "kind": "jsx",
+      "text": "\"Server1,dev-group\""
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://petstore3.swagger.io/api/v3/openapi.json"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-mcp-server.com"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/McpFormTestHarness.tsx",
+      "kind": "jsx",
+      "text": "Submit"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
+      "kind": "prop:title",
+      "text": "gatewaySessions.byAiClient"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
+      "kind": "prop:title",
+      "text": "gatewaySessions.byUser"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://auth.example.com/oauth/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/oauth/authorize"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/oauth/register"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/oauth/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://issuer.example.com"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://docs.example.com/api-keys"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://petstore3.swagger.io/api/v3/openapi.json"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/authorize"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://idp.example.com/oauth2/token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://upstream.example.com"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "urn:ietf:params:oauth:token-type:access_token"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/ToolTestPanel.tsx",
+      "kind": "error",
+      "text": "execCommand failed"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/ToolTestPanel.tsx",
+      "kind": "jsx",
+      "text": "s"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx",
+      "kind": "prop:placeholder",
+      "text": "Authorization"
+    },
+    {
+      "file": "src/app/(dashboard)/memory/_components/MemoryEditModal.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"tags\": [\"example\"]}"
+    },
+    {
+      "file": "src/app/(dashboard)/organizations/_components/OrganizationsTableColumns.tsx",
+      "kind": "jsx",
+      "text": "RPM:"
+    },
+    {
+      "file": "src/app/(dashboard)/organizations/_components/OrganizationsTableColumns.tsx",
+      "kind": "jsx",
+      "text": "TPM:"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/A2AMetrics.tsx",
+      "kind": "jsx",
+      "text": "s"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/A2AMetrics.tsx",
+      "kind": "jsx",
+      "text": "TTFT:"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/AgentBuilderView.tsx",
+      "kind": "jsx",
+      "text": "litellm_agent"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/ChatUI.tsx",
+      "kind": "jsx",
+      "text": "MB)"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/SearchResultsDisplay.tsx",
+      "kind": "jsx",
+      "text": "&quot;"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat/McpDialog.tsx",
+      "kind": "jsx",
+      "text": "MCP"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "category"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "expected_result"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "FN"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "FP"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "framework"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceUI.tsx",
+      "kind": "jsx",
+      "text": "prompt"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/ResponseView.tsx",
+      "kind": "jsx",
+      "text": "ms"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/SystemOneUI.tsx",
+      "kind": "jsx",
+      "text": "/v1/decisions"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/SystemOneUI.tsx",
+      "kind": "jsx",
+      "text": "/v1/systemone"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/SystemOneUI.tsx",
+      "kind": "jsx",
+      "text": "cURL"
+    },
+    {
+      "file": "src/app/(dashboard)/policies/_components/ai_suggestion_modal.tsx",
+      "kind": "jsx",
+      "text": "Enter"
+    },
+    {
+      "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
+      "kind": "jsx",
+      "text": "ms)"
+    },
+    {
+      "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
+      "kind": "jsx",
+      "text": "x"
+    },
+    {
+      "file": "src/app/(dashboard)/projects/_components/ProjectDetailsPage.tsx",
+      "kind": "jsx",
+      "text": "ID:"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/index.tsx",
+      "kind": "jsx",
+      "text": "DOTPROMPT"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/index.tsx",
+      "kind": "jsx",
+      "text": "PRETTY"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/utils.ts",
+      "kind": "error",
+      "text": "Invalid dotprompt format"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/utils.ts",
+      "kind": "error",
+      "text": "No dotprompt_content found in API response"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_info.tsx",
+      "kind": "jsx",
+      "text": "(v"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_info.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx",
+      "kind": "prop:placeholder",
+      "text": "owner/repository"
+    },
+    {
+      "file": "src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx",
+      "kind": "jsx",
+      "text": "=x →"
+    },
+    {
+      "file": "src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx",
+      "kind": "jsx",
+      "text": "x"
+    },
+    {
+      "file": "src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx",
+      "kind": "prop:placeholder",
+      "text": "usecase:"
+    },
+    {
+      "file": "src/app/(dashboard)/search-tools/_components/CreateSearchTools.tsx",
+      "kind": "error",
+      "text": "Access Token required"
+    },
+    {
+      "file": "src/app/(dashboard)/search-tools/_components/SearchTools.tsx",
+      "kind": "error",
+      "text": "Access Token required"
+    },
+    {
+      "file": "src/app/(dashboard)/search-tools/_components/SearchToolTester.tsx",
+      "kind": "jsx",
+      "text": "ms"
+    },
+    {
+      "file": "src/app/(dashboard)/skills/_components/add_plugin_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "author@example.com"
+    },
+    {
+      "file": "src/app/(dashboard)/skills/_components/add_plugin_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://github.com/org/repo or https://bucket.s3.amazonaws.com/my-skill.zip"
+    },
+    {
+      "file": "src/app/(dashboard)/skills/_components/add_plugin_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "plugins/my-skill"
+    },
+    {
+      "file": "src/app/(dashboard)/skills/_components/add_plugin_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "Productivity"
+    },
+    {
+      "file": "src/app/(dashboard)/skills/_components/add_plugin_form.tsx",
+      "kind": "prop:placeholder",
+      "text": "search, web, api"
+    },
+    {
+      "file": "src/app/(dashboard)/ui-theme/UIThemeSettings.tsx",
+      "kind": "error",
+      "text": "Failed to reset"
+    },
+    {
+      "file": "src/app/(dashboard)/ui-theme/UIThemeSettings.tsx",
+      "kind": "error",
+      "text": "Failed to update settings"
+    },
+    {
+      "file": "src/app/(dashboard)/ui-theme/UIThemeSettings.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/favicon.ico"
+    },
+    {
+      "file": "src/app/(dashboard)/ui-theme/UIThemeSettings.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/logo-dark.png"
+    },
+    {
+      "file": "src/app/(dashboard)/ui-theme/UIThemeSettings.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com/logo.png"
+    },
+    {
+      "file": "src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx",
+      "kind": "error",
+      "text": "Failed to load default user settings"
+    },
+    {
+      "file": "src/app/(dashboard)/users/_components/view_users.tsx",
+      "kind": "error",
+      "text": "Access token required"
+    },
+    {
+      "file": "src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"key\": \"value\"}"
+    },
+    {
+      "file": "src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx",
+      "kind": "jsx",
+      "text": "https://github.com/BerriAI/litellm-pgvector"
+    },
+    {
+      "file": "src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"key\": \"value\"}"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "jsx",
+      "text": "data:"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "jsx",
+      "text": "seq:"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "jsx",
+      "text": "step:"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "jsx",
+      "text": "time:"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "jsx",
+      "text": "type:"
+    },
+    {
+      "file": "src/app/login/LoginPage.tsx",
+      "kind": "jsx",
+      "text": "🚅 LiteLLM"
+    },
+    {
+      "file": "src/app/login/LoginPage.tsx",
+      "kind": "jsx",
+      "text": "DISABLE_ADMIN_UI=False"
+    },
+    {
+      "file": "src/components/add_model/advanced_settings.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"mode\": \"chat\" }"
+    },
+    {
+      "file": "src/components/add_model/advanced_settings.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"rpm\": 100, \"timeout\": 0, \"stream_timeout\": 0 }"
+    },
+    {
+      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
+      "kind": "jsx",
+      "text": "&middot;"
+    },
+    {
+      "file": "src/components/add_model/DecisionModelNote.tsx",
+      "kind": "jsx",
+      "text": "/v1/decisions"
+    },
+    {
+      "file": "src/components/add_model/DecisionModelNote.tsx",
+      "kind": "jsx",
+      "text": "/v1/systemone"
+    },
+    {
+      "file": "src/components/add_model/ReminderMarkers.tsx",
+      "kind": "prop:placeholder",
+      "text": "</note>"
+    },
+    {
+      "file": "src/components/add_model/ReminderMarkers.tsx",
+      "kind": "prop:placeholder",
+      "text": "<note>"
+    },
+    {
+      "file": "src/components/add_pass_through.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://engine.prod.bria-api.com"
+    },
+    {
+      "file": "src/components/AIHub/AgentHubTableColumns.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/AIHub/forms/MakeAgentPublicForm.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/AIHub/ModelHubTable.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/AIHub/UsefulLinksManagement.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com"
+    },
+    {
+      "file": "src/components/bulk_create_users_button.tsx",
+      "kind": "jsx",
+      "text": "KB •"
+    },
+    {
+      "file": "src/components/claude_code_plugins/skill_detail.tsx",
+      "kind": "jsx",
+      "text": "/plugin marketplace update litellm"
+    },
+    {
+      "file": "src/components/claude_code_plugins/skill_detail.tsx",
+      "kind": "jsx",
+      "text": "~/.claude/settings.json"
+    },
+    {
+      "file": "src/components/cloudzero_export_modal.tsx",
+      "kind": "prop:alt",
+      "text": "CloudZero"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "jsx",
+      "text": "esc"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "jsx",
+      "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPaletteProvider.tsx",
+      "kind": "error",
+      "text": "useCommandPalette must be used within CommandPaletteProvider"
+    },
+    {
+      "file": "src/components/common_components/LoadingScreen.tsx",
+      "kind": "jsx",
+      "text": "🚅 LiteLLM"
+    },
+    {
+      "file": "src/components/common_components/ModelAliasManager.tsx",
+      "kind": "jsx",
+      "text": "&nbsp;&nbsp;&quot;"
+    },
+    {
+      "file": "src/components/common_components/ModelAliasManager.tsx",
+      "kind": "jsx",
+      "text": "&nbsp;&nbsp;# No aliases configured yet"
+    },
+    {
+      "file": "src/components/common_components/ModelAliasManager.tsx",
+      "kind": "jsx",
+      "text": "&quot;"
+    },
+    {
+      "file": "src/components/common_components/ModelAliasManager.tsx",
+      "kind": "jsx",
+      "text": "&quot;: &quot;"
+    },
+    {
+      "file": "src/components/common_components/ModelAliasManager.tsx",
+      "kind": "jsx",
+      "text": "model_aliases:"
+    },
+    {
+      "file": "src/components/common_components/MountedFormField.tsx",
+      "kind": "error",
+      "text": "MountedFormField requires a MountedFormProvider ancestor"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "• choices[*].message.content"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "• documents[*].text"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "• messages[*].content"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "• query"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "• results[*].text"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "+ documents[*]"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "+ query"
+    },
+    {
+      "file": "src/components/common_components/PassThroughGuardrailsSection.tsx",
+      "kind": "jsx",
+      "text": "+ results[*]"
+    },
+    {
+      "file": "src/components/common_components/PremiumLoggingSettings.tsx",
+      "kind": "jsx",
+      "text": "✨ datadog-logging"
+    },
+    {
+      "file": "src/components/common_components/PremiumLoggingSettings.tsx",
+      "kind": "jsx",
+      "text": "✨ langfuse-logging"
+    },
+    {
+      "file": "src/components/common_components/RouterSettingsSummary.tsx",
+      "kind": "jsx",
+      "text": "-&gt;"
+    },
+    {
+      "file": "src/components/DeploymentHealth/DeploymentWarningContent.tsx",
+      "kind": "jsx",
+      "text": "general_settings.disable_env_credential_login: true"
+    },
+    {
+      "file": "src/components/DeploymentHealth/DeploymentWarningContent.tsx",
+      "kind": "jsx",
+      "text": "LITELLM_LOG=DEBUG"
+    },
+    {
+      "file": "src/components/DeploymentHealth/DeploymentWarningContent.tsx",
+      "kind": "jsx",
+      "text": "UI_PASSWORD"
+    },
+    {
+      "file": "src/components/DeploymentHealth/DeploymentWarningContent.tsx",
+      "kind": "jsx",
+      "text": "UI_USERNAME"
+    },
+    {
+      "file": "src/components/leftnav.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/leftnav.tsx",
+      "kind": "prop:alt",
+      "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/liteadmin/LiteAdmin.tsx",
+      "kind": "jsx",
+      "text": "⌘J"
+    },
+    {
+      "file": "src/components/liteadmin/LiteAdmin.tsx",
+      "kind": "prop:aria-label",
+      "text": "LiteAdmin"
+    },
+    {
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "error",
+      "text": "Action cancelled. No change was sent."
+    },
+    {
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "error",
+      "text": "The change could not be verified. Check the resource before trying again."
+    },
+    {
+      "file": "src/components/logs/detail/DrawerHeader.tsx",
+      "kind": "jsx",
+      "text": "J"
+    },
+    {
+      "file": "src/components/logs/detail/DrawerHeader.tsx",
+      "kind": "jsx",
+      "text": "K"
+    },
+    {
+      "file": "src/components/logs/detail/DrawerHeader.tsx",
+      "kind": "jsx",
+      "text": "x-litellm-call-id:"
+    },
+    {
+      "file": "src/components/logs/detail/LogDetailContent.tsx",
+      "kind": "jsx",
+      "text": "ms"
+    },
+    {
+      "file": "src/components/logs/detail/LogDetailContent.tsx",
+      "kind": "jsx",
+      "text": "s"
+    },
+    {
+      "file": "src/components/logs/detail/LogDetailsDrawer.tsx",
+      "kind": "jsx",
+      "text": "s"
+    },
+    {
+      "file": "src/components/logs/request/RequestLogsTableColumns.tsx",
+      "kind": "jsx",
+      "text": "x-litellm-call-id:"
+    },
+    {
+      "file": "src/components/mcp_tools/ByokCredentialModal.tsx",
+      "kind": "jsx",
+      "text": "L"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "&nbsp;&nbsp;&nbsp;&nbsp;&quot;"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "&nbsp;&nbsp;&nbsp;&nbsp;# No aliases configured yet"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "&nbsp;&nbsp;model_group_alias:"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "&quot;"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "&quot;: &quot;"
+    },
+    {
+      "file": "src/components/model_group_alias_settings.tsx",
+      "kind": "jsx",
+      "text": "router_settings:"
+    },
+    {
+      "file": "src/components/molecules/DecisionModelsBanner.tsx",
+      "kind": "jsx",
+      "text": "/v1/decisions"
+    },
+    {
+      "file": "src/components/molecules/DecisionModelsBanner.tsx",
+      "kind": "jsx",
+      "text": "/v1/systemone"
+    },
+    {
+      "file": "src/components/moyai/MoyaiLanding.tsx",
+      "kind": "jsx",
+      "text": ".git"
+    },
+    {
+      "file": "src/components/moyai/MoyaiLanding.tsx",
+      "kind": "jsx",
+      "text": "git clone"
+    },
+    {
+      "file": "src/components/moyai/MoyaiLanding.tsx",
+      "kind": "jsx",
+      "text": "github.com/BerriAI/moyai"
+    },
+    {
+      "file": "src/components/moyai/MoyaiLanding.tsx",
+      "kind": "jsx",
+      "text": "Moyai"
+    },
+    {
+      "file": "src/components/navbar.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/Navbar/ViewSwitcher.tsx",
+      "kind": "jsx",
+      "text": "Moyai"
+    },
+    {
+      "file": "src/components/networking.tsx",
+      "kind": "error",
+      "text": "Must provide either userIds or set allUsers=true"
+    },
+    {
+      "file": "src/components/pass_through_info.tsx",
+      "kind": "jsx",
+      "text": "s"
+    },
+    {
+      "file": "src/components/pass_through_info.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"Authorization\": \"Bearer your-token\", \"Content-Type\": \"application/json\"}"
+    },
+    {
+      "file": "src/components/pass_through_info.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://api.example.com"
+    },
+    {
+      "file": "src/components/price_data_reload.tsx",
+      "kind": "jsx",
+      "text": "LITELLM_LOCAL_MODEL_COST_MAP=True"
+    },
+    {
+      "file": "src/components/route_preview.tsx",
+      "kind": "jsx",
+      "text": "/v1/text-to-image/base/model"
+    },
+    {
+      "file": "src/components/router_settings/ConfigOwned.tsx",
+      "kind": "jsx",
+      "text": "config.yaml"
+    },
+    {
+      "file": "src/components/routing_groups/RoutingGroupModal.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"ttl\": 3600 }"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/HashicorpVault/HashicorpVault.tsx",
+      "kind": "jsx",
+      "text": "vault kv put secret/SECRET_NAME key=secret_value"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://example.com"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/UISettings/UISettings.tsx",
+      "kind": "jsx",
+      "text": "Moyai"
+    },
+    {
+      "file": "src/components/shared/CreatedKeyDisplay.tsx",
+      "kind": "prop:alt",
+      "text": "Claude Code"
+    },
+    {
+      "file": "src/components/shared/CreatedKeyDisplay.tsx",
+      "kind": "prop:alt",
+      "text": "Codex"
+    },
+    {
+      "file": "src/components/shared/CreatedKeyDisplay.tsx",
+      "kind": "prop:title",
+      "text": "Claude Code"
+    },
+    {
+      "file": "src/components/shared/CreatedKeyDisplay.tsx",
+      "kind": "prop:title",
+      "text": "Codex"
+    },
+    {
+      "file": "src/components/shared/dotField/DotField.tsx",
+      "kind": "error",
+      "text": "DotField parts must be rendered inside DotFieldRoot"
+    },
+    {
+      "file": "src/components/shared/Inspector.tsx",
+      "kind": "error",
+      "text": "Inspector parts must be rendered inside Inspector.Root"
+    },
+    {
+      "file": "src/components/shared/InspectorTable.tsx",
+      "kind": "error",
+      "text": "InspectorTable parts must be rendered inside InspectorTable.Root"
+    },
+    {
+      "file": "src/components/shared/search/SearchBox.tsx",
+      "kind": "error",
+      "text": "SearchBox parts must be rendered inside SearchBox.Root"
+    },
+    {
+      "file": "src/components/SidebarAccountMenu/SidebarAccountMenu.tsx",
+      "kind": "jsx",
+      "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/SidebarAccountMenu/SidebarAccountMenu.tsx",
+      "kind": "jsx",
+      "text": "v"
+    },
+    {
+      "file": "src/components/team/EditMembership.tsx",
+      "kind": "prop:placeholder",
+      "text": "user@example.com"
+    },
+    {
+      "file": "src/components/team/MyUserTab.tsx",
+      "kind": "jsx",
+      "text": "RPM:"
+    },
+    {
+      "file": "src/components/team/MyUserTab.tsx",
+      "kind": "jsx",
+      "text": "TPM:"
+    },
+    {
+      "file": "src/components/team/TeamInfo.tsx",
+      "kind": "jsx",
+      "text": ", RPM"
+    },
+    {
+      "file": "src/components/team/TeamInfo.tsx",
+      "kind": "jsx",
+      "text": ": TPM"
+    },
+    {
+      "file": "src/components/team/TeamInfo.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"gpt-4\": 4096}"
+    },
+    {
+      "file": "src/components/team/TeamInfo.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"namespace\": \"admin\", \"mount\": \"secret\", \"path_prefix\": \"litellm\"}"
+    },
+    {
+      "file": "src/components/Teams.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"namespace\": \"admin\", \"mount\": \"secret\", \"path_prefix\": \"litellm\"}"
+    },
+    {
+      "file": "src/components/TeamsPage/teamTableColumns.tsx",
+      "kind": "prop:label",
+      "text": "RPM"
+    },
+    {
+      "file": "src/components/TeamsPage/teamTableColumns.tsx",
+      "kind": "prop:label",
+      "text": "TPM"
+    },
+    {
+      "file": "src/components/templates/key_info_view.tsx",
+      "kind": "jsx",
+      "text": "-&gt;"
+    },
+    {
+      "file": "src/components/templates/key_info_view.tsx",
+      "kind": "jsx",
+      "text": "USD"
+    },
+    {
+      "file": "src/components/templates/KeyEditViewControls.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"gpt-4\": 4096}"
+    },
+    {
+      "file": "src/components/ui/chart.tsx",
+      "kind": "error",
+      "text": "useChart must be used within a <ChartContainer />"
+    },
+    {
+      "file": "src/contexts/AuthContext.tsx",
+      "kind": "error",
+      "text": "useAuth must be used within an AuthProvider"
+    },
+    {
+      "file": "src/contexts/ChatShellContext.tsx",
+      "kind": "error",
+      "text": "useChatShell must be used within a ChatShellProvider"
+    },
+    {
+      "file": "src/contexts/LocaleContext.tsx",
+      "kind": "error",
+      "text": "useUiLocale must be used within a LocaleProvider"
+    },
+    {
+      "file": "src/contexts/ThemeContext.tsx",
+      "kind": "error",
+      "text": "useTheme must be used within a ThemeProvider"
+    },
+    {
+      "file": "src/hooks/policies/useDeletePolicyAttachment.ts",
+      "kind": "error",
+      "text": "Access token is required"
+    },
+    {
+      "file": "src/utils/dataUtils.ts",
+      "kind": "error",
+      "text": "execCommand failed"
+    },
+    {
+      "file": "src/utils/keyExpiryUtils.ts",
+      "kind": "error",
+      "text": "Invalid duration format"
+    }
+  ]
+}

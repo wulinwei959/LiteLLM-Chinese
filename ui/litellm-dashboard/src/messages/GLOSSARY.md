@@ -93,6 +93,8 @@
 | API Base URL、API base                                                                                                              | 保留原样 | 与后端字段 base_url 对应，cost-optimization 页整页共用这一写法                                                    |
 | LiteLLM、Lens、LiteAdmin、CyberArk Conjur、Hashicorp Vault、Microsoft Entra ID、Cursor、OpenAI API、Azure SDK、Headroom、GitHub API | 保留原样 | 品牌与产品名，按 AGENTS.md 的规定不译也不加公司名以外的修饰                                                       |
 
+静态残留的机读清单在 `english-leaks-baseline.json`，范围、五档判定与刷新方法见 [ENGLISH-BASELINE.md](../../docs/i18n/ENGLISH-BASELINE.md)
+
 ## 已知存量分歧（暂不改，只记录）
 
 - `Cost`：nav 与 models 用"成本"，mcpServers 费用配置用"费用"。按语境区分是合理的（优化与统计用成本，按次计费的单价用费用），维持现状。
