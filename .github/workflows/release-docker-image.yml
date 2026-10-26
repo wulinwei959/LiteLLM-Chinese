@@ -1,0 +1,123 @@
+name: Release Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "留空则取最新的 litellm_sync_v* 分支版本号，也可显式填写，如 v1.107.0"
+        required: false
+        type: string
+        default: ""
+      prerelease:
+        description: "把 Release 标为预发布"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-docker-image
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    name: build-and-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      IMAGE_NAME: litellm-chinese
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Resolve the release tag from the sync branch
+        env:
+          INPUT_TAG: ${{ inputs.version_tag }}
+          PRERELEASE: ${{ inputs.prerelease }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          latest=$(gh api "repos/$REPO/branches?per_page=100" --paginate --jq '.[].name' \
+            | grep -E '^litellm_sync_v' | sed 's/^litellm_sync_//' | sort -V | tail -1 || true)
+          tag="${INPUT_TAG:-$latest}"
+          if [ -z "$tag" ]; then
+            echo "::error::仓库里找不到 litellm_sync_v* 分支，且没有填写 version_tag"
+            exit 1
+          fi
+          if ! printf '%s' "$tag" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$'; then
+            echo "::error::版本号格式应为 v主.次.补丁，可选 -rc.N，收到的是 $tag"
+            exit 1
+          fi
+          src_version=$(sed -n 's/^version = "\([^"]*\)"/\1/p' pyproject.toml | head -1)
+          official=$(gh api "repos/BerriAI/litellm/git/ref/tags/$tag" --jq .ref 2>/dev/null || echo "上游无此 tag")
+          {
+            echo "tag=$tag"
+            echo "sync_branch_source=${latest:-手工指定}"
+            echo "src_version=$src_version"
+            echo "official_tag=$official"
+            echo "tarball=$IMAGE_NAME-$tag.tar.gz"
+            echo "prerelease_flag=$PRERELEASE"
+          } >> "$GITHUB_ENV"
+          echo "Release tag $tag，来源分支 ${latest:-手工指定}，源码版本 $src_version，官方 tag $official"
+
+      - name: Build the runtime image
+        run: |
+          set -euo pipefail
+          docker build \
+            --target runtime \
+            --build-arg LITELLM_RELEASE_TAG="$tag" \
+            -t "$IMAGE_NAME:$tag" \
+            -f Dockerfile .
+
+      - name: Export the image as a gzip tarball
+        run: |
+          set -euo pipefail
+          docker save "$IMAGE_NAME:$tag" | gzip -n > "$tarball"
+          echo "image_id=$(docker image inspect --format '{{.Id}}' "$IMAGE_NAME:$tag")" >> "$GITHUB_ENV"
+          echo "image_bytes=$(docker image inspect --format '{{.Size}}' "$IMAGE_NAME:$tag")" >> "$GITHUB_ENV"
+          echo "tarball_bytes=$(stat -c %s "$tarball")" >> "$GITHUB_ENV"
+          ls -lh "$tarball"
+
+      - name: Write the release notes
+        run: |
+          set -euo pipefail
+          cat > release-notes.md <<EOF
+          本 Release 打包汉化源码的 proxy 镜像，版本号取自最新同步分支 $sync_branch_source。
+
+          - Release tag：$tag
+          - 构建提交：$GITHUB_SHA
+          - pyproject 版本：$src_version
+          - 上游官方 tag：$official_tag
+          - 镜像名：$IMAGE_NAME:$tag，镜像 ID $image_id
+          - 镜像体积 $image_bytes 字节，附件 $tarball_bytes 字节
+
+          下载附件后本地加载：
+
+          1. docker load -i $tarball
+          2. docker run -d -p 4000:4000 -e LITELLM_MASTER_KEY=你自己的主密钥 $IMAGE_NAME:$tag
+          3. 健康检查 http://localhost:4000/health/readiness，管理面板 http://localhost:4000/ui
+
+          镜像构建自 Dockerfile 的 runtime 阶段，含 Dashboard、Prisma、pgbouncer 与 Rust bridge，
+          基础镜像按 digest 钉死在 cgr.dev/chainguard/wolfi-base。
+          EOF
+
+      - name: Create the release or refresh its asset
+        run: |
+          set -euo pipefail
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag 已存在，覆盖其中的镜像附件"
+            gh release upload "$tag" "$tarball" --clobber
+          elif [ "$prerelease_flag" = "true" ]; then
+            gh release create "$tag" --target "$GITHUB_SHA" --title "汉化镜像 $tag" \
+              --notes-file release-notes.md --prerelease "$tarball"
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --title "汉化镜像 $tag" \
+              --notes-file release-notes.md "$tarball"
+          fi
+          gh release view "$tag" --json tagName,url,prerelease,assets \
+            --jq '"已发布 " + .url + " 预发布=" + (.prerelease|tostring) + " 附件=" + ([.assets[].name]|join(","))'

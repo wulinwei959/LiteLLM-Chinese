@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    # Run daily at 04:00 UTC
-    - cron: "0 4 * * *"
+    # Weekly on Monday at 04:00 UTC, sized for the free 4-core runner
+    - cron: "0 4 * * 1"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -13,10 +13,9 @@ concurrency:
 
 jobs:
   analyze:
-    if: github.event_name != 'schedule' || github.repository == 'BerriAI/litellm'
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       security-events: write
       packages: read

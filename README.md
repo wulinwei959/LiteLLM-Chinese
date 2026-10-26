@@ -84,6 +84,8 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors；另三门目录门禁的判定库单测 3 个文件 15 例 |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
 | CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/中文取值/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
+| 安全分析 | `codeql.yml` 扫 actions、javascript-typescript、python 三种语言（`build-mode: none`），PR 触发加每周一 04:00 UTC 定时；`scorecard.yml` 每周四 12:27 UTC，`publish_results` 已关闭，不外发结果；`image-scan.yml` 维持停用，6 个 job 各自全量 `docker build` 在免费 runner 上不划算 |
+| 镜像发布 | 手动触发 `release-docker-image.yml`，版本号默认取最新的 `litellm_sync_v*` 分支（所以这些同步分支不能删），构建根 `Dockerfile` 的 `runtime` 阶段，`docker save` 成 tar.gz 作为本仓 Release 附件，详见 `docs/docker-image-release.md` |
 
 ## 怎么验证
 

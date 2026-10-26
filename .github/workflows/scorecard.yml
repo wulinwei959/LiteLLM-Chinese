@@ -3,9 +3,8 @@ name: Scorecard supply-chain security
 on:
   branch_protection_rule:
   schedule:
-    - cron: '27 12 * * 4'
-  push:
-    branches: ["main"]
+    - cron: "27 12 * * 4"
+  workflow_dispatch:
 
 permissions: read-all
 
@@ -13,10 +12,10 @@ jobs:
   analysis:
     name: Scorecard analysis
     runs-on: ubuntu-latest
-    if: github.event.repository.default_branch == github.ref_name
+    if: github.ref == 'refs/heads/main'
     permissions:
       security-events: write
-      id-token: write
+      # publish_results is off, so no signed artifacts and no id-token needed
       # Uncomment for private repos if needed:
       # contents: read
       # actions: read
@@ -32,7 +31,7 @@ jobs:
         with:
           results_file: results.sarif
           results_format: sarif
-          publish_results: true
+          publish_results: false
 
       - name: Upload artifact
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
