@@ -46,7 +46,7 @@ describe("audio_transcription", () => {
       type: "audio/wav",
     });
 
-    await makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []);
+    await makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-test-key-9f3a", []);
 
     expect(mockCreate).toHaveBeenCalledWith(
       {
@@ -101,7 +101,7 @@ describe("audio_transcription", () => {
     });
 
     await expect(
-      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
+      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-test-key-9f3a", []),
     ).rejects.toThrow("API Error");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();
@@ -114,7 +114,7 @@ describe("audio_transcription", () => {
     });
 
     await expect(
-      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
+      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-test-key-9f3a", []),
     ).rejects.toThrow("No transcription text in response");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();
