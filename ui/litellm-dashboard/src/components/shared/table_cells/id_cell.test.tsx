@@ -27,8 +27,8 @@ describe("IdCell", () => {
   });
 
   it("renders the full id as a non-interactive pill by default", () => {
-    renderWithProviders(<IdCell value="sk-1234567890abcdef" />);
-    const el = screen.getByText("sk-1234567890abcdef");
+    renderWithProviders(<IdCell value="sk-test-key-9f3a2b7c8d" />);
+    const el = screen.getByText("sk-test-key-9f3a2b7c8d");
     expect(el.tagName).toBe("SPAN");
     expect(el).toHaveClass("bg-info/10");
     expect(el).toHaveClass("font-mono");
