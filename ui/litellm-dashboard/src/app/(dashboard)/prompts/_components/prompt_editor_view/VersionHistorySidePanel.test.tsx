@@ -43,8 +43,8 @@ describe("VersionHistorySidePanel", () => {
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
     expect(await screen.findByRole("dialog", { name: "版本历史" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /v2/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /v1/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /v2/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /v1/i })).toBeInTheDocument();
   });
 
   it("should show an accessible loading state while versions are pending", () => {

@@ -94,3 +94,35 @@ UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒�
 - 取证口径：以 `gh run view --json jobs` 的步骤结论为准。`gh run view --log` 拉 1.2 MB 作业日志时触发限流，
   返回码 124 且落地 0 字节，步骤级结论不依赖该日志
 - 判定：第四轮的等待预算型假红与本轮的断言写法型假红都已消除，UI 套件在免费 4 核 runner 上恢复稳定
+
+## 2026-10-26 unit / ui-unit：EntityUsage 与 VersionHistorySidePanel 等容器不等内容
+
+同族的第三种写法缺陷，特征是"等的对象在渲染初始就已经存在"，等于没等。两轮连续红灯落在不同文件，
+每轮只挂 1 例，属满载下的调度漂移。
+
+### run 403（40262652707，main@3ed933e3）
+
+- 失败点：`EntityUsage.test.tsx:567`，`Unable to find an element with the text: 标签 消费总览`
+- 前提：`3ed933e3` 只改文档，UI 代码与上一轮全绿的 `9d38b32c` 相同，可排除本次改动引入
+- 根因：标题在 `EntityUsage.tsx:470` 的 `loading ? <ChartLoader /> : ...` 之后才随 costPanel 挂载；
+  用例只 `await waitFor(() => expect(mockTagDailyActivityCall).toHaveBeenCalled())`，即"请求已发出"，
+  紧随的 `getByText` 是同步单次检查。CI 的 DOM dump 里 `按标签筛选` 已渲染而面板仍是 ChartLoader，正是该窗口
+- 修复：按正则枚举同文件 9 处同一写法（567/587/622/637/652/667/682/1216/1229，所在用例均为 async），
+  统一改为 `expect(await screen.findByText(...))`，与文件内 819 行既有正确写法一致；本地复跑 63 例全绿
+- 提交：`033bf354`
+
+### run 404（40266668178，main@033bf354）
+
+- 失败点：`VersionHistorySidePanel.test.tsx:46`，找不到 `role=button` 且 name 匹配 `/v2/i` 的元素
+- 根因：同一族。用例先 `await screen.findByRole("dialog", { name: "版本历史" })`，但该 dialog 由 `isOpen`
+  立即渲染，等它不等版本列表落地；随后 `getByRole("button", ...)` 断的是 `getPromptVersions` 返回后的内容
+- 修复：45、46 行改为 `await screen.findByRole("button", ...)`；本地复跑 25 例全绿
+
+### 关于批量改写的一次否定结论
+
+改完两例后先试着量化同族暴露面。按"等请求发出后 4 行内出现同步 `screen.getBy...`"这一窄判据，全仓命中
+33 个文件 63 处，`UsagePageView.test.tsx` 的 8 处经逐一看过，断言对象是页签与选项这类挂载即渲染的静态外壳，
+不构成竞态，未改。再试更宽的判据"同一 `it` 块内在任何 `await find`/`waitFor` 之前出现同步 `getBy...`"，
+命中 518 个文件 3871 处，这个数本身就说明判据不成立，绝大多数组件本来就是同步渲染，`getBy` 是正确用法。
+结论是这个仓库没有静态可判的同族规则，批量改写会摧毁大量正常用例；有效的口径仍然是只改 CI 实际红过、
+且已核对该元素确被加载门控的位置，配合本文件按机制分类累积的判据
