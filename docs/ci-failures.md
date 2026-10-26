@@ -127,19 +127,21 @@ UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒�
 结论是这个仓库没有静态可判的同族规则，批量改写会摧毁大量正常用例；有效的口径仍然是只改 CI 实际红过、
 且已核对该元素确被加载门控的位置，配合本文件按机制分类累积的判据
 
-## 2026-10-26 免费 runner 适配：ui-unit 的 Vitest 并发从 14 降到 8
+## 2026-10-26 免费 runner 适配：ui-unit 的 Vitest 并发从 14 降到 4
 
 - 背景：`--pool forks --maxWorkers=14` 是上游按 16 核付费 runner 设计的，迁到免费 4 核 `ubuntu-latest`
-  后成为 3.5 倍超配。run 403/404/405 三轮"每轮只挂 1 例、文件随机漂移"的环境根源即此，三处脆弱用例
-  （ChangePasswordForm、EntityUsage 九处、VersionHistorySidePanel）已修，但超配仍是残余脆弱点的引爆土壤
+  后成为 3.5 倍超配。run 403/404/405 三轮"每轮只挂 1 例、文件随机漂移"的环境根源即此
 - 实测锚点：同一配置下 Vitest 步全量墙钟 16m13s（402 绿）到 22m58s（403 红），方差约 ±40%；
   串行测试时间 11215 秒
-- 决策：采用折中方案，`--maxWorkers=14` 改为 8（负载指数 3.5 降到 2.0），job `timeout-minutes` 35 改为 60
-  （8 workers 预计 26-32 分钟，叠加 ±40% 方差与 npm ci、typecheck、门禁的开销，35 分钟上限必然被爆）
-- 同步：`tests/unit/test_select_ui_test_scope.py` 的 `FULL_SUITE_ARGV` 与 related 期望两处从 14 改为 8，
+- 过程：先按折中方案降到 8（`b65856a5`，负载指数 2.0，job 超时 35 改 60）。run 406 的 `ui-unit`
+  在 8 workers 下 21m22s 全绿，但把失败 job 单独重跑也能通过，说明失败与并发压力强相关、属随机错误
+- 决策：改为核数匹配的 4（负载指数 1.0），job `timeout-minutes` 提到 90（按串行 11215 秒推算
+  全量约 50-57 分钟，留出方差与 `npm ci`、typecheck、门禁的余量）；8 与 14 都只是降低引爆概率，
+  只有 1.0 的负载指数才消除超配
+- 同步：`tests/unit/test_select_ui_test_scope.py` 的 `FULL_SUITE_ARGV` 与 related 期望两处同步改为 4，
   本地 19 例通过（该测试钉住 workflow 的 argv，历史第一轮红就是两者脱节）
-- 后备：若观察期内（3-5 轮 push）再出同族漂移红，一步降到核数匹配的 `--maxWorkers=4` 并把超时提到 90
-  （预计 50-57 分钟）；Python 侧 41 个分片的 pytest workers 本来就是 4，无需改动
+- 代价与后续：每轮 unit 的 UI 部分多花约 30 分钟；若之后要压缩时长，可考虑把 UI 套件拆成多 job
+  并行（按目录分片），而不是重新提高单 job 的 workers
 - 审计结论：43 个工作流中 20 个已停用（上游发布/issue 自动化/需密钥），其余 runner 标签全部干净；
   OSV Scan 与 LiteLLM Rust 的历史失败是 10-20 至 10-24 账务窗口期的 runner 启动失败（annotation 为
   payment failed），非测试问题；`test-merge-smoke` 的 windows-sdk 与 `test-litellm-ui-build` 的 Docker
