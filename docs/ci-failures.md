@@ -151,3 +151,16 @@ UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒�
   OSV Scan 与 LiteLLM Rust 的历史失败是 10-20 至 10-24 账务窗口期的 runner 启动失败（annotation 为
   payment failed），非测试问题；`test-merge-smoke` 的 windows-sdk 与 `test-litellm-ui-build` 的 Docker
   构建（均 10 分钟、PR-only）在 2 核 Windows / 4 核 Linux 上属边缘值，红了再提，不预先加时
+
+## 2026-10-26 安全分析启用与工作流精简
+
+- CodeQL 与 Scorecard 适配后启用。两者的定时那一路原本在本仓恒不执行：CodeQL 的 job 带
+  `github.repository == 'BerriAI/litellm'` 守卫，Scorecard 的 `if` 读 `github.event.repository.default_branch`
+  而 schedule 事件下该对象不存在。分别改为无守卫加每周一 04:00 UTC、`github.ref == 'refs/heads/main'`
+  保留每周四与手动触发。Scorecard 的 `publish_results` 关掉并撤掉随之无用的 `id-token`，不再向 OSSF 外发
+- 新增 `release-docker-image.yml`，仅手动触发，版本号取最新 `litellm_sync_v*` 分支，产物作为本仓 Release 附件
+- 删除 19 个不适用工作流（17 个已停用加 `e2e_record_replay` 与 `weekly_load_anomaly` 两个没有 provider
+  密钥就无法工作的）。文件数从 44 降到 25，其中 24 个 active、`image-scan.yml` 停用备用。排除配方写在
+  `ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md`，后续同步必须带 `--exclude-paths`，否则上游会把这些
+  文件按新增带回
+- 这批工作流引用的脚本与单测暂留，`uv_sync_with_retries.sh` 因多个在用工作流依赖必须保留

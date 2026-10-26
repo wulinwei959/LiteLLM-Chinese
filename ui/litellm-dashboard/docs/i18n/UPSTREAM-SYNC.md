@@ -174,6 +174,13 @@ theirs = upstream/main 的内容 （上游的新版）
 - 上游搬过家的文件跟着重命名走，`git diff -M` 认出 old→new 后把我们的改动合并到新路径下，汉化随代码一起搬
 - 二进制文件不做合并，直接取上游那份
 - `--keep` 保留 fork 自有的基础设施（我们的 2 个 UI 工作流：`test-litellm-ui-lint.yml` 死键门禁与 `test-litellm-ui-build.yml` 构建检查；以及静态英文门禁的 `english-leaks-baseline.json`、`scripts/scan-english.mjs`、`scripts/english-*-lib.mjs`、`scripts/check-english-leaks.mjs` 与两片单测，中文取值门禁的 `zh-coverage-baseline.json`、`scripts/zh-coverage-lib.mjs`、`scripts/check-zh-coverage.mjs` 与其单测）
+- `--exclude-paths` 永久排除已从本仓删除的 19 个上游工作流，否则下次同步会按"上游新增"把它们原样带回来。2026-10-26 删除这批文件之后，同步命令必须带上下面这段，逐条 startswith 匹配，不能用通配符：
+
+```
+--exclude-paths .github/workflows/auto-close-duplicates.yml,.github/workflows/auto_update_price_and_context_window.yml,.github/workflows/codspeed.yml,.github/workflows/compat-matrix-image.yml,.github/workflows/create-rc-branch.yml,.github/workflows/create-release-branch.yml,.github/workflows/deploy-dev-on-main.yml,.github/workflows/duplicate_issue_check.yml,.github/workflows/issue-keyword-labeler.yml,.github/workflows/issue_classifier.yml,.github/workflows/issue_fixed_comment.yml,.github/workflows/issue_label_claude_code.yml,.github/workflows/issue_label_sync.yml,.github/workflows/lens-install-smoke.yml,.github/workflows/linear-release.yml,.github/workflows/stale.yml,.github/workflows/sync-together-ai-models.yml,.github/workflows/e2e_record_replay.yml,.github/workflows/weekly_load_anomaly.yml
+```
+
+删除的理由是这三类不适用于本仓：上游发布与部署（需要 `LINEAR_API_KEY`、GitHub App 私钥、ghcr Lens 镜像）、上游 issue 运营自动化（本仓无外部 issue 流量，其中几条还要 `LITELLM_API_KEY` 真调模型）、以及被 `github.repository == 'BerriAI/litellm'` 守卫挡死且没有 provider 密钥就无法工作的两个定时检查。`image-scan.yml` 保留但停用，它扫的正是本仓会构建的镜像，等镜像发布链路稳定后按需再开。这批工作流引用的脚本与单测（`scripts/auto-close-duplicates.ts`、`scripts/classify-issue.ts`、`scripts/label-issue.ts`、`scripts/flag-duplicate-issue.ts`、`scripts/comment-fixed-issue.ts`、`scripts/sync-issue-labels.ts`、`scripts/issue-labels.ts`、`scripts/sync_together_ai_models.py`、`.github/scripts/scan_keywords.py`、`.github/scripts/read_rc_version.py`、`.github/scripts/auto_update_price_and_context_window_file.py`、`.github/scripts/e2e_*.sh|.py`）暂时留在仓里，它们仍被 Python 与 TS 测试覆盖，清理属于另一次改动。`.github/scripts/uv_sync_with_retries.sh` 不在其列，多个在用的工作流都靠它。
 
 ### 实际数字
 
