@@ -97,7 +97,11 @@ describe("LoginPage submit payload", () => {
     await user.click(screen.getByRole("button", { name: "登录" }));
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-test-key-9f3a", useV3: false });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({
+      username: "admin",
+      password: "sk-test-key-9f3a",
+      useV3: false,
+    });
     expect(switchToWorkerUrl).not.toHaveBeenCalled();
   });
 
@@ -110,7 +114,11 @@ describe("LoginPage submit payload", () => {
     await user.type(screen.getByLabelText("密码"), "sk-test-key-9f3a{Enter}");
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-test-key-9f3a", useV3: false });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({
+      username: "admin",
+      password: "sk-test-key-9f3a",
+      useV3: false,
+    });
   });
 
   it("blocks submit and shows both required messages when the fields are empty", async () => {
