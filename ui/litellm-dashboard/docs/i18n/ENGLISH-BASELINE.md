@@ -35,4 +35,6 @@ npm run check:english-leaks:write  # 翻译或移动文件后刷新基线
 
 ## CI
 
-暂未挂载。推荐接在 `test-unit.yml` 的 `ui-unit` job：那里已经 `npm ci`，push main 与 PR 都覆盖，不需要新增 job；当前公开仓库的并发额度优先留给现有的完整套件
+接在 `test-unit.yml` 的 `ui-unit` job，步骤名 `Check for new English display strings`，排在 `npm run typecheck` 之后、完整 Vitest 之前。该 job 在 push main 与 PR 都跑，PR 只在改了 UI 文件时执行，扫描约半分钟，失败以 `::error file=…` 标出文件与新串
+
+死键门禁仍只在 PR 的 `UI i18n Gates` 跑，渲染扫描保持本地

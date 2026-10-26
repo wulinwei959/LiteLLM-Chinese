@@ -5304,4 +5304,4 @@ lens 主体落地。第 531 簇备好的 `scripts/lens-localize.mjs` 按 catalog
 
 本地验证：基线 284/284 绿；临时注入一条新 JSX 英文，门禁报出 `ui/litellm-dashboard/src/__english_gate_probe__.tsx` 并 exit 1，移除后恢复绿。新增 `tests/english-scan-lib.test.ts` 与 `tests/english-leaks-lib.test.ts` 共 9 例，i18n 守卫与两片单测合跑 68 例全绿；`typecheck`、`check:dead-keys`（0/0）、`knip:ci`、eslint、prettier 均通过
 
-CI 挂载暂缓，优先接在 `unit` 的 `ui-unit`（已有 `npm ci`，push 与 PR 都覆盖，不新增 job）；当前公开仓库的并发额度还被两轮 `unit` 占着，先保持本地门禁
+CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vitest 之前，push 与 PR 都覆盖，不新增 job；扫描约半分钟

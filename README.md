@@ -82,7 +82,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
-| CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
+| CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
 
 ## 怎么验证
 
@@ -111,7 +111,7 @@ npm run build
 
 ## 剩余工作
 
-- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉。第 534 簇把残留冻结成 `english-leaks-baseline.json`（284 条 / 162 文件），本地 `check:english-leaks` 已接，CI 挂载暂缓
+- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉。第 534 簇把残留冻结成 `english-leaks-baseline.json`（284 条 / 162 文件），本地 `check:english-leaks` 已接，并已挂进 `unit/ui-unit`（push 与 PR 都跑）
 - **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
 - **唯一在案的活项是上游同步（按决定暂缓）**。这是英文重新进面的唯一通道：每一次 release 同步都会带回新的界面文案与结构，届时按 UPSTREAM-SYNC.md 的三件事重接（重测 lint 棘轮、`eslint . --prune-suppressions`、复跑死键门禁与渲染扫描）。除同步外，四条静态口径与渲染扫描的命中已全部接键或判定归册，逐页明细在 `rendered-ui-baseline.json`，没有未甄别的账
 - **17 个上游巨型文件保留 `max-lines` 豁免（第 529 簇的判定账）**。实测它们在上游 `v1.107.0` 树上就已全部超线，拆分的收益只有消一条 lint 豁免，代价是每次上游同步都要在这些文件上重新对齐结构。我们自己的批次撑过线的 4 个已在第 523/524 簇拆完退线，第 529 簇又把超线幅度最小的 `old-usage/usage.tsx` 拆到 752 行退线。日后因功能改动打开哪个文件，顺手拆出内联单元即可

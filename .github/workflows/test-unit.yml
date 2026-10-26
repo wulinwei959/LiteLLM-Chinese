@@ -1131,6 +1131,10 @@ jobs:
         if: steps.changes.outputs.decision != 'skip'
         run: npm run typecheck
 
+      - name: Check for new English display strings
+        if: steps.changes.outputs.decision != 'skip'
+        run: npm run check:english-leaks
+
       - name: Run UI type tests (Vitest)
         if: steps.changes.outputs.decision != 'skip'
         env:
