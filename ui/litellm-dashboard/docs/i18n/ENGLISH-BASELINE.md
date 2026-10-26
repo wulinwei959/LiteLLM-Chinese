@@ -37,4 +37,4 @@ npm run check:english-leaks:write  # 翻译或移动文件后刷新基线
 
 接在 `test-unit.yml` 的 `ui-unit` job，步骤名 `Check for new English display strings`，排在 `npm run typecheck` 之后、完整 Vitest 之前。该 job 在 push main 与 PR 都跑，PR 只在改了 UI 文件时执行，扫描约半分钟，失败以 `::error file=…` 标出文件与新串
 
-死键门禁仍只在 PR 的 `UI i18n Gates` 跑，渲染扫描保持本地
+死键门禁仍只在 PR 的 `UI i18n Gates` 跑，渲染扫描保持本地。中文取值覆盖门禁与本门禁同段执行，方法见 [ARCHITECTURE.md](./ARCHITECTURE.md) 的中文取值守卫一节

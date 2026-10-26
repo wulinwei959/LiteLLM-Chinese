@@ -27,6 +27,8 @@
     "check:dead-keys:write": "node scripts/check-dead-keys.mjs --write",
     "check:english-leaks": "node scripts/check-english-leaks.mjs",
     "check:english-leaks:write": "node scripts/check-english-leaks.mjs --write",
+    "check:zh-coverage": "node scripts/check-zh-coverage.mjs",
+    "check:zh-coverage:write": "node scripts/check-zh-coverage.mjs --write",
     "scan:rendered": "node scripts/rendered-ui-scan.mjs"
   },
   "dependencies": {

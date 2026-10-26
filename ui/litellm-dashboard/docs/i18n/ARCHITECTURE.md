@@ -125,6 +125,14 @@
 
 判定逻辑抽在 `scripts/dead-key-lib.mjs` 里，输出解析、新增死键、已解决死键三个方向各有单测在 `tests/dead-key-lib.test.ts`
 
+## 中文取值守卫
+
+死键守卫管“有没有人用”，这道管“填没填中文”。`scripts/check-zh-coverage.mjs` 摊平两份目录后查两个方向：`zh-CN.json` 里不含汉字的叶子（判据 `/\p{Script=Han}/u`），以及 `en.json` 里含汉字的叶子。前者防新键的中文值直接写英文，后者防中文串漏进英文目录（第 527 簇就手工清出过 `telemetry.note.changesApply` 一枚）
+
+基线 `zh-coverage-baseline.json` 冻结 215 条无汉字与 0 条 en 夹中文。215 条里 183 条与 `en` 取值相同，判定依据在 `GLOSSARY.md` 的保留英文五档：单位与缩写（`RPM：{value}`、`{count} LLM`）、品牌与协议取值（`Hashicorp Vault`、`Client Secret Post`、`Streamable HTTP`）、格式示例与产品名（`CSV（Excel、Google Sheets）`）、lens 的大写区段标识（`02 / TRACE EXPLORER`）。多词且无汉字的 16 条逐条读过，无一是漏翻
+
+`npm run check:zh-coverage` 新增即红并打印 `::error file=`，`--write` 刷新基线，基线里已消失的条目同样让门禁红。判定库 `zh-coverage-lib.mjs` 的六例单测在 `tests/zh-coverage-lib.test.ts`。门禁接在 `unit` 的 `ui-unit`，与静态英文门禁同段执行，push main 与 PR 都覆盖
+
 ## 测试侧的两个入口
 
 `renderWithProviders` 把 `NuqsTestingAdapter`、`QueryClientProvider`、`LocaleProvider` 三层包好，默认把 `locale` 钉在 `zh-CN`。钉住是有意的：翻译工作的断言对象是中文文案，让每个用例都自己拼语言环境只会重复

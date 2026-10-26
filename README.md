@@ -66,6 +66,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | `format.test.tsx` | 格式化按当前 locale 走，无效日期不抛 |
 | `toast.test.ts` | `toastMessage(category)` 的键是运行期拼的，静态守卫看不见，这里断言由两张查找表派生出的 `TOAST_TITLE_CATEGORIES` 在中英两侧的 `toast` 命名空间都存在 |
 | `check:english-leaks` | 静态扫描 `src` 下非测试 `.ts/.tsx` 的 JSX 文本、14 个文案属性、toast 与 `new *Error`，按 `english-leaks-baseline.json` 棘轮，新增硬编码英文即红。分类与刷新方法见 [ENGLISH-BASELINE.md](ui/litellm-dashboard/docs/i18n/ENGLISH-BASELINE.md) |
+| `check:zh-coverage` | 摊平两份目录查两个方向：`zh-CN.json` 里不含汉字的叶子与 `en.json` 里含汉字的叶子，按 `zh-coverage-baseline.json`（215 条与 0 条）棘轮，新增即红 |
 
 目录健康度还有两道：`npm run check:dead-keys` 抓"目录里有但代码没人用"的键（基线是空集，新增即红），`npm run knip:ci` 抓没有任何引用的死文件。代码形态由仓库自有的 lint 规则把关，`local/filename-pascal-case` 管 `.tsx` 文件名，`local/no-large-inline-object-arg` 与 `local/no-long-condition-chain` 进预算棘轮，`local/no-ad-hoc-z-index` 管层叠上下文
 
@@ -82,7 +83,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
 | 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
-| CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
+| CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/中文取值/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
 
 ## 怎么验证
 
@@ -95,6 +96,7 @@ npx eslint .
 npx eslint . -f json -o /tmp/lint.json && node scripts/check-lint-budgets.mjs /tmp/lint.json eslint-budgets.json
 npm run check:dead-keys
 npm run check:english-leaks
+npm run check:zh-coverage
 npm run knip:ci
 npm run build
 ```

@@ -1135,6 +1135,10 @@ jobs:
         if: steps.changes.outputs.decision != 'skip'
         run: npm run check:english-leaks
 
+      - name: Check Chinese coverage of the catalogs
+        if: steps.changes.outputs.decision != 'skip'
+        run: npm run check:zh-coverage
+
       - name: Run UI type tests (Vitest)
         if: steps.changes.outputs.decision != 'skip'
         env:

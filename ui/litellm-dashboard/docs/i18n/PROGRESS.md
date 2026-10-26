@@ -5305,3 +5305,13 @@ lens 主体落地。第 531 簇备好的 `scripts/lens-localize.mjs` 按 catalog
 本地验证：基线 284/284 绿；临时注入一条新 JSX 英文，门禁报出 `ui/litellm-dashboard/src/__english_gate_probe__.tsx` 并 exit 1，移除后恢复绿。新增 `tests/english-scan-lib.test.ts` 与 `tests/english-leaks-lib.test.ts` 共 9 例，i18n 守卫与两片单测合跑 68 例全绿；`typecheck`、`check:dead-keys`（0/0）、`knip:ci`、eslint、prettier 均通过
 
 CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vitest 之前，push 与 PR 都覆盖，不新增 job；扫描约半分钟
+
+## 2026-10-26 第 535 簇：中文取值覆盖门禁
+
+`zh-CN.json` 摊平后 13363 叶里有 215 条不含汉字，`en.json` 里含汉字的 0 条。此前没有任何守卫能拦住“新键的中文值直接写英文”或“中文串漏进英文目录”，第 527 簇手工清出过后者一例。本簇把这两件事变成门禁
+
+新增 `scripts/zh-coverage-lib.mjs`（摊平、按有无汉字取键、基线新增与已解决比较）与 `scripts/check-zh-coverage.mjs`，结果写进 `zh-coverage-baseline.json`，冻结 215 条与 0 条。215 条里 183 条与 `en` 同值，余下多为单位与插值片段；多词且无汉字的 16 条逐条读过，全属品牌、协议取值、产品名与 lens 大写区段标识，无漏翻
+
+接在 `unit` 的 `ui-unit`，步骤名 `Check Chinese coverage of the catalogs`，排在静态英文门禁之后、类型测试之前，push 与 PR 都覆盖
+
+验证：新增 6 例单测，与 i18n 守卫合跑 65 例全绿；双向变异各改一枚唯一锚点，门禁分别以 exit 1 报出 `zh value carries no Chinese: common.configValueUpdated` 与 `en value carries Chinese: common.helpIcon`，还原后回到绿色；`knip:ci`、eslint、prettier 通过；消息目录未改，死键仍 0、静态英文基线仍 284
