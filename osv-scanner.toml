@@ -3,15 +3,18 @@ id = "GHSA-w8v5-vhqr-4h9v"
 ignoreUntil = 2026-11-01
 reason = "diskcache has no fixed release published; remove this entry once one exists"
 
-[[IgnoredVulns]]
-id = "GHSA-vfj7-8cjw-p6xm"
-ignoreUntil = 2026-11-03
-reason = "braces has no fixed release published (3.0.3, 2024-05-21 is latest and last_affected); dev-only via knip > fast-glob > micromatch; remove this entry once one exists"
-
 [[PackageOverrides]]
-name = "pillow"
-version = "12.3.0"
+name = "opentelemetry-api"
+version = "1.33.1"
 ecosystem = "PyPI"
 vulnerability.ignore = true
-effectiveUntil = 2026-10-27
-reason = "pillow 13.0.0 requires Python >= 3.11, so the Python 3.10 resolution of the ci and dev groups stays on 12.3.0; 3.11+ is on 13.0.0"
+effectiveUntil = 2027-01-15
+reason = "fix is api>=1.45.1, but logfire==4.6.0 caps opentelemetry-sdk<1.37.0, so the coordinated api/sdk bump is blocked until logfire ships a compatible release; drop once logfire allows sdk>=1.45"
+
+[[PackageOverrides]]
+name = "@azure/msal-node"
+version = "6.0.1"
+ecosystem = "npm"
+vulnerability.ignore = true
+effectiveUntil = 2027-01-15
+reason = "dev-only transitive of the vscode extension, pinned ^6.0.0 by @azure tooling that has no v7-compatible release yet; forcing 7.x across a major breaks the parent; drop once the parent ships ^7"
