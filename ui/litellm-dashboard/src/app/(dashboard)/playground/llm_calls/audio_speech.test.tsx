@@ -47,7 +47,7 @@ describe("audio_speech", () => {
   });
 
   it("should make a request to the audio speech API with basic parameters", async () => {
-    await makeOpenAIAudioSpeechRequest(t, "Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-1234567890", []);
+    await makeOpenAIAudioSpeechRequest(t, "Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-test-key-9f3a", []);
 
     expect(mockCreate).toHaveBeenCalledWith(
       {
@@ -95,7 +95,7 @@ describe("audio_speech", () => {
     mockCreate.mockRejectedValue(mockError);
 
     await expect(
-      makeOpenAIAudioSpeechRequest(t, "Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-1234567890", []),
+      makeOpenAIAudioSpeechRequest(t, "Hello, world!", "alloy", mockUpdateUI, "tts-1", "sk-test-key-9f3a", []),
     ).rejects.toThrow("API Error");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();
