@@ -62,3 +62,26 @@ GitHub 官方 runner 调度正常，root 分片其余用例通过；该失败只
 ## 结论（第三轮）
 
 UI 套件合并后只剩 `unit / ui-unit` 一份；三处等待放宽到 15 秒后需重新跑 unit 验证。
+
+## 2026-10-26 unit / ui-unit：ChangePasswordForm 断言等的是元素出现，不是值变空
+
+- 运行：40252965363（push，main@c90ef73a），job `ui-unit` 第 10 步 `Run UI unit tests (Vitest)` 失败，其余 54 个 job 全绿
+- 现象：973 个文件里只挂 1 例，`ChangePasswordForm.integration.test.tsx:54` 的
+  `expect(await screen.findByLabelText("当前密码")).toHaveValue("")`，Received 为 `OldP@ssw0rd-2026`；
+  13076 例里 13066 通过、9 例预期失败。同轮两道汉化门禁（英文 284/284、中文取值 215/0）与 UI 类型检查都是绿的
+- 对照：上一轮 40249622617 同一份全量套件全绿，失败点从 KeyActivityPanel 漂到本文件，属同一族的负载相关漂移
+- 根因：这一类断言的等待原语与断言对象不匹配。组件在 `await changePasswordCall` 之后才 `form.reset()`，
+  清空落到 DOM 需要 React 再一次调度；而 `findByLabelText` 首次检查是同步的，该输入框从头到尾都在文档里，
+  所以它立刻返回并只断言一次，命中重置前还是重置后取决于谁先跑。**把 `asyncUtilTimeout` 调大对这种写法无效**，
+  因为它不会因值不对而重试，这和前两轮"等待预算不够"不是同一个问题
+- 取证：临时把期望改成重置前的 `OldP@ssw0rd-2026`，该用例依然通过，说明第一次同步检查那一刻字段确实还是旧密码，
+  重置发生在之后的轮询里
+- 修复：改为 `await waitFor(() => expect(screen.getByLabelText("当前密码")).toHaveValue(""))`，按值轮询；
+  本地复跑该文件 6 例全绿
+- 性质：测试写法不成立，不是产品缺陷，重置逻辑本身正确
+
+## 结论（第四轮）
+
+本轮只改 CI 实际挂掉的这一处。套件里 `findBy...` 后接 `toHaveValue` 的写法还有若干处，其中输入框只在异步数据
+到位后才出现的，等元素即等价于等值，属正常用法；是否还有同族的"元素常驻但断言状态变化"需要按实际红灯再逐处判定，
+不做无证据的批量改写

@@ -51,7 +51,7 @@ describe("ChangePasswordForm", () => {
     fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "NewP@ssw0rd-2026" });
     submit();
 
-    expect(await screen.findByLabelText("当前密码")).toHaveValue("");
+    await waitFor(() => expect(screen.getByLabelText("当前密码")).toHaveValue(""));
     expect(mockChangePasswordCall).toHaveBeenCalledWith("sk-session-token", "OldP@ssw0rd-2026", "NewP@ssw0rd-2026");
     expect(mockToastSuccess).toHaveBeenCalled();
   });
