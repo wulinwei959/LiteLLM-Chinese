@@ -564,7 +564,7 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("标签 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
     expect(screen.getByText("总消费")).toBeInTheDocument();
 
     await waitFor(() => {
@@ -584,7 +584,7 @@ describe("EntityUsage", () => {
     });
 
     // Check that it shows team-specific label
-    expect(screen.getByText("团队 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("团队 消费总览")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -619,7 +619,7 @@ describe("EntityUsage", () => {
       expect(mockOrganizationDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("组织 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("组织 消费总览")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -634,7 +634,7 @@ describe("EntityUsage", () => {
       expect(mockCustomerDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("客户 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("客户 消费总览")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -649,7 +649,7 @@ describe("EntityUsage", () => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("智能体 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("智能体 消费总览")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$444.30");
@@ -664,7 +664,7 @@ describe("EntityUsage", () => {
       expect(mockUserDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("用户 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("用户 消费总览")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -679,7 +679,7 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("标签 消费总览")).toBeInTheDocument();
+    expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
 
     const modelActivityTab = screen.getByText("模型活动");
     act(() => {
@@ -1213,7 +1213,7 @@ describe("EntityUsage", () => {
       await waitFor(() => {
         expect(mockTeamDailyActivityCall).toHaveBeenCalled();
       });
-      expect(screen.getByText("团队 消费总览")).toBeInTheDocument();
+      expect(await screen.findByText("团队 消费总览")).toBeInTheDocument();
 
       expect(mockAgentDailyActivityCall).not.toHaveBeenCalled();
       expect(screen.queryByText("智能体活动")).not.toBeInTheDocument();
@@ -1226,7 +1226,7 @@ describe("EntityUsage", () => {
       await waitFor(() => {
         expect(mockTagDailyActivityCall).toHaveBeenCalled();
       });
-      expect(screen.getByText("标签 消费总览")).toBeInTheDocument();
+      expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
     });
   });
 
