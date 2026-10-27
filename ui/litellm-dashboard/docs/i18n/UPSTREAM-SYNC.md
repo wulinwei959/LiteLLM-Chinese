@@ -180,7 +180,7 @@ theirs = upstream/main 的内容 （上游的新版）
 --exclude-paths .github/workflows/auto-close-duplicates.yml,.github/workflows/auto_update_price_and_context_window.yml,.github/workflows/codspeed.yml,.github/workflows/compat-matrix-image.yml,.github/workflows/create-rc-branch.yml,.github/workflows/create-release-branch.yml,.github/workflows/deploy-dev-on-main.yml,.github/workflows/duplicate_issue_check.yml,.github/workflows/issue-keyword-labeler.yml,.github/workflows/issue_classifier.yml,.github/workflows/issue_fixed_comment.yml,.github/workflows/issue_label_claude_code.yml,.github/workflows/issue_label_sync.yml,.github/workflows/lens-install-smoke.yml,.github/workflows/linear-release.yml,.github/workflows/stale.yml,.github/workflows/sync-together-ai-models.yml,.github/workflows/e2e_record_replay.yml,.github/workflows/weekly_load_anomaly.yml
 ```
 
-删除的理由是这三类不适用于本仓：上游发布与部署（需要 `LINEAR_API_KEY`、GitHub App 私钥、ghcr Lens 镜像）、上游 issue 运营自动化（本仓无外部 issue 流量，其中几条还要 `LITELLM_API_KEY` 真调模型）、以及被 `github.repository == 'BerriAI/litellm'` 守卫挡死且没有 provider 密钥就无法工作的两个定时检查。`image-scan.yml` 保留但停用，它扫的正是本仓会构建的镜像，等镜像发布链路稳定后按需再开。这批工作流引用的脚本与单测（`scripts/auto-close-duplicates.ts`、`scripts/classify-issue.ts`、`scripts/label-issue.ts`、`scripts/flag-duplicate-issue.ts`、`scripts/comment-fixed-issue.ts`、`scripts/sync-issue-labels.ts`、`scripts/issue-labels.ts`、`scripts/sync_together_ai_models.py`、`.github/scripts/scan_keywords.py`、`.github/scripts/read_rc_version.py`、`.github/scripts/auto_update_price_and_context_window_file.py`、`.github/scripts/e2e_*.sh|.py`）暂时留在仓里，它们仍被 Python 与 TS 测试覆盖，清理属于另一次改动。`.github/scripts/uv_sync_with_retries.sh` 不在其列，多个在用的工作流都靠它。
+删除的理由是这三类不适用于本仓：上游发布与部署（需要 `LINEAR_API_KEY`、GitHub App 私钥、ghcr Lens 镜像）、上游 issue 运营自动化（本仓无外部 issue 流量，其中几条还要 `LITELLM_API_KEY` 真调模型）、以及被 `github.repository == 'BerriAI/litellm'` 守卫挡死且没有 provider 密钥就无法工作的两个定时检查。`image-scan.yml` 保留但停用，它扫的正是本仓会构建的镜像，等镜像发布链路稳定后按需再开。这批工作流引用的脚本与单测里，`scripts/sync_together_ai_models.py`、`.github/scripts/auto_update_price_and_context_window_file.py` 与各自的单测已在 2026-10-27 的后端同步中随上游删除，其余（`scripts/auto-close-duplicates.ts`、`scripts/classify-issue.ts`、`scripts/label-issue.ts`、`scripts/flag-duplicate-issue.ts`、`scripts/comment-fixed-issue.ts`、`scripts/sync-issue-labels.ts`、`scripts/issue-labels.ts`、`.github/scripts/scan_keywords.py`、`.github/scripts/read_rc_version.py`、`.github/scripts/e2e_*.sh|.py`）暂时留在仓里，它们仍被 Python 与 TS 测试覆盖，清理属于另一次改动。`.github/scripts/uv_sync_with_retries.sh` 不在其列，多个在用的工作流都靠它。
 
 ### 实际数字
 
@@ -259,3 +259,11 @@ theirs = upstream/main 的内容 （上游的新版）
 仍然欠着：zod 的自定义校验消息仍待改成按译员构造；测试文件类型错误与旧英文断言按文件逐个收；渲染扫描本枝已在 2026-10-23 跑通，桩形状三处缺口（`/user/daily/activity/aggregated/users` 与 `/guardrails/submissions` 缺桩、`/user/daily/activity/aggregated` metadata 只给了两枚字段）已按第 427 簇补齐，用量页与护栏页的运行时错误清零，剩余 25 条命中见 PROGRESS。`scan-english-pos.tmp.mjs` 复核从未入库（`git log --all` 无史），该句作废。
 
 分支策略：合并、汉化与测试收口全部在 `litellm_sync_v1.107.0` 上完成，`main` 保持不动，最后再合入。
+
+## 十、执行记录（2026-10-27）：后端先行同步到上游 main
+
+用完整官方克隆 `D:\qoder\litellm` 按 blob 逐字节比对后确认，本仓未被我方改动的代理侧文件与上游提交 `66c8f5b1a9`（1.108.0-dev，2026-10-21）一致，所以真实三方基线就是它，而不是导入快照或 `v1.106.4`。以此为准，`66c8f5b1a9..cfe0100e1` 只是 178 个提交的正常前向同步
+
+本轮只做后端：`litellm/`（含 6 处我方 proxy 补丁）、`litellm-rust/`、`backend/`、`tests/`、`packaging/`、`vscode-extension/` 与仓库根部的上游资产按三方合并取上游新版；仪表盘源码不动，仍是 `v1.107.0` 汉化版，只按合并后的后端重生成 `src/lib/http/schema.d.ts`。依赖守住 `requires-python>=3.11` 与 `filelock>=4.2.1` 并随上游放开到 `<3.16`，`uv lock` 重锁后 filelock 4.2.4、pillow 13.0.0、opentelemetry 1.45.1
+
+仪表盘的完整同步另行推进。此前一次尝试把 `ui/litellm-dashboard` 全量三方合并后，80 个双方都改的文件里有大量「上游新 JSX 配我方旧 import」的半成品，且上游这 5 天对 chat、usage、liteadmin 等目录做了成规模的组件重构，机械贴回译文会与上游新签名打架。这部分工作副本保留在 `sync-dashboard-wip` 分支，重接方法与第八节相同：取上游骨架，逐个文件把 `t(...)` 按新结构贴回，再补目录键

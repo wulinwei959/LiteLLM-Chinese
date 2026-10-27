@@ -7,6 +7,8 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 
 上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
 
+**2026-10-27 后端先行同步**：用完整官方克隆复核后确认本仓的真实上游基线是 `66c8f5b1a9`，而代理侧未改动文件与它逐字节一致。同日起分支 `litellm_sync_v1.108.0` 把代理侧、`litellm-rust`、`tests`、依赖与仓库脚本同步到上游 main `cfe0100e1`（1.108.0-dev，178 个提交），保留本仓 6 处 proxy 补丁与依赖安全底线。仪表盘源码本轮不动，仍是我方 `v1.107.0` 汉化版，只按合并后的后端重生成 `schema.d.ts`；仪表盘与汉化的完整重接在后续分支进行，工作副本存于 `sync-dashboard-wip` 分支
+
 ## 背景
 
 上游的管理面板原本没有任何国际化基础设施：界面文案硬编码英文，`<html lang="en">` 写死，日期与数字固定按 `en-US` 格式化，也没有语言切换入口。本项目在保留英文为默认语言的前提下，给面板补上完整的 zh-CN 本地化，并把"翻译是否接上、是否漏翻、是否臃肿"三件事都变成机器可检查的门禁
@@ -111,7 +113,7 @@ npm run build
 
 ## 上游同步
 
-上游镜像 `http://192.168.3.224:3001/wulinwei959/litellm.git` 已加为 `upstream` remote。基线只跟官方 release，不跟 `upstream/main`（`v1.107.0` 与当时的 main 之间还差 78 个代理侧文件，仪表盘只差 1 行生成物，取 release 更贴近实际发布物）。合并不是 `git merge`，而是逐文件三方合并把 release 树取进来：代理侧 `litellm/proxy` 与 `litellm/types` 与 release 逐字节一致，仪表盘侧保留我们的汉化层，合并后再按上游新结构重接汉化层与测试断言
+上游镜像 `http://192.168.3.224:3001/wulinwei959/litellm.git` 已加为 `upstream` remote。2026-10-27 起代理侧改为跟上游 `main`（当前 `cfe0100e1`），仪表盘仍停在 `v1.107.0` 的汉化版，两侧分批合并：后端批次只改代理、依赖与仓库脚本，仪表盘批次单独做三方合并与汉化重接（`sync-dashboard-wip`）。合并不是 `git merge`，而是逐文件三方合并把上游树取进来：代理侧按基线 `66c8f5b1a9` 合并后保留 6 处 proxy 补丁，仪表盘侧合并时保留我们的汉化层，合并后再按上游新结构重接汉化层与测试断言
 
 下一次同步按决定暂缓。同步当天要额外做三件事：按合并后的实数重测 `eslint-budgets.json` 的棘轮、跑 `eslint . --prune-suppressions` 让抑制基线跟着新树走、复跑死键门禁与渲染扫描。阶段划分与风险见 [`ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md`](ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md)
 
