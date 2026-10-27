@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { formatDate } from "@/lib/i18n/format";
 
 import type { DeploymentHealthTranslator } from "@/lib/i18n/translators";
 import {
@@ -54,11 +55,11 @@ const SEVERITY_GROUPS = [
 
 const LOCAL_DAY_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 const LOCAL_MINUTE_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
-const FULL_UTC_FORMAT = new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeStyle: "long", timeZone: "UTC" });
 
 const formatLocalMinute = (iso: string): string => LOCAL_MINUTE_FORMAT.format(new Date(iso));
 const formatLocalDay = (iso: string): string => LOCAL_DAY_FORMAT.format(new Date(iso));
-const formatFullUtc = (iso: string): string => FULL_UTC_FORMAT.format(new Date(iso));
+const formatFullUtc = (iso: string): string =>
+  formatDate(new Date(iso), { dateStyle: "full", timeStyle: "long", timeZone: "UTC" });
 
 interface ItemPermissions {
   canManage: boolean;

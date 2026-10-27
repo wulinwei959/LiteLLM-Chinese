@@ -1,5 +1,6 @@
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useTranslations } from "next-intl";
+import { useUiFormat } from "@/lib/i18n/format";
 import { useModelHub, useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
 import { useQueryClient } from "@tanstack/react-query";
 import { transformModelData } from "@/app/(dashboard)/models-and-endpoints/utils/modelDataTransformer";
@@ -78,6 +79,7 @@ export default function ModelInfoView({
   const t = useTranslations("modelInfo");
   const modelsT = useTranslations("models");
   const commonT = useTranslations("common");
+  const { date: formatUiDate } = useUiFormat();
   const queryClient = useQueryClient();
   const [localModelData, setLocalModelData] = useState<any>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -671,7 +673,7 @@ export default function ModelInfoView({
                 </svg>
                 {t("createdAt")}{" "}
                 {modelData.model_info.created_at
-                  ? new Date(modelData.model_info.created_at).toLocaleDateString("en-US", {
+                  ? formatUiDate(new Date(modelData.model_info.created_at), {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
