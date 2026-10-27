@@ -7,7 +7,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 
 上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
 
-**2026-10-27 上游同步**：用完整官方克隆复核后确认本仓的真实上游基线是 `66c8f5b1a9`，而代理侧未改动文件与它逐字节一致。分支 `litellm_sync_v1.108.0` 已把代理侧、`litellm-rust`、`tests`、依赖与仓库脚本同步到上游 main `cfe0100e1`（1.108.0-dev，178 个提交）并合入 main（PR #11），保留本仓 6 处 proxy 补丁与依赖安全底线。仪表盘侧随后同步（分支 `litellm_ui_sync_cfe0100`）：上游小改与新增的文件保住译文并接上上游改动，上游结构大改的 chat 附件与 moyai、LiteAdmin Aria 应答、用量页 client usage 等模块本轮保留我方版本，未接入清单记在 `ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md` 第十一篇。API 类型与 lazy OpenAPI 快照按合并后的后端重生成
+**2026-10-27 上游同步**：用完整官方克隆复核后确认本仓的真实上游基线是 `66c8f5b1a9`，而代理侧未改动文件与它逐字节一致。分支 `litellm_sync_v1.108.0` 已把代理侧、`litellm-rust`、`tests`、依赖与仓库脚本同步到上游 main `cfe0100e1`（1.108.0-dev，178 个提交）并合入 main（PR #11），保留本仓 6 处 proxy 补丁与依赖安全底线。仪表盘侧随后同步（分支 `litellm_ui_sync_cfe0100`）：上游小改与新增的文件保住译文并接上上游改动，上游结构大改的模块分簇接回：用量页的 client usage 视图、LiteAdmin 的 Aria 应答与用量图、新版日期选择器已并入（PR #13）；chat 附件与 moyai、auto router 预设、模型中心 provider 标识等仍在待接清单，记在 `ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md` 第十一、十二篇。API 类型与 lazy OpenAPI 快照按合并后的后端重生成
 
 ## 背景
 
