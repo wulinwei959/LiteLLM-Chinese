@@ -216,6 +216,7 @@ export function AriaUsageComposer() {
   const state = useContext(LiteAdminContext);
   if (!state) return null;
   const { open, setUsageContainer } = state;
+  const t = useTranslations("liteAdmin");
   return (
     <section aria-label={t("askAriaAria")} hidden={open} className="mb-4">
       <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">

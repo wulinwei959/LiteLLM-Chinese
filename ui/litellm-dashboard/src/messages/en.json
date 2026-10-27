@@ -5177,7 +5177,7 @@
     "topModels": "Top Models",
     "topKeys": "Top Virtual Keys",
     "viewAll": "View All",
-    "exportData": "Export Data",
+    "exportData": "Export Usage Data",
     "exportButton": "Export Data",
     "selectRangeToExport": "Select a date range to export",
     "custom": "Custom",
@@ -5353,7 +5353,8 @@
       "successRate": "Success Rate",
       "totalTokens": "Total Tokens",
       "spend": "Spend",
-      "noData": "No endpoint usage data"
+      "noData": "No endpoint usage data",
+      "endpoints": "Endpoints"
     },
     "modelViewToggle": {
       "publicName": "Public Model Name",
@@ -5377,8 +5378,178 @@
     "searchModels": "Search models",
     "searchByModelName": "Search by model name",
     "clearModelSearch": "Clear model search",
-    "errors": "Errors",
-    "overview": "Overview",
+    "errors": {
+      "entity": {
+        "key": {
+          "singular": "Virtual key",
+          "plural": "Virtual keys"
+        },
+        "team": {
+          "singular": "Team",
+          "plural": "Teams"
+        },
+        "user": {
+          "singular": "User",
+          "plural": "Users"
+        },
+        "model": {
+          "singular": "Model",
+          "plural": "Models"
+        }
+      },
+      "status": {
+        "badRequest": "Bad Request",
+        "unauthorized": "Unauthorized",
+        "paymentRequired": "Payment Required",
+        "forbidden": "Forbidden",
+        "notFound": "Not Found",
+        "requestTimeout": "Request Timeout",
+        "payloadTooLarge": "Payload Too Large",
+        "unprocessableEntity": "Unprocessable Entity",
+        "rateLimited": "Rate Limited",
+        "internalServerError": "Internal Server Error",
+        "badGateway": "Bad Gateway",
+        "serviceUnavailable": "Service Unavailable",
+        "gatewayTimeout": "Gateway Timeout",
+        "notRecorded": "Not recorded",
+        "serverError": "Server Error",
+        "clientError": "Client Error",
+        "error": "Error",
+        "noStatus": "No status"
+      },
+      "other": "Other",
+      "view": {
+        "total": "Total",
+        "byStatusCode": "By status code"
+      },
+      "empty": {
+        "noRequests": "No requests in this range",
+        "noFailedRequests": "No failed requests in this range",
+        "noEntitiesWithFailures": "No {entity} with failed requests in this range"
+      },
+      "stat": {
+        "errorRate": "Error rate",
+        "failedRequests": "Failed requests",
+        "clientErrors": "Client errors (4xx)",
+        "serverErrors": "Server errors (5xx)",
+        "rateLimited": "Rate limited (429)",
+        "authFailures": "Auth failures (401/403)",
+        "failedOfRequests": "{failed} of {requests} requests"
+      },
+      "panel": {
+        "errorRate": {
+          "title": "Error rate over time",
+          "subtitle": "Failed requests as a share of all requests, per day"
+        },
+        "failedByStatus": {
+          "title": "Failed requests by status code",
+          "subtitle": "Per day, stacked by HTTP status"
+        },
+        "byStatusCode": {
+          "title": "By status code",
+          "subtitle": "Share of all failed requests"
+        },
+        "byIdentity": {
+          "title": "Failures by identity",
+          "subtitle": "Keys, teams, users and models ranked by failed requests"
+        }
+      },
+      "control": {
+        "show": "Show",
+        "groupBy": "Group by"
+      },
+      "column": {
+        "requests": "Requests",
+        "failed": "Failed",
+        "errorRate": "Error rate",
+        "topStatus": "Top status"
+      },
+      "chart": {
+        "statusCodesAria": "Status codes in the chart",
+        "failedByStatusAria": "Failed requests by status code",
+        "rankedByFailedAria": "{entity} ranked by failed requests"
+      },
+      "action": {
+        "inspectInLogs": "Inspect failed requests in Logs"
+      },
+      "alert": {
+        "deploymentWide": {
+          "title": "Errors are deployment-wide",
+          "body": "Clear the user filter in Global Usage to see failure analytics"
+        },
+        "loadFailed": {
+          "title": "Error activity could not be loaded",
+          "body": "The proxy did not answer the failed-request query. Reload the page to try again."
+        }
+      }
+    },
+    "overview": {
+      "breakdown": {
+        "metric": "Metric",
+        "groupBy": "Group by",
+        "empty": "No usage in this range"
+      },
+      "topAgents": {
+        "subtitle": "Daily usage by agent, from each request's User-Agent",
+        "unattributed": "Daily usage by agent. {coverage}% of tokens came with a User-Agent; the rest is unattributed",
+        "viewActivity": "View activity",
+        "empty": "No agent traffic in this range",
+        "title": "Top agents",
+        "metric": "Agent metric"
+      },
+      "overview": {
+        "bucketSize": "Bucket size",
+        "scale": "Scale",
+        "topModels": "Top models",
+        "topVirtualKeys": "Top Virtual Keys",
+        "topUsersBySpend": "Top Users by Spend",
+        "granularityDaily": "Daily",
+        "granularityWeekly": "Weekly",
+        "scaleLinear": "Linear",
+        "scaleLog": "Log",
+        "metricSpend": "spend",
+        "metricTokens": "tokens",
+        "metricRequests": "requests",
+        "chartTitle": "{granularity} usage",
+        "chartSubtitle": "{granularity} {metric} by model (top 8, rest grouped as Other)"
+      },
+      "statStrip": {
+        "spend": "Spend",
+        "totalRequests": "Total Requests",
+        "totalTokens": "Total Tokens",
+        "avgCostPerRequest": "Avg cost / request",
+        "avgLatency": "Avg latency",
+        "ofBudget": "of {amount} budget",
+        "noBudgetSet": "No budget set",
+        "ok": "ok",
+        "failed": "failed",
+        "tokensExact": "{count} tokens",
+        "cacheRead": "{count} cache read",
+        "successRate": "{rate}% success rate"
+      },
+      "userRecord": {
+        "view": "View user record"
+      },
+      "metric": {
+        "spend": "Spend",
+        "tokens": "Tokens",
+        "requests": "Requests"
+      },
+      "dimension": {
+        "model": "Model",
+        "deployment": "Deployment",
+        "provider": "Provider"
+      },
+      "byProvider": "by {provider}",
+      "bucketSize": "Bucket size",
+      "scale": "Scale",
+      "topModels": "Top models",
+      "loadingTopModels": "Loading top models",
+      "whatCountsTowardTokens": "What counts toward total tokens?",
+      "inputTokens": "Input tokens",
+      "outputTokens": "Output tokens",
+      "viewUserRecord": "View user record"
+    },
     "userActivity": {
       "error": {
         "loadTopUsersFailed": "Could not load top users.",
@@ -5417,20 +5588,11 @@
     "tabEndpointActivity": "Endpoint Activity",
     "tabErrors": "Errors",
     "askAi": "Ask AI",
-    "noModelsMatch": "No models match &quot;",
+    "noModelsMatch": "No models match \"{query}\" in this date range",
     "credentialBannerBody": "When a reusable credential is used, it will appear as a tag prefixed with <code>Credential: </code> in this view.",
-    "inThisDateRange": "&quot; in this date range",
-    "credentialLabel": "Credential:",
-    "endpointActivity": "Endpoint Activity",
-    "inThisView": "in this view.",
-    "keyActivity": "Key Activity",
-    "mcpServerActivity": "MCP Server Activity",
-    "modelActivity": "Model Activity",
-    "userActivityTab": "User Activity",
-    "reusableCredentialHint": "When a reusable credential is used, it will appear as a tag prefixed with",
     "spendLoadFailed": "Failed to load spend data",
-    "errorsTab": "Errors",
-    "overviewTab": "Overview"
+    "agentLoadFailed": "Failed to load agent data",
+    "loadingSettings": "Loading usage settings"
   },
   "logs": {
     "detail": {
@@ -13401,17 +13563,13 @@
     "closeChatLabel": "Close Chat {id}",
     "approvalNeeded": "Approval needed",
     "waitForChange": "Wait for this change to finish",
-    "charactersSuffix": "characters.",
-    "modelsLoadFailed": "Could not load models.",
-    "messageLimitPrefix": "Keep your message within",
-    "openConversation": "Open conversation",
-    "retry": "Retry",
-    "startOver": "Start over",
-    "gatewayAddressNote": "This gateway uses a different address. Aria will send your existing session credential to the address shown above.",
-    "aiUsageAssistant": "Your AI usage assistant",
     "tagline": "Your gateway, a little easier.",
     "askAriaAria": "Ask Aria about usage",
-    "askAriaPlaceholder": "Ask Aria…"
+    "askAriaPlaceholder": "Ask Aria…",
+    "aiUsageAssistant": "Your AI usage assistant",
+    "yourQuestion": "Your question",
+    "greeting": "Hi, I’m Aria.",
+    "suggestedQuestions": "Suggested questions"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "Delete alias {name}",
@@ -14850,27 +15008,5 @@
       "virtualKeyIssued": "Virtual key issued",
       "modelsAvailable": "models available through LiteLLM"
     }
-  },
-  "clientUsage": {
-    "cacheReadShare": "% of these tokens are cache reads.",
-    "allUsers": "All users",
-    "backToUsage": "Back to Usage",
-    "loadFailed": "Could not load client usage",
-    "filterByPerson": "Filter by person",
-    "no": "No",
-    "requestsInRangeSuffix": "requests in the selected range. Try another date range.",
-    "retryBreakdown": "Retry model breakdown",
-    "spendHint": "Spend is the cost recorded by LiteLLM.",
-    "teamMember": "Team member",
-    "tokensHint": "Total tokens include input, cached input and output. Cached input is priced differently, so token count alone does not explain spend. Compare the same person and dates when checking the count shown by a client.",
-    "tryAgain": "Try again",
-    "usageInRangeSuffix": "usage recorded in this date range.",
-    "usageScope": "Usage scope",
-    "loadingAria": "Loading client usage",
-    "requests": "Requests",
-    "spend": "Spend",
-    "totalTokens": "Total tokens",
-    "tokenBreakdown": "Token breakdown",
-    "viewClientUsage": "View client usage"
   }
 }

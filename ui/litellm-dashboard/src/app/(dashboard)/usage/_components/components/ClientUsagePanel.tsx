@@ -25,7 +25,6 @@ import { modelColorMap, formatCompact, formatUsd, overviewTotals } from "./overv
 import { reconciledTokenBreakdown } from "./overview/tokenBreakdown";
 import { Panel, Stat } from "./overview/Primitives";
 import { AgentMark } from "./overview/TopAgents";
-import { useTranslations } from "next-intl";
 
 interface ClientUsagePanelProps {
   client: UsageClient;
@@ -81,7 +80,6 @@ export default function ClientUsagePanel({
   summaryFailed = false,
   onRetry,
 }: ClientUsagePanelProps) {
-  const t = useTranslations("clientUsage");
   const label = client === "claude-desktop" ? "Claude Desktop" : "Claude Code";
   const scopedRequest = Boolean(userId || teamId) && !accessError;
   const personRequest = {
@@ -227,13 +225,13 @@ export default function ClientUsagePanel({
             </div>
           )}
           {pending && (
-            <div role="status" aria-label={t("loadingAria")}>
+            <div role="status" aria-label="Loading client usage">
               <Skeleton className="h-24 w-full" />
             </div>
           )}
           {error && (
             <div role="alert" className="rounded-lg border p-4">
-              <p className="font-medium">{t("loadFailed")}</p>
+              <p className="font-medium">Could not load client usage</p>
               <p className="mt-1 text-muted-foreground">{error}</p>
               {canRetry && (
                 <Button
@@ -259,9 +257,9 @@ export default function ClientUsagePanel({
           {ready && summary && (
             <>
               <div className="grid grid-cols-3 divide-x overflow-hidden rounded-xl border bg-card py-4">
-                <SummaryStat label={t("spend")} value={formatUsd(summary.spend)} />
-                <SummaryStat label={t("totalTokens")} value={formatCompact(summary.tokens)} />
-                <SummaryStat label={t("requests")} value={summary.requests.toLocaleString()} />
+                <SummaryStat label="Spend" value={formatUsd(summary.spend)} />
+                <SummaryStat label="Total tokens" value={formatCompact(summary.tokens)} />
+                <SummaryStat label="Requests" value={summary.requests.toLocaleString()} />
               </div>
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -328,7 +326,7 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
   ];
   const complete = rows.every((row) => row.value !== null);
   return (
-    <Panel icon={Coins} title={t("tokenBreakdown")} subtitle={`${formatCompact(total)} total tokens`} bodyClassName="gap-3">
+    <Panel icon={Coins} title="Token breakdown" subtitle={`${formatCompact(total)} total tokens`} bodyClassName="gap-3">
       {complete && total > 0 && (
         <div aria-hidden="true" className="flex h-2 overflow-hidden rounded-full bg-muted">
           {rows.map((row) => (

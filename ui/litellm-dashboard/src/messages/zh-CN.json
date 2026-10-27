@@ -5177,7 +5177,7 @@
     "topModels": "热门模型",
     "topKeys": "热门虚拟密钥",
     "viewAll": "查看全部",
-    "exportData": "导出数据",
+    "exportData": "导出用量数据",
     "exportButton": "导出数据",
     "selectRangeToExport": "请先选择日期范围再导出",
     "custom": "自定义",
@@ -5353,7 +5353,8 @@
       "successRate": "成功率",
       "totalTokens": "总 Token 数",
       "spend": "花费",
-      "noData": "暂无端点用量数据"
+      "noData": "暂无端点用量数据",
+      "endpoints": "端点"
     },
     "modelViewToggle": {
       "publicName": "公开模型名",
@@ -5377,8 +5378,178 @@
     "searchModels": "搜索模型",
     "searchByModelName": "按模型名搜索",
     "clearModelSearch": "清除模型搜索",
-    "errors": "错误",
-    "overview": "概览",
+    "errors": {
+      "entity": {
+        "key": {
+          "singular": "虚拟密钥",
+          "plural": "虚拟密钥"
+        },
+        "team": {
+          "singular": "团队",
+          "plural": "团队"
+        },
+        "user": {
+          "singular": "用户",
+          "plural": "用户"
+        },
+        "model": {
+          "singular": "模型",
+          "plural": "模型"
+        }
+      },
+      "status": {
+        "badRequest": "请求无效",
+        "unauthorized": "未认证",
+        "paymentRequired": "需要付款",
+        "forbidden": "禁止访问",
+        "notFound": "未找到",
+        "requestTimeout": "请求超时",
+        "payloadTooLarge": "请求体过大",
+        "unprocessableEntity": "无法处理的请求内容",
+        "rateLimited": "触发限流",
+        "internalServerError": "服务器内部错误",
+        "badGateway": "网关错误",
+        "serviceUnavailable": "服务不可用",
+        "gatewayTimeout": "网关超时",
+        "notRecorded": "未记录",
+        "serverError": "服务器错误",
+        "clientError": "客户端错误",
+        "error": "错误",
+        "noStatus": "无状态码"
+      },
+      "other": "其他",
+      "view": {
+        "total": "合计",
+        "byStatusCode": "按状态码"
+      },
+      "empty": {
+        "noRequests": "该时间范围内没有请求",
+        "noFailedRequests": "该时间范围内没有失败请求",
+        "noEntitiesWithFailures": "该时间范围内没有出现失败请求的{entity}"
+      },
+      "stat": {
+        "errorRate": "错误率",
+        "failedRequests": "失败请求数",
+        "clientErrors": "客户端错误 (4xx)",
+        "serverErrors": "服务器错误 (5xx)",
+        "rateLimited": "触发限流 (429)",
+        "authFailures": "认证失败 (401/403)",
+        "failedOfRequests": "{requests} 个请求中有 {failed} 个失败"
+      },
+      "panel": {
+        "errorRate": {
+          "title": "错误率趋势",
+          "subtitle": "每日失败请求占全部请求的比例"
+        },
+        "failedByStatus": {
+          "title": "按状态码统计的失败请求",
+          "subtitle": "按 HTTP 状态堆叠的每日数据"
+        },
+        "byStatusCode": {
+          "title": "按状态码",
+          "subtitle": "占全部失败请求的比例"
+        },
+        "byIdentity": {
+          "title": "按身份统计的失败",
+          "subtitle": "按失败请求数排名的密钥、团队、用户和模型"
+        }
+      },
+      "control": {
+        "show": "显示",
+        "groupBy": "分组方式"
+      },
+      "column": {
+        "requests": "请求数",
+        "failed": "失败数",
+        "errorRate": "错误率",
+        "topStatus": "主要状态"
+      },
+      "chart": {
+        "statusCodesAria": "图表中的状态码",
+        "failedByStatusAria": "按状态码统计的失败请求",
+        "rankedByFailedAria": "按失败请求数排名的{entity}"
+      },
+      "action": {
+        "inspectInLogs": "在日志中查看失败请求"
+      },
+      "alert": {
+        "deploymentWide": {
+          "title": "错误是整个部署范围内的",
+          "body": "在全局用量中清除用户筛选后即可查看失败分析"
+        },
+        "loadFailed": {
+          "title": "无法加载错误数据",
+          "body": "代理没有响应失败请求查询，请重新加载页面重试"
+        }
+      }
+    },
+    "overview": {
+      "breakdown": {
+        "metric": "指标",
+        "groupBy": "分组方式",
+        "empty": "该时间范围内没有用量"
+      },
+      "topAgents": {
+        "subtitle": "按智能体统计的每日用量，取自每个请求的 User-Agent",
+        "unattributed": "按智能体统计的每日用量，{coverage}% 的令牌带有 User-Agent，其余无法归属",
+        "viewActivity": "查看活动",
+        "empty": "该时间范围内没有智能体流量",
+        "title": "热门智能体",
+        "metric": "智能体指标"
+      },
+      "overview": {
+        "bucketSize": "分桶大小",
+        "scale": "时间粒度",
+        "topModels": "热门模型",
+        "topVirtualKeys": "热门虚拟密钥",
+        "topUsersBySpend": "按花费排名的用户",
+        "granularityDaily": "每日",
+        "granularityWeekly": "每周",
+        "scaleLinear": "线性",
+        "scaleLog": "对数",
+        "metricSpend": "花费",
+        "metricTokens": "token",
+        "metricRequests": "请求数",
+        "chartTitle": "{granularity}用量",
+        "chartSubtitle": "{granularity}按模型统计的{metric}（前 8 项，其余归为其他）"
+      },
+      "statStrip": {
+        "spend": "花费",
+        "totalRequests": "总请求数",
+        "totalTokens": "总令牌数",
+        "avgCostPerRequest": "平均每请求成本",
+        "avgLatency": "平均延迟",
+        "ofBudget": "共 {amount} 预算",
+        "noBudgetSet": "未设预算",
+        "ok": "正常",
+        "failed": "失败",
+        "tokensExact": "{count} 个令牌",
+        "cacheRead": "{count} 缓存读取",
+        "successRate": "成功率 {rate}%"
+      },
+      "userRecord": {
+        "view": "查看用户记录"
+      },
+      "metric": {
+        "spend": "花费",
+        "tokens": "令牌",
+        "requests": "请求"
+      },
+      "dimension": {
+        "model": "模型",
+        "deployment": "部署",
+        "provider": "供应商"
+      },
+      "byProvider": "由 {provider} 提供",
+      "bucketSize": "时间粒度",
+      "scale": "标度",
+      "topModels": "热门模型",
+      "loadingTopModels": "正在加载热门模型",
+      "whatCountsTowardTokens": "总 token 都算了什么？",
+      "inputTokens": "输入 token",
+      "outputTokens": "输出 token",
+      "viewUserRecord": "查看用户记录"
+    },
     "userActivity": {
       "error": {
         "loadTopUsersFailed": "无法加载热门用户。",
@@ -5417,20 +5588,11 @@
     "tabEndpointActivity": "端点活动",
     "tabErrors": "错误",
     "askAi": "询问 AI",
-    "noModelsMatch": "没有匹配的模型 &quot;",
+    "noModelsMatch": "该时间范围内没有匹配「{query}」的模型",
     "credentialBannerBody": "使用可复用凭据时，它会在本视图中以带 <code>Credential: </code> 前缀的标签出现。",
-    "inThisDateRange": "&quot; 在本时间范围内",
-    "credentialLabel": "凭据：",
-    "endpointActivity": "端点活动",
-    "inThisView": "在本视图中。",
-    "keyActivity": "密钥活动",
-    "mcpServerActivity": "MCP 服务器活动",
-    "modelActivity": "模型活动",
-    "userActivityTab": "用户活动",
-    "reusableCredentialHint": "使用可复用凭据时，它会以带前缀的标签出现",
     "spendLoadFailed": "加载花费数据失败",
-    "errorsTab": "错误",
-    "overviewTab": "概览"
+    "agentLoadFailed": "加载代理数据失败",
+    "loadingSettings": "正在加载用量设置"
   },
   "logs": {
     "detail": {
@@ -13397,17 +13559,13 @@
     "closeChatLabel": "关闭对话 {id}",
     "approvalNeeded": "需要审批",
     "waitForChange": "请等待此更改完成",
-    "charactersSuffix": "个字符。",
-    "modelsLoadFailed": "无法加载模型。",
-    "messageLimitPrefix": "消息请控制在",
-    "openConversation": "打开对话",
-    "retry": "重试",
-    "startOver": "重新开始",
-    "gatewayAddressNote": "该网关使用了不同的地址。Aria 会把现有的会话凭据发送到上面显示的地址。",
-    "aiUsageAssistant": "你的 AI 用量助手",
     "tagline": "让你的网关更好用一点。",
     "askAriaAria": "向 Aria 询问用量",
-    "askAriaPlaceholder": "问 Aria…"
+    "askAriaPlaceholder": "问 Aria…",
+    "aiUsageAssistant": "你的 AI 用量助手",
+    "yourQuestion": "你的问题",
+    "greeting": "你好，我是 Aria。",
+    "suggestedQuestions": "建议问题"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "删除别名 {name}",
@@ -14848,27 +15006,5 @@
       "virtualKeyIssued": "已签发的虚拟密钥",
       "modelsAvailable": "个模型可通过 LiteLLM 使用"
     }
-  },
-  "clientUsage": {
-    "cacheReadShare": "这些 token 中缓存读取的比例",
-    "allUsers": "全部用户",
-    "backToUsage": "返回用量",
-    "loadFailed": "无法加载客户端用量",
-    "filterByPerson": "按人员筛选",
-    "no": "否",
-    "requestsInRangeSuffix": "次请求（所选时间范围内）。试试其他时间范围。",
-    "retryBreakdown": "重试模型明细",
-    "spendHint": "花费是 LiteLLM 记录的成本。",
-    "teamMember": "团队成员",
-    "tokensHint": "总 token 包含输入、缓存输入与输出。缓存输入计价不同，单看 token 数无法解释花费。核对客户端显示的数量时，请比较同一人员与同一日期范围。",
-    "tryAgain": "重试",
-    "usageInRangeSuffix": "次用量（本时间范围）。",
-    "usageScope": "用量范围",
-    "loadingAria": "正在加载客户端用量",
-    "requests": "请求数",
-    "spend": "花费",
-    "totalTokens": "总 token",
-    "tokenBreakdown": "token 明细",
-    "viewClientUsage": "查看客户端用量"
   }
 }

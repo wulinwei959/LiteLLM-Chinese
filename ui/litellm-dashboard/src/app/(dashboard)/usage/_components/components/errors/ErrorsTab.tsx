@@ -25,7 +25,6 @@ import {
   type ErrorEntityKind,
   type RequestErrorActivity,
 } from "./errorsData";
-import { useTranslations } from "next-intl";
 
 interface ErrorsTabProps {
   activity: RequestErrorActivity | null;
@@ -84,8 +83,6 @@ function rateChartEmpty(rateView: ErrorRateView, series: ErrorSeries, noTraffic:
 }
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
-  const t = useTranslations("usage.errors");
-
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
@@ -108,8 +105,8 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     return (
       <Alert role="status">
         <AlertCircle />
-        <AlertTitle>{t("alert.deploymentWide.title")}</AlertTitle>
-        <AlertDescription>{t("alert.deploymentWide.body")}</AlertDescription>
+        <AlertTitle>Errors are deployment-wide</AlertTitle>
+        <AlertDescription>Clear the user filter in Global Usage to see failure analytics</AlertDescription>
       </Alert>
     );
   }
@@ -117,7 +114,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     return (
       <Alert variant="destructive" role="alert">
         <AlertCircle />
-        <AlertTitle>{t("alert.loadFailed.title")}</AlertTitle>
+        <AlertTitle>Error activity could not be loaded</AlertTitle>
         <AlertDescription>
           The proxy did not answer the failed-request query. Reload the page to try again.
         </AlertDescription>
@@ -128,30 +125,30 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
   return (
     <div className="grid gap-3" data-testid="usage-errors-tab">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCell label={t("stat.errorRate")}>
+        <StatCell label="Error rate">
           <Stat
-            label={t("stat.errorRate")}
+            label="Error rate"
             value={summary ? formatRate(summary.rate) : null}
             pending={loading}
             tone={summary && summary.failed > 0 ? "destructive" : undefined}
             hint={summary ? `${count(summary.failed)} of ${count(summary.requests)} requests` : undefined}
           />
         </StatCell>
-        <StatCell label={t("stat.failedRequests")}>
-          <Stat label={t("stat.failedRequests")} value={summary ? count(summary.failed) : null} pending={loading} />
+        <StatCell label="Failed requests">
+          <Stat label="Failed requests" value={summary ? count(summary.failed) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.clientErrors")}>
-          <Stat label={t("stat.clientErrors")} value={summary ? count(summary.clientErrors) : null} pending={loading} />
+        <StatCell label="Client errors (4xx)">
+          <Stat label="Client errors (4xx)" value={summary ? count(summary.clientErrors) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.serverErrors")}>
-          <Stat label={t("stat.serverErrors")} value={summary ? count(summary.serverErrors) : null} pending={loading} />
+        <StatCell label="Server errors (5xx)">
+          <Stat label="Server errors (5xx)" value={summary ? count(summary.serverErrors) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.rateLimited")}>
-          <Stat label={t("stat.rateLimited")} value={summary ? count(summary.rateLimited) : null} pending={loading} />
+        <StatCell label="Rate limited (429)">
+          <Stat label="Rate limited (429)" value={summary ? count(summary.rateLimited) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.authFailures")}>
+        <StatCell label="Auth failures (401/403)">
           <Stat
-            label={t("stat.authFailures")}
+            label="Auth failures (401/403)"
             value={summary ? count(summary.authFailures) : null}
             pending={loading}
           />
@@ -160,9 +157,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Panel
-          title={t("panel.errorRate.title")}
-          subtitle={t("panel.errorRate.subtitle")}
-          action={<Segmented label={t("control.show")} value={rateView} options={ERROR_RATE_VIEW_OPTIONS} onChange={setRateView} />}
+          title="Error rate over time"
+          subtitle="Failed requests as a share of all requests, per day"
+          action={<Segmented label="Show" value={rateView} options={ERROR_RATE_VIEW_OPTIONS} onChange={setRateView} />}
         >
           <PanelBody loading={loading} height="h-64" empty={rateEmpty}>
             <LineChart
@@ -181,7 +178,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             />
           </PanelBody>
         </Panel>
-        <Panel title={t("panel.failedByStatus.title")} subtitle={t("panel.failedByStatus.subtitle")}>
+        <Panel title="Failed requests by status code" subtitle="Per day, stacked by HTTP status">
           <PanelBody
             loading={loading}
             height="h-64"
@@ -199,7 +196,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             />
             <ul
               className={cn("flex flex-wrap gap-x-4 gap-y-1 pb-4 text-xs text-muted-foreground", PANEL_INSET_X)}
-              aria-label={t("chart.statusCodesAria")}
+              aria-label="Status codes in the chart"
             >
               {series.codes.map((code, index) => (
                 <li key={code} className="flex items-center gap-1.5">
@@ -217,13 +214,13 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
       </div>
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <Panel title={t("view.byStatusCode")} subtitle={t("panel.byStatusCode.subtitle")}>
+        <Panel title="By status code" subtitle="Share of all failed requests">
           <PanelBody
             loading={loading}
             height="h-48"
             empty={statusRows.length === 0 ? "No failed requests in this range" : null}
           >
-            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("panel.failedByStatus.title")}>
+            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label="Failed requests by status code">
               {statusRows.map((row) => (
                 <li
                   key={row.status_code}
@@ -246,9 +243,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
         </Panel>
 
         <Panel
-          title={t("panel.byIdentity.title")}
-          subtitle={t("panel.byIdentity.subtitle")}
-          action={<Segmented label={t("control.groupBy")} value={kind} options={ENTITY_OPTIONS} onChange={setKind} />}
+          title="Failures by identity"
+          subtitle="Keys, teams, users and models ranked by failed requests"
+          action={<Segmented label="Group by" value={kind} options={ENTITY_OPTIONS} onChange={setKind} />}
         >
           <PanelBody
             loading={loading}
@@ -263,10 +260,10 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               <TableHeader>
                 <TableRow>
                   <TableHead>{ERROR_ENTITY_LABEL[kind].singular}</TableHead>
-                  <TableHead className="text-right">{t("column.requests")}</TableHead>
-                  <TableHead className="text-right">{t("column.failed")}</TableHead>
-                  <TableHead>{t("stat.errorRate")}</TableHead>
-                  <TableHead>{t("column.topStatus")}</TableHead>
+                  <TableHead className="text-right">Requests</TableHead>
+                  <TableHead className="text-right">Failed</TableHead>
+                  <TableHead>Error rate</TableHead>
+                  <TableHead>Top status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
