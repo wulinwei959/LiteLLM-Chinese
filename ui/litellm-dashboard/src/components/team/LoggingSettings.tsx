@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+ 
 import React from "react";
 import { useTranslations } from "next-intl";
 import { SimpleTooltip } from "@/components/ui/tooltip";

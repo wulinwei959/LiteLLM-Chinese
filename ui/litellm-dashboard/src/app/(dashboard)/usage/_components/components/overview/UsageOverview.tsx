@@ -6,13 +6,24 @@
  * matching colors.
  */
 
-import { type ReactNode } from "react";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useMemo, useState } from "react";
 import type { DailyData } from "@/components/UsagePage/types";
 import { KeyRound, Users } from "lucide-react";
-import type { OverviewTotals } from "./overviewData";
-import { Panel } from "./Primitives";
+import { StackedUsageChart, type StackedUsageScale } from "@/components/shared/charts";
+import {
+  bucketSeries,
+  bucketTotals,
+  labelForDate,
+  formatMetricValue,
+  type Granularity,
+  type OverviewTotals,
+  type UsageMetric,
+} from "./overviewData";
+import { BreakdownControls, Leaderboard, useBreakdown, type BreakdownState } from "./BreakdownChart";
+import { cn } from "@/lib/cva.config";
+import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented } from "./Primitives";
 import UsageStatStrip from "./UsageStatStrip";
-import UsageBreakdownChart from "./UsageBreakdownChart";
 
 interface UsageOverviewProps {
   results: readonly DailyData[];
@@ -27,6 +38,16 @@ interface UsageOverviewProps {
   providerBreakdown: ReactNode;
 }
 
+const METRIC_NOUN_KEY: Record<UsageMetric, "overview.metricSpend" | "overview.metricTokens" | "overview.metricRequests"> = {
+  spend: "overview.metricSpend",
+  tokens: "overview.metricTokens",
+  requests: "overview.metricRequests",
+};
+const GRANULARITY_KEY: Record<Granularity, "overview.granularityDaily" | "overview.granularityWeekly"> = {
+  day: "overview.granularityDaily",
+  week: "overview.granularityWeekly",
+};
+
 export default function UsageOverview({
   results,
   totals,
@@ -39,6 +60,23 @@ export default function UsageOverview({
   providerBreakdown,
   budget,
 }: UsageOverviewProps) {
+  const t = useTranslations("usage.overview");
+  const granularityOptions = [
+    { value: "day", label: t("overview.granularityDaily") },
+    { value: "week", label: t("overview.granularityWeekly") },
+  ] as const satisfies readonly { value: Granularity; label: string }[];
+  const scaleOptions = [
+    { value: "linear", label: t("overview.scaleLinear") },
+    { value: "log", label: t("overview.scaleLog") },
+  ] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+  const [state, setState] = useState<BreakdownState>({ metric: "spend", dimension: "model_groups" });
+  const [granularity, setGranularity] = useState<Granularity>("day");
+  const [scale, setScale] = useState<StackedUsageScale>("linear");
+  const { series: dailySeries, ranking } = useBreakdown(results, state, 8);
+  const series = useMemo(() => bucketSeries(dailySeries, granularity), [dailySeries, granularity]);
+  const totalsByBucket = useMemo(() => bucketTotals(series), [series]);
+  const format = (value: number) => formatMetricValue(value, state.metric);
+
   return (
     <div className="grid gap-3">
       <UsageStatStrip
@@ -49,15 +87,63 @@ export default function UsageOverview({
         budget={budget}
       />
 
-      <UsageBreakdownChart results={results} loading={loading} />
+      <Panel
+        title={t("overview.chartTitle", { granularity: t(GRANULARITY_KEY[granularity]) })}
+        subtitle={t("overview.chartSubtitle", {
+          granularity: t(GRANULARITY_KEY[granularity]),
+          metric: t(METRIC_NOUN_KEY[state.metric]),
+        })}
+        action={
+          <>
+            <BreakdownControls state={state} onChange={setState} showDimension={false} />
+            <Segmented
+              label={t("overview.bucketSize")}
+              value={granularity}
+              options={granularityOptions}
+              onChange={setGranularity}
+            />
+            <Segmented label={t("overview.scale")} value={scale} options={scaleOptions} onChange={setScale} />
+          </>
+        }
+        bodyClassName="px-0 pt-4 pb-0"
+      >
+        <div className="px-2 pb-2">
+          {loading ? (
+            <ChartSkeleton className="mx-3 h-[380px] w-auto" />
+          ) : (
+            <StackedUsageChart
+              data={series.data}
+              series={series.keys}
+              labels={series.labels}
+              colors={series.colors}
+              xKey="date"
+              xLabel={(date) => labelForDate(series, date)}
+              scale={scale}
+              format={format}
+              totalFor={(date) => totalsByBucket.get(date)}
+            />
+          )}
+        </div>
+        <div className={cn("border-t pt-3 pb-2", PANEL_INSET_X)}>
+          <h4 className="text-sm leading-5 font-medium text-foreground">{t("overview.topModels")}</h4>
+          <Leaderboard
+            ranking={ranking}
+            series={dailySeries}
+            metric={state.metric}
+            dimension={state.dimension}
+            columns={2}
+            limit={10}
+          />
+        </div>
+      </Panel>
 
       {topAgents}
       {providerBreakdown}
 
-      <Panel icon={KeyRound} title="Top Virtual Keys">
+      <Panel icon={KeyRound} title={t("overview.topVirtualKeys")}>
         {topKeys}
       </Panel>
-      <Panel icon={Users} title="Top Users by Spend">
+      <Panel icon={Users} title={t("overview.topUsersBySpend")}>
         {topUsers}
       </Panel>
       {gatewayByEndpoint}

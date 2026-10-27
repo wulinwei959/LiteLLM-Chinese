@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 
-import "@testing-library/jest-dom/vitest";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import {
   copyToClipboard,
@@ -17,6 +16,8 @@ const mockToast = vi.mocked(toast);
 describe("dataUtils", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset document.execCommand mock
+    delete (document as any).execCommand;
   });
 
   afterEach(() => {
@@ -150,25 +151,12 @@ describe("dataUtils", () => {
         expect(mockToast.success).toHaveBeenCalledWith("已复制到剪贴板");
         expect(result).toBe(true);
       });
-      Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
-      Object.defineProperty(document, "execCommand", { configurable: true, value: execCommand });
-      vi.spyOn(console, "error").mockImplementation(() => {});
-      document.body.appendChild(trigger);
-      trigger.focus();
-    });
 
-    afterEach(() => {
-      document.body.replaceChildren();
-      if (clipboardDescriptor) Object.defineProperty(navigator, "clipboard", clipboardDescriptor);
-      else Reflect.deleteProperty(navigator, "clipboard");
-      if (execCommandDescriptor) Object.defineProperty(document, "execCommand", execCommandDescriptor);
-      else Reflect.deleteProperty(document, "execCommand");
-    });
+      it("should use custom message when provided", async () => {
+        await copyToClipboard("test text", "Custom message");
 
-    it("confirms a modern clipboard write only after it succeeds", async () => {
-      const pendingWrite = Promise.withResolvers<void>();
-      writeText.mockReturnValue(pendingWrite.promise);
-      const result = copyToClipboard(text, "Request copied");
+        expect(mockToast.success).toHaveBeenCalledWith("Custom message");
+      });
 
       it("should return false for null/undefined text", async () => {
         expect(await copyToClipboard(null, "已复制到剪贴板")).toBe(false);
@@ -264,19 +252,20 @@ describe("dataUtils", () => {
 
         const result = await copyToClipboard("test text", "已复制到剪贴板");
 
-    it("falls back after a rejected modern write", async () => {
-      writeText.mockRejectedValue(new Error("Permission denied"));
+        expect(document.execCommand).toHaveBeenCalledWith("copy");
+        expect(mockToast.fromError).toHaveBeenCalledWith("Failed to copy to clipboard");
+        expect(result).toBe(false);
+      });
 
-      expect(await copyToClipboard(text, "Request copied")).toBe(true);
+      it("should handle DOM manipulation errors", async () => {
+        document.createElement = vi.fn().mockImplementation(() => {
+          throw new Error("DOM error");
+        });
 
         const result = await copyToClipboard("test text", "已复制到剪贴板");
 
-    it.each(["false", "throw"])("cleans up and reports failure when the fallback returns %s", async (outcome) => {
-      Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
-      execCommand.mockImplementation(() => {
-        selectedText();
-        if (outcome === "throw") throw new Error("Copy denied");
-        return false;
+        expect(mockToast.fromError).toHaveBeenCalledWith("Failed to copy to clipboard");
+        expect(result).toBe(false);
       });
 
       it("should clean up textarea element after successful copy", async () => {
@@ -291,17 +280,29 @@ describe("dataUtils", () => {
 
         await copyToClipboard("test text", "已复制到剪贴板");
 
-      expect(selectedText).toHaveReturnedWith(text);
-      expect(mockToast.fromError).toHaveBeenCalledWith("Failed to copy to clipboard");
-      expect(mockToast.success).not.toHaveBeenCalled();
-      expect(document.querySelector("textarea")).not.toBeInTheDocument();
-      expect(trigger).toHaveFocus();
+        expect(document.body.appendChild).toHaveBeenCalledWith(mockTextArea);
+        expect(document.body.removeChild).toHaveBeenCalledWith(mockTextArea);
+      });
     });
 
-    it("reports failure when the fallback cannot create its selection", async () => {
-      Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
-      vi.spyOn(document, "createElement").mockImplementationOnce(() => {
-        throw new Error("DOM error");
+    describe("edge cases", () => {
+      beforeEach(() => {
+        // Mock scenario where navigator exists but clipboard is null
+        Object.assign(navigator, {
+          clipboard: null,
+        });
+
+        document.execCommand = vi.fn().mockReturnValue(true);
+        const mockTextArea = {
+          value: "",
+          style: {} as Record<string, string>,
+          setAttribute: vi.fn(),
+          focus: vi.fn(),
+          select: vi.fn(),
+        };
+        document.createElement = vi.fn().mockReturnValue(mockTextArea);
+        document.body.appendChild = vi.fn();
+        document.body.removeChild = vi.fn();
       });
 
       it("should handle navigator.clipboard being null", async () => {

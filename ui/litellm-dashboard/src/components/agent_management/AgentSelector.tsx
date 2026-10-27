@@ -42,7 +42,7 @@ const AgentSelector: React.FC<AgentSelectorProps> = ({
       setLoading(true);
       try {
         const response = await getAgentsList(accessToken);
-        let agentsList = response?.agents || [];
+        const agentsList = response?.agents || [];
         setAgents(agentsList);
 
         // Extract unique access groups from agents

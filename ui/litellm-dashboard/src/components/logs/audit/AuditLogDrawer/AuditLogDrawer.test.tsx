@@ -1,7 +1,7 @@
 import { copyToClipboard } from "@/utils/dataUtils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import moment from "moment";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import { AuditLogDrawer } from "./AuditLogDrawer";

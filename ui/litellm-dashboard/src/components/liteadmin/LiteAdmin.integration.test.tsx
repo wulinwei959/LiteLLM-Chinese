@@ -1,7 +1,6 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { z } from "zod";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { setGlobalLitellmHeaderName, switchToWorkerUrl } from "@/components/networking";
@@ -11,7 +10,7 @@ import userEvent from "@testing-library/user-event";
 import { useEffect, type ComponentType } from "react";
 import SidebarAccountMenu from "@/components/SidebarAccountMenu/SidebarAccountMenu";
 import UserDropdown from "@/components/Navbar/UserDropdown/UserDropdown";
-import LiteAdmin, { AriaUsageComposer, AriaUsageTrigger, LiteAdminFrame, LiteAdminHome } from "./LiteAdmin";
+import LiteAdmin, { LiteAdminFrame, LiteAdminHome } from "./LiteAdmin";
 import { MAX_INPUT_LENGTH } from "./agent";
 import type { ModelGroup } from "@/components/llm_calls/fetch_models";
 import { renderWithProviders } from "../../../tests/test-utils";

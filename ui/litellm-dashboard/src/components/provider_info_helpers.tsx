@@ -505,10 +505,10 @@ export const getPlaceholder = (selectedProvider: string): string => {
 };
 
 export const getProviderModels = (provider: string, modelMap: any): Array<string> => {
-  let providerKey = provider;
-  let custom_llm_provider = providerKey ? resolveLitellmProviderSlug(providerKey) : undefined;
+  const providerKey = provider;
+  const custom_llm_provider = providerKey ? resolveLitellmProviderSlug(providerKey) : undefined;
 
-  let providerModels: Array<string> = [];
+  const providerModels: Array<string> = [];
 
   if (providerKey && typeof modelMap === "object") {
     Object.entries(modelMap).forEach(([key, value]) => {

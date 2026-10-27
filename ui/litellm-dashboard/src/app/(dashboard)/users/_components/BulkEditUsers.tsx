@@ -131,7 +131,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
         return;
       }
 
-      let successMessages: string[] = [];
+      const successMessages: string[] = [];
 
       // Handle user property updates
       if (hasUserUpdates) {
@@ -170,12 +170,14 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
               updateAllUsers,
             );
 
-            teamResults.push({
+            const teamResult = {
               teamId,
               success: true,
               successfulAdditions: result.successful_additions,
               failedAdditions: result.failed_additions,
-            });
+            };
+
+            teamResults.push(teamResult);
           } catch (error) {
             console.error(`Failed to add users to team ${teamId}:`, error);
             teamResults.push({

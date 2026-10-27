@@ -255,7 +255,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
       return;
     }
     getGeneralSettingsCall(accessToken).then((data) => {
-      let general_settings = data;
+      const general_settings = data;
       setGeneralSettings(general_settings);
     });
   }, [accessToken]);

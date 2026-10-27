@@ -93,6 +93,7 @@ export interface PassThroughInfoProps {
   onClose: () => void;
   accessToken: string | null;
   isAdmin: boolean;
+  premiumUser?: boolean;
   onEndpointUpdated?: () => void;
 }
 
@@ -141,6 +142,7 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
   onClose,
   accessToken,
   isAdmin,
+  premiumUser = false,
   onEndpointUpdated,
 }) => {
   const t = useTranslations("models.passThrough");
@@ -161,7 +163,7 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
       include_subpath: initialEndpointData.include_subpath || false,
       cost_per_request: initialEndpointData.cost_per_request,
       timeout: initialEndpointData.timeout,
-      auth: initialEndpointData.auth ?? true,
+      auth: initialEndpointData.auth || false,
     },
   });
 
@@ -193,7 +195,7 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
         include_subpath: values.include_subpath,
         cost_per_request: values.cost_per_request,
         timeout: values.timeout,
-        auth: values.auth,
+        auth: premiumUser ? values.auth : undefined,
         methods: values.methods.length > 0 ? values.methods : undefined,
         guardrails: guardrails && Object.keys(guardrails).length > 0 ? guardrails : undefined,
       };
@@ -482,7 +484,11 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
 
                     <FormField control={form.control} name="auth">
                       {({ value, onChange }) => (
-                        <PassThroughSecuritySection authEnabled={value} onAuthChange={onChange} />
+                        <PassThroughSecuritySection
+                          premiumUser={premiumUser}
+                          authEnabled={value}
+                          onAuthChange={onChange}
+                        />
                       )}
                     </FormField>
 

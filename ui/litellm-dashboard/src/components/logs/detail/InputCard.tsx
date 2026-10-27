@@ -35,7 +35,7 @@ export function InputCard({ messages, promptTokens, inputCost }: InputCardProps)
 
   const handleCopy = () => {
     const content = lastMessage?.content || "";
-    void copyToClipboard(content, "Input copied");
+    void copyToClipboard(content, t("cards.inputCopied"));
   };
 
   return (

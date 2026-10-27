@@ -45,15 +45,17 @@ const defaultProps = {
   allowAllUsers: false,
 };
 
+const bulkUpdateResult = (totalRequested: number, successfulUpdates: number) => ({
+  results: [],
+  total_requested: totalRequested,
+  successful_updates: successfulUpdates,
+  failed_updates: 0,
+});
+
 describe("BulkEditUserModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 2,
-      successful_updates: 2,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(2, 2));
     mockTeamBulkMemberAddCall.mockResolvedValue({
       successful_additions: 2,
       failed_additions: 0,
@@ -239,12 +241,7 @@ describe("BulkEditUserModal", () => {
 
   it("should show success message after successful user update", async () => {
     const user = userEvent.setup();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 2,
-      successful_updates: 2,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(2, 2));
 
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
@@ -258,12 +255,7 @@ describe("BulkEditUserModal", () => {
 
   it("should show success message for all users update", async () => {
     const user = userEvent.setup();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 100,
-      successful_updates: 100,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(100, 100));
 
     renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
 

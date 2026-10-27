@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -14,12 +15,12 @@ import AddPassThroughEndpoint from "../add_pass_through";
 import PassThroughInfoView from "../pass_through_info";
 import { toast } from "@/lib/toast";
 import { PassThroughEndpointsTable } from "./PassThroughEndpointsTable";
-import { useTranslations } from "next-intl";
 
 interface PassThroughSettingsProps {
   accessToken: string | null;
   userRole: string | null;
   userID: string | null;
+  premiumUser?: boolean;
 }
 
 export interface passThroughItem {
@@ -37,9 +38,9 @@ export interface passThroughItem {
   is_from_config?: boolean;
 }
 
-const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, userRole, userID }) => {
+const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, userRole, userID, premiumUser }) => {
   const t = useTranslations("models.passThrough");
-
+  const commonT = useTranslations("common");
   const [generalSettings, setGeneralSettings] = useState<passThroughItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(null);
@@ -109,7 +110,7 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
     const selectedEndpoint = generalSettings.find((endpoint) => endpoint.id === selectedEndpointId);
 
     if (!selectedEndpoint) {
-      return <div>Endpoint not found</div>;
+      return <div>{t("notFound")}</div>;
     }
 
     return (
@@ -118,6 +119,7 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
         onClose={() => setSelectedEndpointId(null)}
         accessToken={accessToken}
         isAdmin={userRole === "Admin" || userRole === "admin"}
+        premiumUser={premiumUser}
         onEndpointUpdated={handleEndpointUpdated}
       />
     );
@@ -126,14 +128,15 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
   return (
     <div>
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Pass Through Endpoints</h2>
-        <p className="text-sm text-muted-foreground">Configure and manage your pass-through endpoints</p>
+        <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
 
       <AddPassThroughEndpoint
         accessToken={accessToken}
         setPassThroughItems={setGeneralSettings}
         passThroughItems={generalSettings}
+        premiumUser={premiumUser}
       />
 
       <PassThroughEndpointsTable
@@ -146,15 +149,13 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
       <AlertDialog open={isDeleteModalOpen} onOpenChange={(open) => !open && cancelDelete()}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Pass-Through Endpoint</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this pass-through endpoint? This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("deleteConfirmMessage")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>
             <Button variant="destructive" onClick={confirmDelete}>
-              Delete
+              {commonT("delete")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
