@@ -11,6 +11,10 @@ query-filters:
       id: py/clear-text-logging-sensitive-data # CWE-312
   - exclude:
       id: py/polynomial-redos # CWE-730
+  # 同步到 1.108.0-dev 后该查询的结果集超过 2 GiB 评估上限（2026-10-27 实测），
+  # 与上面两条同属数据流放大的规模问题；等日志调用面收敛后再试
+  - exclude:
+      id: py/log-injection # CWE-117
 
 paths-ignore:
   - tests

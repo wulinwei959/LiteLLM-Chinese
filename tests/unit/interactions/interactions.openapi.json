@@ -756,7 +756,7 @@
           {
             "label": "list",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    res, err := client.Environments.ListEnvironments(ctx, operations.ListEnvironmentsRequest{})\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.ListEnvironmentsResponse != nil {\n        for _, env := range res.ListEnvironmentsResponse.Environments {\n            if env.ID != \"\" {\n                fmt.Println(env.ID)\n            }\n        }\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n    res, err := client.Environments.ListEnvironments(ctx, operations.ListEnvironmentsRequest{})\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.ListEnvironmentsResponse != nil {\n        for _, env := range res.ListEnvironmentsResponse.Environments {\n            if env.ID != \"\" {\n                fmt.Println(env.ID)\n            }\n        }\n    }\n}\n"
           }
         ]
       },
@@ -834,12 +834,12 @@
           {
             "label": "create",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    gaos_environments \"google.golang.org/genai/interactions/models/environments\"\n    gaos_interactions \"google.golang.org/genai/interactions/models/interactions\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    req := operations.CreateEnvironmentRequest{\n        Body: gaos_environments.CreateEnvironmentRequest{\n            Sources: []gaos_interactions.Source{\n                {\n                    Type:    genai.Ptr(gaos_interactions.SourceTypeInline),\n                    Target:  genai.Ptr(\"main.py\"),\n                    Content: genai.Ptr(\"print('Hello, World!')\"),\n                },\n            },\n        },\n    }\n\n    res, err := client.Environments.CreateEnvironment(ctx, req)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    gaos_environments \"google.golang.org/genai/interactions/models/environments\"\n    gaos_interactions \"google.golang.org/genai/interactions/models/interactions\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n    req := operations.CreateEnvironmentRequest{\n        Body: gaos_environments.CreateEnvironmentRequest{\n            Sources: []gaos_interactions.Source{\n                {\n                    Type:    genai.Ptr(gaos_interactions.SourceTypeInline),\n                    Target:  genai.Ptr(\"main.py\"),\n                    Content: genai.Ptr(\"print('Hello, World!')\"),\n                },\n            },\n        },\n    }\n\n    res, err := client.Environments.CreateEnvironment(ctx, req)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n\n    }\n}\n"
           },
           {
             "label": "copy",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    gaos_environments \"google.golang.org/genai/interactions/models/environments\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n\n    res, err := client.Environments.CreateEnvironment(ctx, operations.CreateEnvironmentRequest{\n        Body: gaos_environments.CreateEnvironmentRequest{\n            FromEnvironment: genai.Ptr(sourceEnvID),\n        },\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    gaos_environments \"google.golang.org/genai/interactions/models/environments\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n\n    res, err := client.Environments.CreateEnvironment(ctx, operations.CreateEnvironmentRequest{\n        Body: gaos_environments.CreateEnvironmentRequest{\n            FromEnvironment: genai.Ptr(sourceEnvID),\n        },\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n\n    }\n}\n"
           }
         ]
       }
@@ -967,12 +967,12 @@
           {
             "label": "list_files",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n\n    res, err := client.Environments.Files.List(ctx, operations.GetEnvironmentFilesRequest{\n        Environment: envID,\n        Path:        \"src\",\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.GetEnvironmentFilesResponse != nil {\n        for _, file := range res.GetEnvironmentFilesResponse.Files {\n            name := \"\"\n            if file.Name != nil {\n                name = *file.Name\n            }\n            fileType := \"\"\n            if file.Type != nil {\n                fileType = string(*file.Type)\n            }\n            var size int64\n            if file.SizeBytes != nil {\n                size = *file.SizeBytes\n            }\n            fmt.Println(name, fileType, size)\n        }\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n\n    res, err := client.Environments.Files.List(ctx, operations.GetEnvironmentFilesRequest{\n        Environment: envID,\n        Path:        \"src\",\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.GetEnvironmentFilesResponse != nil {\n        for _, file := range res.GetEnvironmentFilesResponse.Files {\n            name := \"\"\n            if file.Name != nil {\n                name = *file.Name\n            }\n            fileType := \"\"\n            if file.Type != nil {\n                fileType = string(*file.Type)\n            }\n            var size int64\n            if file.SizeBytes != nil {\n                size = *file.SizeBytes\n            }\n            fmt.Println(name, fileType, size)\n        }\n    }\n}\n"
           },
           {
             "label": "get_file",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n\n    res, err := client.Environments.Files.List(ctx, operations.GetEnvironmentFilesRequest{\n        Environment: envID,\n        Path:        \"main.py\",\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.GetEnvironmentFilesResponse != nil {\n        for _, file := range res.GetEnvironmentFilesResponse.Files {\n            name := \"\"\n            if file.Name != nil {\n                name = *file.Name\n            }\n            var size int64\n            if file.SizeBytes != nil {\n                size = *file.SizeBytes\n            }\n            fmt.Println(name, size)\n        }\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n\n    res, err := client.Environments.Files.List(ctx, operations.GetEnvironmentFilesRequest{\n        Environment: envID,\n        Path:        \"main.py\",\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.GetEnvironmentFilesResponse != nil {\n        for _, file := range res.GetEnvironmentFilesResponse.Files {\n            name := \"\"\n            if file.Name != nil {\n                name = *file.Name\n            }\n            var size int64\n            if file.SizeBytes != nil {\n                size = *file.SizeBytes\n            }\n            fmt.Println(name, size)\n        }\n    }\n}\n"
           }
         ]
       }
@@ -1036,7 +1036,7 @@
           {
             "label": "delete",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n\n    _, err = client.Environments.DeleteEnvironment(ctx, operations.DeleteEnvironmentRequest{\n        ID: envID,\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n    fmt.Println(\"Environment deleted successfully.\")\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n\n    _, err = client.Environments.DeleteEnvironment(ctx, operations.DeleteEnvironmentRequest{\n        ID: envID,\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n    fmt.Println(\"Environment deleted successfully.\")\n}\n"
           }
         ]
       },
@@ -1093,7 +1093,7 @@
           {
             "label": "get",
             "lang": "go",
-            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client, err := genai.NewClient(ctx, nil)\n    if err != nil {\n        log.Fatal(err)\n    }\n\n\n    res, err := client.Environments.GetEnvironment(ctx, operations.GetEnvironmentRequest{\n        ID: envID,\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n    }\n}\n"
+            "source": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"log\"\n    \"google.golang.org/genai/interactions/models/operations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    client := interactions.New()\n\n\n    res, err := client.Environments.GetEnvironment(ctx, operations.GetEnvironmentRequest{\n        ID: envID,\n    })\n    if err != nil {\n        log.Fatal(err)\n    }\n\n    if res.Environment != nil && res.Environment.ID != \"\" {\n        fmt.Println(res.Environment.ID)\n    }\n}\n"
           }
         ]
       }
@@ -3041,22 +3041,6 @@
         "description": "An agent definition for the CreateAgent API.\nThis message is the target for annotation-parser-based JSON parsing.\nNew format:\n  {\n    \"id\": \"customer-sentinel\",\n    \"base_agent\": \"\",\n    \"system_instruction\": \"...\",\n    \"base_environment\": { \"type\": \"remote\", \"sources\": [...] },\n    \"tools\": [ {\"type\": \"code_execution\"} ]\n  }",
         "type": "object",
         "properties": {
-          "id": {
-            "description": "The unique identifier for the agent.",
-            "type": "string"
-          },
-          "base_agent": {
-            "description": "The base agent to extend.",
-            "type": "string"
-          },
-          "system_instruction": {
-            "description": "System instruction for the agent.",
-            "type": "string"
-          },
-          "description": {
-            "description": "Agent description for developers to quickly read and understand.",
-            "type": "string"
-          },
           "agent_config": {
             "description": "Configuration parameters for the agent.",
             "oneOf": [
@@ -3075,6 +3059,22 @@
                 "type": "string"
               }
             ]
+          },
+          "id": {
+            "description": "The unique identifier for the agent.",
+            "type": "string"
+          },
+          "base_agent": {
+            "description": "The base agent to extend.",
+            "type": "string"
+          },
+          "system_instruction": {
+            "description": "System instruction for the agent.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Agent description for developers to quickly read and understand.",
+            "type": "string"
           },
           "tools": {
             "description": "The tools available to the agent.",
@@ -3330,6 +3330,14 @@
           "type": {
             "const": "audio"
           },
+          "data": {
+            "type": "string",
+            "format": "byte",
+            "x-speakeasy-base64-input-mode": "file"
+          },
+          "uri": {
+            "type": "string"
+          },
           "mime_type": {
             "type": "string",
             "enum": [
@@ -3362,14 +3370,6 @@
               "MULAW audio format",
               "WEBM audio format"
             ]
-          },
-          "data": {
-            "type": "string",
-            "format": "byte",
-            "x-speakeasy-base64-input-mode": "file"
-          },
-          "uri": {
-            "type": "string"
           },
           "rate": {
             "description": "Deprecated. Use sample_rate instead. The value is ignored.",
@@ -3817,6 +3817,32 @@
               }
             ]
           },
+          "response_format": {
+            "description": "Enforces that the generated response is a JSON object that complies with\nthe JSON schema specified in this field.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ResponseFormat"
+              },
+              {
+                "title": "ResponseFormatList",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResponseFormat"
+                }
+              }
+            ]
+          },
+          "environment": {
+            "description": "The environment configuration for the interaction. Can be an object\nspecifying remote environment sources or a string referencing an existing\nenvironment ID.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentConfig"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
           "id": {
             "description": "Required. Output only. A unique identifier for the interaction completion.",
             "type": "string",
@@ -3883,21 +3909,6 @@
               "$ref": "#/components/schemas/ResponseModality"
             }
           },
-          "response_format": {
-            "description": "Enforces that the generated response is a JSON object that complies with\nthe JSON schema specified in this field.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ResponseFormat"
-              },
-              {
-                "title": "ResponseFormatList",
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ResponseFormat"
-                }
-              }
-            ]
-          },
           "response_mime_type": {
             "description": "The mime type of the response. This is required if response_format is set.",
             "type": "string",
@@ -3906,17 +3917,6 @@
           "previous_interaction_id": {
             "description": "The ID of the previous interaction, if any.",
             "type": "string"
-          },
-          "environment": {
-            "description": "The environment configuration for the interaction. Can be an object\nspecifying remote environment sources or a string referencing an existing\nenvironment ID.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentConfig"
-              },
-              {
-                "type": "string"
-              }
-            ]
           },
           "environment_id": {
             "description": "Output only. The environment ID for the interaction. Only populated if environment\nconfig is set in the request.",
@@ -4018,6 +4018,32 @@
             "$ref": "#/components/schemas/GenerationConfig",
             "writeOnly": true
           },
+          "response_format": {
+            "description": "Enforces that the generated response is a JSON object that complies with\nthe JSON schema specified in this field.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ResponseFormat"
+              },
+              {
+                "title": "ResponseFormatList",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResponseFormat"
+                }
+              }
+            ]
+          },
+          "environment": {
+            "description": "The environment configuration for the interaction. Can be an object\nspecifying remote environment sources or a string referencing an existing\nenvironment ID.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentConfig"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
           "id": {
             "description": "Required. Output only. A unique identifier for the interaction completion.",
             "type": "string",
@@ -4084,21 +4110,6 @@
               "$ref": "#/components/schemas/ResponseModality"
             }
           },
-          "response_format": {
-            "description": "Enforces that the generated response is a JSON object that complies with\nthe JSON schema specified in this field.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ResponseFormat"
-              },
-              {
-                "title": "ResponseFormatList",
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ResponseFormat"
-                }
-              }
-            ]
-          },
           "response_mime_type": {
             "description": "The mime type of the response. This is required if response_format is set.",
             "type": "string",
@@ -4107,17 +4118,6 @@
           "previous_interaction_id": {
             "description": "The ID of the previous interaction, if any.",
             "type": "string"
-          },
-          "environment": {
-            "description": "The environment configuration for the interaction. Can be an object\nspecifying remote environment sources or a string referencing an existing\nenvironment ID.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentConfig"
-              },
-              {
-                "type": "string"
-              }
-            ]
           },
           "environment_id": {
             "description": "Output only. The environment ID for the interaction. Only populated if environment\nconfig is set in the request.",
@@ -4379,6 +4379,14 @@
           "type": {
             "const": "document"
           },
+          "data": {
+            "type": "string",
+            "format": "byte",
+            "x-speakeasy-base64-input-mode": "file"
+          },
+          "uri": {
+            "type": "string"
+          },
           "mime_type": {
             "type": "string",
             "enum": [
@@ -4389,14 +4397,6 @@
               "PDF document format",
               "CSV document format"
             ]
-          },
-          "data": {
-            "type": "string",
-            "format": "byte",
-            "x-speakeasy-base64-input-mode": "file"
-          },
-          "uri": {
-            "type": "string"
           }
         },
         "required": [
@@ -4474,6 +4474,23 @@
             "type": "string",
             "readOnly": true
           },
+          "network": {
+            "description": "Network configuration for the environment.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentNetworkEgressAllowlist"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "disabled"
+                ],
+                "x-google-enum-descriptions": [
+                  "All network egress is blocked."
+                ]
+              }
+            ]
+          },
           "sources": {
             "description": "Sources to be mounted into the environment.",
             "type": "array",
@@ -4509,23 +4526,6 @@
               ""
             ]
           },
-          "network": {
-            "description": "Network configuration for the environment.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentNetworkEgressAllowlist"
-              },
-              {
-                "type": "string",
-                "enum": [
-                  "disabled"
-                ],
-                "x-google-enum-descriptions": [
-                  "All network egress is blocked."
-                ]
-              }
-            ]
-          },
           "file_count": {
             "description": "Output only. The number of files in the environment, output only.",
             "type": "string",
@@ -4551,12 +4551,6 @@
           "type": {
             "const": "remote"
           },
-          "sources": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Source"
-            }
-          },
           "network": {
             "description": "Network configuration for the environment.",
             "oneOf": [
@@ -4573,6 +4567,12 @@
                 ]
               }
             ]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            }
           },
           "environment_id": {
             "description": "Optional. The environment ID for the interaction. If specified, the request will\nupdate the existing environment instead of creating a new one.",
@@ -5347,30 +5347,6 @@
         "description": "Configuration parameters for model interactions.",
         "type": "object",
         "properties": {
-          "temperature": {
-            "description": "Controls the randomness of the output.",
-            "type": "number",
-            "deprecated": true,
-            "format": "float"
-          },
-          "top_p": {
-            "description": "The maximum cumulative probability of tokens to consider when sampling.",
-            "type": "number",
-            "deprecated": true,
-            "format": "float"
-          },
-          "seed": {
-            "description": "Seed used in decoding for reproducibility.",
-            "type": "integer",
-            "format": "int32"
-          },
-          "stop_sequences": {
-            "description": "A list of character sequences that will stop output interaction.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
           "tool_choice": {
             "description": "The tool choice configuration.",
             "oneOf": [
@@ -5394,6 +5370,30 @@
                 "x-speakeasy-model-namespace": "interactions"
               }
             ]
+          },
+          "temperature": {
+            "description": "Controls the randomness of the output.",
+            "type": "number",
+            "deprecated": true,
+            "format": "float"
+          },
+          "top_p": {
+            "description": "The maximum cumulative probability of tokens to consider when sampling.",
+            "type": "number",
+            "deprecated": true,
+            "format": "float"
+          },
+          "seed": {
+            "description": "Seed used in decoding for reproducibility.",
+            "type": "integer",
+            "format": "int32"
+          },
+          "stop_sequences": {
+            "description": "A list of character sequences that will stop output interaction.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "thinking_level": {
             "description": "The level of thought tokens that the model should generate.",
@@ -6211,6 +6211,14 @@
           "type": {
             "const": "image"
           },
+          "data": {
+            "type": "string",
+            "format": "byte",
+            "x-speakeasy-base64-input-mode": "file"
+          },
+          "uri": {
+            "type": "string"
+          },
           "mime_type": {
             "type": "string",
             "enum": [
@@ -6233,14 +6241,6 @@
               "BMP image format",
               "TIFF image format"
             ]
-          },
-          "data": {
-            "type": "string",
-            "format": "byte",
-            "x-speakeasy-base64-input-mode": "file"
-          },
-          "uri": {
-            "type": "string"
           },
           "resolution": {
             "description": "The resolution of the media.",
@@ -6434,32 +6434,8 @@
             "$ref": "#/components/schemas/GenerationConfig",
             "writeOnly": true
           },
-          "system_instruction": {
-            "description": "System instruction for the interaction.",
-            "type": "string"
-          },
-          "tools": {
-            "description": "A list of tool declarations the model may call during interaction.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Tool"
-            }
-          },
           "input": {
             "$ref": "#/components/schemas/InteractionsInput"
-          },
-          "usage": {
-            "description": "Output only. Statistics on the interaction request's token usage.",
-            "$ref": "#/components/schemas/Usage",
-            "readOnly": true
-          },
-          "response_modalities": {
-            "description": "The requested modalities of the response (TEXT, IMAGE, AUDIO).",
-            "type": "array",
-            "deprecated": true,
-            "items": {
-              "$ref": "#/components/schemas/ResponseModality"
-            }
           },
           "response_format": {
             "description": "Enforces that the generated response is a JSON object that complies with\nthe JSON schema specified in this field.",
@@ -6476,15 +6452,6 @@
               }
             ]
           },
-          "response_mime_type": {
-            "description": "The mime type of the response. This is required if response_format is set.",
-            "type": "string",
-            "deprecated": true
-          },
-          "previous_interaction_id": {
-            "description": "The ID of the previous interaction, if any.",
-            "type": "string"
-          },
           "environment": {
             "description": "The environment configuration for the interaction. Can be an object\nspecifying remote environment sources or a string referencing an existing\nenvironment ID.",
             "oneOf": [
@@ -6495,6 +6462,39 @@
                 "type": "string"
               }
             ]
+          },
+          "system_instruction": {
+            "description": "System instruction for the interaction.",
+            "type": "string"
+          },
+          "tools": {
+            "description": "A list of tool declarations the model may call during interaction.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tool"
+            }
+          },
+          "usage": {
+            "description": "Output only. Statistics on the interaction request's token usage.",
+            "$ref": "#/components/schemas/Usage",
+            "readOnly": true
+          },
+          "response_modalities": {
+            "description": "The requested modalities of the response (TEXT, IMAGE, AUDIO).",
+            "type": "array",
+            "deprecated": true,
+            "items": {
+              "$ref": "#/components/schemas/ResponseModality"
+            }
+          },
+          "response_mime_type": {
+            "description": "The mime type of the response. This is required if response_format is set.",
+            "type": "string",
+            "deprecated": true
+          },
+          "previous_interaction_id": {
+            "description": "The ID of the previous interaction, if any.",
+            "type": "string"
           },
           "environment_id": {
             "description": "Output only. The environment ID for the interaction. Only populated if environment\nconfig is set in the request.",
@@ -7076,12 +7076,12 @@
           "type": {
             "const": "mcp_server"
           },
-          "name": {
-            "description": "The name of the MCPServer.",
-            "type": "string"
-          },
           "url": {
             "description": "The full URL for the MCPServer endpoint.\nExample: \"https://api.example.com/mcp\"",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the MCPServer.",
             "type": "string"
           },
           "headers": {
@@ -8695,20 +8695,6 @@
         "description": "Configuration for speech recognition (transcription).",
         "type": "object",
         "properties": {
-          "language_codes": {
-            "description": "Optional. BCP-47 language codes providing hints about the languages present in the\naudio. If omitted or empty, defaults to automatic language detection.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "custom_vocabulary": {
-            "description": "Optional. A list of custom vocabulary phrases to bias the speech recognition model\ntoward recognizing specific terms.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
           "mode": {
             "description": "Discriminated transcription mode options or enum.",
             "oneOf": [
@@ -8727,6 +8713,20 @@
                 ]
               }
             ]
+          },
+          "language_codes": {
+            "description": "Optional. BCP-47 language codes providing hints about the languages present in the\naudio. If omitted or empty, defaults to automatic language detection.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "custom_vocabulary": {
+            "description": "Optional. A list of custom vocabulary phrases to bias the speech recognition model\ntoward recognizing specific terms.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "timestamp_granularities": {
             "description": "Optional. The granularity of timestamps to include in the transcription output.\nSupported values: \"word\". If empty, no timestamps are generated.",
@@ -9497,10 +9497,6 @@
             "description": "The URI of the video.",
             "type": "string"
           },
-          "resolution": {
-            "description": "The resolution of the media.",
-            "$ref": "#/components/schemas/MediaResolution"
-          },
           "processing": {
             "description": "How the model processes this video for understanding.",
             "oneOf": [
@@ -9519,6 +9515,10 @@
                 ]
               }
             ]
+          },
+          "resolution": {
+            "description": "The resolution of the media.",
+            "$ref": "#/components/schemas/MediaResolution"
           },
           "name": {
             "description": "A user-defined name for this content block. Can be referenced by the model\nin the final response.",
@@ -9573,6 +9573,14 @@
           "type": {
             "const": "video"
           },
+          "data": {
+            "type": "string",
+            "format": "byte",
+            "x-speakeasy-base64-input-mode": "file"
+          },
+          "uri": {
+            "type": "string"
+          },
           "mime_type": {
             "type": "string",
             "enum": [
@@ -9599,14 +9607,6 @@
               "3GPP video format",
               "JPEG 2000 video format"
             ]
-          },
-          "data": {
-            "type": "string",
-            "format": "byte",
-            "x-speakeasy-base64-input-mode": "file"
-          },
-          "uri": {
-            "type": "string"
           },
           "resolution": {
             "description": "The resolution of the media.",
