@@ -260,8 +260,8 @@ describe("Navbar", () => {
       const logoUrl = "https://example.com/custom-logo.png";
       mockUseThemeImpl = () => ({ logoUrl, logoUrlDark });
 
-    const logoImg = screen.getByAltText("LiteLLM 品牌标识");
-    expect(logoImg).toHaveAttribute("src", "https://example.com/custom-logo.png");
+      const logoImg = screen.getByAltText("LiteLLM 品牌标识");
+      expect(logoImg).toHaveAttribute("src", "https://example.com/custom-logo.png");
 
       const brand = within(screen.getByRole("link", { name: /litellm brand/i }));
       const light = brand.getByAltText("LiteLLM Brand");

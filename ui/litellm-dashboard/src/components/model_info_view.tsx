@@ -271,7 +271,6 @@ export default function ModelInfoView({
     values: ModelEditSubmitValues,
     isFieldTouched: (field: TouchedPricingField) => boolean,
   ) => {
-    
     try {
       if (!accessToken) return;
       setIsSaving(true);
@@ -445,7 +444,6 @@ export default function ModelInfoView({
   }
 
   const handleTestConnection = async () => {
-    
     if (!accessToken) return;
     if (isComplexityRouterModel) {
       const targets = buildComplexityRouterTestTargets(localModelData ?? modelData);
@@ -492,7 +490,6 @@ export default function ModelInfoView({
   };
 
   const handleDelete = async () => {
-    
     try {
       setDeleteLoading(true);
       if (!accessToken) return;

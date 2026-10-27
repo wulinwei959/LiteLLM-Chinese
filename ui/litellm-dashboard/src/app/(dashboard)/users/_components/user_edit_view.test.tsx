@@ -616,9 +616,7 @@ describe("UserEditView", () => {
       }
       fireEvent.submit(form);
 
-      expect(
-        await screen.findByText("请输入非负整数，或留空表示无限制"),
-      ).toBeInTheDocument();
+      expect(await screen.findByText("请输入非负整数，或留空表示无限制")).toBeInTheDocument();
       expect(onSubmit).not.toHaveBeenCalled();
     });
 
