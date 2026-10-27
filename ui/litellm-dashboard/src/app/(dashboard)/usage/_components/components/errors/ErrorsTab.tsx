@@ -25,6 +25,7 @@ import {
   type ErrorEntityKind,
   type RequestErrorActivity,
 } from "./errorsData";
+import { useTranslations } from "next-intl";
 
 interface ErrorsTabProps {
   activity: RequestErrorActivity | null;

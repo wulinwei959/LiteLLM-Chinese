@@ -8,6 +8,7 @@ import { ARIA_AGENT_LABEL } from "./aria-brand";
 import { exportAriaAnswer } from "./answerExport";
 import { UsageAnswerChart } from "./UsageAnswerChart";
 import type { UsageChart } from "./usageChart";
+import { useTranslations } from "next-intl";
 
 export function AriaAnswer({
   message,

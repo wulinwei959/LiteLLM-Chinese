@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TriangleAlert } from "lucide-react";
 import * as React from "react";
+import { useTranslations } from "next-intl";
 
 interface ErrorStateProps {
   title?: string;

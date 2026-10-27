@@ -2,6 +2,7 @@ import { BarChart } from "@/components/shared/charts/bar_chart";
 import { LineChart } from "@/components/shared/charts/line_chart";
 import { STACKED_USAGE_PALETTE } from "@/components/shared/charts/StackedUsageChart";
 import { formatUsageChartValue, type UsageChart } from "./usageChart";
+import { useTranslations } from "next-intl";
 
 export function UsageAnswerChart({ chart }: { chart: UsageChart }) {
   const formatValue = (value: number) => formatUsageChartValue(value, chart.unit);

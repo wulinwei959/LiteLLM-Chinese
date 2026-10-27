@@ -25,6 +25,7 @@ import { modelColorMap, formatCompact, formatUsd, overviewTotals } from "./overv
 import { reconciledTokenBreakdown } from "./overview/tokenBreakdown";
 import { Panel, Stat } from "./overview/Primitives";
 import { AgentMark } from "./overview/TopAgents";
+import { useTranslations } from "next-intl";
 
 interface ClientUsagePanelProps {
   client: UsageClient;
@@ -80,6 +81,10 @@ export default function ClientUsagePanel({
   summaryFailed = false,
   onRetry,
 }: ClientUsagePanelProps) {
+  const tUsageUseractivityColumn = useTranslations("usage.userActivity.column");
+  const tVirtualkeysColumns = useTranslations("virtualKeys.columns");
+  const tUsageTeamuserspend = useTranslations("usage.teamUserSpend");
+  const tSharedcomponents = useTranslations("sharedComponents");
   const label = client === "claude-desktop" ? "Claude Desktop" : "Claude Code";
   const scopedRequest = Boolean(userId || teamId) && !accessError;
   const personRequest = {
@@ -198,7 +203,7 @@ export default function ClientUsagePanel({
               </label>
               <SearchSelect
                 id="client-usage-member"
-                aria-label="Team member"
+                aria-label={tSharedcomponents("scopeTeamMember")}
                 value={userId ? `user:${userId}` : "all"}
                 options={[
                   { value: "all", label: "All members" },
@@ -257,9 +262,9 @@ export default function ClientUsagePanel({
           {ready && summary && (
             <>
               <div className="grid grid-cols-3 divide-x overflow-hidden rounded-xl border bg-card py-4">
-                <SummaryStat label="Spend" value={formatUsd(summary.spend)} />
-                <SummaryStat label="Total tokens" value={formatCompact(summary.tokens)} />
-                <SummaryStat label="Requests" value={summary.requests.toLocaleString()} />
+                <SummaryStat label={tVirtualkeysColumns("spend")} value={formatUsd(summary.spend)} />
+                <SummaryStat label={tUsageUseractivityColumn("totalTokens")} value={formatCompact(summary.tokens)} />
+                <SummaryStat label={tUsageTeamuserspend("requests")} value={summary.requests.toLocaleString()} />
               </div>
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">

@@ -1,5 +1,6 @@
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { parseUsageClient, UsageClient } from "./overview/agentCatalog";
+import { useTranslations } from "next-intl";
 
 const CLIENT_OPTIONS = [
   { value: UsageClient.ClaudeDesktop, label: "Claude Desktop" },
