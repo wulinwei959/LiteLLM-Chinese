@@ -5603,7 +5603,8 @@
     "inThisView": "在本视图中。",
     "inThisDateRange": "在本时间范围内",
     "overviewTab": "概览",
-    "errorsTab": "错误"
+    "errorsTab": "错误",
+    "exportUsageData": "导出用量数据"
   },
   "logs": {
     "detail": {

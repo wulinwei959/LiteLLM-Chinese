@@ -5603,7 +5603,8 @@
     "inThisView": "in this view.",
     "inThisDateRange": "in this date range",
     "overviewTab": "Overview",
-    "errorsTab": "Errors"
+    "errorsTab": "Errors",
+    "exportUsageData": "Export Usage Data"
   },
   "logs": {
     "detail": {

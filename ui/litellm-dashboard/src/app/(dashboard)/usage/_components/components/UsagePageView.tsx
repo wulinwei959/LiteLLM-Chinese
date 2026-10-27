@@ -851,11 +851,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
         onExport={(exportType, format) =>
           dailyActivityRequest
             ? ENTITY_API.user.exportRows(dailyActivityRequest, exportType, format)
-            : Promise.reject(new Error("{t("missingTokenOrRange")}"))
+            : Promise.reject(new Error(t("missingTokenOrRange")))
         }
         dateRange={dateValue}
         selectedFilters={[]}
-        customTitle="Export Usage Data"
+        customTitle={t("exportUsageData")}
       />
     </div>
   );
