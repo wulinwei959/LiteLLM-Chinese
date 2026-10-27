@@ -5280,7 +5280,8 @@
       "successful": "Successful",
       "failed": "Failed",
       "tokens": "Tokens",
-      "attributionHint": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
+      "attributionHint": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
+      "attributionNote": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
     },
     "old": {
       "title": "Usage",
@@ -5548,7 +5549,15 @@
       "whatCountsTowardTokens": "What counts toward total tokens?",
       "inputTokens": "Input tokens",
       "outputTokens": "Output tokens",
-      "viewUserRecord": "View user record"
+      "viewUserRecord": "View user record",
+      "clientSubsetNote": "A client may show a different subset of tokens. Compare the same person, client and time range before comparing counts.",
+      "failed": "failed",
+      "inputIncludesCacheNote": "Input includes cache reads and writes. Cached input has separate pricing, so total tokens alone cannot explain the cost.",
+      "ok": "ok",
+      "viewTokenBreakdown": "View token breakdown",
+      "tokensSuffix": "tokens",
+      "viewActivity": "View activity",
+      "by": "by"
     },
     "userActivity": {
       "error": {
@@ -5604,7 +5613,11 @@
     "inThisDateRange": "in this date range",
     "overviewTab": "Overview",
     "errorsTab": "Errors",
-    "exportUsageData": "Export Usage Data"
+    "exportUsageData": "Export Usage Data",
+    "topStackedSuffix": ", top 8 stacked",
+    "by": "by",
+    "spendOverview": "Spend Overview",
+    "trackCostPer": "Track cost per"
   },
   "logs": {
     "detail": {
@@ -13581,7 +13594,16 @@
     "aiUsageAssistant": "Your AI usage assistant",
     "yourQuestion": "Your question",
     "greeting": "Hi, I’m Aria.",
-    "suggestedQuestions": "Suggested questions"
+    "suggestedQuestions": "Suggested questions",
+    "charactersSuffix": "characters.",
+    "modelsLoadFailed": "Could not load models.",
+    "messageLimitPrefix": "Keep your message within",
+    "openConversation": "Open conversation",
+    "retry": "Retry",
+    "startOver": "Start over",
+    "gatewayAddressNote": "This gateway uses a different address. Aria will send your existing session credential to the address shown above.",
+    "cancel": "Cancel",
+    "details": "Details"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "Delete alias {name}",
@@ -13915,7 +13937,9 @@
     "to": "To:",
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
-    "selectDateRange": "Select date range"
+    "selectDateRange": "Select date range",
+    "apply": "Apply",
+    "cancel": "Cancel"
   },
   "objectPermissions": {
     "title": "Object Permissions",
@@ -15020,5 +15044,8 @@
       "virtualKeyIssued": "Virtual key issued",
       "modelsAvailable": "models available through LiteLLM"
     }
+  },
+  "clientUsage": {
+    "viewClientUsage": "View client usage"
   }
 }

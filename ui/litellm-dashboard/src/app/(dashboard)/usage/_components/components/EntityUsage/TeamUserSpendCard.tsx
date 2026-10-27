@@ -96,13 +96,11 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
           onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data), teamUserSpendCsvFileName(data))}
         >
           <Download />
-          Download CSV
+          {t("downloadCsv")}
         </Button>
       }
     >
-      <p className="mb-3 text-xs text-muted-foreground">
-        Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key
-      </p>
+      <p className="mb-3 text-xs text-muted-foreground">{t("attributionNote")}</p>
       <DataTable
         columns={columns}
         data={rows}

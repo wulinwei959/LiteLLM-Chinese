@@ -5280,7 +5280,8 @@
       "successful": "成功",
       "failed": "失败",
       "tokens": "Token",
-      "attributionHint": "按请求归因自花费日志，因此包含不使用虚拟密钥的 JWT/SSO 流量"
+      "attributionHint": "按请求归因自花费日志，因此包含不使用虚拟密钥的 JWT/SSO 流量",
+      "attributionNote": "按请求从花费日志归属，因此包含不使用虚拟密钥的 JWT/SSO 流量"
     },
     "old": {
       "title": "用量",
@@ -5548,7 +5549,15 @@
       "whatCountsTowardTokens": "总 token 都算了什么？",
       "inputTokens": "输入 token",
       "outputTokens": "输出 token",
-      "viewUserRecord": "查看用户记录"
+      "viewUserRecord": "查看用户记录",
+      "clientSubsetNote": "客户端可能只显示部分 token。比较数量前，请核对同一人员、客户端与时间范围。",
+      "failed": "失败",
+      "inputIncludesCacheNote": "输入包含缓存读取与写入。缓存输入单独计价，单看总 token 无法解释成本。",
+      "ok": "成功",
+      "viewTokenBreakdown": "查看 token 明细",
+      "tokensSuffix": "token",
+      "viewActivity": "查看活动",
+      "by": "按"
     },
     "userActivity": {
       "error": {
@@ -5604,7 +5613,11 @@
     "inThisDateRange": "在本时间范围内",
     "overviewTab": "概览",
     "errorsTab": "错误",
-    "exportUsageData": "导出用量数据"
+    "exportUsageData": "导出用量数据",
+    "topStackedSuffix": "，前 8 项堆叠",
+    "by": "按",
+    "spendOverview": "花费概览",
+    "trackCostPer": "跟踪成本，按"
   },
   "logs": {
     "detail": {
@@ -13577,7 +13590,16 @@
     "aiUsageAssistant": "你的 AI 用量助手",
     "yourQuestion": "你的问题",
     "greeting": "你好，我是 Aria。",
-    "suggestedQuestions": "建议问题"
+    "suggestedQuestions": "建议问题",
+    "charactersSuffix": "个字符。",
+    "modelsLoadFailed": "无法加载模型。",
+    "messageLimitPrefix": "消息请控制在",
+    "openConversation": "打开对话",
+    "retry": "重试",
+    "startOver": "重新开始",
+    "gatewayAddressNote": "该网关使用了不同的地址。Aria 会把现有的会话凭据发送到上面显示的地址。",
+    "cancel": "取消",
+    "details": "详情"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "删除别名 {name}",
@@ -13911,7 +13933,9 @@
     "to": "至：",
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
-    "selectDateRange": "选择日期范围"
+    "selectDateRange": "选择日期范围",
+    "apply": "应用",
+    "cancel": "取消"
   },
   "objectPermissions": {
     "title": "对象权限",
@@ -15018,5 +15042,8 @@
       "virtualKeyIssued": "已签发的虚拟密钥",
       "modelsAvailable": "个模型可通过 LiteLLM 使用"
     }
+  },
+  "clientUsage": {
+    "viewClientUsage": "查看客户端用量"
   }
 }

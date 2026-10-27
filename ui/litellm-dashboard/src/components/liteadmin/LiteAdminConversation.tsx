@@ -69,7 +69,9 @@ export function LiteAdminConversation({
                     <AriaAnswer message={entry.message} chart={entry.chart} question={entry.question} />
                   ) : (
                     <article aria-label={t("yourQuestion")} className="space-y-2">
-                      <p className="text-right text-xs font-medium text-muted-foreground">{tVirtualKeys("createForm.ownerYou")}</p>
+                      <p className="text-right text-xs font-medium text-muted-foreground">
+                        {tVirtualKeys("createForm.ownerYou")}
+                      </p>
                       <ChatMessageContent
                         message={entry.message}
                         allowImages={false}
@@ -193,7 +195,7 @@ function ActionCard({
           <Collapsible>
             <CollapsibleTrigger render={<Button variant="ghost" size="xs" />}>
               <ChevronDown className="size-3" />
-              Details
+              {t("details")}
             </CollapsibleTrigger>
             <CollapsibleContent>{fields}</CollapsibleContent>
           </Collapsible>
@@ -216,7 +218,7 @@ function ActionCard({
       {review && (
         <CardFooter className="justify-end gap-2">
           <Button variant="outline" onClick={() => answer(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button variant={entry.action.destructive ? "destructive" : "default"} onClick={() => answer(true)}>
             {t("confirmChange")}

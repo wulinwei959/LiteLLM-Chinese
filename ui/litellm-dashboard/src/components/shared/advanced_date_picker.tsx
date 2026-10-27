@@ -335,7 +335,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {/* Start date */}
                   <div className={compact ? "min-w-0" : undefined}>
                     <label htmlFor={`${inputId}-start`} className="text-sm text-foreground mb-1 block">
-                      Start date
+                      {t("startDate")}
                     </label>
                     <input
                       id={`${inputId}-start`}
@@ -358,7 +358,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {/* End date */}
                   <div className={compact ? "min-w-0" : undefined}>
                     <label htmlFor={`${inputId}-end`} className="text-sm text-foreground mb-1 block">
-                      End date
+                      {t("endDate")}
                     </label>
                     <input
                       id={`${inputId}-end`}
@@ -418,10 +418,10 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                 <div className={compact ? "flex justify-end px-3 pb-3" : "absolute bottom-4 right-4"}>
                   <div className="flex gap-2">
                     <Button variant="secondary" onClick={handleCancel}>
-                      Cancel
+                      {t("cancel")}
                     </Button>
                     <Button onClick={handleApply} disabled={!tempValue.from || !tempValue.to || !validation.isValid}>
-                      Apply
+                      {t("apply")}
                     </Button>
                   </div>
                 </div>

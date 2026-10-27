@@ -14,10 +14,11 @@ export default function ClientUsageSelect({
   value: UsageClient | null;
   onChange: (client: UsageClient | null) => void;
 }) {
+  const t = useTranslations("clientUsage");
   return (
     <SearchSelect
-      aria-label="View client usage"
-      placeholder="View client usage"
+      aria-label={t("viewClientUsage")}
+      placeholder={t("viewClientUsage")}
       value={value}
       options={CLIENT_OPTIONS}
       onValueChange={(client) => onChange(parseUsageClient(client))}

@@ -42,11 +42,15 @@ export default function UsageStatStrip({
         />
       </StatCell>
       <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-14" />}>
-        <Stat label={t("statStrip.totalRequests")} value={totals.requests.toLocaleString()} pending={requestCountsPending} />
+        <Stat
+          label={t("statStrip.totalRequests")}
+          value={totals.requests.toLocaleString()}
+          pending={requestCountsPending}
+        />
         {!requestCountsPending && (
           <div className="mt-0.5 flex gap-3 text-xs leading-4 text-muted-foreground">
             <span>
-              <span className="text-success tabular-nums">{totals.successful.toLocaleString()}</span> ok
+              <span className="text-success tabular-nums">{totals.successful.toLocaleString()}</span> {t("ok")}
             </span>
             <span>
               <span className={totals.failed > 0 ? "text-destructive tabular-nums" : "tabular-nums"}>
@@ -68,7 +72,7 @@ export default function UsageStatStrip({
         {!loading && (
           <Popover>
             <PopoverTrigger className="mt-1 text-xs font-medium text-primary underline-offset-4 hover:underline">
-              View token breakdown
+              {t("viewTokenBreakdown")}
             </PopoverTrigger>
             <PopoverContent side="right" align="start" className="w-80 gap-3">
               <PopoverTitle>{t("whatCountsTowardTokens")}</PopoverTitle>
@@ -108,7 +112,11 @@ export default function UsageStatStrip({
       </StatCell>
       <StatCell>
         <div className="grid gap-3">
-          <Stat label={t("statStrip.avgCostPerRequest")} value={formatUsd(totals.avgCostPerRequest, 4)} pending={loading} />
+          <Stat
+            label={t("statStrip.avgCostPerRequest")}
+            value={formatUsd(totals.avgCostPerRequest, 4)}
+            pending={loading}
+          />
           <Stat
             label={t("statStrip.avgLatency")}
             value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}

@@ -163,7 +163,7 @@ export function LiteAdminHome() {
         </div>
         <Button variant="ghost" size="sm" onClick={show} className="text-muted-foreground">
           <History className="size-3.5" />
-          Open conversation
+          {t("openConversation")}
         </Button>
       </div>
       <div ref={setHomeContainer} />
@@ -284,7 +284,7 @@ function Destination({
             <Alert variant="destructive">
               <AlertDescription>{target?.error || "Could not load gateway settings."}</AlertDescription>
               <Button variant="link" onClick={retry}>
-                Retry
+                {t("retry")}
               </Button>
             </Alert>
           )}
@@ -374,6 +374,7 @@ function useForegroundReviewFocus(
 }
 
 function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; open: boolean; close: () => void }) {
+  const t = useTranslations("liteAdmin");
   const state = useContext(LiteAdminContext);
   const chat = useLiteAdmin(session);
   const [input, setInput] = useState("");
@@ -460,7 +461,7 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
           className="text-muted-foreground"
         >
           <RotateCcw className="size-3.5" />
-          Start over
+          {t("startOver")}
         </Button>
       </PanelHeader>
       <LiteAdminConversation

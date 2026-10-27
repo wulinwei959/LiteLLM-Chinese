@@ -105,7 +105,7 @@ function AgentItem({
         <span className="block truncate text-sm font-medium text-foreground">{agent.label}</span>
         {openRow ? (
           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground">
-            View activity
+            {t("viewActivity")}
             <ArrowRight aria-hidden="true" className="size-3 transition-transform group-hover:translate-x-0.5" />
           </span>
         ) : (
