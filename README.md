@@ -2,7 +2,9 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 的活动远端是 GitHub 公开仓库（LAN Gitea 已弃用），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
+**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 的主远端是 GitHub 公开仓库，LAN Gitea 作后备镜像同步（双推），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
+**2026-10-27 更新**：五个修复分支已合并进 main（PR #8）。随后 main 加了 ruleset 硬保护，必须走 PR 且 `lint passed`、`unit passed`、`osv-scan` 三项全绿才能合并，禁止直推与强推。依赖安全方面把 `requires-python` 提到 `>=3.11`，据此 filelock 升到 4.2.x、pillow 升到 13、dashboard 的 next 升到 16.4.1；opentelemetry-api 与 dev-only 的 @azure/msal-node 因上游 pin 限制，用带过期时间的 osv 豁免。汉化范围也就此定边界：技术示例（URL、JSON、URN、正则、单位符号）保留英文，日期/数字/金额的 locale 格式化不再作为收尾目标继续推进，个别位置仍按 en-US 显示属有意不跟进
+
 上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
 
 ## 背景
@@ -13,7 +15,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 
 | 项 | 说明 |
 |---|---|
-| 翻什么 | 用户能看见的一切：界面文案、toast 标题与正文、表单校验消息、可访问名称（label、aria、alt）、日期时间与数字货币的格式 |
+| 翻什么 | 用户能看见的一切：界面文案、toast 标题与正文、表单校验消息、可访问名称（label、aria、alt）；日期/数字/金额格式按 2026-10-27 的范围边界未纳入收尾 |
 | 不翻什么 | 机读面与语料。导出 CSV 的列头与文件名、MCP 协议能力名（`prompts`、`resources`）与方法名、后端枚举取值、代码与 curl 示例、URL 与模型名这类格式示例、品牌与产品名 |
 | 默认语言 | 仍是英文（`DEFAULT_UI_LOCALE = "en"`），中文由浏览器语言或用户选择决定，存量英文用户与上游测试的默认断言不受影响 |
 
@@ -22,7 +24,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 采用 next-intl 的 "without i18n routing" 模式，三个理由
 
 1. 面板是 Next.js 静态导出（`output: "export"`），由 Python proxy 托管在 `/ui/` 路径下，Next.js 官方的 i18n 路由与静态导出对不上，URL 带 locale 前缀的方案被排除
-2. next-intl 支持纯客户端的 locale 切换，且活跃适配当前锁定的版本（`next@16.3.8`、`next-intl@4.14.6`、`react@19.2.8`）
+2. next-intl 支持纯客户端的 locale 切换，且活跃适配当前锁定的版本（`next@16.4.1`、`next-intl@4.14.6`、`react@19.2.8`）
 3. 自带 ICU 消息格式，并能把 `en.json` 的形状接进类型系统，key 打错在编译期就报错
 
 日期与数字没有用 next-intl 的 `useFormatter()`，因为它是 Hook，而格式化需求里相当一部分落在拿不到 React 上下文的纯模块上（`licenseUtils.formatExpiryDate`、列定义里的单元格渲染器这类）。所以另起一层 `src/lib/i18n/format.ts`。代价是它不响应切换本身，调用方要在切换后重新渲染，这是有意的取舍。两个细节：货币必须带 `currencyDisplay: "narrowSymbol"`，否则中文下渲染成 `US$1,234.56`；中文紧凑记法在万位才缩写（`6万`，而 6000 不缩），属数量词习惯不是缺陷
