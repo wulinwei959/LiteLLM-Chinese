@@ -1,12 +1,8 @@
-import { useTranslations } from "next-intl";
-
 export type ModelViewType = "groups" | "individual";
 
-type ModelViewLabelKey = "publicName" | "litellmName";
-
-const MODEL_VIEW_OPTIONS: readonly { value: ModelViewType; labelKey: ModelViewLabelKey }[] = [
-  { value: "groups", labelKey: "publicName" },
-  { value: "individual", labelKey: "litellmName" },
+const MODEL_VIEW_OPTIONS: readonly { value: ModelViewType; label: string }[] = [
+  { value: "groups", label: "Public Model Name" },
+  { value: "individual", label: "Litellm Model Name" },
 ];
 
 interface ModelViewToggleProps {
@@ -15,8 +11,6 @@ interface ModelViewToggleProps {
 }
 
 export default function ModelViewToggle({ value, onChange }: ModelViewToggleProps) {
-  const t = useTranslations("usage.modelViewToggle");
-
   return (
     <div className="flex bg-muted rounded-lg p-1">
       {MODEL_VIEW_OPTIONS.map((option) => (
@@ -27,7 +21,7 @@ export default function ModelViewToggle({ value, onChange }: ModelViewToggleProp
           }`}
           onClick={() => onChange(option.value)}
         >
-          {t(option.labelKey)}
+          {option.label}
         </button>
       ))}
     </div>

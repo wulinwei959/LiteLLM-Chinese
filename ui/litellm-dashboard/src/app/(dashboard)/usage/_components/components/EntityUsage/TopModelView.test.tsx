@@ -1,5 +1,4 @@
-import { screen } from "@testing-library/react";
-import { renderWithProviders as render } from "@/../tests/test-utils";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import TopModelView from "./TopModelView";
@@ -21,26 +20,26 @@ describe("TopModelView", () => {
 
   it("should render", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByText("表格视图")).toBeInTheDocument();
+    expect(screen.getByText("Table View")).toBeInTheDocument();
   });
 
   it("should display table view button", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByText("表格视图")).toBeInTheDocument();
+    expect(screen.getByText("Table View")).toBeInTheDocument();
   });
 
   it("should display chart view button", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByText("图表视图")).toBeInTheDocument();
+    expect(screen.getByText("Chart View")).toBeInTheDocument();
   });
 
   it("should display all table column headers", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByText("模型")).toBeInTheDocument();
-    expect(screen.getByText("花费（美元）")).toBeInTheDocument();
-    expect(screen.getByText("成功")).toBeInTheDocument();
-    expect(screen.getByText("失败")).toBeInTheDocument();
-    expect(screen.getByText("Token 数")).toBeInTheDocument();
+    expect(screen.getByText("Model")).toBeInTheDocument();
+    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Successful")).toBeInTheDocument();
+    expect(screen.getByText("Failed")).toBeInTheDocument();
+    expect(screen.getByText("Tokens")).toBeInTheDocument();
   });
 
   it("should display model data in table view", () => {
@@ -78,7 +77,7 @@ describe("TopModelView", () => {
     );
 
     expect(showsChart(container)).toBe(false);
-    await clickControl(user, "图表视图");
+    await clickControl(user, "Chart View");
 
     expect(showsChart(container)).toBe(true);
     expect(screen.queryByText("Spend (USD)")).not.toBeInTheDocument();
@@ -90,11 +89,11 @@ describe("TopModelView", () => {
       <TopModelView topModels={oneModel} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />,
     );
 
-    await clickControl(user, "图表视图");
-    await clickControl(user, "表格视图");
+    await clickControl(user, "Chart View");
+    await clickControl(user, "Table View");
 
     expect(showsChart(container)).toBe(false);
-    expect(screen.getByText("花费（美元）")).toBeInTheDocument();
+    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
   });
 
   it("renders one brand-blue bar per model with model names on the axis in chart view", async () => {
@@ -122,7 +121,7 @@ describe("TopModelView", () => {
       />,
     );
 
-    await clickControl(user, "图表视图");
+    await clickControl(user, "Chart View");
 
     const bars = container.querySelectorAll("path.recharts-rectangle");
     expect(bars).toHaveLength(2);
@@ -285,8 +284,8 @@ describe("TopModelView", () => {
 
   it("should handle empty model list", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
-    expect(screen.getByText("模型")).toBeInTheDocument();
-    expect(screen.getByText("花费（美元）")).toBeInTheDocument();
+    expect(screen.getByText("Model")).toBeInTheDocument();
+    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
   });
 
   it("should display dash for missing model key", () => {

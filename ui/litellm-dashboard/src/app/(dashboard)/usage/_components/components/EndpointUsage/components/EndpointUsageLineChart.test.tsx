@@ -51,7 +51,7 @@ describe("EndpointUsageLineChart", () => {
   it("renders the title", () => {
     renderWithProviders(<EndpointUsageLineChart dailyData={dailyData} />);
 
-    expect(screen.getByText("端点用量趋势")).toBeInTheDocument();
+    expect(screen.getByText("Endpoint Usage Trends")).toBeInTheDocument();
   });
 
   it("renders one line per endpoint with the stacked usage palette strokes", () => {
@@ -79,7 +79,7 @@ describe("EndpointUsageLineChart", () => {
     const tickLabels = Array.from(container.querySelectorAll(".recharts-xAxis-tick-labels text")).map(
       (tick) => tick.textContent,
     );
-    expect(tickLabels).toEqual(["6月1日", "6月2日", "6月3日"]);
+    expect(tickLabels).toEqual(["Jun 1", "Jun 2", "Jun 3"]);
   });
 
   it("formats y axis ticks with toLocaleString", () => {
@@ -98,7 +98,7 @@ describe("EndpointUsageLineChart", () => {
   it("renders an empty chart without lines when dailyData is absent", () => {
     const { container } = renderWithProviders(<EndpointUsageLineChart />);
 
-    expect(screen.getByText("端点用量趋势")).toBeInTheDocument();
+    expect(screen.getByText("Endpoint Usage Trends")).toBeInTheDocument();
     expect(container.querySelectorAll("path.recharts-line-curve")).toHaveLength(0);
   });
 });

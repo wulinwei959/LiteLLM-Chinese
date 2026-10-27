@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { LineChart, STACKED_USAGE_PALETTE, StackedUsageChart } from "@/components/shared/charts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,20 +12,20 @@ import { uiHref } from "@/utils/uiHref";
 import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented, Stat } from "../overview/Primitives";
 import {
   ERROR_ENTITY_KINDS,
+  ERROR_ENTITY_LABEL,
   entityRows,
   errorSeries,
   type ErrorRateView,
   type ErrorSeries,
-  errorRateViewOptions,
+  ERROR_RATE_VIEW_OPTIONS,
   rateByStatusRows,
   errorSummary,
   formatRate,
   statusCodeRows,
   type ErrorEntityKind,
   type RequestErrorActivity,
-  errorEntityLabel,
-  type ErrorsTranslator,
 } from "./errorsData";
+import { useTranslations } from "next-intl";
 
 interface ErrorsTabProps {
   activity: RequestErrorActivity | null;
@@ -34,6 +33,8 @@ interface ErrorsTabProps {
   failed: boolean;
   userScoped?: boolean;
 }
+
+const ENTITY_OPTIONS = ERROR_ENTITY_KINDS.map((kind) => ({ value: kind, label: ERROR_ENTITY_LABEL[kind].plural }));
 
 const shortDate = (iso: string): string =>
   new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
@@ -76,31 +77,21 @@ function PanelBody({
   return <>{children}</>;
 }
 
-function rateChartEmpty(
-  rateView: ErrorRateView,
-  series: ErrorSeries,
-  noTraffic: boolean,
-  t: ErrorsTranslator,
-): string | null {
-  if (noTraffic || series.rows.length === 0) return t("empty.noRequests");
-  if (rateView === "status" && series.codes.length === 0) return t("empty.noFailedRequests");
+function rateChartEmpty(rateView: ErrorRateView, series: ErrorSeries, noTraffic: boolean): string | null {
+  if (noTraffic || series.rows.length === 0) return "No requests in this range";
+  if (rateView === "status" && series.codes.length === 0) return "No failed requests in this range";
   return null;
 }
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
   const t = useTranslations("usage.errors");
-  const tc = useTranslations("common");
+
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
-  const entityOptions = useMemo(
-    () =>
-      ERROR_ENTITY_KINDS.map((entityKind) => ({ value: entityKind, label: errorEntityLabel(entityKind, t).plural })),
-    [t],
-  );
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
-  const series = useMemo(() => (activity ? errorSeries(activity, t) : { rows: [], codes: [] }), [activity, t]);
-  const statusRows = useMemo(() => (activity ? statusCodeRows(activity, t) : []), [activity, t]);
-  const rows = useMemo(() => (activity ? entityRows(activity, kind, t) : []), [activity, kind, t]);
+  const series = useMemo(() => (activity ? errorSeries(activity) : { rows: [], codes: [] }), [activity]);
+  const statusRows = useMemo(() => (activity ? statusCodeRows(activity) : []), [activity]);
+  const rows = useMemo(() => (activity ? entityRows(activity, kind) : []), [activity, kind]);
   const failedByDate = useMemo(() => new Map(series.rows.map((row) => [row.date, row.failed])), [series]);
   const rateRows = useMemo(
     () =>
@@ -111,8 +102,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     [series, rateView],
   );
   const noTraffic = summary !== null && summary.requests === 0;
-  const rateEmpty = rateChartEmpty(rateView, series, noTraffic, t);
-  const entity = errorEntityLabel(kind, t);
+  const rateEmpty = rateChartEmpty(rateView, series, noTraffic);
 
   if (userScoped) {
     return (
@@ -128,7 +118,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
       <Alert variant="destructive" role="alert">
         <AlertCircle />
         <AlertTitle>{t("alert.loadFailed.title")}</AlertTitle>
-        <AlertDescription>{t("alert.loadFailed.body")}</AlertDescription>
+        <AlertDescription>
+          The proxy did not answer the failed-request query. Reload the page to try again.
+        </AlertDescription>
       </Alert>
     );
   }
@@ -142,11 +134,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             value={summary ? formatRate(summary.rate) : null}
             pending={loading}
             tone={summary && summary.failed > 0 ? "destructive" : undefined}
-            hint={
-              summary
-                ? t("stat.failedOfRequests", { failed: count(summary.failed), requests: count(summary.requests) })
-                : undefined
-            }
+            hint={summary ? `${count(summary.failed)} of ${count(summary.requests)} requests` : undefined}
           />
         </StatCell>
         <StatCell label={t("stat.failedRequests")}>
@@ -162,7 +150,11 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           <Stat label={t("stat.rateLimited")} value={summary ? count(summary.rateLimited) : null} pending={loading} />
         </StatCell>
         <StatCell label={t("stat.authFailures")}>
-          <Stat label={t("stat.authFailures")} value={summary ? count(summary.authFailures) : null} pending={loading} />
+          <Stat
+            label={t("stat.authFailures")}
+            value={summary ? count(summary.authFailures) : null}
+            pending={loading}
+          />
         </StatCell>
       </div>
 
@@ -170,14 +162,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
         <Panel
           title={t("panel.errorRate.title")}
           subtitle={t("panel.errorRate.subtitle")}
-          action={
-            <Segmented
-              label={t("control.show")}
-              value={rateView}
-              options={errorRateViewOptions(t)}
-              onChange={setRateView}
-            />
-          }
+          action={<Segmented label={t("control.show")} value={rateView} options={ERROR_RATE_VIEW_OPTIONS} onChange={setRateView} />}
         >
           <PanelBody loading={loading} height="h-64" empty={rateEmpty}>
             <LineChart
@@ -200,7 +185,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           <PanelBody
             loading={loading}
             height="h-64"
-            empty={series.rows.every((row) => row.failed === 0) ? t("empty.noFailedRequests") : null}
+            empty={series.rows.every((row) => row.failed === 0) ? "No failed requests in this range" : null}
           >
             <StackedUsageChart
               data={series.rows}
@@ -209,7 +194,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               xLabel={shortDate}
               format={count}
               totalFor={(date) => failedByDate.get(date)}
-              totalLabel={tc("failed")}
+              totalLabel="failed"
               className="h-64"
             />
             <ul
@@ -232,13 +217,13 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
       </div>
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <Panel title={t("panel.byStatusCode.title")} subtitle={t("panel.byStatusCode.subtitle")}>
+        <Panel title={t("view.byStatusCode")} subtitle={t("panel.byStatusCode.subtitle")}>
           <PanelBody
             loading={loading}
             height="h-48"
-            empty={statusRows.length === 0 ? t("empty.noFailedRequests") : null}
+            empty={statusRows.length === 0 ? "No failed requests in this range" : null}
           >
-            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("chart.failedByStatusAria")}>
+            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("panel.failedByStatus.title")}>
               {statusRows.map((row) => (
                 <li
                   key={row.status_code}
@@ -263,20 +248,24 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
         <Panel
           title={t("panel.byIdentity.title")}
           subtitle={t("panel.byIdentity.subtitle")}
-          action={<Segmented label={t("control.groupBy")} value={kind} options={entityOptions} onChange={setKind} />}
+          action={<Segmented label={t("control.groupBy")} value={kind} options={ENTITY_OPTIONS} onChange={setKind} />}
         >
           <PanelBody
             loading={loading}
             height="h-48"
-            empty={rows.length === 0 ? t("empty.noEntitiesWithFailures", { entity: entity.plural }) : null}
+            empty={
+              rows.length === 0
+                ? `No ${ERROR_ENTITY_LABEL[kind].plural.toLowerCase()} with failed requests in this range`
+                : null
+            }
           >
-            <Table aria-label={t("chart.rankedByFailedAria", { entity: entity.plural })}>
+            <Table aria-label={`${ERROR_ENTITY_LABEL[kind].plural} ranked by failed requests`}>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{entity.singular}</TableHead>
+                  <TableHead>{ERROR_ENTITY_LABEL[kind].singular}</TableHead>
                   <TableHead className="text-right">{t("column.requests")}</TableHead>
                   <TableHead className="text-right">{t("column.failed")}</TableHead>
-                  <TableHead>{t("column.errorRate")}</TableHead>
+                  <TableHead>{t("stat.errorRate")}</TableHead>
                   <TableHead>{t("column.topStatus")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -306,7 +295,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           </PanelBody>
           <div className={cn("flex justify-end pb-4 pt-2", PANEL_INSET_X)}>
             <Button variant="outline" size="sm" nativeButton={false} render={<Link href={uiHref("logs")} />}>
-              {t("action.inspectInLogs")}
+              Inspect failed requests in Logs
               <ArrowUpRight />
             </Button>
           </div>

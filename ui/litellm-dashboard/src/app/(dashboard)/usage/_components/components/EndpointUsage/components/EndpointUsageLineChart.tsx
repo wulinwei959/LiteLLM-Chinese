@@ -1,12 +1,9 @@
-"use client";
-
 import { useMemo } from "react";
-import { stackedUsageColor } from "@/components/shared/charts";
-import { useTranslations } from "next-intl";
-import { LineChart } from "@/components/shared/charts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartLine } from "lucide-react";
+import { LineChart, stackedUsageColor } from "@/components/shared/charts";
 import { DailyData } from "@/components/UsagePage/types";
-import { formatDate } from "@/lib/i18n/format";
+import { Panel } from "../../overview/Primitives";
+import { useTranslations } from "next-intl";
 
 interface EndpointUsageLineChartProps {
   dailyData?: { results: DailyData[] };
@@ -26,7 +23,7 @@ function transformDailyDataToChart(dailyData: DailyData[]): Array<Record<string,
 
   dailyData.forEach((day) => {
     const date = new Date(day.date);
-    const dateStr = formatDate(date, {
+    const dateStr = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
@@ -49,6 +46,7 @@ function transformDailyDataToChart(dailyData: DailyData[]): Array<Record<string,
 
 export function EndpointUsageLineChart({ dailyData }: EndpointUsageLineChartProps) {
   const t = useTranslations("usage.endpointCharts");
+
   const chartData = useMemo(() => {
     if (!dailyData?.results || dailyData.results.length === 0) {
       return [];
@@ -67,26 +65,21 @@ export function EndpointUsageLineChart({ dailyData }: EndpointUsageLineChartProp
   const colors = useMemo(() => categories.map((_, i) => stackedUsageColor(i)), [categories]);
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="text-base font-semibold">{t("trends")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <LineChart
-          className="h-80"
-          data={chartData}
-          index="date"
-          categories={categories}
-          colors={colors.slice(0, categories.length)}
-          valueFormatter={(value) => value.toLocaleString()}
-          showLegend={true}
-          showGridLines={true}
-          yAxisWidth={60}
-          connectNulls={true}
-          curveType="natural"
-        />
-      </CardContent>
-    </Card>
+    <Panel icon={ChartLine} title={t("trends")}>
+      <LineChart
+        className="h-64"
+        data={chartData}
+        index="date"
+        categories={categories}
+        colors={colors}
+        valueFormatter={(value) => value.toLocaleString()}
+        showLegend={true}
+        showGridLines={true}
+        yAxisWidth={56}
+        connectNulls={true}
+        curveType="monotone"
+      />
+    </Panel>
   );
 }
 

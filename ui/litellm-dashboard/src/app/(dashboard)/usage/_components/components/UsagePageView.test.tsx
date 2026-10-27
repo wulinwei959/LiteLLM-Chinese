@@ -5,11 +5,11 @@ import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
 import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { UrlUpdateEvent } from "nuqs/adapters/testing";
-import type { TagListResponse } from "@/components/tag_management/types";
-import { renderWithProviders } from "@/../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "@/../tests/test-utils";
 import { toast } from "@/lib/toast";
 import { processActivityData } from "@/components/activity_metrics";
 import type { Organization } from "@/components/networking";
@@ -18,40 +18,31 @@ import * as networking from "@/components/networking";
 import { STACKED_USAGE_PALETTE } from "@/components/shared/charts";
 import { OTHER_COLOR } from "./overview/overviewData";
 import UsagePage from "./UsagePageView";
-import { authorizedSession } from "@tests/mocks/authorizedSession";
-
-const SESSION_OVERRIDE_1 = {
-  token: "mock-token",
-  accessToken: "test-token",
-  userId: "user-123",
-  premiumUser: true,
-  disabledPersonalKeyCreation: false,
-};
-const SESSION_OVERRIDE_2 = {
-  token: "mock-token",
-  accessToken: "test-token",
-  userId: "user-123",
-  userRole: "internal_user",
-  premiumUser: true,
-  disabledPersonalKeyCreation: false,
-};
-const SESSION_OVERRIDE_4 = {
-  token: "mock-token",
-  accessToken: "test-token",
-  userId: "user-123",
-  userRole: "Internal User",
-  disabledPersonalKeyCreation: false,
-};
+import type ClientUsagePanel from "./ClientUsagePanel";
 
 const mockEntityUsageMounted = vi.hoisted(() => vi.fn());
+const mockClientUsagePanel = vi.hoisted(() => vi.fn());
+
+vi.mock("./ClientUsagePanel", () => ({
+  default: (props: ComponentProps<typeof ClientUsagePanel>) => {
+    mockClientUsagePanel(props);
+    return (
+      <section aria-label="Client usage panel">
+        <button onClick={() => props.onTeamChange?.("design")}>Select Design scope</button>
+        <button onClick={() => props.onUserChange("maya")}>Select Maya</button>
+        <button onClick={props.onClose}>Close client panel</button>
+      </section>
+    );
+  },
+}));
 
 // The Overview tab. The Key Activity tab stays mounted and carries its own spend-derived totals,
 // so assertions about the overview's request tiles are scoped here rather than to the whole page.
-const overview = () => within(screen.getByRole("tabpanel", { name: "概览" }));
+const overview = () => within(screen.getByRole("tabpanel", { name: "Overview" }));
 
 // The Total Requests stat cell: its label, the count, and the "N ok / N failed" line beneath it.
 const totalRequestsCell = (): HTMLElement => {
-  const cell = overview().getByText("总请求数").parentElement?.parentElement;
+  const cell = overview().getByText("Total Requests").parentElement?.parentElement;
   expect(cell).toBeTruthy();
   return cell as HTMLElement;
 };
@@ -181,7 +172,7 @@ vi.mock("./UsageViewSelect/UsageViewSelect", async (importOriginal) => {
       React.createElement("option", { value: "global" }, "Global Usage"),
       React.createElement("option", { value: "team" }, "Team Usage"),
       React.createElement("option", { value: "organization" }, "Organization Usage"),
-      React.createElement("option", { value: "customer" }, "客户用量"),
+      React.createElement("option", { value: "customer" }, "Customer Usage"),
       tagOption,
       React.createElement("option", { value: "agent" }, "Agent Usage"),
       React.createElement("option", { value: "user" }, "User Usage"),
@@ -248,8 +239,9 @@ vi.mock("@/components/EntityUsageExport", () => ({
   default: () => <div>Entity Usage Export Modal</div>,
 }));
 
-vi.mock("./UsageAIChatPanel", () => ({
-  default: () => <div data-testid="usage-ai-chat-panel">Usage AI Chat Panel</div>,
+vi.mock("@/components/liteadmin/LiteAdmin", () => ({
+  AriaUsageTrigger: () => <button aria-label="Open Aria Agent">Aria</button>,
+  AriaUsageComposer: () => <section aria-label="Ask Aria Agent">Shared Aria composer</section>,
 }));
 
 vi.mock("@/app/(dashboard)/hooks/customers/useCustomers", () => ({
@@ -361,7 +353,7 @@ describe("UsagePage", () => {
                 cache_creation_input_tokens: 0,
               },
               metadata: {
-                key_alias: "测试密钥",
+                key_alias: "Test Key",
                 tags: ["production"],
               },
             },
@@ -524,7 +516,24 @@ describe("UsagePage", () => {
   };
 
   beforeEach(() => {
-    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_1));
+    mockClientUsagePanel.mockClear();
+    vi.mocked(processActivityData).mockReset();
+    vi.mocked(processActivityData).mockImplementation((_data, key) => ({
+      [key]: modelActivity(`activity-source:${key}`),
+    }));
+    mockUseAuthorized.mockReturnValue({
+      ...nonAdminSession,
+      isLoading: false,
+      isAuthorized: true,
+      token: "mock-token",
+      accessToken: "test-token",
+      userId: "user-123",
+      userEmail: "test@example.com",
+      userRole: "Admin",
+      premiumUser: true,
+      disabledPersonalKeyCreation: false,
+      showSSOBanner: false,
+    });
     mockUseCurrentUser.mockReturnValue({
       data: {
         user_id: "user-123",
@@ -602,7 +611,7 @@ describe("UsagePage", () => {
     });
 
     // Check that key metrics are displayed
-    const totalRequestElements = screen.getAllByText("总请求数");
+    const totalRequestElements = overview().getAllByText("Total Requests");
     expect(totalRequestElements.length).toBeGreaterThan(0);
     await waitFor(() => {
       expect(overview().getAllByText("424,242").length).toBeGreaterThan(0);
@@ -611,8 +620,8 @@ describe("UsagePage", () => {
     expect(overview().getByText("425,151")).toBeInTheDocument();
     // Successful and failed counts now sit under Total Requests rather than in their own tiles.
     expect(totalRequestsCell()).toHaveTextContent("425,151");
-    expect(totalRequestsCell()).toHaveTextContent("424,242 正常");
-    expect(totalRequestsCell()).toHaveTextContent("909 失败");
+    expect(totalRequestsCell()).toHaveTextContent("424,242 ok");
+    expect(totalRequestsCell()).toHaveTextContent("909 failed");
     expect(overview().queryByText("1,500")).not.toBeInTheDocument();
     expect(overview().queryByText("1,450")).not.toBeInTheDocument();
   });
@@ -636,7 +645,7 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(overview().getAllByText("75K").length).toBeGreaterThan(0);
     });
-    expect(overview().getByTitle("75,000 个令牌")).toHaveTextContent("75K");
+    expect(overview().getByTitle("75,000 tokens")).toHaveTextContent("75K");
 
     await act(async () => {
       fireEvent.click(screen.getByTestId("pick-a-different-range"));
@@ -645,12 +654,13 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledTimes(2);
     });
-    expect(screen.queryByText("75,000")).not.toBeInTheDocument();
-    expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
-    expect(screen.getByText("总令牌数")).toBeInTheDocument();
-    expect(await screen.findByText("425,151")).toBeInTheDocument();
-    expect(screen.getByText("总令牌数").parentElement?.parentElement).not.toHaveTextContent(/\d/);
-    expect(screen.queryByText("$0.0000")).not.toBeInTheDocument();
+    expect(overview().queryByText("75K")).not.toBeInTheDocument();
+    expect(overview().queryByText("$0.00")).not.toBeInTheDocument();
+    expect(overview().getByText("Total Tokens")).toBeInTheDocument();
+    expect(await overview().findByText("425,151")).toBeInTheDocument();
+    // The Total Tokens stat (label, value and hint) must hold no number while its range is in flight.
+    expect(overview().getByText("Total Tokens").parentElement).not.toHaveTextContent(/\d/);
+    expect(overview().queryByText("$0.0000")).not.toBeInTheDocument();
 
     await act(async () => {
       releaseSecondFetch();
@@ -658,8 +668,8 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(overview().getAllByText("75K").length).toBeGreaterThan(0);
     });
-    expect(screen.getByText("总令牌数")).toBeInTheDocument();
-    expect(screen.getAllByText("$0.0838").length).toBeGreaterThan(0);
+    expect(overview().getByText("Total Tokens")).toBeInTheDocument();
+    expect(overview().getByText("$0.0838")).toBeInTheDocument();
   });
 
   it("loads key pages separately from the aggregate and refreshes them when the range changes", async () => {
@@ -668,7 +678,7 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
     });
-    fireEvent.click(screen.getByText("密钥活动"));
+    fireEvent.click(screen.getByText("Key Activity"));
     await waitFor(() => {
       expect(mockDailyActivityKeyPageCall).toHaveBeenCalledWith("user", expect.any(Object), 0, 50);
     });
@@ -695,8 +705,8 @@ describe("UsagePage", () => {
     });
     expect(overview().getByText("1,500")).toBeInTheDocument();
     expect(totalRequestsCell()).toHaveTextContent("1,500");
-    expect(totalRequestsCell()).toHaveTextContent("1,450 正常");
-    expect(totalRequestsCell()).toHaveTextContent("50 失败");
+    expect(totalRequestsCell()).toHaveTextContent("1,450 ok");
+    expect(totalRequestsCell()).toHaveTextContent("50 failed");
     expect(screen.queryByText("424,242")).not.toBeInTheDocument();
     expect(screen.queryByText("909")).not.toBeInTheDocument();
     expect(screen.queryByText("425,151")).not.toBeInTheDocument();
@@ -713,7 +723,7 @@ describe("UsagePage", () => {
     });
     expect(mockGatewayDailyActivityCall).not.toHaveBeenCalled();
     expect(mockRequestErrorActivityCall).not.toHaveBeenCalled();
-    expect(screen.queryByRole("tab", { name: "错误" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Errors" })).not.toBeInTheDocument();
     await waitFor(() => {
       expect(totalRequestsCell()).toHaveTextContent("1,500");
     });
@@ -731,11 +741,11 @@ describe("UsagePage", () => {
     expect(overview().queryByText(/Client errors \(4xx\)/)).not.toBeInTheDocument();
     expect(overview().queryByRole("button", { name: /Failed Requests/ })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "错误" }));
+    await user.click(screen.getByRole("tab", { name: "Errors" }));
     const errorsTab = within(await screen.findByTestId("usage-errors-tab"));
     expect(await errorsTab.findByText("10.0%")).toBeInTheDocument();
-    expect(errorsTab.getByRole("list", { name: "按状态码统计的失败请求" })).toHaveTextContent("429");
-    const keys = errorsTab.getByRole("table", { name: "按失败请求数排名的虚拟密钥" });
+    expect(errorsTab.getByRole("list", { name: "Failed requests by status code" })).toHaveTextContent("429");
+    const keys = errorsTab.getByRole("table", { name: "Virtual keys ranked by failed requests" });
     expect(within(keys).getAllByRole("row")[1]).toHaveTextContent("prod-key");
   });
 
@@ -747,14 +757,64 @@ describe("UsagePage", () => {
     });
 
     // Check for usage metrics cards
-    const totalRequestElements = screen.getAllByText("总请求数");
+    const totalRequestElements = screen.getAllByText("Total Requests");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const totalTokensElements = screen.getAllByText("总令牌数");
+    // Successful and failed counts now sit under Total Requests rather than in their own tiles.
+    await waitFor(() => {
+      expect(totalRequestsCell()).toHaveTextContent(/\d+ ok/);
+    });
+    expect(totalRequestsCell()).toHaveTextContent(/\d+ failed/);
+    const totalTokensElements = screen.getAllByText("Total Tokens");
     expect(totalTokensElements.length).toBeGreaterThan(0);
 
-    // Check for chart titles (these are in the Cost tab)
-    expect(screen.getByText("每日用量")).toBeInTheDocument();
-    expect(screen.getByText("热门虚拟密钥")).toBeInTheDocument();
+    // Check for chart titles (these are in the Overview tab)
+    expect(screen.getByText("Daily usage")).toBeInTheDocument();
+    expect(screen.getByText("Daily spend by model (top 8, rest grouped as Other)")).toBeInTheDocument();
+    expect(screen.getByText("Top models")).toBeInTheDocument();
+    expect(screen.getByText("Top Virtual Keys")).toBeInTheDocument();
+    expect(screen.getByText("Top Users by Spend")).toBeInTheDocument();
+  });
+
+  it("places Top Users by Spend directly below Top Virtual Keys", async () => {
+    renderWithProviders(<UsagePage {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+    });
+
+    const topKeys = screen.getByText("Top Virtual Keys");
+    const topUsers = screen.getByText("Top Users by Spend");
+    expect(topKeys.compareDocumentPosition(topUsers) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("loads the User Activity tab from the user page endpoint", async () => {
+    renderWithProviders(<UsagePage {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+    });
+    fireEvent.click(screen.getByText("User Activity"));
+
+    await waitFor(() => {
+      expect(mockUserDailyActivityUserPageCall).toHaveBeenCalledWith(expect.any(Object), 0, 50);
+    });
+  });
+
+  it("should rename the usage chart when the weekly bucket is selected", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<UsagePage {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+    });
+
+    expect(screen.getByText("Daily usage")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("radio", { name: "Weekly" }));
+
+    expect(screen.getByText("Weekly usage")).toBeInTheDocument();
+    expect(screen.getByText("Weekly spend by model (top 8, rest grouped as Other)")).toBeInTheDocument();
+    expect(screen.queryByText("Daily usage")).not.toBeInTheDocument();
   });
 
   it("should render the top models chart stacked in the shared usage palette", async () => {
@@ -781,7 +841,7 @@ describe("UsagePage", () => {
     const fills = new Set(spendBars().map((rect) => rect.getAttribute("fill")));
     expect(fills).toEqual(new Set([STACKED_USAGE_PALETTE[0], OTHER_COLOR]));
 
-    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Jan 1").length).toBeGreaterThan(0);
     expect(screen.getAllByText("gpt-4").length).toBeGreaterThan(0);
   });
 
@@ -793,7 +853,7 @@ describe("UsagePage", () => {
     });
 
     // Default view should show Global Usage (for admin)
-    expect(screen.getByText("每日用量")).toBeInTheDocument();
+    expect(screen.getByText("Daily usage")).toBeInTheDocument();
 
     // Switch to Team Usage view
     const usageSelect = screen.getByTestId("usage-view-select");
@@ -820,7 +880,7 @@ describe("UsagePage", () => {
   });
 
   it("should withhold the tag list until it resolves so no empty state is shown while loading", async () => {
-    let resolveTagList: (tags: TagListResponse | PromiseLike<TagListResponse>) => void = () => {};
+    let resolveTagList: (tags: Awaited<ReturnType<typeof networking.tagListCall>>) => void = () => {};
     mockTagListCall.mockReturnValue(
       new Promise((resolve) => {
         resolveTagList = resolve;
@@ -859,7 +919,7 @@ describe("UsagePage", () => {
       );
     });
 
-    let resolveNewRange: (tags: TagListResponse | PromiseLike<TagListResponse>) => void = () => {};
+    let resolveNewRange: (tags: Awaited<ReturnType<typeof networking.tagListCall>>) => void = () => {};
     mockTagListCall.mockReturnValue(
       new Promise((resolve) => {
         resolveNewRange = resolve;
@@ -880,7 +940,19 @@ describe("UsagePage", () => {
   });
 
   it("should show tag usage selector option for internal users", async () => {
-    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_2));
+    mockUseAuthorized.mockReturnValue({
+      ...nonAdminSession,
+      isLoading: false,
+      isAuthorized: true,
+      token: "mock-token",
+      accessToken: "test-token",
+      userId: "user-123",
+      userEmail: "test@example.com",
+      userRole: "internal_user",
+      premiumUser: true,
+      disabledPersonalKeyCreation: false,
+      showSSOBanner: false,
+    });
 
     renderWithProviders(<UsagePage {...defaultProps} />);
 
@@ -919,6 +991,7 @@ describe("UsagePage", () => {
     const mockUseIsOrgAdmin = vi.mocked(useIsOrgAdmin);
     mockUseIsOrgAdmin.mockReturnValue(true);
     mockUseAuthorized.mockReturnValue({
+      ...nonAdminSession,
       isLoading: false,
       isAuthorized: true,
       token: "mock-token",
@@ -1035,9 +1108,201 @@ describe("UsagePage", () => {
     expect(screen.queryByText("Entity Usage")).not.toBeInTheDocument();
   });
 
+  describe("admin user selector", () => {
+    // Anchored on the header dropdown's own test id, so it does not depend on which library draws
+    // the control.
+    const userSelectCombobox = (): HTMLElement => {
+      const combobox = screen.getByTestId("user-dropdown").querySelector('[role="combobox"]');
+      expect(combobox).not.toBeNull();
+      return combobox as HTMLElement;
+    };
+
+    const openUserSelect = async () => {
+      await userEvent.setup().click(userSelectCombobox());
+    };
+
+    // One library paints the prompt as its own text node and the other leaves it on the input's
+    // placeholder attribute, so either one means the user is being told what to type.
+    const promptsWith = (text: string) =>
+      screen.queryAllByText(text).length + screen.queryAllByPlaceholderText(text).length > 0;
+
+    it("should render user selector for admin users in global view", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      expect(userSelectCombobox()).toBeInTheDocument();
+      expect(promptsWith("Search users by email…")).toBe(true);
+    });
+
+    it("should format user options with alias when available", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      await openUserSelect();
+
+      // User with alias should show "alias (id)"
+      expect(screen.getByText("Alice (user-001)")).toBeInTheDocument();
+      // User without alias but with email should show "email (id)"
+      expect(screen.getByText("bob@example.com (user-002)")).toBeInTheDocument();
+      // User with neither alias nor email should show just the id
+      expect(screen.getByText("user-003")).toBeInTheDocument();
+    });
+
+    it("should call useInfiniteUsers with debounced search", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      // useInfiniteUsers should be called with default page size
+      expect(mockUseInfiniteUsers).toHaveBeenCalledWith(50, undefined);
+    });
+
+    it("should deduplicate users across pages", async () => {
+      mockUseInfiniteUsers.mockReturnValue({
+        data: {
+          pages: [
+            {
+              users: [{ user_id: "user-dup", user_alias: "DupUser", user_email: null }],
+              page: 1,
+              total_pages: 2,
+              total_count: 2,
+            },
+            {
+              users: [
+                { user_id: "user-dup", user_alias: "DupUser", user_email: null },
+                { user_id: "user-unique", user_alias: "UniqueUser", user_email: null },
+              ],
+              page: 2,
+              total_pages: 2,
+              total_count: 2,
+            },
+          ],
+          pageParams: [1, 2],
+        },
+        fetchNextPage: vi.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
+        isLoading: false,
+      } as any);
+
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      await openUserSelect();
+
+      // Duplicate user should appear only once
+      const dupElements = screen.getAllByText("DupUser (user-dup)");
+      expect(dupElements).toHaveLength(1);
+      // Unique user should also appear
+      expect(screen.getByText("UniqueUser (user-unique)")).toBeInTheDocument();
+    });
+
+    it("should pass selected userId to aggregated call", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      // Initially called with null (global view for admin)
+      expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(
+        expect.objectContaining({ accessToken: "test-token", entityIds: null }),
+      );
+    });
+  });
+
+  describe("user usage view", () => {
+    it("should hand EntityUsage no user list so its own filter can search every user", async () => {
+      mockUseInfiniteUsers.mockReturnValue({
+        data: {
+          pages: [
+            {
+              users: Array.from({ length: 50 }, (_, index) => ({
+                user_id: `user-${index}`,
+                user_alias: null,
+                user_email: `user${index}@example.com`,
+              })),
+              page: 1,
+              total_pages: 4,
+              total_count: 200,
+            },
+          ],
+          pageParams: [1],
+        },
+        fetchNextPage: vi.fn(),
+        hasNextPage: true,
+        isFetchingNextPage: false,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useInfiniteUsers>);
+
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      act(() => {
+        fireEvent.change(screen.getByTestId("usage-view-select"), { target: { value: "user" } });
+      });
+
+      const entityUsage = await screen.findByTestId("entity-usage");
+      expect(entityUsage).toHaveAttribute("data-entity-type", "user");
+      expect(entityUsage).toHaveAttribute("data-entity-list", "null");
+    });
+  });
+
   describe("non-admin user behavior", () => {
+    it("should not render user selector for non-admin users", async () => {
+      mockUseAuthorized.mockReturnValue({
+        ...nonAdminSession,
+        isLoading: false,
+        isAuthorized: true,
+        token: "mock-token",
+        accessToken: "test-token",
+        userId: "user-123",
+        userEmail: "test@example.com",
+        userRole: "Internal User",
+        premiumUser: false,
+        disabledPersonalKeyCreation: false,
+        showSSOBanner: false,
+      });
+
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      // The admin case above proves this test id is rendered when the selector exists, so its
+      // absence here is a live assertion rather than a query that can never match.
+      expect(screen.queryByTestId("user-dropdown")).not.toBeInTheDocument();
+    });
+
     it("should always pass own userId for non-admin users", async () => {
-      mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_4));
+      mockUseAuthorized.mockReturnValue({
+        ...nonAdminSession,
+        isLoading: false,
+        isAuthorized: true,
+        token: "mock-token",
+        accessToken: "test-token",
+        userId: "user-123",
+        userEmail: "test@example.com",
+        userRole: "Internal User",
+        premiumUser: false,
+        disabledPersonalKeyCreation: false,
+        showSSOBanner: false,
+      });
 
       renderWithProviders(<UsagePage {...defaultProps} />);
 
@@ -1059,7 +1324,22 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
       expect(mockDailyActivityAggregatedCall.mock.calls.filter((c) => c[0] === "user")).toHaveLength(1);
-      expect(await screen.findByText(/消费数据拉取失败/)).toBeInTheDocument();
+      const alert = await screen.findByRole("alert");
+      expect(alert).toHaveTextContent("Failed to load spend data");
+      expect(alert).toHaveTextContent("Aggregated endpoint not available");
+      expect(within(alert).getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    });
+
+    it("re-issues the aggregated call when Retry is clicked", async () => {
+      mockUserDailyActivityAggregatedCall.mockRejectedValue(new Error("Aggregated endpoint not available"));
+
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      const alert = await screen.findByRole("alert");
+      const callsBefore = mockUserDailyActivityAggregatedCall.mock.calls.length;
+      fireEvent.click(within(alert).getByRole("button", { name: "Retry" }));
+
+      await waitFor(() => expect(mockUserDailyActivityAggregatedCall.mock.calls.length).toBe(callsBefore + 1));
     });
   });
 
@@ -1072,7 +1352,7 @@ describe("UsagePage", () => {
       });
 
       // The tab list should contain MCP Server Activity
-      expect(screen.getByText("MCP 服务器活动")).toBeInTheDocument();
+      expect(screen.getByText("MCP Server Activity")).toBeInTheDocument();
     });
   });
 
@@ -1105,29 +1385,37 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("导出数据")).toBeInTheDocument();
+      expect(screen.getByText("Export Data")).toBeInTheDocument();
     });
   });
 
-  describe("Ask AI button", () => {
-    it("should render Ask AI button in global view", async () => {
+  describe("Aria Agent", () => {
+    it("should render the shared Aria prompt and entry point in global view", async () => {
       renderWithProviders(<UsagePage {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("询问 AI")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Open Aria Agent" })).toBeInTheDocument();
+      expect(screen.getByRole("region", { name: "Ask Aria Agent" })).toBeVisible();
+      expect(screen.queryByText("Ask AI")).not.toBeInTheDocument();
     });
 
-    it("should render AI chat panel component", async () => {
+    it("should keep the shared Aria prompt available in entity usage views", async () => {
       renderWithProviders(<UsagePage {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByTestId("usage-ai-chat-panel")).toBeInTheDocument();
+      act(() => {
+        fireEvent.change(screen.getByTestId("usage-view-select"), { target: { value: "team" } });
+      });
+
+      expect(await screen.findByText("Entity Usage")).toBeInTheDocument();
+      expect(screen.getAllByRole("region", { name: "Ask Aria Agent" })).toHaveLength(1);
+      expect(screen.getByRole("region", { name: "Ask Aria Agent" })).toBeVisible();
     });
   });
 
@@ -1139,10 +1427,10 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      // Default should be "groups" view showing "热门公开模型名"
-      expect(screen.getByText("公开模型名")).toBeInTheDocument();
-      expect(screen.getAllByText("公开模型名").length).toBeGreaterThan(0);
-      expect(screen.getAllByText("LiteLLM 模型名").length).toBeGreaterThan(0);
+      // Default should be the "groups" view, which feeds Model Activity from model_groups
+      expect(screen.getByText("activity-source:model_groups")).toBeInTheDocument();
+      expect(screen.getAllByText("Public Model Name").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Litellm Model Name").length).toBeGreaterThan(0);
     });
 
     it("should switch to Litellm Model Name view on toggle click", async () => {
@@ -1152,15 +1440,15 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      // Click the "LiteLLM 模型名" toggle
-      const litellmToggle = screen.getAllByText("LiteLLM 模型名")[0];
+      // Click the "Litellm Model Name" toggle
+      const litellmToggle = screen.getAllByText("Litellm Model Name")[0];
       act(() => {
         fireEvent.click(litellmToggle);
       });
 
-      // Title should change to "热门 Litellm 模型"
+      // Model Activity should switch to the litellm models breakdown
       await waitFor(() => {
-        expect(screen.getByText("LiteLLM 模型名")).toBeInTheDocument();
+        expect(screen.getByText("activity-source:models")).toBeInTheDocument();
       });
     });
 
@@ -1172,24 +1460,25 @@ describe("UsagePage", () => {
       });
 
       // Switch to individual first
-      const litellmToggle = screen.getAllByText("LiteLLM 模型名")[0];
+      const litellmToggle = screen.getAllByText("Litellm Model Name")[0];
       act(() => {
         fireEvent.click(litellmToggle);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("LiteLLM 模型名")).toBeInTheDocument();
+        expect(screen.getByText("activity-source:models")).toBeInTheDocument();
       });
 
       // Switch back to groups
-      const publicToggle = screen.getAllByText("公开模型名")[0];
+      const publicToggle = screen.getAllByText("Public Model Name")[0];
       act(() => {
         fireEvent.click(publicToggle);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("公开模型名")).toBeInTheDocument();
+        expect(screen.getByText("activity-source:model_groups")).toBeInTheDocument();
       });
+      expect(screen.queryByText("activity-source:models")).not.toBeInTheDocument();
     });
 
     it("should feed the Model Activity tab from the model_groups breakdown by default", async () => {
@@ -1199,7 +1488,8 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(expect.anything(), "model_groups", expect.anything());
+      expect(screen.getByText("activity-source:model_groups")).toBeInTheDocument();
+      expect(screen.queryByText("activity-source:models")).not.toBeInTheDocument();
     });
 
     it("should switch the Model Activity tab to the litellm models breakdown on toggle click", async () => {
@@ -1210,12 +1500,13 @@ describe("UsagePage", () => {
       });
 
       act(() => {
-        fireEvent.click(screen.getAllByText("LiteLLM 模型名")[0]);
+        fireEvent.click(screen.getAllByText("Litellm Model Name")[0]);
       });
 
       await waitFor(() => {
-        expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(expect.anything(), "models", expect.anything());
+        expect(screen.getByText("activity-source:models")).toBeInTheDocument();
       });
+      expect(screen.queryByText("activity-source:model_groups")).not.toBeInTheDocument();
     });
 
     it("filters Model Activity by model name and shows an empty state when there are no matches", async () => {
@@ -1228,10 +1519,10 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
-      fireEvent.click(screen.getByRole("tab", { name: "模型活动" }));
+      fireEvent.click(screen.getByRole("tab", { name: "Model Activity" }));
 
-      const modelActivityTab = screen.getByRole("tabpanel", { name: "模型活动" });
-      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "搜索模型" });
+      const modelActivityTab = screen.getByRole("tabpanel", { name: "Model Activity" });
+      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "Search models" });
       fireEvent.change(searchInput, { target: { value: "GPT-4o" } });
 
       expect(within(modelActivityTab).getByText("GPT-4o")).toBeInTheDocument();
@@ -1239,7 +1530,9 @@ describe("UsagePage", () => {
 
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
-      expect(within(modelActivityTab).getByText("该时间范围内没有匹配「missing model」的模型")).toBeInTheDocument();
+      expect(
+        within(modelActivityTab).getByText('No models match "missing model" in this date range'),
+      ).toBeInTheDocument();
     });
 
     it("does not show the no-match state when model data is empty", async () => {
@@ -1249,14 +1542,14 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
-      fireEvent.click(screen.getByRole("tab", { name: "模型活动" }));
+      fireEvent.click(screen.getByRole("tab", { name: "Model Activity" }));
 
-      const modelActivityTab = screen.getByRole("tabpanel", { name: "模型活动" });
-      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "搜索模型" });
+      const modelActivityTab = screen.getByRole("tabpanel", { name: "Model Activity" });
+      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "Search models" });
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
       expect(
-        within(modelActivityTab).queryByText("该时间范围内没有匹配「missing model」的模型"),
+        within(modelActivityTab).queryByText('No models match "missing model" in this date range'),
       ).not.toBeInTheDocument();
     });
   });
@@ -1321,19 +1614,210 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("概览")).toBeInTheDocument();
-      expect(screen.getByText("模型活动")).toBeInTheDocument();
-      expect(screen.getByText("密钥活动")).toBeInTheDocument();
-      expect(screen.getByText("MCP 服务器活动")).toBeInTheDocument();
-      expect(screen.getByText("端点活动")).toBeInTheDocument();
+      expect(screen.getByText("Overview")).toBeInTheDocument();
+      expect(screen.getByText("Model Activity")).toBeInTheDocument();
+      expect(screen.getByText("Key Activity")).toBeInTheDocument();
+      expect(screen.getByText("User Activity")).toBeInTheDocument();
+      expect(screen.getByText("MCP Server Activity")).toBeInTheDocument();
+      expect(screen.getByText("Endpoint Activity")).toBeInTheDocument();
     });
   });
+  describe("client scope wiring", () => {
+    const administeredTeams = [
+      {
+        ...defaultProps.teams[0],
+        team_id: "engineering",
+        team_alias: "Engineering",
+        members_with_roles: [
+          { user_id: "user-123", role: "admin" },
+          { user_id: "alice", role: "user", user_email: "alice@example.com" },
+        ],
+      },
+      {
+        ...defaultProps.teams[0],
+        team_id: "design",
+        team_alias: "Design",
+        members_with_roles: [
+          { user_id: "user-123", role: "admin" },
+          { user_id: "maya", role: "user", user_email: "maya@example.com" },
+        ],
+      },
+      {
+        ...defaultProps.teams[0],
+        team_id: "outside-team",
+        team_alias: "Outside team",
+        members_with_roles: [
+          { user_id: "user-123", role: "user" },
+          { user_id: "outside-user", role: "admin" },
+        ],
+      },
+    ];
+    const renderClientAt = (searchParams: string, props: ComponentProps<typeof UsagePage> = defaultProps) => {
+      const onUrlUpdate = vi.fn<(event: UrlUpdateEvent) => void>();
+      const view = renderWithProviders(<UsagePage {...props} />, {
+        searchParams,
+        onUrlUpdate,
+        resetUrlUpdateQueueOnMount: false,
+      });
+      return { ...view, onUrlUpdate };
+    };
+    const lastPanelProps = (): ComponentProps<typeof ClientUsagePanel> => mockClientUsagePanel.mock.lastCall?.[0];
+
+    it("should default a proxy administrator's client panel to all users", async () => {
+      renderClientAt("?client=claude-desktop");
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      expect(lastPanelProps()).toMatchObject({ userId: null, teamId: null, canChooseUser: true });
+      expect(lastPanelProps().scopeError).toBeNull();
+    });
+
+    it("should honor a proxy administrator's linked person", async () => {
+      renderClientAt("?client=claude-desktop&client_user=selected-person");
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      const expectedScope = {
+        userId: "selected-person",
+        teamId: null,
+        canChooseUser: true,
+        scopeError: null,
+        defaultScopeLabel: "All users",
+      };
+      expect(lastPanelProps()).toMatchObject(expectedScope);
+    });
+
+    it("should default an internal user to their own client usage without a global person selector", async () => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      renderClientAt("?client=claude-desktop");
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      const expectedScope = {
+        userId: "user-123",
+        teamId: null,
+        canChooseUser: false,
+        scopeError: null,
+        teams: [],
+        defaultScopeLabel: "My usage",
+      };
+      expect(lastPanelProps()).toMatchObject(expectedScope);
+    });
+
+    it("should keep an administered-team member scoped and reset the person when the team changes", async () => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      const user = userEvent.setup();
+      const props = { ...defaultProps, teams: administeredTeams };
+      const { onUrlUpdate } = renderClientAt("?client=claude-desktop&client_team=engineering&client_user=alice", props);
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      const expectedScope = {
+        userId: "alice",
+        teamId: "engineering",
+        canChooseUser: false,
+        scopeError: null,
+      };
+      expect(lastPanelProps()).toMatchObject(expectedScope);
+      expect(lastPanelProps().teams).toEqual([
+        { value: "engineering", label: "Engineering" },
+        { value: "design", label: "Design" },
+      ]);
+      expect(lastPanelProps().members?.map((member) => member.value)).toEqual(["user-123", "alice"]);
+
+      await user.click(screen.getByRole("button", { name: "Select Design scope" }));
+      await waitFor(() => expect(lastPanelProps()).toMatchObject({ teamId: "design", userId: null, scopeError: null }));
+      expect(lastPanelProps().members?.map((member) => member.value)).toEqual(["user-123", "maya"]);
+      expect(new URLSearchParams(onUrlUpdate.mock.lastCall?.[0].queryString).get("client_team")).toBe("design");
+
+      await user.click(screen.getByRole("button", { name: "Select Maya" }));
+      await waitFor(() =>
+        expect(lastPanelProps()).toMatchObject({ teamId: "design", userId: "maya", scopeError: null }),
+      );
+      expect(screen.getByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+    });
+
+    it("should reject a member from another administered team in a saved link", async () => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      const props = { ...defaultProps, teams: administeredTeams };
+      renderClientAt("?client=claude-desktop&client_team=engineering&client_user=maya", props);
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      const expectedScope = {
+        userId: "maya",
+        teamId: "engineering",
+        canChooseUser: false,
+        scopeError: "Choose a member of the selected team",
+      };
+      expect(lastPanelProps()).toMatchObject(expectedScope);
+      expect(mockClientUsagePanel.mock.calls.every(([props]) => Boolean(props.scopeError))).toBe(true);
+    });
+
+    it.each([
+      "?client=claude-desktop&client_user=outside-user",
+      "?client=claude-desktop&client_team=outside-team&client_user=outside-user",
+    ])("should never broaden an ordinary user's saved client scope from %s", async (searchParams) => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      const { onUrlUpdate } = renderClientAt(searchParams);
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      await waitFor(() => expect(onUrlUpdate).toHaveBeenCalled());
+      if (searchParams.includes("client_team")) {
+        await waitFor(() => expect(lastPanelProps().scopeError).toBe("Choose a team you administer"));
+      } else {
+        await waitFor(() => expect(lastPanelProps()).toMatchObject({ userId: "user-123", scopeError: null }));
+      }
+      expect(mockClientUsagePanel.mock.calls.length).toBeGreaterThan(0);
+      for (const [props] of mockClientUsagePanel.mock.calls) {
+        expect(props.canChooseUser).toBe(false);
+        const personalScope = props.userId === "user-123" && props.teamId === null;
+        expect(personalScope || Boolean(props.scopeError)).toBe(true);
+      }
+      expect(lastPanelProps().teams).toEqual([]);
+    });
+
+    it("should preserve an unauthorized main team selection when opening client usage instead of substituting an allowed team", async () => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      const user = userEvent.setup();
+      const props = { ...defaultProps, teams: administeredTeams };
+      const { onUrlUpdate } = renderClientAt("?view=team&team=outside-team", props);
+
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "View client usage" }), "Claude Desktop");
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      expect(lastPanelProps()).toMatchObject({
+        teamId: "outside-team",
+        scopeError: "Choose a team you administer",
+        canChooseUser: false,
+      });
+      expect(new URLSearchParams(onUrlUpdate.mock.lastCall?.[0].queryString).get("client_team")).toBe("outside-team");
+    });
+
+    it("should keep an administrator's explicit My usage view personal despite client scope URL parameters", async () => {
+      renderClientAt("?view=my-usage&client=claude-desktop&client_team=outside-team&client_user=outside-user");
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      const expectedScope = {
+        userId: "user-123",
+        teamId: null,
+        canChooseUser: false,
+        teams: [],
+        scopeError: null,
+      };
+      expect(lastPanelProps()).toMatchObject(expectedScope);
+    });
+
+    it("should wait for team membership before mounting a linked client panel", async () => {
+      mockUseAuthorized.mockReturnValue(nonAdminSession);
+      const pendingProps = { ...defaultProps, teams: [], teamsLoading: true };
+      const { rerender } = renderClientAt(
+        "?client=claude-desktop&client_team=engineering&client_user=alice",
+        pendingProps,
+      );
+      expect(screen.queryByRole("region", { name: "Client usage panel" })).not.toBeInTheDocument();
+      expect(mockClientUsagePanel).not.toHaveBeenCalled();
+
+      rerender(<UsagePage {...defaultProps} teams={administeredTeams} teamsLoading={false} />);
+      expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
+      expect(lastPanelProps()).toMatchObject({ userId: "alice", teamId: "engineering", scopeError: null });
+    });
+  });
+
   describe("URL state", () => {
     const renderAt = (searchParams: string) => {
       const onUrlUpdate = vi.fn<(event: UrlUpdateEvent) => void>();
       const view = renderWithProviders(<UsagePage {...defaultProps} />, {
         searchParams,
         onUrlUpdate,
+        resetUrlUpdateQueueOnMount: false,
       });
       const lastQuery = (): string | undefined => onUrlUpdate.mock.lastCall?.[0].queryString;
       return { ...view, onUrlUpdate, lastQuery };
@@ -1351,7 +1835,7 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(expect.objectContaining(expectedRequest));
       });
-      expect(screen.getByRole("link", { name: "查看用户记录" })).toHaveAttribute("href", "/ui/users?user=user-001");
+      expect(screen.getByRole("link", { name: "View user record" })).toHaveAttribute("href", "/ui/users?user=user-001");
     });
 
     it("shows no user record link while the global view is unfiltered", async () => {
@@ -1366,7 +1850,7 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(expect.objectContaining(expectedRequest));
       });
-      expect(screen.queryByRole("link", { name: "查看用户记录" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "View user record" })).not.toBeInTheDocument();
     });
 
     it("opens the linked entity view with its selection and writes new picks back", async () => {
@@ -1396,9 +1880,9 @@ describe("UsagePage", () => {
     it("restores the inner tab from the URL and writes tab changes", async () => {
       const { lastQuery } = renderAt("?tab=models");
 
-      expect(await screen.findByRole("tab", { name: "模型活动" })).toHaveAttribute("aria-selected", "true");
+      expect(await screen.findByRole("tab", { name: "Model Activity" })).toHaveAttribute("aria-selected", "true");
 
-      fireEvent.click(screen.getByRole("tab", { name: "密钥活动" }));
+      fireEvent.click(screen.getByRole("tab", { name: "Key Activity" }));
 
       await waitFor(() => {
         expect(lastQuery()).toBe("?tab=keys");
@@ -1406,8 +1890,8 @@ describe("UsagePage", () => {
     });
 
     it.each([
-      ["users", "用户活动"],
-      ["errors", "错误"],
+      ["users", "User Activity"],
+      ["errors", "Errors"],
     ])("restores the %s tab from the URL", async (tab, label) => {
       renderAt(`?tab=${tab}`);
 
@@ -1429,6 +1913,61 @@ describe("UsagePage", () => {
         JSON.stringify(["User-Agent: Firefox/2.0"]),
       );
     });
+
+    it("queries the configured month and preserves later manual selections", async () => {
+      const now = new Date(2026, 9, 24, 12);
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(now);
+      try {
+        renderWithProviders(<UsagePage {...defaultProps} defaultTimeRange="month_to_date" />);
+        await waitFor(() =>
+          expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(
+            expect.objectContaining({
+              startTime: new Date(2026, 9, 1),
+              endTime: new Date(2026, 9, 24, 23, 59, 59, 999),
+            }),
+          ),
+        );
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledTimes(1);
+        fireEvent.click(screen.getByTestId("pick-a-different-range"));
+        await waitFor(() =>
+          expect(mockUserDailyActivityAggregatedCall).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              startTime: new Date(2024, 0, 1),
+              endTime: new Date(2024, 0, 8, 23, 59, 59, 999),
+            }),
+          ),
+        );
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it.each(["?range=today", "?from=2025-03-01&to=2025-03-05"])(
+      "preserves explicit dates over configured defaults for %s",
+      async (searchParams) => {
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(new Date(2026, 9, 24, 12));
+        try {
+          const view = renderWithProviders(<UsagePage {...defaultProps} defaultTimeRange="month_to_date" />, {
+            searchParams,
+          });
+          const startTime = searchParams.includes("range=today") ? new Date(2026, 9, 24) : new Date(2025, 2, 1);
+          const endTime = searchParams.includes("range=today")
+            ? new Date(2026, 9, 24, 23, 59, 59, 999)
+            : new Date(2025, 2, 5, 23, 59, 59, 999);
+          await waitFor(() =>
+            expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(
+              expect.objectContaining({ startTime, endTime }),
+            ),
+          );
+          view.rerender(<UsagePage {...defaultProps} defaultTimeRange="year_to_date" />);
+          expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledTimes(1);
+        } finally {
+          vi.useRealTimers();
+        }
+      },
+    );
 
     it("fetches the custom range in the URL and writes a newly picked one", async () => {
       const { lastQuery } = renderAt("?from=2025-03-01&to=2025-03-05");
@@ -1454,12 +1993,13 @@ describe("UsagePage", () => {
       const warning = vi.spyOn(toast, "warning");
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      renderAt("?view=organization&org=org-1&range=30d");
+      const { lastQuery } = renderAt("?view=organization&org=org-1&range=30d");
 
       await waitFor(() => {
-        expect(warning).toHaveBeenCalledWith("您无权查看该用量视图", {
-          id: "usage-url-access-denied",
-        });
+        expect(lastQuery()).toBe("?range=30d");
+      });
+      expect(warning).toHaveBeenCalledWith("You don't have access to that usage view", {
+        id: "usage-url-access-denied",
       });
       expect(screen.queryByTestId("entity-usage")).not.toBeInTheDocument();
     });
@@ -1479,22 +2019,26 @@ describe("UsagePage", () => {
     it("does not select the admin-only Errors tab for an internal user", async () => {
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      renderAt("?tab=errors");
+      const { lastQuery } = renderAt("?tab=errors");
 
-      expect(await screen.findByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
-      expect(screen.queryByRole("tab", { name: "错误" })).not.toBeInTheDocument();
+      expect(await screen.findByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+      await waitFor(() => {
+        expect(lastQuery()).toBe("");
+      });
+      expect(screen.queryByRole("tab", { name: "Errors" })).not.toBeInTheDocument();
     });
 
     it("never fetches another user's usage for a non-admin who opens their link", async () => {
       const warning = vi.spyOn(toast, "warning");
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      renderAt("?user=user-001");
+      const { lastQuery } = renderAt("?user=user-001");
 
       await waitFor(() => {
-        expect(warning).toHaveBeenCalledWith("您无权查看该用量视图", {
-          id: "usage-url-access-denied",
-        });
+        expect(lastQuery()).toBe("");
+      });
+      expect(warning).toHaveBeenCalledWith("You don't have access to that usage view", {
+        id: "usage-url-access-denied",
       });
       expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalledWith(
         expect.anything(),
@@ -1509,7 +2053,7 @@ describe("UsagePage", () => {
       Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
       renderAt("?tab=models");
 
-      fireEvent.click(await screen.findByRole("button", { name: "复制分享链接" }));
+      fireEvent.click(await screen.findByRole("button", { name: "Copy Share Link" }));
 
       await waitFor(() => {
         expect(writeText).toHaveBeenCalledWith(window.location.href);
@@ -1519,7 +2063,7 @@ describe("UsagePage", () => {
     it("shows the share link on an entity view", async () => {
       renderAt("?view=team");
 
-      expect(await screen.findByRole("button", { name: "复制分享链接" })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: "Copy Share Link" })).toBeInTheDocument();
     });
   });
 });

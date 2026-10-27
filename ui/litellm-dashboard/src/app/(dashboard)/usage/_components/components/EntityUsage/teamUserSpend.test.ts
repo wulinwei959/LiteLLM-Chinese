@@ -54,12 +54,11 @@ describe("teamUserSpend", () => {
     expect(ids[0]).not.toBe(ids[1]);
   });
 
-  it("labels a user by email, then alias, then id, then the caller's placeholder", () => {
-    const noUser = "（无用户）";
-    expect(userLabel(row({}), noUser)).toBe("alice@example.com");
-    expect(userLabel(row({ user_email: null, user_alias: "Bob", user_id: "u1" }), noUser)).toBe("Bob");
-    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "u1" }), noUser)).toBe("u1");
-    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "" }), noUser)).toBe(noUser);
+  it("labels a user by email, then alias, then id, then a placeholder", () => {
+    expect(userLabel(row({}))).toBe("alice@example.com");
+    expect(userLabel(row({ user_email: null, user_alias: "Bob", user_id: "u1" }))).toBe("Bob");
+    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "u1" }))).toBe("u1");
+    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "" }))).toBe("(no user)");
   });
 
   it("sorts by spend descending without mutating the input", () => {
@@ -69,7 +68,7 @@ describe("teamUserSpend", () => {
   });
 
   it("writes one CSV line per (team, user) with the team kept on every line", () => {
-    const lines = buildTeamUserSpendCsv(response, "（无用户）").split(/\r?\n/);
+    const lines = buildTeamUserSpendCsv(response).split(/\r?\n/);
     expect(lines[0]).toBe(
       "Start Date,End Date,Team,Team ID,User,User ID,User Email,Spend (USD),Requests,Successful,Failed,Prompt Tokens,Completion Tokens,Total Tokens",
     );
@@ -81,13 +80,10 @@ describe("teamUserSpend", () => {
   });
 
   it("neutralises spreadsheet formulas in user-controlled cells", () => {
-    const csv = buildTeamUserSpendCsv(
-      {
-        ...response,
-        results: [row({ user_alias: null, user_email: "=HYPERLINK(1)" })],
-      },
-      "（无用户）",
-    );
+    const csv = buildTeamUserSpendCsv({
+      ...response,
+      results: [row({ user_alias: null, user_email: "=HYPERLINK(1)" })],
+    });
     expect(csv).toContain("'=HYPERLINK(1)");
   });
 

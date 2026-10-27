@@ -1,7 +1,6 @@
 import type { DailyData, SpendMetrics } from "@/components/UsagePage/types";
 import { stackedUsageColor } from "@/components/shared/charts";
 import { EMPTY_DAILY_ACTIVITY_METADATA, type DailyActivityMetadata } from "@/components/UsagePage/dailyActivityApi";
-import { formatDate } from "@/lib/i18n/format";
 import type { GatewayActivity } from "../gatewayActivity";
 
 export type BreakdownDimension = "models" | "model_groups" | "providers";
@@ -80,7 +79,7 @@ const seriesKey = (index: number) => `s${index}`;
 const formatDayLabel = (date: string): string => {
   const parsed = new Date(`${date}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return date;
-  return formatDate(parsed, { month: "short", day: "numeric" });
+  return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
 const sortByDate = (results: readonly DailyData[]) =>

@@ -1,4 +1,4 @@
-import { fireEvent, renderWithProviders as render, screen, waitFor } from "../../../tests/test-utils";
+import { act, render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
@@ -39,9 +39,35 @@ describe("AdvancedDatePicker", () => {
     }
   };
 
+  it.each([
+    ["MTD", "Month to date"],
+    ["YTD", "Year to date"],
+  ])("keeps %s selected when calendar ranges coincide", (preset, label) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2027, 0, 1, 12));
+    try {
+      render(
+        <AdvancedDatePicker
+          value={{ from: new Date(2027, 0, 1), to: new Date(2027, 0, 1, 23, 59, 59, 999) }}
+          onValueChange={mockOnValueChange}
+          presetShortLabel={preset}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "1 Jan, 00:00 - 1 Jan, 23:59" }));
+      expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button", { name: /Today/ })).toHaveAttribute("aria-pressed", "false");
+      fireEvent.click(screen.getByRole("button", { name: /Today/ }));
+      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      fireEvent.click(screen.getByRole("button", { name: "1 Jan, 00:00 - 1 Jan, 23:59" }));
+      expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("should render with default label", () => {
     render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
-    expect(screen.getByText("选择时间范围")).toBeInTheDocument();
+    expect(screen.getByText("Select Time Range")).toBeInTheDocument();
   });
 
   it("should render with custom label", () => {
@@ -51,8 +77,7 @@ describe("AdvancedDatePicker", () => {
 
   it("should display formatted date range", () => {
     const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
-    // The range follows the UI locale: this suite renders with zh-CN pinned.
-    expect(getTrigger(container)).toHaveTextContent(/\d{1,2}月\d{1,2}日 \d{2}:\d{2} - \d{1,2}月\d{1,2}日 \d{2}:\d{2}/);
+    expect(getTrigger(container)).toHaveTextContent(/\d{1,2} \w{3}, \d{2}:\d{2} - \d{1,2} \w{3}, \d{2}:\d{2}/);
   });
 
   it("should open dropdown when clicked", () => {
@@ -61,9 +86,9 @@ describe("AdvancedDatePicker", () => {
     openDropdown(container);
 
     // Check for relative time options
-    expect(screen.getAllByText("今天")[0]).toBeInTheDocument();
-    expect(screen.getByText("最近 7 天")).toBeInTheDocument();
-    expect(screen.getByText("最近 30 天")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    expect(screen.getByText("Last 7 days")).toBeInTheDocument();
+    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
   });
 
   it("should display relative time options", () => {
@@ -71,11 +96,11 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    expect(screen.getAllByText("今天")[0]).toBeInTheDocument();
-    expect(screen.getByText("最近 7 天")).toBeInTheDocument();
-    expect(screen.getByText("最近 30 天")).toBeInTheDocument();
-    expect(screen.getByText("本月至今")).toBeInTheDocument();
-    expect(screen.getByText("本年至今")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    expect(screen.getByText("Last 7 days")).toBeInTheDocument();
+    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
+    expect(screen.getByText("Month to date")).toBeInTheDocument();
+    expect(screen.getByText("Year to date")).toBeInTheDocument();
   });
 
   it("anchors the panel to the trigger edge named by align", () => {
@@ -107,7 +132,7 @@ describe("AdvancedDatePicker", () => {
 
     await user.keyboard("{Enter}");
 
-    expect(screen.getByText("相对时间")).toBeInTheDocument();
+    expect(screen.getByText("Relative time")).toBeInTheDocument();
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -139,8 +164,8 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    expect(screen.getByText("应用")).toBeInTheDocument();
-    expect(screen.getByText("取消")).toBeInTheDocument();
+    expect(screen.getByText("Apply")).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
   });
 
   it("should close dropdown when Cancel is clicked", () => {
@@ -148,11 +173,11 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const cancelButton = screen.getByText("取消");
+    const cancelButton = screen.getByText("Cancel");
     fireEvent.click(cancelButton);
 
     // Dropdown should be closed, so relative time options shouldn't be visible
-    expect(screen.queryAllByText("今天")).toHaveLength(0);
+    expect(screen.queryByText("Today")).not.toBeInTheDocument();
   });
 
   it("should call onValueChange when Apply is clicked", async () => {
@@ -160,7 +185,7 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const applyButton = screen.getByText("应用");
+    const applyButton = screen.getByText("Apply");
     fireEvent.click(applyButton);
 
     await waitFor(() => {
@@ -172,8 +197,8 @@ describe("AdvancedDatePicker", () => {
     const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
 
     openDropdown(container);
-    fireEvent.click(screen.getByText("今天"));
-    fireEvent.click(screen.getByRole("button", { name: "应用" }));
+    fireEvent.click(screen.getByText("Today"));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "today");
     await waitFor(() => {
@@ -188,7 +213,7 @@ describe("AdvancedDatePicker", () => {
     openDropdown(container);
     fireEvent.change(screen.getByDisplayValue("2025-01-01"), { target: { value: today } });
     fireEvent.change(screen.getByDisplayValue("2025-01-31"), { target: { value: today } });
-    fireEvent.click(screen.getByRole("button", { name: "应用" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), null);
     await waitFor(() => {
@@ -202,8 +227,8 @@ describe("AdvancedDatePicker", () => {
     );
 
     openDropdown(container);
-    fireEvent.click(screen.getByText("今天"));
-    fireEvent.click(screen.getByRole("button", { name: "应用" }));
+    fireEvent.click(screen.getByText("Today"));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "today");
     await waitFor(() => {
@@ -218,7 +243,7 @@ describe("AdvancedDatePicker", () => {
     rerender(<AdvancedDatePicker value={customValue} onValueChange={mockOnValueChange} presetShortLabel={null} />);
 
     openDropdown(container);
-    fireEvent.click(screen.getByRole("button", { name: "应用" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), null);
     await waitFor(() => {
@@ -236,7 +261,7 @@ describe("AdvancedDatePicker", () => {
     );
 
     openDropdown(container);
-    fireEvent.click(screen.getByRole("button", { name: "应用" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "30d");
     await waitFor(() => {
@@ -249,7 +274,7 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const todayOption = screen.getAllByText("今天")[0];
+    const todayOption = screen.getByText("Today");
     fireEvent.click(todayOption);
 
     // The option should be highlighted (bg-info/10)
@@ -275,7 +300,7 @@ describe("AdvancedDatePicker", () => {
 
     await user.keyboard("{Enter}");
     expect(presets[1]).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("最近 7 天").closest("button")).toHaveClass("bg-info/10");
+    expect(screen.getByText("Last 7 days").closest("button")).toHaveClass("bg-info/10");
   });
 
   it("should show validation error for invalid date range", async () => {
@@ -291,7 +316,7 @@ describe("AdvancedDatePicker", () => {
     fireEvent.change(endDateInput, { target: { value: "2025-01-01" } });
 
     await waitFor(() => {
-      expect(screen.getByText("结束日期不能早于开始日期")).toBeInTheDocument();
+      expect(screen.getByText("End date cannot be before start date")).toBeInTheDocument();
     });
   });
 
@@ -309,8 +334,52 @@ describe("AdvancedDatePicker", () => {
 
     await waitFor(() => {
       // Find the button element (the Apply button's actual button element)
-      const applyButton = screen.getByText("应用").closest("button");
+      const applyButton = screen.getByText("Apply").closest("button");
       expect(applyButton).toBeDisabled();
     });
+  });
+
+  it("should label compact custom date inputs, validate their order and apply the corrected range", async () => {
+    const user = userEvent.setup();
+    render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} compact />);
+
+    await user.click(screen.getByRole("button", { expanded: false }));
+    const start = screen.getByLabelText("Start date");
+    const end = screen.getByLabelText("End date");
+    expect(start).toHaveValue("2025-01-01");
+    expect(end).toHaveValue("2025-01-31");
+
+    act(() => fireEvent.change(start, { target: { value: "2025-02-01" } }));
+    expect(screen.getByText("End date cannot be before start date")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
+    expect(mockOnValueChange).not.toHaveBeenCalled();
+
+    act(() => fireEvent.change(end, { target: { value: "2025-02-05" } }));
+    expect(screen.queryByText("End date cannot be before start date")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Apply" })).toBeEnabled();
+    expect(mockOnValueChange).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    const expectedRange = {
+      from: new Date(2025, 1, 1),
+      to: new Date(2025, 1, 5, 23, 59, 59, 999),
+    };
+    expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expectedRange, null);
+    await waitFor(() => expect(mockOnValueChange).toHaveBeenNthCalledWith(2, expectedRange, null));
+    expect(screen.queryByLabelText("Start date")).not.toBeInTheDocument();
+  });
+
+  it("should keep compact preset selection pending until Apply is clicked", async () => {
+    const user = userEvent.setup();
+    render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} compact />);
+
+    await user.click(screen.getByRole("button", { expanded: false }));
+    await user.click(screen.getByRole("button", { name: /Last 7 days/ }));
+    expect(screen.getByRole("button", { name: /Last 7 days/ })).toHaveAttribute("aria-pressed", "true");
+    expect(mockOnValueChange).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "7d");
+    await waitFor(() => expect(mockOnValueChange).toHaveBeenNthCalledWith(2, expect.anything(), "7d"));
   });
 });

@@ -29,9 +29,11 @@ describe("EndpointUsageBarChart", () => {
   it("renders the title and the header legend labels", () => {
     renderWithProviders(<EndpointUsageBarChart endpointData={endpointData} />);
 
-    expect(screen.getByText("各端点成功与失败请求数")).toBeInTheDocument();
-    expect(screen.getByText("成功请求")).toBeInTheDocument();
-    expect(screen.getByText("失败请求")).toBeInTheDocument();
+    expect(screen.getByText("Success vs Failed Requests by Endpoint")).toBeInTheDocument();
+    expect(screen.getByText("Successful")).toBeInTheDocument();
+    expect(screen.getByText("Failed")).toBeInTheDocument();
+    expect(screen.getByText("160")).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
   });
 
   it("renders stacked brand-blue and red bars per endpoint", () => {
@@ -64,7 +66,7 @@ describe("EndpointUsageBarChart", () => {
   it("renders an empty chart without bars when endpointData is absent", () => {
     const { container } = renderWithProviders(<EndpointUsageBarChart />);
 
-    expect(screen.getByText("各端点成功与失败请求数")).toBeInTheDocument();
+    expect(screen.getByText("Success vs Failed Requests by Endpoint")).toBeInTheDocument();
     expect(container.querySelectorAll("path.recharts-rectangle")).toHaveLength(0);
   });
 });

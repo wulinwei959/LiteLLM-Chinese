@@ -1,6 +1,4 @@
-import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
-
-import { renderWithProviders } from "../../../../../../../tests/test-utils";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { useState, type ComponentProps, type ReactNode } from "react";
@@ -78,7 +76,7 @@ vi.mock("@/components/activity_metrics", () => ({
   ActivityMetrics: ({
     modelMetrics,
     summaryMetrics,
-    summaryTitle = "总体用量",
+    summaryTitle = "Overall Usage",
     fetchTopApiKeys,
   }: {
     modelMetrics?: { __source?: string };
@@ -512,18 +510,18 @@ describe("EntityUsage", () => {
     it("sums, sorts, limits, and carries email attribution for global top keys", () => {
       const results = [
         createDailyData("2025-01-01", {
-          "key-low": createKeyMetrics(10, { key_alias: "低", team_id: null, user_email: "low@example.com" }),
-          "key-high": createKeyMetrics(25, { key_alias: "高", team_id: null, user_email: "high@example.com" }),
+          "key-low": createKeyMetrics(10, { key_alias: "Low", team_id: null, user_email: "low@example.com" }),
+          "key-high": createKeyMetrics(25, { key_alias: "High", team_id: null, user_email: "high@example.com" }),
         }),
         createDailyData("2025-01-02", {
-          "key-low": createKeyMetrics(30, { key_alias: "低", team_id: null, user_email: "low@example.com" }),
+          "key-low": createKeyMetrics(30, { key_alias: "Low", team_id: null, user_email: "low@example.com" }),
         }),
       ];
 
       expect(getGlobalTopKeys(results, 1)).toEqual([
         {
           api_key: "key-low",
-          key_alias: "低",
+          key_alias: "Low",
           user: "low@example.com",
           tags: [],
           spend: 40,
@@ -558,14 +556,14 @@ describe("EntityUsage", () => {
   });
 
   it("should render with tag entity type and display spend metrics", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
-    expect(screen.getByText("总消费")).toBeInTheDocument();
+    expect(screen.getByText("Tag Spend Overview")).toBeInTheDocument();
+    expect(screen.getByText("Total Spend")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -577,14 +575,14 @@ describe("EntityUsage", () => {
   });
 
   it("should render with team entity type and call team API", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
     });
 
     // Check that it shows team-specific label
-    expect(await screen.findByText("团队 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("Team Spend Overview")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -600,12 +598,12 @@ describe("EntityUsage", () => {
       teamsResult([{ team_id: "team-alpha" }, { team_id: "litellm-dashboard" }, { team_id: "team-beta" }]),
     );
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
     expect(await screen.findByText("team-user-spend:team-alpha|team-beta")).toBeInTheDocument();
 
     cleanup();
     mockUseTeams.mockReturnValue(teamsResult([]));
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
@@ -613,13 +611,13 @@ describe("EntityUsage", () => {
   });
 
   it("should render with organization entity type and call organization API", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="organization" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="organization" />);
 
     await waitFor(() => {
       expect(mockOrganizationDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("组织 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("Organization Spend Overview")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -628,13 +626,13 @@ describe("EntityUsage", () => {
   });
 
   it("should render with customer entity type and call customer API", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="customer" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="customer" />);
 
     await waitFor(() => {
       expect(mockCustomerDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("客户 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("Customer Spend Overview")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -643,13 +641,13 @@ describe("EntityUsage", () => {
   });
 
   it("should render with agent entity type and call agent API", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
 
     await waitFor(() => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("智能体 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("Agent Spend Overview")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$444.30");
@@ -658,13 +656,13 @@ describe("EntityUsage", () => {
   });
 
   it("should render with user entity type and call user API", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="user" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="user" />);
 
     await waitFor(() => {
       expect(mockUserDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("用户 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("User Spend Overview")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -673,31 +671,31 @@ describe("EntityUsage", () => {
   });
 
   it("should switch between tabs", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
+    expect(screen.getByText("Tag Spend Overview")).toBeInTheDocument();
 
-    const modelActivityTab = screen.getByText("模型活动");
+    const modelActivityTab = screen.getByText("Model Activity");
     act(() => {
       fireEvent.click(modelActivityTab);
     });
 
     expect(screen.getAllByText("Activity Metrics")[0]).toBeInTheDocument();
 
-    const keyActivityTab = screen.getByText("密钥活动");
+    const keyActivityTab = screen.getByText("Key Activity");
     act(() => {
       fireEvent.click(keyActivityTab);
     });
 
-    expect(within(screen.getByRole("tabpanel")).getByRole("heading", { name: "总体用量" })).toBeInTheDocument();
+    expect(within(screen.getByRole("tabpanel")).getByRole("heading", { name: "Overall Usage" })).toBeInTheDocument();
   });
 
   it("loads key pages separately from the aggregate using the current entity scope", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalledTimes(1);
@@ -706,7 +704,7 @@ describe("EntityUsage", () => {
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalledTimes(2);
     });
-    fireEvent.click(screen.getByText("密钥活动"));
+    fireEvent.click(screen.getByText("Key Activity"));
     await waitFor(() => {
       expect(mockDailyActivityKeyPageCall).toHaveBeenCalledWith(
         "team",
@@ -745,14 +743,14 @@ describe("EntityUsage", () => {
   };
 
   const NON_TEAM_PANELS: [string, string][] = [
-    ["成本", "标签 消费总览"],
-    ["模型活动", "metrics-source:model_groups"],
-    ["密钥活动", "总体用量"],
-    ["端点活动", "Endpoint Usage Panel"],
+    ["Cost", "Tag Spend Overview"],
+    ["Model Activity", "metrics-source:model_groups"],
+    ["Key Activity", "Overall Usage"],
+    ["Endpoint Activity", "Endpoint Usage Panel"],
   ];
 
   it.each(NON_TEAM_PANELS)("shows only the %s panel for a non-team entity type", async (tabLabel, marker) => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -770,15 +768,15 @@ describe("EntityUsage", () => {
   });
 
   const TEAM_PANELS: [string, string][] = [
-    ["成本", "团队 消费总览"],
-    ["模型活动", "metrics-source:model_groups"],
-    ["智能体活动", "metrics-source:entities"],
-    ["密钥活动", "总体用量"],
-    ["端点活动", "Endpoint Usage Panel"],
+    ["Cost", "Team Spend Overview"],
+    ["Model Activity", "metrics-source:model_groups"],
+    ["Agent Activity", "metrics-source:entities"],
+    ["Key Activity", "Overall Usage"],
+    ["Endpoint Activity", "Endpoint Usage Panel"],
   ];
 
   it.each(TEAM_PANELS)("shows only the %s panel for the team entity type", async (tabLabel, marker) => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
@@ -809,82 +807,83 @@ describe("EntityUsage", () => {
 
     mockTagDailyActivityCall.mockResolvedValue(emptyData);
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
-    expect((await screen.findAllByText("$0.00")).length).toBeGreaterThan(0);
-    expect(screen.getByText("总消费")).toBeInTheDocument();
-    expect(screen.getAllByText("0")[0]).toBeInTheDocument();
+    expect(await screen.findByText("Tag Spend Overview")).toBeInTheDocument();
+    const costTab = screen.getByRole("tabpanel");
+    expect(await within(costTab).findByText("$0.00")).toBeInTheDocument();
+    expect(within(costTab).getByText("Total Spend")).toBeInTheDocument();
+    expect(within(costTab).getAllByText("0")[0]).toBeInTheDocument();
   });
 
   it("should display Model Activity tab for non-agent entity types", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("模型活动")).toBeInTheDocument();
+    expect(screen.getByText("Model Activity")).toBeInTheDocument();
   });
 
-  it("should display 请求 / Token 消耗 tab for agent entity type", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
+  it("should display Request / Token Consumption tab for agent entity type", async () => {
+    render(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
 
     await waitFor(() => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("请求 / Token 消耗")).toBeInTheDocument();
+    expect(screen.getByText("Request / Token Consumption")).toBeInTheDocument();
   });
 
   it("should display Top Public Model Names title for non-agent entity types", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
+    expect(screen.getByText("Top Public Model Names")).toBeInTheDocument();
   });
 
   it("defaults Model Activity to public model names and toggles to litellm models", async () => {
-    const { container } = renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
     act(() => {
-      fireEvent.click(screen.getByText("模型活动"));
+      fireEvent.click(screen.getByText("Model Activity"));
     });
 
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("LiteLLM 模型名"));
+      fireEvent.click(showingText("Litellm Model Name"));
     });
 
     expect(showingCount("metrics-source:models")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("公开模型名"));
+      fireEvent.click(showingText("Public Model Name"));
     });
 
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
   });
 
   it("should display Top Agents title for agent entity type", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="agent" />);
 
     await waitFor(() => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("热门智能体")).toBeInTheDocument();
+    expect(screen.getByText("Top Agents")).toBeInTheDocument();
   });
 
   it("should use entityList label when entityList is provided and entity exists", async () => {
@@ -893,7 +892,7 @@ describe("EntityUsage", () => {
       { label: "Tag 2", value: "tag-2" },
     ];
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={customEntityList} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={customEntityList} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -907,7 +906,7 @@ describe("EntityUsage", () => {
   it("should fallback to team_alias when entityList is provided but entity does not exist", async () => {
     const customEntityList = [{ label: "Tag 2", value: "tag-2" }];
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={customEntityList} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={customEntityList} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -919,7 +918,7 @@ describe("EntityUsage", () => {
   });
 
   it("should fallback to team_alias when entityList is null", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={null} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={null} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -931,7 +930,7 @@ describe("EntityUsage", () => {
   });
 
   it("should still request the filter when the caller's tag scope is empty", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={[]} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={[]} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -941,7 +940,7 @@ describe("EntityUsage", () => {
   });
 
   it("should not request the filter while the entity list is still unresolved", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={null} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={null} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -951,47 +950,47 @@ describe("EntityUsage", () => {
   });
 
   it("should display Agent Activity tab for team entity type", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("智能体活动")).toBeInTheDocument();
+    expect(screen.getByText("Agent Activity")).toBeInTheDocument();
   });
 
   it("should not display Agent Activity tab for non-team entity types", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.queryByText("智能体活动")).not.toBeInTheDocument();
+    expect(screen.queryByText("Agent Activity")).not.toBeInTheDocument();
   });
 
   it("should display Top Agents Driving Spend card for team entity type", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("消费最高的智能体")).toBeInTheDocument();
+    expect(screen.getByText("Top Agents Driving Spend")).toBeInTheDocument();
   });
 
   it("should not display Top Agents Driving Spend card for non-team entity types", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
-    expect(screen.queryByText("消费最高的智能体")).not.toBeInTheDocument();
+    expect(screen.queryByText("Top Agents Driving Spend")).not.toBeInTheDocument();
   });
 
   it("should fetch agent activity data when entity type is team", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "test-token" }));
@@ -999,19 +998,19 @@ describe("EntityUsage", () => {
   });
 
   it("offers per-model top keys in Model Activity but not in the agent breakdown", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
     });
 
     act(() => {
-      fireEvent.click(screen.getByText("模型活动"));
+      fireEvent.click(screen.getByText("Model Activity"));
     });
     expect(showingCount("top-keys-fetcher:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(screen.getByText("智能体活动"));
+      fireEvent.click(screen.getByText("Agent Activity"));
     });
     expect(showingCount("metrics-source:entities")).toBeGreaterThan(0);
     expect(screen.queryByText("top-keys-fetcher:entities")).not.toBeInTheDocument();
@@ -1024,28 +1023,28 @@ describe("EntityUsage", () => {
         resolveSpend = resolve;
       }),
     );
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
-    expect(screen.getAllByText("正在加载图表数据...").length).toBeGreaterThan(0);
-    expect(screen.queryByText("总消费")).not.toBeInTheDocument();
-    expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Loading chart data...")).toHaveLength(2);
+    expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
     await act(async () => {
       resolveSpend(mockSpendData);
     });
 
-    expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
-    expect(screen.getByText("总体用量")).toBeInTheDocument();
-    expect(screen.getByText("总消费")).toBeInTheDocument();
+    expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
+    expect(screen.getByText("Overall Usage")).toBeInTheDocument();
+    expect(screen.getByText("Total Spend")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
   });
 
   it("should not fetch agent activity data for non-team entity types", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -1055,13 +1054,13 @@ describe("EntityUsage", () => {
   });
 
   it("should switch to Agent Activity tab for team entity type", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
     });
 
-    const agentActivityTab = screen.getByText("智能体活动");
+    const agentActivityTab = screen.getByText("Agent Activity");
     act(() => {
       fireEvent.click(agentActivityTab);
     });
@@ -1092,7 +1091,7 @@ describe("EntityUsage", () => {
 
     mockTagDailyActivityCall.mockResolvedValue(spendDataWithoutAlias);
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityList={null} />);
+    render(<StatefulEntityUsage {...defaultProps} entityList={null} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -1103,8 +1102,8 @@ describe("EntityUsage", () => {
     });
   });
 
-  it("renders daily spend bars, per-entity bars, and the provider donut with cyan fills and a $ center total", async () => {
-    const { container } = renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+  it("renders the stacked daily spend chart, the per-entity table, and the provider share bar with a $ total", async () => {
+    const { container } = render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
@@ -1116,7 +1115,7 @@ describe("EntityUsage", () => {
     });
     expect(container.querySelector("path.recharts-rectangle")).toHaveAttribute("fill", "#94a3b8");
 
-    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Jan 1").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Tag 1").length).toBeGreaterThan(0);
 
     const segments = screen.getAllByTestId("provider-share-segment");
@@ -1148,7 +1147,7 @@ describe("EntityUsage", () => {
     mockUserDailyActivityCall.mockResolvedValue(spendDataForUser);
 
     // entityList is null to simulate a spender missing from the paginated user list
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="user" entityList={null} />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="user" entityList={null} />);
 
     await waitFor(() => {
       expect(mockUserDailyActivityCall).toHaveBeenCalled();
@@ -1161,7 +1160,7 @@ describe("EntityUsage", () => {
   });
 
   it("renders the provider spend table logo from the bundled provider map", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     const logo = await screen.findByAltText("openai logo");
     expect(logo).toHaveAttribute("src", expect.stringContaining("openai_small"));
@@ -1169,10 +1168,10 @@ describe("EntityUsage", () => {
 
   describe("capability gating", () => {
     it.each([
-      ["organization", () => mockOrganizationDailyActivityCall, "组织 消费总览"],
-      ["agent", () => mockAgentDailyActivityCall, "智能体 消费总览"],
+      ["organization", () => mockOrganizationDailyActivityCall, "Organization Spend Overview"],
+      ["agent", () => mockAgentDailyActivityCall, "Agent Spend Overview"],
     ] as const)("fetches %s activity for an admin but not for an internal user", async (entityType, call, heading) => {
-      renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType={entityType} />);
+      render(<StatefulEntityUsage {...defaultProps} entityType={entityType} />);
       await waitFor(() => {
         expect(call()).toHaveBeenCalled();
       });
@@ -1180,7 +1179,7 @@ describe("EntityUsage", () => {
       cleanup();
       call().mockClear();
 
-      renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType={entityType} userRole="Internal User" />);
+      render(<StatefulEntityUsage {...defaultProps} entityType={entityType} userRole="Internal User" />);
       expect(await screen.findByText(heading)).toBeInTheDocument();
       expect(call()).not.toHaveBeenCalled();
     });
@@ -1193,7 +1192,7 @@ describe("EntityUsage", () => {
       ["organization", () => mockOrganizationDailyActivityCall, true],
       ["agent", () => mockAgentDailyActivityCall, false],
     ] as const)("fetches %s activity for an org admin: %s", async (entityType, call, expected) => {
-      renderWithProviders(
+      render(
         <StatefulEntityUsage {...defaultProps} entityType={entityType} userRole="Internal User" isOrgAdmin={true} />,
       );
 
@@ -1202,31 +1201,31 @@ describe("EntityUsage", () => {
           expect(call()).toHaveBeenCalled();
         });
       } else {
-        expect(await screen.findByText("智能体 消费总览")).toBeInTheDocument();
+        expect(await screen.findByText("Agent Spend Overview")).toBeInTheDocument();
         expect(call()).not.toHaveBeenCalled();
       }
     });
 
     it("keeps the team breakdown but drops its agent sub-fetch for an internal user", async () => {
-      renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" userRole="Internal User" />);
+      render(<StatefulEntityUsage {...defaultProps} entityType="team" userRole="Internal User" />);
 
       await waitFor(() => {
         expect(mockTeamDailyActivityCall).toHaveBeenCalled();
       });
-      expect(await screen.findByText("团队 消费总览")).toBeInTheDocument();
+      expect(screen.getByText("Team Spend Overview")).toBeInTheDocument();
 
       expect(mockAgentDailyActivityCall).not.toHaveBeenCalled();
-      expect(screen.queryByText("智能体活动")).not.toBeInTheDocument();
-      expect(screen.queryByText("消费最高的智能体")).not.toBeInTheDocument();
+      expect(screen.queryByText("Agent Activity")).not.toBeInTheDocument();
+      expect(screen.queryByText("Top Agents Driving Spend")).not.toBeInTheDocument();
     });
 
     it("keeps the tag breakdown for an internal user", async () => {
-      renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="tag" userRole="Internal User" />);
+      render(<StatefulEntityUsage {...defaultProps} entityType="tag" userRole="Internal User" />);
 
       await waitFor(() => {
         expect(mockTagDailyActivityCall).toHaveBeenCalled();
       });
-      expect(await screen.findByText("标签 消费总览")).toBeInTheDocument();
+      expect(screen.getByText("Tag Spend Overview")).toBeInTheDocument();
     });
   });
 
@@ -1247,7 +1246,7 @@ describe("EntityUsage", () => {
     };
     mockTagDailyActivityCall.mockResolvedValue(spendDataUnknownProvider);
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} />);
+    render(<StatefulEntityUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(screen.getAllByText("zzz-internal").length).toBeGreaterThan(0);
@@ -1287,7 +1286,7 @@ describe("EntityUsage", () => {
       ],
     });
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(screen.getByText("top-keys:sk-abc=30.75=alice@example.com")).toBeInTheDocument();
@@ -1297,7 +1296,7 @@ describe("EntityUsage", () => {
   });
 
   it("uses the aggregated team endpoint and makes a single bounded request", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockDailyActivityAggregatedCall).toHaveBeenCalledWith("team", expect.anything());
@@ -1310,7 +1309,7 @@ describe("EntityUsage", () => {
   });
 
   it("does not scope the agent breakdown by the selected team ids", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockTeamDailyActivityCall).toHaveBeenCalled();
@@ -1332,7 +1331,7 @@ describe("EntityUsage", () => {
   });
 
   it("does not refetch agent activity when the team selection changes", async () => {
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
     await waitFor(() => {
       expect(mockAgentDailyActivityCall).toHaveBeenCalled();
@@ -1355,11 +1354,12 @@ describe("EntityUsage", () => {
   it("surfaces a failure alert when the aggregated call fails instead of retrying other routes", async () => {
     mockTeamDailyActivityCall.mockRejectedValue(new Error("aggregated unavailable"));
 
-    renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="team" />);
+    render(<StatefulEntityUsage {...defaultProps} entityType="team" />);
 
-    await waitFor(() => {
-      expect(screen.getAllByText(/消费数据拉取失败/).length).toBeGreaterThan(0);
-    });
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Failed to load spend data");
+    expect(alert).toHaveTextContent("aggregated unavailable");
+    expect(within(alert).getByRole("button", { name: "Retry" })).toBeInTheDocument();
     expect(mockDailyActivityAggregatedCall.mock.calls.filter((c) => c[0] === "team")).toHaveLength(1);
   });
 
@@ -1368,14 +1368,14 @@ describe("EntityUsage", () => {
     const userCombobox = (): HTMLElement => within(userDropdown()).getByRole("combobox");
 
     const renderUserUsage = async () => {
-      renderWithProviders(<StatefulEntityUsage {...defaultProps} entityType="user" entityList={null} />);
+      render(<StatefulEntityUsage {...defaultProps} entityType="user" entityList={null} />);
       await waitFor(() => {
         expect(mockUserDailyActivityCall).toHaveBeenCalled();
       });
     };
 
     it("links the single picked user back to their Internal Users record", async () => {
-      renderWithProviders(
+      render(
         <EntityUsage
           {...defaultProps}
           entityType="user"
@@ -1385,7 +1385,7 @@ describe("EntityUsage", () => {
         />,
       );
 
-      expect(await screen.findByRole("link", { name: "查看用户记录" })).toHaveAttribute(
+      expect(await screen.findByRole("link", { name: "View user record" })).toHaveAttribute(
         "href",
         "/ui/users?user=user-001",
       );
@@ -1394,13 +1394,13 @@ describe("EntityUsage", () => {
     it("shows no user record link until a user is picked", async () => {
       await renderUserUsage();
 
-      expect(screen.queryByRole("link", { name: "查看用户记录" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "View user record" })).not.toBeInTheDocument();
     });
 
     it("reports the picked user to the owner of the selection", async () => {
       const user = userEvent.setup();
       const onSelectedEntitiesChange = vi.fn();
-      renderWithProviders(
+      render(
         <EntityUsage
           {...defaultProps}
           entityType="user"
@@ -1419,7 +1419,7 @@ describe("EntityUsage", () => {
     it("offers a user filter even when the caller preloaded no user page", async () => {
       await renderUserUsage();
 
-      expect(userCombobox()).toHaveAttribute("placeholder", "按邮箱搜索用户…");
+      expect(userCombobox()).toHaveAttribute("placeholder", "Search users by email…");
     });
 
     it("searches every user on the server rather than a preloaded page", async () => {
