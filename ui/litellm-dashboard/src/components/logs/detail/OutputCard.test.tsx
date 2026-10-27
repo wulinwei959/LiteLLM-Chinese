@@ -5,12 +5,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OutputCard } from "./OutputCard";
 import { ParsedMessage } from "./prettyMessagesTypes";
-import { copyToClipboard } from "@/utils/dataUtils";
-import { toast } from "@/lib/toast";
-
-vi.mock("@/utils/dataUtils", () => ({ copyToClipboard: vi.fn() }));
 
 describe("OutputCard", () => {
+  const mockWriteText = vi.fn().mockResolvedValue(undefined);
   const mockMessage: ParsedMessage = {
     role: "assistant",
     content: "This is a test response",
@@ -18,7 +15,13 @@ describe("OutputCard", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(copyToClipboard).mockResolvedValue(true);
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: mockWriteText,
+      },
+      writable: true,
+      configurable: true,
+    });
   });
 
   it("should render the OutputCard component", () => {
@@ -62,8 +65,9 @@ describe("OutputCard", () => {
       fireEvent.click(copyButton);
     });
 
-    expect(copyToClipboard).toHaveBeenCalledWith("This is a test response", "Output copied");
-    expect(toast.success).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalledWith("This is a test response");
+    });
   });
 
   it("should not copy when message is null and copy button is clicked", async () => {
@@ -77,7 +81,7 @@ describe("OutputCard", () => {
     await user.click(copyButton);
 
     await waitFor(() => {
-      expect(copyToClipboard).not.toHaveBeenCalled();
+      expect(mockWriteText).not.toHaveBeenCalled();
     });
   });
 

@@ -4,13 +4,27 @@
  */
 
 import { useState } from "react";
-import { copyToClipboard } from "@/utils/dataUtils";
+import { useTranslations } from "next-intl";
+import { toast } from "@/lib/toast";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 import { ParsedMessage } from "./prettyMessagesTypes";
 import { SectionHeader } from "./SectionHeader";
 import { CollapsibleMessage } from "./CollapsibleMessage";
 import { HistoryTree } from "./HistoryTree";
 import { SimpleMessageBlock } from "./SimpleMessageBlock";
-import { useTranslations } from "next-intl";
+
+type MessageRoleLabelKey = "detail.assistantRole" | "detail.systemRole" | "detail.userRole";
+
+const MESSAGE_ROLE_LABEL_KEYS: Readonly<Record<string, MessageRoleLabelKey>> = {
+  assistant: "detail.assistantRole",
+  system: "detail.systemRole",
+  user: "detail.userRole",
+};
+
+const messageRoleLabel = (t: LogsTranslator, role: string): string => {
+  const key = MESSAGE_ROLE_LABEL_KEYS[role];
+  return key === undefined ? role.toUpperCase() : t(key);
+};
 
 interface InputCardProps {
   messages: ParsedMessage[];
@@ -20,7 +34,6 @@ interface InputCardProps {
 
 export function InputCard({ messages, promptTokens, inputCost }: InputCardProps) {
   const t = useTranslations("logs");
-
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   if (messages.length === 0) {
@@ -35,7 +48,8 @@ export function InputCard({ messages, promptTokens, inputCost }: InputCardProps)
 
   const handleCopy = () => {
     const content = lastMessage?.content || "";
-    void copyToClipboard(content, t("cards.inputCopied"));
+    navigator.clipboard.writeText(content);
+    toast.success(t("cards.inputCopied"));
   };
 
   return (
@@ -82,7 +96,7 @@ export function InputCard({ messages, promptTokens, inputCost }: InputCardProps)
           {/* Last User Message - Always visible */}
           {lastMessage && (
             <SimpleMessageBlock
-              label={lastMessage.role.toUpperCase()}
+              label={messageRoleLabel(t, lastMessage.role)}
               content={lastMessage.content}
               toolCalls={lastMessage.toolCalls}
             />

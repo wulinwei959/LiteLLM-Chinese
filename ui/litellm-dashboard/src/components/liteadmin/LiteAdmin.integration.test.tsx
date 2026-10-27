@@ -51,10 +51,10 @@ type ModelReply = {
 
 const json = (value: unknown, status = 200) =>
   new Response(JSON.stringify(value), { status, headers: { "Content-Type": "application/json" } });
-const toolReply = (name: string, args: Record<string, unknown>, id = "call-test"): ModelReply => ({
+const toolReply = (name: string, args: Record<string, unknown>): ModelReply => ({
   role: "assistant",
   content: null,
-  tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+  tool_calls: [{ id: "call-test", type: "function", function: { name, arguments: JSON.stringify(args) } }],
 });
 const answer = (content: string): ModelReply => ({ role: "assistant", content });
 
@@ -104,9 +104,9 @@ function Page() {
   return null;
 }
 
-function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome = false, showUsage = false) {
+function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  const tree = (home = showHome, usage = showUsage) => (
+  const tree = (home = showHome) => (
     <QueryClientProvider client={client}>
       <LocaleProvider locale="zh-CN">
         <Toaster />
@@ -128,29 +128,12 @@ function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome =
 
 interface GatewayOptions {
   models?: ModelGroup[];
-  callableModels?: string[] | (() => Promise<Response>);
   write?: () => Promise<Response>;
   read?: () => Promise<Response>;
-  usage?: () => Promise<Response>;
   settings?: { target: string; status: number } | ((request: Request) => Promise<Response>);
 }
 
-function completionResponse(message: ModelReply | undefined) {
-  if (!message) return json({ error: { message: "Model unavailable" } }, 503);
-  const completion = {
-    id: "completion-test",
-    object: "chat.completion",
-    created: 0,
-    model: "chat-model",
-    choices: [{ index: 0, message, finish_reason: message.tool_calls ? "tool_calls" : "stop" }],
-  };
-  return json(completion);
-}
-
-function gateway(
-  replies: (ModelReply | Promise<ModelReply> | ((request: RecordedRequest) => ModelReply))[],
-  options: GatewayOptions = {},
-) {
+function gateway(replies: (ModelReply | Promise<ModelReply>)[], options: GatewayOptions = {}) {
   const requests: RecordedRequest[] = [];
   const settings = options.settings ?? { target: INFERENCE, status: 200 };
   transport.mockImplementation(async (input, init) => {
@@ -175,20 +158,20 @@ function gateway(
           { model_group: "chat-model", mode: "chat" },
         ],
       });
-    if (path.endsWith("/models")) {
-      if (typeof options.callableModels === "function") return options.callableModels();
-      const names = options.callableModels ??
-        options.models?.map((model) => model.model_group) ?? ["a-embedding", "chat-model"];
-      return json({ data: names.map((id) => ({ id })) });
-    }
     if (path.endsWith("/chat/completions")) {
-      const reply = replies.shift();
-      return completionResponse(typeof reply === "function" ? reply(recorded) : await reply);
+      const message = await replies.shift();
+      if (!message) return json({ error: { message: "Model unavailable" } }, 503);
+      const completion = {
+        id: "completion-test",
+        object: "chat.completion",
+        created: 0,
+        model: "chat-model",
+        choices: [{ index: 0, message, finish_reason: message.tool_calls ? "tool_calls" : "stop" }],
+      };
+      return json(completion);
     }
     if (path.endsWith("/team/info"))
       return options.read ? options.read() : json({ team_info: { team_id: "team-1", max_budget: 40 } });
-    if (path.endsWith("/user/daily/activity/aggregated"))
-      return options.usage ? options.usage() : json({ results: [], metadata: { total_spend: 12.34 } });
     if (path.endsWith("/team/update"))
       return options.write ? options.write() : json({ team_id: "team-1", max_budget: body.max_budget });
     if (path.endsWith("/key/generate"))
@@ -206,7 +189,7 @@ async function selectModel(model = "chat-model") {
 }
 
 async function openWidget() {
-  fireEvent.click(await screen.findByRole("button", { name: "Aria Agent" }));
+  fireEvent.click(await screen.findByRole("button", { name: "LiteAdmin" }));
   await selectModel();
 }
 
@@ -231,341 +214,8 @@ afterEach(() => {
   document.cookie = "token=; Max-Age=0; Path=/";
 });
 
-describe("Aria Agent in the gateway", () => {
-  it.each(["proxy_admin", "internal_user"])(
-    "should start a conversation from the exact suggested question without changing %s permissions",
-    async (role) => {
-      session(role);
-      const requests = gateway([answer("Here is your weekly spend.")]);
-      renderWidget();
-      await userEvent.setup().click(await screen.findByRole("button", { name: "Aria Agent" }));
-      const question = "How much have I spent this week?";
-      const suggestion = await screen.findByRole("button", { name: question });
-      await waitFor(() => expect(suggestion).toBeEnabled());
-      act(() => fireEvent.click(suggestion));
-      expect(await screen.findByText("Here is your weekly spend.")).toBeInTheDocument();
-      for (const label of [question, "Which models are costing the most?", "How can I reduce my spend?"]) {
-        expect(screen.queryByRole("button", { name: label })).not.toBeInTheDocument();
-      }
-      const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-      expect(completions).toHaveLength(1);
-      expect(completions[0].body.messages).toEqual([
-        { role: "system", content: expect.any(String) },
-        { role: "user", content: question },
-      ]);
-      if (role === "internal_user") {
-        expect(completions[0].body.tools).toEqual([
-          expect.objectContaining({ function: expect.objectContaining({ name: "render_usage_chart" }) }),
-          expect.objectContaining({ function: expect.objectContaining({ name: "get_usage_data" }) }),
-        ]);
-      }
-      expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
-    },
-  );
-
-  it("should disable suggested questions when no chat model is available", async () => {
-    const requests = gateway([], { models: [] });
-    renderWidget();
-    await userEvent.setup().click(await screen.findByRole("button", { name: "Aria Agent" }));
-    const picker = await screen.findByRole("combobox", { name: "Aria Agent model" });
-    expect(picker).toBeEnabled();
-    expect(screen.queryByText("No chat models are available for your account.")).not.toBeInTheDocument();
-    await userEvent.setup().click(picker);
-    expect(await screen.findByText("No available models")).toBeVisible();
-    await userEvent.setup().keyboard("{Escape}");
-    for (const question of [
-      "How much have I spent this week?",
-      "Which models are costing the most?",
-      "How can I reduce my spend?",
-    ]) {
-      expect(screen.getByRole("button", { name: question })).toBeDisabled();
-    }
-    expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
-  });
-
-  it("should restore header trigger focus and preserve the conversation when the popup closes with Escape", async () => {
-    const requests = gateway([answer("Your current usage is $12.34."), answer("Last month was $10.")]);
-    const user = userEvent.setup();
-    const backgroundAction = vi.fn();
-    function PageAction() {
-      return <button onClick={backgroundAction}>Background page action</button>;
-    }
-    renderWidget(PageAction);
-    await user.click(await screen.findByRole("button", { name: "Aria Agent" }));
-    const popup = await screen.findByRole("dialog", { name: "Aria Agent" });
-    expect(popup).toBeVisible();
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "Background page action" }));
-    expect(backgroundAction).toHaveBeenCalledOnce();
-    expect(popup).toBeVisible();
-    act(() => send("What is my usage?"));
-    await screen.findByText("Your current usage is $12.34.");
-    act(() => fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "And last month?" } }));
-    await user.click(screen.getByPlaceholderText("Ask Aria…"));
-    await user.keyboard("{Escape}");
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument());
-    const trigger = screen.getByRole("button", { name: "Aria Agent" });
-    await waitFor(() => expect(trigger).toHaveFocus());
-    await user.keyboard("{Enter}");
-    expect(await screen.findByRole("dialog", { name: "Aria Agent" })).toBeVisible();
-    expect(screen.getByText("Your current usage is $12.34.")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("And last month?");
-    expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("chat-model");
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Send message" })));
-    await screen.findByText("Last month was $10.");
-    const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-    expect(completions.at(-1)?.body.messages).toEqual([
-      { role: "system", content: expect.any(String) },
-      { role: "user", content: "What is my usage?" },
-      { role: "assistant", content: "Your current usage is $12.34." },
-      { role: "user", content: "And last month?" },
-    ]);
-    await user.click(screen.getByRole("button", { name: "Close Aria Agent" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument());
-    await waitFor(() => expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveFocus());
-  });
-
-  it("should show the same product name on Home, Usage, the header trigger and the popup", async () => {
-    gateway([]);
-    const view = renderWidget(undefined, true);
-    const home = await screen.findByRole("region", { name: "Ask Aria Agent" });
-    expect(within(home).getByRole("heading", { name: "Aria Agent" })).toHaveTextContent("Aria Agent");
-    expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveTextContent("Aria Agent");
-    view.refresh(false, true);
-    const usage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-    expect(within(usage).getByRole("heading", { name: "Aria Agent" })).toHaveTextContent("Aria Agent");
-    expect(screen.getByRole("button", { name: "Open Aria Agent" })).toHaveTextContent("Aria Agent");
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Aria Agent" })));
-    const popup = await screen.findByRole("dialog", { name: "Aria Agent" });
-    expect(within(popup).getByRole("heading", { name: "Aria Agent" })).toHaveTextContent("Aria Agent");
-  });
-
-  it("should keep the same scoped conversation when leaving Usage and reopening the header trigger", async () => {
-    session("internal_user");
-    const requests = gateway(
-      [answer("Your usage is within budget."), answer("The same usage conversation continues.")],
-      {
-        models: [
-          { model_group: "chat-model", mode: "chat" },
-          { model_group: "other-chat-model", mode: "chat" },
-        ],
-      },
-    );
-    const view = renderWidget(undefined, false, true);
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
-    const usage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-    await selectModel("other-chat-model");
-    act(() => {
-      fireEvent.change(within(usage).getByRole("textbox", { name: "Message Aria Agent" }), {
-        target: { value: "Check my usage" },
-      });
-    });
-
-    view.refresh(false, false);
-    expect(screen.queryByRole("region", { name: "Ask Aria about usage" })).not.toBeInTheDocument();
-    const trigger = screen.getByRole("button", { name: "Aria Agent" });
-    expect(trigger).toHaveTextContent("Aria Agent");
-    act(() => trigger.focus());
-    await userEvent.setup().keyboard("{Enter}");
-    expect(await screen.findByPlaceholderText("Ask Aria…")).toHaveValue("Check my usage");
-    expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
-    expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "true");
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Send message" })));
-    await screen.findByText("Your usage is within budget.");
-    act(() => {
-      fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "And last month?" } });
-      fireEvent.click(screen.getByRole("button", { name: "Close Aria Agent" }));
-    });
-
-    view.refresh(false, true);
-    const restoredUsage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-    expect(within(restoredUsage).getByRole("textbox", { name: "Message Aria Agent" })).toHaveValue("And last month?");
-    view.refresh(false, false);
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Aria Agent" })));
-    expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
-    expect(screen.getByText("Your usage is within budget.")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("And last month?");
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Send message" })));
-    await screen.findByText("The same usage conversation continues.");
-    const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-    expect(completions.map((request) => request.body.model)).toEqual(["other-chat-model", "other-chat-model"]);
-    expect(completions.at(-1)?.body.messages).toEqual([
-      { role: "system", content: expect.any(String) },
-      { role: "user", content: "Check my usage" },
-      { role: "assistant", content: "Your usage is within budget.", tool_calls: undefined },
-      { role: "user", content: "And last month?" },
-    ]);
-    expect(completions.at(-1)?.body.tools).toEqual([
-      expect.objectContaining({ function: expect.objectContaining({ name: "render_usage_chart" }) }),
-      expect.objectContaining({ function: expect.objectContaining({ name: "get_usage_data" }) }),
-    ]);
-  });
-
-  it("should keep the header trigger unavailable without a signed-in session", async () => {
-    document.cookie = "token=; Max-Age=0; Path=/";
-    const requests = gateway([]);
-    const { client } = renderWidget();
-    await screen.findByText("Session ready");
-    await waitFor(() => expect(client.isFetching()).toBe(0));
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
-    act(() => fireEvent.keyDown(document, { key: "j", ctrlKey: true }));
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
-    expect(requests.every((request) => request.url.endsWith("/litellm-ui-config"))).toBe(true);
-  });
-
-  it("should share the usage prompt's draft, selected model and conversation with the header panel", async () => {
-    const requests = gateway([answer("Your spend is within budget."), answer("The same conversation continues.")], {
-      models: [
-        { model_group: "chat-model", mode: "chat" },
-        { model_group: "other-chat-model", mode: "chat" },
-      ],
-    });
-    renderWidget(undefined, false, true);
-    const usage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-    await selectModel("other-chat-model");
-    act(() => {
-      fireEvent.change(within(usage).getByRole("textbox", { name: "Message Aria Agent" }), {
-        target: { value: "How is my spend?" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Open Aria Agent" }));
-    });
-    expect(usage).not.toBeVisible();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("How is my spend?");
-    expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Send message" })));
-    expect(await screen.findByText("Your spend is within budget.")).toBeInTheDocument();
-    act(() => {
-      fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "And my teams?" } });
-      fireEvent.click(screen.getByRole("button", { name: "Close Aria Agent" }));
-    });
-    const usageTrigger = screen.getByRole("button", { name: "Open Aria Agent" });
-    expect(usageTrigger).toHaveAttribute("aria-expanded", "false");
-    expect(within(usage).getByRole("textbox", { name: "Message Aria Agent" })).toHaveValue("And my teams?");
-    expect(within(usage).getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
-    const headerTrigger = screen.getByRole("button", { name: "Aria Agent" });
-    act(() => fireEvent.click(headerTrigger));
-    expect(usageTrigger).toHaveAttribute("aria-expanded", "true");
-    expect(headerTrigger).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
-    expect(screen.getByText("Your spend is within budget.")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("And my teams?");
-    act(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Send message" }));
-    });
-    expect(await screen.findByText("The same conversation continues.")).toBeInTheDocument();
-    const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-    expect(completions.map((request) => request.body.model)).toEqual(["other-chat-model", "other-chat-model"]);
-    expect(requests.some((request) => request.url.includes("/usage/ai/chat"))).toBe(false);
-    expect(completions.at(-1)?.body.messages).toEqual([
-      { role: "system", content: expect.any(String) },
-      { role: "user", content: "How is my spend?" },
-      { role: "assistant", content: "Your spend is within budget." },
-      { role: "user", content: "And my teams?" },
-    ]);
-  });
-
-  it.each([
-    ["proxy_admin", true, "global", true],
-    ["proxy_admin", false, "global", false],
-    ["proxy_admin_viewer", true, "global", false],
-    ["internal_user", true, "user", false],
-    ["internal_user_viewer", false, "user", false],
-    ["org_admin", true, "user", false],
-  ] as const)(
-    "should use the shared agent with scoped tools for %s with enterprise access %s",
-    async (role, premiumUser, scope, writable) => {
-      session(role, "first-admin", { premium_user: premiumUser });
-      const dates = { start_date: "2026-10-01", end_date: "2026-10-23" };
-      const args = scope === "global" ? { ...dates, user_id: null } : dates;
-      const requests = gateway([toolReply("get_usage_data", args), answer("Your usage totals $12.34.")]);
-      renderWidget(undefined, false, true);
-      const usage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-      const input = await within(usage).findByRole("textbox", { name: "Message Aria Agent" });
-      await waitFor(() => expect(input).toBeEnabled());
-      expect(within(usage).getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("chat-model");
-      act(() => {
-        fireEvent.change(input, { target: { value: "Summarize my usage" } });
-        fireEvent.keyDown(input, { key: "Enter" });
-      });
-      expect(await screen.findByText("Your usage totals $12.34.")).toBeInTheDocument();
-      expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
-      expect(usage).not.toBeVisible();
-      expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "true");
-      const read = requests.find((request) => request.url.includes("/user/daily/activity/aggregated"));
-      expect(read).toBeDefined();
-      expect(new URL(read!.url).searchParams.get("user_id")).toBe(scope === "user" ? "first-admin" : null);
-      expect(read?.headers.get("X-Gateway-Session")).toBe("Bearer sk-session-first-admin");
-      const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-      expect(completions).toHaveLength(2);
-      const tool = (name: string) => expect.objectContaining({ function: expect.objectContaining({ name }) });
-      expect(completions[0].body.tools).toEqual(expect.arrayContaining([tool("get_usage_data")]));
-      if (!writable) {
-        const names =
-          scope === "global"
-            ? ["render_usage_chart", "get_usage_data", "get_team_usage_data", "get_tag_usage_data"]
-            : ["render_usage_chart", "get_usage_data"];
-        expect(completions[0].body.tools).toEqual(names.map(tool));
-      }
-      expect(requests.some((request) => request.url.includes("/usage/ai/chat"))).toBe(false);
-      expect(requests.some((request) => request.url.endsWith("/key/generate"))).toBe(false);
-      expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
-    },
-  );
-
-  it("should hide usage and header access together and restore the same agent when unhidden", async () => {
-    gateway([]);
-    const user = userEvent.setup();
-    renderWidget(SidebarAccountMenu, false, true);
-    await screen.findByRole("button", { name: "Aria Agent" });
-    await user.click(screen.getByRole("button", { name: "Open Aria Agent" }));
-    expect(await screen.findByRole("dialog", { name: "Aria Agent" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /account menu/i }));
-    const hideToggle = await screen.findByRole("switch", { name: "Toggle hide Aria Agent" });
-    await user.click(hideToggle);
-    expect(screen.queryByRole("button", { name: "Open Aria Agent" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
-    await user.click(hideToggle);
-    const usageTrigger = await screen.findByRole("button", { name: "Open Aria Agent" });
-    const usage = screen.getByRole("region", { name: "Ask Aria about usage" });
-    expect(usageTrigger).toHaveAttribute("aria-expanded", "false");
-    await user.click(usageTrigger);
-    expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
-    expect(usage).not.toBeVisible();
-  });
-
-  it("should discard an administrator approval when usage access becomes read-only", async () => {
-    const requests = gateway([toolReply("key_create", keyArguments), answer("Only your own usage is available.")]);
-    const view = renderWidget(undefined, false, true);
-    const input = await screen.findByRole("textbox", { name: "Message Aria Agent" });
-    await waitFor(() => expect(input).toBeEnabled());
-    act(() => send("Create a key"));
-    await screen.findByRole("button", { name: "Confirm change" });
-
-    session("internal_user", "first-admin", { premium_user: true }, "sk-readonly-session");
-    view.refresh();
-    const usage = await screen.findByRole("region", { name: "Ask Aria about usage" });
-    const usageInput = await within(usage).findByRole("textbox", { name: "Message Aria Agent" });
-    await waitFor(() => expect(usageInput).toBeEnabled());
-    expect(usageInput).toHaveValue("");
-    expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
-    act(() => send("Show my usage"));
-    expect(await screen.findByText("Only your own usage is available.")).toBeInTheDocument();
-    const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
-    expect(completions.at(-1)?.body.messages).toEqual([
-      { role: "system", content: expect.any(String) },
-      { role: "user", content: "Show my usage" },
-    ]);
-    expect(completions.at(-1)?.body.tools).toEqual([
-      expect.objectContaining({ function: expect.objectContaining({ name: "render_usage_chart" }) }),
-      expect.objectContaining({ function: expect.objectContaining({ name: "get_usage_data" }) }),
-    ]);
-    expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
-  });
-
-  it.each(["keyboard", "click"])("continues one conversation from Home via %s and the popup", async (method) => {
+describe("LiteAdmin in the gateway", () => {
+  it.each(["keyboard", "click"])("continues one conversation from Home via %s and the dock", async (method) => {
     const requests = gateway([answer("First reply."), answer("Second reply."), answer("Third reply.")]);
     renderWidget(undefined, true);
     const home = await screen.findByRole("region", { name: "向 LiteAdmin 提问" });
@@ -576,7 +226,7 @@ describe("Aria Agent in the gateway", () => {
     else fireEvent.click(within(home).getByRole("button", { name: "发送消息" }));
     expect(await screen.findByText("First reply.")).toBeInTheDocument();
     expect(home).not.toBeVisible();
-    expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
+    expect(screen.getAllByRole("complementary", { name: "LiteAdmin" })).toHaveLength(1);
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
     send("Second question");
     expect(await screen.findByText("Second reply.")).toBeInTheDocument();
@@ -605,7 +255,7 @@ describe("Aria Agent in the gateway", () => {
       fireEvent.click(screen.getByRole("button", { name: label }));
       expect(input).toHaveValue(label);
       expect(input).toHaveFocus();
-      expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
       expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
     }
     fireEvent.change(input, { target: { value: "Set a budget of $10 for my team" } });
@@ -621,7 +271,7 @@ describe("Aria Agent in the gateway", () => {
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
   });
 
-  it("should preserve the draft and chosen model when opening, closing and leaving Home", async () => {
+  it("preserves the draft and chosen model when opening, closing and leaving Home", async () => {
     const requests = gateway([answer("Draft received.")], {
       models: [
         { model_group: "claude-sonnet-5-5", mode: "chat" },
@@ -649,13 +299,16 @@ describe("Aria Agent in the gateway", () => {
     expect(completion?.body.messages).toContainEqual({ role: "user", content: "Keep this draft" });
   });
 
-  it("should start over with an empty history and draft while preserving the selected model", async () => {
-    const requests = gateway([answer("Old answer."), answer("Fresh answer.")], {
-      models: [
-        { model_group: "chat-model", mode: "chat" },
-        { model_group: "other-chat-model", mode: "chat" },
-      ],
-    });
+  it("keeps each tab's history, model and draft independent through the Home composer", async () => {
+    const requests = gateway(
+      [answer("First answer."), answer("Second answer."), answer("Second follow-up."), answer("First follow-up.")],
+      {
+        models: [
+          { model_group: "chat-model", mode: "chat" },
+          { model_group: "other-chat-model", mode: "chat" },
+        ],
+      },
+    );
     renderWidget(undefined, true);
     await selectModel();
     send("First question");
@@ -715,7 +368,9 @@ describe("Aria Agent in the gateway", () => {
     ]);
     expect(completions[3].body.messages).toEqual([
       { role: "system", content: expect.any(String) },
-      { role: "user", content: "Fresh question" },
+      { role: "user", content: "First question" },
+      { role: "assistant", content: "First answer." },
+      { role: "user", content: "First draft" },
     ]);
   });
 
@@ -853,14 +508,16 @@ describe("Aria Agent in the gateway", () => {
     expect(requests.filter((request) => request.url.endsWith("/key/generate")).map((request) => request.body)).toEqual([
       { key_alias: "Second chat key", team_id: "team-1", max_budget: 40 },
     ]);
+    expect(screen.queryByText(/A submitted change may have completed/)).not.toBeInTheDocument();
   });
 
-  it("should abort an unfinished answer when starting over and ignore a late approval", async () => {
-    const pending = deferred<ModelReply>();
-    const requests = gateway([pending.promise, answer("Fresh answer.")]);
+  it("closes inactive, active and last tabs without cancelling survivors or reusing closed histories", async () => {
+    const first = deferred<ModelReply>();
+    const second = deferred<ModelReply>();
+    const requests = gateway([first.promise, second.promise, answer("Third answer."), answer("Fresh answer.")]);
     renderWidget();
     await openWidget();
-    act(() => send("Old pending question"));
+    send("First pending question");
     await waitFor(() =>
       expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1),
     );
@@ -965,7 +622,7 @@ describe("Aria Agent in the gateway", () => {
   it.each([
     ["sidebar", SidebarAccountMenu],
     ["navbar", UserDropdown],
-  ] as const)("persists Hide Aria Agent only for enterprise users in the %s account menu", async (_name, Menu) => {
+  ] as const)("persists Hide LiteAdmin only for enterprise users in the %s account menu", async (_name, Menu) => {
     gateway([]);
     const user = userEvent.setup();
     const view = renderWidget(Menu, true);
@@ -999,7 +656,7 @@ describe("Aria Agent in the gateway", () => {
   });
 
   it.each([false, null, undefined, "true"])(
-    "should offer the scoped header trigger without admin Home access when premium_user is %s",
+    "does not expose LiteAdmin when premium_user is %s",
     async (premiumUser) => {
       session("proxy_admin", "first-admin", { premium_user: premiumUser });
       const requests = gateway([]);
@@ -1013,49 +670,39 @@ describe("Aria Agent in the gateway", () => {
         expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
       }
       expect(requests.every((request) => request.url.endsWith("/litellm-ui-config"))).toBe(true);
-      act(() => fireEvent.keyDown(document, { key: "j", metaKey: true }));
-      expect(await screen.findByRole("dialog", { name: "Aria Agent" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "true");
-      act(() => fireEvent.keyDown(document, { key: "j", ctrlKey: true }));
-      expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Aria Agent" })).toBeVisible();
     },
   );
 
-  it("should discard admin state and preserve scoped header trigger access when enterprise access is lost", async () => {
-    const requests = gateway([answer("Your usage remains available.")]);
+  it("removes an open panel and shortcuts when enterprise access is lost and restores it closed", async () => {
+    const requests = gateway([]);
     const view = renderWidget();
     await openWidget();
     fireEvent.change(screen.getByPlaceholderText("向 LiteAdmin 提问…"), {
       target: { value: "Previous enterprise draft" },
     });
     await waitFor(() => expect(view.client.isFetching()).toBe(0));
+    const requestCount = requests.length;
+
     session("proxy_admin", "first-admin", { premium_user: false });
     view.refresh();
-    expect(screen.getByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
-    act(() => fireEvent.click(screen.getByRole("button", { name: "Aria Agent" })));
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("");
-    act(() => send("Show my usage"));
-    await screen.findByText("Your usage remains available.");
-    const completion = requests.find((request) => request.url.endsWith("/chat/completions"));
-    expect(completion?.body.tools).toEqual(
-      ["render_usage_chart", "get_usage_data", "get_team_usage_data", "get_tag_usage_data"].map((name) =>
-        expect.objectContaining({ function: expect.objectContaining({ name }) }),
-      ),
-    );
+    expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
+    for (const modifiers of [{ metaKey: true }, { ctrlKey: true }]) {
+      expect(fireEvent.keyDown(document, { key: "j", ...modifiers })).toBe(true);
+      expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
+    }
+    expect(requests).toHaveLength(requestCount);
 
     session();
     view.refresh();
-    expect(await screen.findByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "LiteAdmin" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     fireEvent.keyDown(document, { key: "j", ctrlKey: true });
     expect(await screen.findByRole("complementary", { name: "LiteAdmin" })).toBeInTheDocument();
     expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("");
   });
 
-  it("isolates Hide Aria Agent by admin and gateway and reacts to another tab clearing it", async () => {
+  it("isolates Hide LiteAdmin by admin and gateway and reacts to another tab clearing it", async () => {
     gateway([]);
     const user = userEvent.setup();
     const view = renderWidget(SidebarAccountMenu);
@@ -1069,7 +716,7 @@ describe("Aria Agent in the gateway", () => {
     expect(screen.getByRole("switch", { name: "切换隐藏 LiteAdmin" })).not.toBeChecked();
     session();
     view.refresh();
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
 
     switchToWorkerUrl("https://other-gateway.test");
     view.refresh();
@@ -1077,7 +724,7 @@ describe("Aria Agent in the gateway", () => {
     expect(screen.getByRole("switch", { name: "切换隐藏 LiteAdmin" })).not.toBeChecked();
     switchToWorkerUrl(MANAGEMENT);
     view.refresh();
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
 
     act(() => {
       localStorage.clear();
@@ -1090,7 +737,7 @@ describe("Aria Agent in the gateway", () => {
   it.each([
     ["sidebar", SidebarAccountMenu],
     ["navbar", UserDropdown],
-  ] as const)("does not offer Hide Aria Agent to a view-only admin in the %s menu", async (_name, Menu) => {
+  ] as const)("does not offer Hide LiteAdmin to a view-only admin in the %s menu", async (_name, Menu) => {
     session("proxy_admin_viewer");
     gateway([]);
     renderWidget(Menu);
@@ -1101,7 +748,7 @@ describe("Aria Agent in the gateway", () => {
     expect(screen.queryByRole("switch", { name: "切换隐藏 LiteAdmin" })).not.toBeInTheDocument();
   });
 
-  it("keeps the page mounted and comes back closed after Hide Aria Agent is turned off", async () => {
+  it("keeps the page mounted and comes back closed after Hide LiteAdmin is turned off", async () => {
     gateway([]);
     pageMounts = 0;
     const user = userEvent.setup();
@@ -1112,22 +759,18 @@ describe("Aria Agent in the gateway", () => {
     fireEvent.keyDown(document, { key: "j", metaKey: true });
     expect(await screen.findByRole("complementary", { name: "LiteAdmin" })).toBeInTheDocument();
     await user.click(toggle);
-    expect(screen.queryByRole("button", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
     await user.click(toggle);
-    expect(await screen.findByRole("button", { name: "Aria Agent" })).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "LiteAdmin" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     expect(pageMounts).toBe(1);
   });
 
   it("moves focus into the panel on open: the panel while loading, the message box, then a pending review", async () => {
-    const settings = deferred<Response>();
-    gateway([toolReply("key_create", keyArguments)], { settings: () => settings.promise });
+    gateway([toolReply("key_create", keyArguments)]);
     renderWidget();
-    fireEvent.click(await screen.findByRole("button", { name: "Aria Agent" }));
-    await waitFor(() => expect(screen.getByRole("dialog", { name: "Aria Agent" })).toHaveFocus());
-    await act(async () =>
-      settings.resolve(json({ PROXY_BASE_URL: MANAGEMENT, LITELLM_UI_API_DOC_BASE_URL: INFERENCE })),
-    );
+    fireEvent.click(await screen.findByRole("button", { name: "LiteAdmin" }));
+    expect(screen.getByRole("complementary", { name: "LiteAdmin" })).toHaveFocus();
     await selectModel();
     const reopen = () => {
       fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
@@ -1145,12 +788,12 @@ describe("Aria Agent in the gateway", () => {
     gateway([]);
     const user = userEvent.setup();
     renderWidget(SidebarAccountMenu);
-    const headerTrigger = await screen.findByRole("button", { name: "Aria Agent" });
+    await screen.findByRole("button", { name: "LiteAdmin" });
     fireEvent.keyDown(document, { key: "j", metaKey: true, shiftKey: true });
-    expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     fireEvent.keyDown(document, { key: "j", metaKey: true });
-    expect(await screen.findByRole("dialog", { name: "Aria Agent" })).toBeInTheDocument();
-    expect(headerTrigger).toHaveAttribute("aria-expanded", "true");
+    expect(await screen.findByRole("complementary", { name: "LiteAdmin" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "LiteAdmin" })).toHaveAttribute("aria-expanded", "true");
     fireEvent.keyDown(document, { key: "j", ctrlKey: true });
     expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /账户菜单/ }));
@@ -1162,28 +805,16 @@ describe("Aria Agent in the gateway", () => {
   });
 
   it.each(["proxy_admin_viewer", "internal_user", "internal_user_viewer", "org_admin"])(
-    "should expose only scoped usage tools from the dashboard header trigger to %s",
+    "does not expose operations to %s",
     async (role) => {
       session(role);
-      const requests = gateway([answer("Usage is available.")]);
+      const requests = gateway([]);
       const { client } = renderWidget(undefined, true);
       await screen.findByText("Session ready");
       await waitFor(() => expect(client.isFetching()).toBe(0));
       expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
       expect(screen.queryByRole("region", { name: "向 LiteAdmin 提问", hidden: true })).not.toBeInTheDocument();
       expect(requests.every((request) => request.url.endsWith("/litellm-ui-config"))).toBe(true);
-      act(() => fireEvent.click(screen.getByRole("button", { name: "Aria Agent" })));
-      await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
-      act(() => send("Show my usage"));
-      await screen.findByText("Usage is available.");
-      const names =
-        role === "proxy_admin_viewer"
-          ? ["render_usage_chart", "get_usage_data", "get_team_usage_data", "get_tag_usage_data"]
-          : ["render_usage_chart", "get_usage_data"];
-      const completion = requests.find((request) => request.url.endsWith("/chat/completions"));
-      expect(completion?.body.tools).toEqual(
-        names.map((name) => expect.objectContaining({ function: expect.objectContaining({ name }) })),
-      );
     },
   );
 
@@ -1240,82 +871,6 @@ describe("Aria Agent in the gateway", () => {
     );
   });
 
-  it("should let an admin viewer select only models their inference session can call", async () => {
-    session("proxy_admin_viewer");
-    const options: GatewayOptions = {
-      models: [
-        { model_group: "claude-sonnet-5-5", mode: "chat", providers: ["anthropic"] },
-        { model_group: "allowed-chat", mode: "chat" },
-        { model_group: "allowed-embedding", mode: "embedding" },
-      ],
-      callableModels: ["allowed-chat", "allowed-embedding"],
-    };
-    const requests = gateway([answer("Your usage is available.")], options);
-    const { client } = renderWidget(undefined, false, true);
-    const user = userEvent.setup();
-    const input = await screen.findByRole("textbox", { name: "Message Aria Agent" });
-    await waitFor(() => expect(input).toBeEnabled());
-    const picker = screen.getByRole("combobox", { name: "Aria Agent model" });
-    expect(picker).toHaveValue("allowed-chat");
-    await user.click(picker);
-    expect(screen.getByRole("option", { name: "allowed-chat" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "claude-sonnet-5-5" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "allowed-embedding" })).not.toBeInTheDocument();
-    await user.keyboard("{Escape}");
-    act(() => send("Show our usage"));
-    await screen.findByText("Your usage is available.");
-    expect(requests.find((request) => request.url.endsWith("/chat/completions"))?.body.model).toBe("allowed-chat");
-    const discovery = requests.find((request) => request.url === `${INFERENCE}/models`);
-    expect(discovery?.headers.get("X-Gateway-Session")).toBe("Bearer sk-session-first-admin");
-    options.callableModels = [];
-    await act(async () => client.invalidateQueries({ queryKey: ["liteadmin-models"] }));
-    await user.click(screen.getByRole("combobox", { name: "Aria Agent model" }));
-    expect(await screen.findByText("No available models")).toBeVisible();
-    await user.keyboard("{Escape}");
-    expect(screen.getByPlaceholderText("Ask Aria…")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
-    expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
-  });
-
-  it("should keep viewer prompts disabled when inference model discovery fails", async () => {
-    session("proxy_admin_viewer");
-    const requests = gateway([], { callableModels: async () => json({ error: { message: "Forbidden" } }, 403) });
-    renderWidget(undefined, false, true);
-    expect(await screen.findByText(/Could not load models/)).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Message Aria Agent" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
-    expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
-  });
-
-  it("should send a callable team model's public name and respect its inference mode", async () => {
-    const requests = gateway([answer("The team model answered.")], {
-      models: [
-        { model_group: "model_name_team1_def", mode: "chat" },
-        { model_group: "renamed-model", mode: "chat" },
-      ],
-      callableModels: async () =>
-        json({
-          data: [
-            { id: "team-chat", mode: "chat" },
-            { id: "renamed-model", mode: "embedding" },
-          ],
-        }),
-    });
-    renderWidget(undefined, false, true);
-    await waitFor(() => expect(screen.getByRole("textbox", { name: "Message Aria Agent" })).toBeEnabled());
-    const picker = screen.getByRole("combobox", { name: "Aria Agent model" });
-    expect(picker).toHaveValue("team-chat");
-    const user = userEvent.setup();
-    await user.click(picker);
-    expect(screen.getByRole("option", { name: "team-chat" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "model_name_team1_def" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "renamed-model" })).not.toBeInTheDocument();
-    await user.keyboard("{Escape}");
-    act(() => send("Show our usage"));
-    await screen.findByText("The team model answered.");
-    expect(requests.find((request) => request.url.endsWith("/chat/completions"))?.body.model).toBe("team-chat");
-  });
-
   it("reviews the explicit team removal, sends nothing on cancel and detaches on confirmation", async () => {
     const key = "a".repeat(64);
     const proposal = toolReply("key_detach_from_team", { key });
@@ -1339,7 +894,7 @@ describe("Aria Agent in the gateway", () => {
     ]);
   });
 
-  it("should keep a single inline action through review, close/reopen and one confirmed write", async () => {
+  it("keeps a single inline action through review, close/reopen and one confirmed write", async () => {
     const response = deferred<Response>();
     const proposed = { ...toolReply("key_create", keyArguments), content: "Here is the requested change." };
     const requests = gateway([proposed, answer("Created the key."), answer("You are welcome.")], {
@@ -1361,7 +916,7 @@ describe("Aria Agent in the gateway", () => {
     expect(screen.queryByRole("button", { name: "停止请求" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
     await act(async () => response.resolve(json({ key: NEW_KEY })));
-    fireEvent.click(screen.getByRole("button", { name: "Aria Agent" }));
+    fireEvent.click(screen.getByRole("button", { name: "LiteAdmin" }));
     expect(await screen.findByText("Created the key.")).toBeInTheDocument();
     expect(screen.getByText(NEW_KEY)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "复制生成的密钥" })).toBeInTheDocument();
@@ -1539,7 +1094,7 @@ describe("Aria Agent in the gateway", () => {
       switchToWorkerUrl(worker);
       view.refresh();
     });
-    fireEvent.click(await screen.findByRole("button", { name: "Aria Agent" }));
+    fireEvent.click(await screen.findByRole("button", { name: "LiteAdmin" }));
     await settingsRequested.promise;
     expect(screen.queryByText(EXTERNAL_INFERENCE)).not.toBeInTheDocument();
     expect(await screen.findByLabelText("正在加载网关设置")).toBeInTheDocument();

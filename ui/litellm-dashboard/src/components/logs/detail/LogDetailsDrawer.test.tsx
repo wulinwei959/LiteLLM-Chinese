@@ -1,5 +1,3 @@
-import userEvent from "@testing-library/user-event";
-import { copyToClipboard } from "@/utils/dataUtils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../../../tests/test-utils";
@@ -9,11 +7,6 @@ import { sessionSpendLogsCall } from "../../networking";
 import { LogEntry } from "../types";
 import { AutoRouterModelGroupsProvider } from "@/components/shared/table_cells";
 
-vi.mock("@/utils/dataUtils", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/utils/dataUtils")>()),
-  copyToClipboard: vi.fn(),
-}));
-
 vi.mock("../../networking", () => ({
   sessionSpendLogsCall: vi.fn(),
 }));
@@ -22,9 +15,9 @@ vi.mock("@/app/(dashboard)/hooks/logDetails/useLogDetails", () => ({
   useLogDetails: () => ({ data: null, isLoading: false }),
 }));
 
-const mockUseUserLookup = vi.fn<
-  (userId: string | null) => { data: { user_id: string; user_email: string } | undefined }
->(() => ({ data: undefined }));
+const mockUseUserLookup = vi.fn<(userId: string | null) => { data: { user_id: string; user_email: string } | undefined }>(
+  () => ({ data: undefined }),
+);
 vi.mock("@/app/(dashboard)/hooks/users/useUsers", () => ({
   useUserLookup: (userId: string | null) => mockUseUserLookup(userId),
 }));
@@ -209,20 +202,5 @@ describe("LogDetailsDrawer session sidebar auto-router icon", () => {
     expect(routedRow.querySelector(".lucide-sparkles")).toBeNull();
     expect(directRow.querySelector(".lucide-sparkles")).not.toBeNull();
     expect(directRow.querySelector(".lucide-waypoints")).toBeNull();
-  });
-});
-
-describe("LogDetailsDrawer copying", () => {
-  it.each([true, false])("confirms a session id only when copying succeeds (%s)", async (success) => {
-    const user = userEvent.setup();
-    Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });
-    vi.mocked(copyToClipboard).mockReset().mockResolvedValue(success);
-    renderSessionDrawer();
-
-    const button = await screen.findByRole("button", { name: "Copy trace id" });
-    await user.click(button);
-
-    expect(copyToClipboard).toHaveBeenCalledWith("session-1");
-    expect(button.querySelector(".lucide-check") !== null).toBe(success);
   });
 });

@@ -646,7 +646,7 @@ describe("TeamMembersComponent", () => {
         />,
       );
 
-    it("resets the member's current period spend to $0 after confirming, then refreshes the team", async () => {
+    it("resets the member's current cycle spend to $0 after confirming, then refreshes the team", async () => {
       const user = userEvent.setup();
       POST.mockResolvedValue({ data: {} });
       renderEditableTab();
@@ -674,7 +674,9 @@ describe("TeamMembersComponent", () => {
       POST.mockRejectedValue(new Error("Cannot reset your own spend. Ask a proxy admin."));
       renderEditableTab();
 
-      await user.click(within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"));
+      await user.click(
+        within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"),
+      );
       const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
       await user.click(within(dialog).getByRole("button", { name: "重置" }));
 
@@ -687,7 +689,9 @@ describe("TeamMembersComponent", () => {
       const user = userEvent.setup();
       renderEditableTab();
 
-      await user.click(within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"));
+      await user.click(
+        within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"),
+      );
       const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
       await user.click(within(dialog).getByRole("button", { name: "取消" }));
 
@@ -695,7 +699,7 @@ describe("TeamMembersComponent", () => {
       expect(POST).not.toHaveBeenCalled();
     });
 
-    it("disables the reset with a reason on members that have no current period spend", async () => {
+    it("disables the reset with a reason on members that have no current cycle spend", async () => {
       const user = userEvent.setup();
       renderEditableTab();
 
@@ -703,7 +707,7 @@ describe("TeamMembersComponent", () => {
         "reset-member-spend",
       );
       await user.hover(resetButton);
-      expect(await screen.findByText("No current period spend to reset")).toBeInTheDocument();
+      expect(await screen.findByText("No current cycle spend to reset")).toBeInTheDocument();
 
       await user.click(resetButton);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -733,7 +737,9 @@ describe("TeamMembersComponent", () => {
 
       await user.click(within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"));
 
-      expect(await screen.findByRole("dialog", { name: "重置团队成员支出" })).toHaveTextContent("user1@test.com");
+      expect(await screen.findByRole("dialog", { name: "重置团队成员支出" })).toHaveTextContent(
+        "user1@test.com",
+      );
     });
   });
 

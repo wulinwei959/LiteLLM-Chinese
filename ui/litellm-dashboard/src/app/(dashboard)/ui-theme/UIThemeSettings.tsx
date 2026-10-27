@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
-import { resolveThemeImages, useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 import { toast } from "@/lib/toast";
 
@@ -42,13 +42,12 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
       });
       if (response.ok) {
         const data = await response.json();
-        const images = resolveThemeImages(data, proxyBaseUrl);
         setLogoUrlInput(data.values?.logo_url || "");
         setLogoUrlDarkInput(data.values?.logo_url_dark || "");
         setFaviconUrlInput(data.values?.favicon_url || "");
-        setLogoUrl(images.logoUrl);
-        setLogoUrlDark(images.logoUrlDark);
-        setFaviconUrl(images.faviconUrl);
+        setLogoUrl(data.values?.logo_url || null);
+        setLogoUrlDark(data.values?.logo_url_dark || null);
+        setFaviconUrl(data.values?.favicon_url || null);
       }
     } catch (error) {
       console.error("Error fetching theme settings:", error);
