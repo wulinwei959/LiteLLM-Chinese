@@ -23,11 +23,7 @@ const ROWS = 10;
 const CHART_SERIES = 6;
 /** Below this share of tokens carrying a User-Agent, say so rather than imply the list is the whole picture. */
 const COVERAGE_NOTE_BELOW = 0.5;
-const METRICS = [
-  { value: "tokens", label: "Tokens" },
-  { value: "spend", label: "Spend" },
-  { value: "requests", label: "Requests" },
-] as const satisfies readonly { value: UsageMetric; label: string }[];
+const METRIC_VALUES = ["tokens", "spend", "requests"] as const satisfies readonly UsageMetric[];
 
 /** Brand-tinted monograms for runtimes that have no logo file, so a top spender never shows a blank tile. */
 const MONOGRAMS: Readonly<Record<string, { text: string; className: string }>> = {
@@ -113,7 +109,9 @@ function AgentItem({
         )}
       </span>
       <span className="text-right">
-        <span className="block text-sm tabular-nums text-foreground">{formatCompact(agent.tokens)} tokens</span>
+        <span className="block text-sm tabular-nums text-foreground">
+          {formatCompact(agent.tokens)} {t("tokensSuffix")}
+        </span>
         <span className="block text-xs tabular-nums text-muted-foreground">
           {formatCompactUsd(agent.spend)} · {share.toFixed(1)}%
         </span>
@@ -196,8 +194,8 @@ export default function TopAgents({
   const coverage = totalTokens > 0 ? Math.min(attributedTokens / totalTokens, 1) : 1;
   const subtitle =
     coverage < COVERAGE_NOTE_BELOW
-      ? `Daily usage by agent. ${Math.round(coverage * 100)}% of tokens came with a User-Agent; the rest is unattributed`
-      : "Daily usage by agent, from each request's User-Agent";
+      ? t("topAgentsSubtitlePartial", { percent: Math.round(coverage * 100) })
+      : t("topAgentsSubtitle");
   const half = Math.ceil(agents.length / 2);
 
   return (
@@ -206,7 +204,14 @@ export default function TopAgents({
       title={t("topAgents.title")}
       subtitle={subtitle}
       testId="top-agents"
-      action={<Segmented label={t("topAgents.metric")} value={metric} options={METRICS} onChange={setMetric} />}
+      action={
+        <Segmented
+          label={t("topAgents.metric")}
+          value={metric}
+          options={METRIC_VALUES.map((value) => ({ value, label: t(`metricLabel.${value}`) }))}
+          onChange={setMetric}
+        />
+      }
       bodyClassName="px-0 pt-4 pb-0"
     >
       <TopAgentsBody loading={loading} empty={agents.length === 0}>

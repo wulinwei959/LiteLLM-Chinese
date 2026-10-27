@@ -280,7 +280,8 @@
     "credentialUpdated": "凭据更新成功",
     "total": "总计",
     "notAvailable": "不适用",
-    "docs": "文档"
+    "docs": "文档",
+    "failedToLoad": "加载失败"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -5178,8 +5179,7 @@
     "topKeys": "热门虚拟密钥",
     "viewAll": "查看全部",
     "exportData": "导出用量数据",
-    "exportButton": "导出数据",
-    "selectRangeToExport": "请先选择日期范围再导出",
+    "selectRangeToExport": "选择日期范围后再导出",
     "custom": "自定义",
     "noData": "暂无用量数据",
     "loading": "正在加载用量数据...",
@@ -5210,8 +5210,6 @@
       "failed": "失败请求"
     },
     "entity": {
-      "ptuHoursTooltip": "已消耗的预置吞吐量（按 PTU 小时计）：发送到 PTU 部署的 token 按每个模型的 Azure 容量表换算。用它除以预留的 PTU 数乘以周期内小时数，即可看出预留容量的使用比例。",
-      "ptuHoursTitle": "PTU 小时",
       "here": "此处",
       "topKeys": "热门虚拟密钥",
       "topAgents": "热门智能体",
@@ -5219,13 +5217,7 @@
       "providerUsage": "供应商用量",
       "totalCost": "总成本",
       "totalSpend": "总消费",
-      "requestCost": "请求成本",
-      "flatCost": "固定成本",
-      "totalCostTooltip": "请求成本加上预留容量的固定成本。选中此卡片查看明细。",
-      "requestCostTooltip": "该实体在所选时间段内发送请求的用量成本，按令牌计价。",
-      "flatCostTooltip": "预留的预配置吞吐量，无论是否发送请求都按小时计费。仅在此处展示，不计入团队、密钥、用户或组织的预算。",
       "requestTokenConsumption": "请求 / Token 消耗",
-      "spendFetchFailed": "消费数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
       "type": {
         "user": "用户",
         "team": "团队",
@@ -5234,24 +5226,14 @@
         "customer": "客户",
         "agent": "智能体"
       },
-      "shareColumn": "占比",
       "granularityDaily": "每日",
       "granularityWeekly": "每周",
       "scaleLinear": "线性",
       "scaleLog": "对数",
       "spendOverview": "{entity} 消费总览",
-      "byModel": "{metric}按模型",
-      "byDeployment": "{metric}按部署",
-      "chartSubtitle": "{granularity}{metric}，堆叠展示前 8 项",
-      "flatCostOnTop": "，顶部叠加固定成本",
       "bucketSize": "分桶大小",
       "scale": "时间粒度",
-      "spendPer": "按{entity}统计的消费",
-      "trackCostPer": "按{entity}跟踪成本",
-      "noSpendData": "没有{entity}的消费数据",
-      "agentFetchFailed": "智能体数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
-      "filterBy": "按{entity}筛选",
-      "selectFilter": "选择{entity}以筛选……"
+      "trackCostPer": "按{entity}跟踪成本"
     },
     "provider": {
       "title": "按供应商统计消费",
@@ -5268,8 +5250,6 @@
     },
     "teamUserSpend": {
       "selectTeamHint": "选择一个团队以查看各用户花费",
-      "noUserSpend": "此范围内无用户花费",
-      "noUser": "（无用户）",
       "title": "团队内各用户消费",
       "subtitle": "按消费日志中每条请求归因，包含不经过虚拟密钥的 JWT/SSO 流量",
       "downloadCsv": "下载 CSV",
@@ -5280,7 +5260,6 @@
       "successful": "成功",
       "failed": "失败",
       "tokens": "Token",
-      "attributionHint": "按请求归因自花费日志，因此包含不使用虚拟密钥的 JWT/SSO 流量",
       "attributionNote": "按请求从花费日志归属，因此包含不使用虚拟密钥的 JWT/SSO 流量"
     },
     "old": {
@@ -5327,53 +5306,36 @@
       "title": "用量视图",
       "description": "选择要查看的用量数据",
       "global": "全局用量",
-      "yourUsage": "你的用量",
       "organization": "组织用量",
       "team": "团队用量",
       "customer": "客户用量",
       "tag": "标签用量",
       "agent": "智能体用量（A2A）",
       "user": "用户用量",
-      "userAgentActivity": "用户代理活跃度",
-      "globalDesc": "查看所有资源的用量",
-      "globalDescNonAdmin": "查看你的用量",
-      "myUsageDesc": "查看你自己的用量",
-      "organizationDesc": "查看所有组织的用量",
-      "teamDesc": "按团队查看用量",
-      "customerDesc": "按客户账号查看用量",
-      "tagDesc": "按标签分组查看用量",
-      "agentDesc": "按智能体查看用量",
-      "userDesc": "按单个用户查看用量",
-      "userAgentDesc": "查看详细的用户代理活跃日志"
+      "agentDesc": "按智能体查看用量"
     },
     "endpointUsage": {
       "endpoint": "端点",
-      "successfulFailed": "成功 / 失败",
       "successfulAria": "成功的请求数",
       "totalRequests": "请求总数",
       "successRate": "成功率",
       "totalTokens": "总 Token 数",
       "spend": "花费",
       "noData": "暂无端点用量数据",
-      "endpoints": "端点"
+      "endpoints": "端点",
+      "successFailed": "成功 / 失败",
+      "totalRequest": "请求总数"
     },
-    "modelViewToggle": {
-      "publicName": "公开模型名",
-      "litellmName": "LiteLLM 模型名"
-    },
+    "modelViewToggle": {},
     "topModelView": {
       "colModel": "模型",
       "colSpend": "花费（美元）",
-      "colSuccessful": "成功",
-      "colFailed": "失败",
       "colTokens": "Token 数",
       "modelCountAria": "要展示的模型数量",
       "viewModeAria": "头部模型视图模式",
       "tableView": "表格视图",
       "chartView": "图表视图"
     },
-    "usageViewAccessDenied": "您无权查看该用量视图",
-    "linkCopied": "链接已复制",
     "copyShareLink": "复制分享链接",
     "gatewayRequestsByEndpointSubtitle": "按路由统计的成功与失败请求数",
     "searchModels": "搜索模型",
@@ -5540,7 +5502,8 @@
       "emptyIdentity": "本时间范围内没有出现失败请求的{entity}",
       "tableAria": "按失败请求排序的{entity}",
       "requestsHeader": "请求数",
-      "failedHeader": "失败"
+      "failedHeader": "失败",
+      "statusListAria": "按状态码统计的失败请求"
     },
     "overview": {
       "breakdown": {
@@ -5568,9 +5531,7 @@
         "scaleLog": "对数",
         "metricSpend": "花费",
         "metricTokens": "token",
-        "metricRequests": "请求数",
-        "chartTitle": "{granularity}用量",
-        "chartSubtitle": "{granularity}按模型统计的{metric}（前 8 项，其余归为其他）"
+        "metricRequests": "请求数"
       },
       "statStrip": {
         "spend": "花费",
@@ -5579,10 +5540,8 @@
         "avgCostPerRequest": "平均每请求成本",
         "avgLatency": "平均延迟",
         "ofBudget": "共 {amount} 预算",
-        "noBudgetSet": "未设预算",
         "ok": "正常",
         "failed": "失败",
-        "tokensExact": "{count} 个令牌",
         "cacheRead": "{count} 缓存读取",
         "successRate": "成功率 {rate}%"
       },
@@ -5613,9 +5572,16 @@
       "inputIncludesCacheNote": "输入包含缓存读取与写入。缓存输入单独计价，单看总 token 无法解释成本。",
       "ok": "成功",
       "viewTokenBreakdown": "查看 token 明细",
-      "tokensSuffix": "token",
+      "tokensSuffix": "个 token",
       "viewActivity": "查看活动",
-      "by": "按"
+      "by": "按",
+      "topAgentsSubtitle": "按每个请求的 User-Agent 统计的每日代理用量",
+      "topAgentsSubtitlePartial": "每日代理用量。{percent}% 的 token 带有 User-Agent，其余无法归属",
+      "metricLabel": {
+        "tokens": "Token 数",
+        "spend": "花费",
+        "requests": "请求数"
+      }
     },
     "userActivity": {
       "error": {
@@ -5648,15 +5614,7 @@
       "userCount": "{count} 个用户"
     },
     "tabOverview": "概览",
-    "tabModelActivity": "模型活动",
-    "tabKeyActivity": "密钥活动",
-    "tabUserActivity": "用户活动",
-    "tabMcpActivity": "MCP 服务器活动",
-    "tabEndpointActivity": "端点活动",
-    "tabErrors": "错误",
-    "askAi": "询问 AI",
     "noModelsMatch": "没有匹配的模型",
-    "credentialBannerBody": "使用可复用凭据时，它会在本视图中以带 <code>Credential: </code> 前缀的标签出现。",
     "spendLoadFailed": "加载花费数据失败",
     "agentLoadFailed": "加载代理数据失败",
     "loadingSettings": "正在加载用量设置",
@@ -5675,7 +5633,9 @@
     "topStackedSuffix": "，前 8 项堆叠",
     "by": "按",
     "spendOverview": "花费概览",
-    "trackCostPer": "跟踪成本，按"
+    "trackCostPer": "跟踪成本，按",
+    "modelLabel": "模型",
+    "deploymentLabel": "部署"
   },
   "logs": {
     "detail": {
@@ -13559,43 +13519,18 @@
     "loadingGatewaySettings": "正在加载网关设置",
     "connectToGateway": "连接到已配置的网关",
     "useConfiguredGateway": "使用已配置的网关",
-    "newChat": "新建对话",
     "loadingModels": "正在加载模型",
     "modelLabel": "LiteAdmin 模型",
     "chooseChatModel": "选择对话模型",
-    "addChatModelHint": "请为您的网关添加一个对话模型后才能使用 LiteAdmin。",
-    "askPlaceholder": "向 LiteAdmin 提问…",
-    "trustModelHint": "请使用您信任的模型来处理网关数据。",
     "subtitle": "向 LiteAdmin 询问网关问题，在对话中审阅改动。",
     "close": "关闭 LiteAdmin",
-    "conversationLabel": "LiteAdmin 对话",
-    "isWorking": "LiteAdmin 正在处理",
     "working": "处理中…",
-    "howCanIHelp": "有什么可以帮您？",
     "jumpToLatest": "跳到最新",
     "copyGeneratedKey": "复制生成的密钥",
     "copyKeyHint": "请立即复制此密钥，它只会保留在本次对话会话中。",
     "trigger": "LiteAdmin",
-    "actionReview": "审阅改动",
-    "actionApplying": "应用中…",
-    "actionCompleted": "已完成",
-    "actionCancelled": "已取消",
-    "actionUnknown": "检查结果",
-    "interruptedWrite": "已提交的改动可能已完成。请在重试前检查相关页面。",
     "completedChangesPrefix": "已完成的改动显示在上方。",
-    "capabilityHint": "可以查询预算、查看用量，或管理密钥与团队。每项改动都会先由您审阅后再执行。",
     "confirmChange": "确认改动",
-    "unknownResultHint": "改动未能核实，请先检查该资源再重试。",
-    "gatewaySettingsError": "无法加载网关设置。",
-    "modelsLoadError": "无法加载模型。",
-    "consentNotice": "该网关使用的是另一个地址。LiteAdmin 会把您当前的会话凭据发送到上面所示的地址。",
-    "messageTooLong": "消息请控制在 {count} 字符以内。",
-    "eachMessageTooLong": "每条消息请控制在 {count} 字符以内，或新建对话。",
-    "actionLimitReached": "已达到操作次数上限，请先检查已完成的改动再继续。",
-    "stepLimitNotice": "我已完成本轮可用的步骤。已生效的改动不会回滚，请先检查相关页面再继续。",
-    "emptyAnswerNotice": "模型没有返回内容，请换一个请求或模型重试。",
-    "invalidGatewayUrl": "网关地址必须是合法的 HTTP(S) URL，且不能包含凭据、查询串或片段。",
-    "httpsRequiredForInference": "当控制台或管理网关使用 HTTPS 时，推理地址也必须使用 HTTPS。",
     "operations": {
       "keys_list": "列出虚拟密钥",
       "key_info": "查看虚拟密钥",
@@ -13628,20 +13563,12 @@
       "request_logs": "列出请求的花费、耗时与状态，不含提示词与响应内容",
       "key_detach_from_team": "从团队移除虚拟密钥但不删除该密钥"
     },
-    "askAria": "向 LiteAdmin 提问",
-    "homeSubtitle": "掌控你的整个网关。",
-    "recentChats": "最近的对话",
-    "chatsAria": "LiteAdmin 对话列表",
-    "chatLabel": "对话 {id}",
     "composer": {
       "placeholder": "你想做点什么？",
       "ariaLabel": "给 LiteAdmin 发消息",
       "stopAriaLabel": "停止请求",
       "sendAriaLabel": "发送消息"
     },
-    "closeChatLabel": "关闭对话 {id}",
-    "approvalNeeded": "需要审批",
-    "waitForChange": "请等待此更改完成",
     "tagline": "让你的网关更好用一点。",
     "askAriaAria": "向 Aria 询问用量",
     "askAriaPlaceholder": "问 Aria…",
@@ -13657,7 +13584,10 @@
     "startOver": "重新开始",
     "gatewayAddressNote": "该网关使用了不同的地址。Aria 会把现有的会话凭据发送到上面显示的地址。",
     "cancel": "取消",
-    "details": "详情"
+    "details": "详情",
+    "pdfPrintFailed": "无法打开 PDF 打印对话框，请重试。",
+    "category": "类别",
+    "exportAnswer": "导出回答"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "删除别名 {name}",
@@ -13972,17 +13902,6 @@
     "inputLabel": "输入"
   },
   "advancedDatePicker": {
-    "presetToday": "今天",
-    "presetLast7": "最近 7 天",
-    "presetLast30": "最近 30 天",
-    "presetMonthToDate": "本月至今",
-    "presetYearToDate": "本年至今",
-    "badgeToday": "今天",
-    "badge7d": "7 天",
-    "badge30d": "30 天",
-    "badgeMtd": "本月",
-    "badgeYtd": "本年",
-    "selectTimeRange": "选择时间范围",
     "relativeTime": "相对时间",
     "startEndDates": "开始和结束日期",
     "startDate": "开始日期",
@@ -13991,7 +13910,6 @@
     "to": "至：",
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
-    "selectDateRange": "选择日期范围",
     "apply": "应用",
     "cancel": "取消"
   },
@@ -15122,10 +15040,7 @@
     "tokensHint": "总 token 包含输入、缓存输入与输出。缓存输入计价不同，单看 token 数无法解释花费。核对客户端显示的数量时，请比较同一人员与同一日期范围。",
     "loadingAria": "正在加载客户端用量",
     "tokenBreakdown": "token 明细",
-    "requestsLabel": "请求数",
     "spendLabel": "花费",
-    "totalTokensLabel": "总 token",
-    "noLabel": "否",
     "couldNotLoad": "无法加载客户端用量",
     "cacheReads": "缓存读取",
     "cacheWrites": "缓存写入",

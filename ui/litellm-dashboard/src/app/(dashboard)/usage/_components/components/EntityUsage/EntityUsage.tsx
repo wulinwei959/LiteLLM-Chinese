@@ -480,7 +480,9 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   ) : (
     <div className="grid gap-3">
       <section className="grid gap-2">
-        <h2 className="text-sm font-medium text-foreground">{capitalizedEntityLabel} Spend Overview</h2>
+        <h2 className="text-sm font-medium text-foreground">
+          {capitalizedEntityLabel} {t("spendOverview")}
+        </h2>
         <div
           className={cn(
             "grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border",
@@ -504,10 +506,12 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
           <div>
             <h3 className="text-sm font-medium text-foreground">
-              {METRIC_TITLE[breakdown.metric]} by {modelViewType === "groups" ? "model" : "deployment"}
+              {METRIC_TITLE[breakdown.metric]} {t("by")}{" "}
+              {modelViewType === "groups" ? t("modelLabel") : t("deploymentLabel")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {granularity === "day" ? "Daily" : "Weekly"} {breakdown.metric}, top 8 stacked
+              {granularity === "day" ? "Daily" : "Weekly"} {breakdown.metric}
+              {t("topStackedSuffix")}
               {stackFlatCost ? ", flat cost on top" : ""}
             </p>
           </div>
@@ -556,7 +560,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
             href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            Track cost per {entityType}
+            {t("trackCostPer")} {entityType}
             <ExternalLink aria-hidden="true" className="size-3" />
           </a>
         }
@@ -679,9 +683,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           dateValue={dateValue}
           entityType={entityType}
           onExport={(exportType, format) =>
-            request
-              ? api.exportRows(request, exportType, format)
-              : Promise.reject(new Error("Select a date range to export"))
+            request ? api.exportRows(request, exportType, format) : Promise.reject(new Error(t("selectRangeToExport")))
           }
           showFilters={filterSlot === undefined && entityList !== null}
           filterSlot={filterSlot}

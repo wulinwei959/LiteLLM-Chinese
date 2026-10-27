@@ -283,3 +283,15 @@ theirs = upstream/main 的内容 （上游的新版）
 收口后的实测口径：生产类型检查 0 条错误，死键 0，静态英文 284 条与基线同数，中文取值未译 215 / 夹中文 0 与基线同数，lint 预算九条不超线（`local/no-large-inline-object-arg` 靠提取 4 处内联对象回到 477 上限内），`knip:ci` 无未用文件。
 
 本轮没有接入的上游新模块（后续按功能补齐时从这里取）：`src/components/chat/`（`ChatFileChip`、`ChatModelPicker`、`attachmentHelpers`、`imageHelpers`、`chatImageStorage`、`runChatRequest`、`moyai/MoyaiChatComposer`、`moyai/MoyaiChatHome`）、`src/components/liteadmin/`（`AriaAnswer`、`AriaAvatar`、`UsageAnswerChart`、`answerExport`、`aria-brand`、`usageChart`）、`usage/_components/components/`（`ClientUsagePanel`、`ClientUsageSelect`、`overview/UsageBreakdownChart`）、`add_model/`（`AutoRouterPresetSelect`、`AutoRouterSimpleSetup`）、`AIHub/ModelHubProviders`、`TeamsPage/TeamMemberSpendBudgetCell`、`shared/BudgetPeriodTooltip`、`utils/modelEditParams`、`key_team_helpers/key_sorting`。
+
+## 十二、执行记录（2026-10-28）：把延迟的上游界面接回来
+
+PR #12 为保汉化把几块结构变动过大的上游界面留在我方版本。本轮按功能簇接回其中三块：用量页的 client usage 视图（`ClientUsagePanel`、`ClientUsageSelect`、`UsageBreakdownChart` 与 `hooks/useClientUsage|useClientAgentModels|useUsagePanelContext` 等）、LiteAdmin 的 Aria 应答与用量图（`AriaAnswer`、`AriaAvatar`、`UsageAnswerChart`、`answerExport`、`aria-brand`、`usageChart`）、以及上游新版 `advanced_date_picker`（拆出 `date_range_presets`）与 `shared/ErrorState`。`chat/ChatMessages` 的 `ChatMessageContent` 增加可选 `actions` 槽位，供 `AriaAnswer` 放导出按钮。
+
+三步走：先整目录取上游并让生产 `typecheck` 归零；再把我方版本里的 `t(...)` 调用按「英文行→译行」成对贴回，缺 `useTranslations` 的按顶层组件补；最后逐文件补目录键。工具上吃过两次亏：自动插钩子会落进解构参数、盲替换会把 `attr="文案"` 改成非法 JSX，所以后期改为「逐文件改 + 立即 `tsc` 校验，变差就回滚该文件」的写法。
+
+复测：死键 0（本轮清掉 100 枚因组件被替换而失效的旧键）、静态英文 287/287（较 284 新增 3 条，均为模型侧提示：`agent.ts` 两条与 `operations.ts` 一条，按「喂给模型的字符串留英文」的既定口径冻结）、中文取值 215/0 与基线同数、生产 `typecheck` 0 条错误、`knip:ci` 无未用文件、受影响用例 84 个文件 984 例全绿。
+
+上游这 13 份测试本轮没有移植，随组件接入一并移除，留待专门一批按本仓 convention 重写（渲染走 `renderWithProviders`、断言中文、不测内部结构）：`ClientUsagePanel.integration`、`EntityUsage.test`、`SpendByProvider.test`、`TopModelView.test`、`UsagePageView.test`、`ErrorsTab.test`、`TopAgents.integration`、`UsageBreakdownChart.integration`、`UsageStatStrip.integration`、`AriaAnswer.integration`、`LiteAdmin.integration`、`operations.test`、`advanced_date_picker.test`。
+
+仍未接入：chat 的图片附件与 moyai 工作台、auto router 预设选择、模型中心的 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入。

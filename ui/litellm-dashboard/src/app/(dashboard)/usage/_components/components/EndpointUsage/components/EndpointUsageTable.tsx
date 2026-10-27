@@ -45,12 +45,12 @@ const EndpointUsageTable: React.FC<EndpointUsageTableProps> = ({ endpointData })
 
   const columns: ColumnDef<EndpointRow>[] = [
     {
-      header: "Endpoint",
+      header: t("endpoint"),
       accessorKey: "endpoint",
       cell: ({ row }) => <span className="font-mono text-xs text-foreground">{row.original.endpoint}</span>,
     },
     {
-      header: "Successful / Failed",
+      header: t("successFailed"),
       id: "requests",
       cell: ({ row }) => {
         const record = row.original;
@@ -80,13 +80,13 @@ const EndpointUsageTable: React.FC<EndpointUsageTableProps> = ({ endpointData })
       },
     },
     {
-      header: "Total Request",
+      header: t("totalRequest"),
       accessorKey: "api_requests",
       meta: { numeric: true },
       cell: ({ row }) => <span className="tabular-nums">{row.original.api_requests.toLocaleString()}</span>,
     },
     {
-      header: "Success Rate",
+      header: t("successRate"),
       accessorKey: "successRate",
       meta: { numeric: true },
       cell: ({ row }) => {

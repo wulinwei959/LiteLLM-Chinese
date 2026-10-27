@@ -98,14 +98,8 @@ export default function UsageStatStrip({
                   <dd>{totals.tokens.toLocaleString()}</dd>
                 </div>
               </dl>
-              <p className="text-xs leading-5 text-muted-foreground">
-                Input includes cache reads and writes. Cached input has separate pricing, so total tokens alone cannot
-                explain the cost.
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                A client may show a different subset of tokens. Compare the same person, client and time range before
-                comparing counts.
-              </p>
+              <p className="text-xs leading-5 text-muted-foreground">{t("inputIncludesCacheNote")}</p>
+              <p className="text-xs leading-5 text-muted-foreground">{t("clientSubsetNote")}</p>
             </PopoverContent>
           </Popover>
         )}

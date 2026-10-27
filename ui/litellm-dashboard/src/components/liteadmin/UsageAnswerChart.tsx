@@ -5,6 +5,7 @@ import { formatUsageChartValue, type UsageChart } from "./usageChart";
 import { useTranslations } from "next-intl";
 
 export function UsageAnswerChart({ chart }: { chart: UsageChart }) {
+  const t = useTranslations("liteAdmin");
   const formatValue = (value: number) => formatUsageChartValue(value, chart.unit);
   const unavailable = chart.data.filter((point) => point.value == null).map((point) => point.label);
   const data = chart.data.map((point) => ({ label: point.label, [chart.unit]: point.value }));
@@ -55,7 +56,7 @@ export function UsageAnswerChart({ chart }: { chart: UsageChart }) {
       <table className="sr-only" aria-label={`${chart.title} values`}>
         <thead>
           <tr>
-            <th scope="col">Category</th>
+            <th scope="col">{t("category")}</th>
             <th scope="col">{chart.unit}</th>
           </tr>
         </thead>

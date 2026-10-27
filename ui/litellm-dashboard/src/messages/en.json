@@ -280,7 +280,8 @@
     "credentialUpdated": "Credential updated successfully",
     "total": "Total",
     "notAvailable": "n/a",
-    "docs": "Docs"
+    "docs": "Docs",
+    "failedToLoad": "Failed to load"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -5178,7 +5179,6 @@
     "topKeys": "Top Virtual Keys",
     "viewAll": "View All",
     "exportData": "Export Usage Data",
-    "exportButton": "Export Data",
     "selectRangeToExport": "Select a date range to export",
     "custom": "Custom",
     "noData": "No usage data available",
@@ -5210,8 +5210,6 @@
       "failed": "Failed"
     },
     "entity": {
-      "ptuHoursTooltip": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
-      "ptuHoursTitle": "PTU Hours",
       "here": "here",
       "topKeys": "Top Virtual Keys",
       "topAgents": "Top Agents",
@@ -5219,13 +5217,7 @@
       "providerUsage": "Provider Usage",
       "totalCost": "Total Cost",
       "totalSpend": "Total Spend",
-      "requestCost": "Request Cost",
-      "flatCost": "Flat Cost",
-      "totalCostTooltip": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
-      "requestCostTooltip": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
-      "flatCostTooltip": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
       "requestTokenConsumption": "Request / Token Consumption",
-      "spendFetchFailed": "Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try again.",
       "type": {
         "user": "User",
         "team": "Team",
@@ -5234,24 +5226,14 @@
         "customer": "Customer",
         "agent": "Agent"
       },
-      "shareColumn": "Share",
       "granularityDaily": "Daily",
       "granularityWeekly": "Weekly",
       "scaleLinear": "Linear",
       "scaleLog": "Log",
       "spendOverview": "{entity} Spend Overview",
-      "byModel": "{metric} by model",
-      "byDeployment": "{metric} by deployment",
-      "chartSubtitle": "{granularity} {metric}, top 8 stacked",
-      "flatCostOnTop": ", flat cost on top",
       "bucketSize": "Bucket size",
       "scale": "Scale",
-      "spendPer": "Spend Per {entity}",
-      "trackCostPer": "Track cost per {entity}",
-      "noSpendData": "No {entity} spend data",
-      "agentFetchFailed": "Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try again.",
-      "filterBy": "Filter by {entity}",
-      "selectFilter": "Select {entity} to filter..."
+      "trackCostPer": "Track cost per {entity}"
     },
     "provider": {
       "title": "Spend by Provider",
@@ -5268,8 +5250,6 @@
     },
     "teamUserSpend": {
       "selectTeamHint": "Select a team to see spend per user",
-      "noUserSpend": "No user spend in this range",
-      "noUser": "(no user)",
       "title": "Spend Per User Within Team",
       "subtitle": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
       "downloadCsv": "Download CSV",
@@ -5280,7 +5260,6 @@
       "successful": "Successful",
       "failed": "Failed",
       "tokens": "Tokens",
-      "attributionHint": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
       "attributionNote": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
     },
     "old": {
@@ -5327,53 +5306,36 @@
       "title": "Usage View",
       "description": "Select the usage data you want to view",
       "global": "Global Usage",
-      "yourUsage": "Your Usage",
       "organization": "Organization Usage",
       "team": "Team Usage",
       "customer": "Customer Usage",
       "tag": "Tag Usage",
       "agent": "Agent Usage (A2A)",
       "user": "User Usage",
-      "userAgentActivity": "User Agent Activity",
-      "globalDesc": "View usage across all resources",
-      "globalDescNonAdmin": "View your usage",
-      "myUsageDesc": "View your own usage",
-      "organizationDesc": "View usage across all organizations",
-      "teamDesc": "View usage by team",
-      "customerDesc": "View usage by customer accounts",
-      "tagDesc": "View usage grouped by tags",
-      "agentDesc": "View usage by AI agents",
-      "userDesc": "View usage by individual users",
-      "userAgentDesc": "View detailed user agent activity logs"
+      "agentDesc": "View usage by AI agents"
     },
     "endpointUsage": {
       "endpoint": "Endpoint",
-      "successfulFailed": "Successful / Failed",
       "successfulAria": "Successful requests",
       "totalRequests": "Total Request",
       "successRate": "Success Rate",
       "totalTokens": "Total Tokens",
       "spend": "Spend",
       "noData": "No endpoint usage data",
-      "endpoints": "Endpoints"
+      "endpoints": "Endpoints",
+      "successFailed": "Successful / Failed",
+      "totalRequest": "Total Request"
     },
-    "modelViewToggle": {
-      "publicName": "Public Model Name",
-      "litellmName": "Litellm Model Name"
-    },
+    "modelViewToggle": {},
     "topModelView": {
       "colModel": "Model",
       "colSpend": "Spend (USD)",
-      "colSuccessful": "Successful",
-      "colFailed": "Failed",
       "colTokens": "Tokens",
       "modelCountAria": "Number of models to show",
       "viewModeAria": "Top model view mode",
       "tableView": "Table View",
       "chartView": "Chart View"
     },
-    "usageViewAccessDenied": "You don't have access to that usage view",
-    "linkCopied": "Link copied",
     "copyShareLink": "Copy Share Link",
     "gatewayRequestsByEndpointSubtitle": "Successful and failed requests per route",
     "searchModels": "Search models",
@@ -5540,7 +5502,8 @@
       "emptyIdentity": "No {entity} with failed requests in this range",
       "tableAria": "{entity} ranked by failed requests",
       "requestsHeader": "Requests",
-      "failedHeader": "Failed"
+      "failedHeader": "Failed",
+      "statusListAria": "Failed requests by status code"
     },
     "overview": {
       "breakdown": {
@@ -5568,9 +5531,7 @@
         "scaleLog": "Log",
         "metricSpend": "spend",
         "metricTokens": "tokens",
-        "metricRequests": "requests",
-        "chartTitle": "{granularity} usage",
-        "chartSubtitle": "{granularity} {metric} by model (top 8, rest grouped as Other)"
+        "metricRequests": "requests"
       },
       "statStrip": {
         "spend": "Spend",
@@ -5579,10 +5540,8 @@
         "avgCostPerRequest": "Avg cost / request",
         "avgLatency": "Avg latency",
         "ofBudget": "of {amount} budget",
-        "noBudgetSet": "No budget set",
         "ok": "ok",
         "failed": "failed",
-        "tokensExact": "{count} tokens",
         "cacheRead": "{count} cache read",
         "successRate": "{rate}% success rate"
       },
@@ -5615,7 +5574,14 @@
       "viewTokenBreakdown": "View token breakdown",
       "tokensSuffix": "tokens",
       "viewActivity": "View activity",
-      "by": "by"
+      "by": "by",
+      "topAgentsSubtitle": "Daily usage by agent, from each request's User-Agent",
+      "topAgentsSubtitlePartial": "Daily usage by agent. {percent}% of tokens came with a User-Agent; the rest is unattributed",
+      "metricLabel": {
+        "tokens": "Tokens",
+        "spend": "Spend",
+        "requests": "Requests"
+      }
     },
     "userActivity": {
       "error": {
@@ -5648,15 +5614,7 @@
       "userCount": "{count} users"
     },
     "tabOverview": "Overview",
-    "tabModelActivity": "Model Activity",
-    "tabKeyActivity": "Key Activity",
-    "tabUserActivity": "User Activity",
-    "tabMcpActivity": "MCP Server Activity",
-    "tabEndpointActivity": "Endpoint Activity",
-    "tabErrors": "Errors",
-    "askAi": "Ask AI",
     "noModelsMatch": "No models match",
-    "credentialBannerBody": "When a reusable credential is used, it will appear as a tag prefixed with <code>Credential: </code> in this view.",
     "spendLoadFailed": "Failed to load spend data",
     "agentLoadFailed": "Failed to load agent data",
     "loadingSettings": "Loading usage settings",
@@ -5675,7 +5633,9 @@
     "topStackedSuffix": ", top 8 stacked",
     "by": "by",
     "spendOverview": "Spend Overview",
-    "trackCostPer": "Track cost per"
+    "trackCostPer": "Track cost per",
+    "modelLabel": "model",
+    "deploymentLabel": "deployment"
   },
   "logs": {
     "detail": {
@@ -13563,43 +13523,18 @@
     "loadingGatewaySettings": "Loading gateway settings",
     "connectToGateway": "Connect to the configured gateway",
     "useConfiguredGateway": "Use configured gateway",
-    "newChat": "New chat",
     "loadingModels": "Loading models",
     "modelLabel": "LiteAdmin model",
     "chooseChatModel": "Choose a chat model",
-    "addChatModelHint": "Add a chat model to your gateway to use LiteAdmin.",
-    "askPlaceholder": "Ask LiteAdmin…",
-    "trustModelHint": "Use a model you trust with your gateway data.",
     "subtitle": "Ask about your gateway. Review changes in chat.",
     "close": "Close LiteAdmin",
-    "conversationLabel": "LiteAdmin conversation",
-    "isWorking": "LiteAdmin is working",
     "working": "Working…",
-    "howCanIHelp": "How can I help?",
     "jumpToLatest": "Jump to latest",
     "copyGeneratedKey": "Copy generated key",
     "copyKeyHint": "Copy this key now. It stays only in this chat session.",
     "trigger": "LiteAdmin",
-    "actionReview": "Review change",
-    "actionApplying": "Applying…",
-    "actionCompleted": "Completed",
-    "actionCancelled": "Cancelled",
-    "actionUnknown": "Check result",
-    "interruptedWrite": "A submitted change may have completed. Check the relevant page before trying again.",
     "completedChangesPrefix": "Completed changes are shown above. ",
-    "capabilityHint": "Check budgets, inspect usage, or manage keys and teams. You review every change before it runs.",
     "confirmChange": "Confirm change",
-    "unknownResultHint": "The change could not be verified. Check the resource before trying again.",
-    "gatewaySettingsError": "Could not load gateway settings.",
-    "modelsLoadError": "Could not load models.",
-    "consentNotice": "This gateway uses a different address. LiteAdmin will send your existing session credential to the address shown above.",
-    "messageTooLong": "Keep your message within {count} characters.",
-    "eachMessageTooLong": "Keep each message under {count} characters, or start a new chat.",
-    "actionLimitReached": "The action limit was reached. Check completed actions before continuing.",
-    "stepLimitNotice": "I reached the step limit. Any completed actions remain applied; check the relevant page before continuing.",
-    "emptyAnswerNotice": "The model returned no answer. Try another request or model.",
-    "invalidGatewayUrl": "The gateway must be a valid HTTP(S) URL without credentials, a query, or a fragment.",
-    "httpsRequiredForInference": "Inference must use HTTPS when the dashboard or management gateway uses HTTPS.",
     "operations": {
       "keys_list": "List virtual keys",
       "key_info": "View a virtual key",
@@ -13632,20 +13567,12 @@
       "request_logs": "List request cost, timing and status, excluding prompts and responses",
       "key_detach_from_team": "Remove a virtual key from its team without deleting the key"
     },
-    "askAria": "Ask LiteAdmin",
-    "homeSubtitle": "Control your entire gateway.",
-    "recentChats": "Recent chats",
-    "chatsAria": "LiteAdmin chats",
-    "chatLabel": "Chat {id}",
     "composer": {
       "placeholder": "What would you like to do?",
       "ariaLabel": "Message LiteAdmin",
       "stopAriaLabel": "Stop request",
       "sendAriaLabel": "Send message"
     },
-    "closeChatLabel": "Close Chat {id}",
-    "approvalNeeded": "Approval needed",
-    "waitForChange": "Wait for this change to finish",
     "tagline": "Your gateway, a little easier.",
     "askAriaAria": "Ask Aria about usage",
     "askAriaPlaceholder": "Ask Aria…",
@@ -13661,7 +13588,10 @@
     "startOver": "Start over",
     "gatewayAddressNote": "This gateway uses a different address. Aria will send your existing session credential to the address shown above.",
     "cancel": "Cancel",
-    "details": "Details"
+    "details": "Details",
+    "pdfPrintFailed": "Could not open the PDF print dialog. Please try again.",
+    "category": "Category",
+    "exportAnswer": "Export answer"
   },
   "modelGroupAlias": {
     "deleteAliasAria": "Delete alias {name}",
@@ -13976,17 +13906,6 @@
     "inputLabel": "Input"
   },
   "advancedDatePicker": {
-    "presetToday": "Today",
-    "presetLast7": "Last 7 days",
-    "presetLast30": "Last 30 days",
-    "presetMonthToDate": "Month to date",
-    "presetYearToDate": "Year to date",
-    "badgeToday": "today",
-    "badge7d": "7d",
-    "badge30d": "30d",
-    "badgeMtd": "MTD",
-    "badgeYtd": "YTD",
-    "selectTimeRange": "Select Time Range",
     "relativeTime": "Relative time",
     "startEndDates": "Start and end dates",
     "startDate": "Start date",
@@ -13995,7 +13914,6 @@
     "to": "To:",
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
-    "selectDateRange": "Select date range",
     "apply": "Apply",
     "cancel": "Cancel"
   },
@@ -15124,10 +15042,7 @@
     "tokensHint": "Total tokens include input, cached input and output. Cached input is priced differently, so token count alone does not explain spend. Compare the same person and dates when checking the count shown by a client.",
     "loadingAria": "Loading client usage",
     "tokenBreakdown": "Token breakdown",
-    "requestsLabel": "Requests",
     "spendLabel": "Spend",
-    "totalTokensLabel": "Total tokens",
-    "noLabel": "No",
     "couldNotLoad": "Could not load client usage",
     "cacheReads": "Cache reads",
     "cacheWrites": "Cache writes",

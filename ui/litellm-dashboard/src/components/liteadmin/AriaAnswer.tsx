@@ -20,9 +20,11 @@ export function AriaAnswer({
   chart?: UsageChart;
 }) {
   const answerRef = useRef<HTMLDivElement>(null);
+
+  const t = useTranslations("liteAdmin");
   const exportAnswer = () => {
     if (!answerRef.current || !exportAriaAnswer(question ?? "", answerRef.current)) {
-      toast.error("Could not open the PDF print dialog. Please try again.");
+      toast.error(t("pdfPrintFailed"));
     }
   };
   return (
@@ -38,7 +40,7 @@ export function AriaAnswer({
           actions={
             <Button variant="ghost" size="sm" onClick={exportAnswer} data-export-exclude>
               <Download className="size-3.5" />
-              Export answer
+              {t("exportAnswer")}
             </Button>
           }
         />

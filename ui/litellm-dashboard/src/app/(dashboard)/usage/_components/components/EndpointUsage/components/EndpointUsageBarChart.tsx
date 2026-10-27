@@ -46,7 +46,7 @@ const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointD
           {CATEGORIES.map((category, i) => (
             <span key={category} className="flex items-center gap-1.5">
               <span aria-hidden="true" className="size-2 rounded-[2px]" style={{ backgroundColor: COLORS[i] }} />
-              <span>{category}</span>
+              <span>{category === "Successful" ? t("successful") : t("failed")}</span>
               <span className="tabular-nums text-foreground">{totals[category].toLocaleString()}</span>
             </span>
           ))}

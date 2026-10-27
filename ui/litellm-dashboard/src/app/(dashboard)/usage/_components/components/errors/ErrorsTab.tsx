@@ -174,20 +174,16 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           <Stat label={t("failedRequests")} value={summary ? count(summary.failed) : null} pending={loading} />
         </StatCell>
         <StatCell label={t("clientErrors")}>
-          <Stat label="Client errors (4xx)" value={summary ? count(summary.clientErrors) : null} pending={loading} />
+          <Stat label={t("clientErrors")} value={summary ? count(summary.clientErrors) : null} pending={loading} />
         </StatCell>
         <StatCell label={t("serverErrors")}>
-          <Stat label="Server errors (5xx)" value={summary ? count(summary.serverErrors) : null} pending={loading} />
+          <Stat label={t("serverErrors")} value={summary ? count(summary.serverErrors) : null} pending={loading} />
         </StatCell>
         <StatCell label={t("rateLimited")}>
-          <Stat label="Rate limited (429)" value={summary ? count(summary.rateLimited) : null} pending={loading} />
+          <Stat label={t("rateLimited")} value={summary ? count(summary.rateLimited) : null} pending={loading} />
         </StatCell>
         <StatCell label={t("authFailures")}>
-          <Stat
-            label="Auth failures (401/403)"
-            value={summary ? count(summary.authFailures) : null}
-            pending={loading}
-          />
+          <Stat label={t("authFailures")} value={summary ? count(summary.authFailures) : null} pending={loading} />
         </StatCell>
       </div>
 
@@ -256,7 +252,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             height="h-48"
             empty={statusRows.length === 0 ? "No failed requests in this range" : null}
           >
-            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label="Failed requests by status code">
+            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("statusListAria")}>
               {statusRows.map((row) => (
                 <li
                   key={row.status_code}

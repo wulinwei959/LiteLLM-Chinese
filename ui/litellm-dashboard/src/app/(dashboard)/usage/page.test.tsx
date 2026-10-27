@@ -19,7 +19,7 @@ describe("Usage settings readiness", () => {
 
   it("waits for the configured range before mounting the usage data consumers", () => {
     const { rerender } = renderWithProviders(<UsagePage />);
-    expect(screen.getByRole("status", { name: "Loading usage settings" })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "正在加载用量设置" })).toBeInTheDocument();
     expect(screen.queryByText(/Usage range/)).not.toBeInTheDocument();
     settings.mockReturnValue({ isLoading: false, data: { values: { usage_default_time_range: "month_to_date" } } });
     rerender(<UsagePage />);
@@ -39,7 +39,7 @@ describe("Usage settings readiness", () => {
     "waits for settings when the URL range is invalid %s",
     (searchParams) => {
       renderWithProviders(<UsagePage />, { searchParams });
-      expect(screen.getByRole("status", { name: "Loading usage settings" })).toBeInTheDocument();
+      expect(screen.getByRole("status", { name: "正在加载用量设置" })).toBeInTheDocument();
     },
   );
 

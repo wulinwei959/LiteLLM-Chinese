@@ -806,6 +806,16 @@
       "text": "https://example.com/logo.png"
     },
     {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/BreakdownChart.tsx",
+      "kind": "jsx",
+      "text": "by"
+    },
+    {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/UsageStatStrip.tsx",
+      "kind": "jsx",
+      "text": "failed"
+    },
+    {
       "file": "src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx",
       "kind": "error",
       "text": "Failed to load default user settings"
@@ -1081,24 +1091,29 @@
       "text": "LiteLLM"
     },
     {
+      "file": "src/components/liteadmin/agent.ts",
+      "kind": "error",
+      "text": "Keep each message under 8,000 characters, or start a new chat."
+    },
+    {
+      "file": "src/components/liteadmin/agent.ts",
+      "kind": "error",
+      "text": "The action limit was reached. Check completed actions before continuing."
+    },
+    {
       "file": "src/components/liteadmin/LiteAdmin.tsx",
       "kind": "jsx",
       "text": "⌘J"
     },
     {
-      "file": "src/components/liteadmin/LiteAdmin.tsx",
-      "kind": "prop:aria-label",
-      "text": "LiteAdmin"
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "error",
+      "text": "A signed-in user is required to query usage."
     },
     {
       "file": "src/components/liteadmin/operations.ts",
       "kind": "error",
       "text": "Action cancelled. No change was sent."
-    },
-    {
-      "file": "src/components/liteadmin/operations.ts",
-      "kind": "error",
-      "text": "The change could not be verified. Check the resource before trying again."
     },
     {
       "file": "src/components/logs/detail/DrawerHeader.tsx",

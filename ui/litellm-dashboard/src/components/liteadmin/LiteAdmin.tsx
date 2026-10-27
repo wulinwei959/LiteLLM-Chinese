@@ -295,10 +295,7 @@ function Destination({
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="break-all font-mono text-xs">{target.baseUrl}</p>
-                <p className="text-muted-foreground">
-                  This gateway uses a different address. Aria will send your existing session credential to the address
-                  shown above.
-                </p>
+                <p className="text-muted-foreground">{t("gatewayAddressNote")}</p>
               </CardContent>
               <CardFooter>
                 <Button onClick={() => setApproved(true)}>{t("useConfiguredGateway")}</Button>
@@ -499,7 +496,11 @@ function LiteAdminComposer({
   return (
     <div className={cn("space-y-3", !home && "border-t p-3")}>
       <ModelStatus models={models} />
-      {tooLong && <FieldError>Keep your message within {MAX_INPUT_LENGTH.toLocaleString()} characters.</FieldError>}
+      {tooLong && (
+        <FieldError>
+          {t("messageLimitPrefix")} {MAX_INPUT_LENGTH.toLocaleString()} {t("charactersSuffix")}
+        </FieldError>
+      )}
       {home ? (
         <LiteAdminHomeComposer
           {...props}
@@ -560,9 +561,9 @@ function ModelStatus({ models }: { models: UseQueryResult<ModelGroup[]> }) {
   return (
     <Alert variant="destructive">
       <AlertDescription>
-        Could not load models.{" "}
+        {t("modelsLoadFailed")}{" "}
         <Button variant="link" onClick={() => void models.refetch()}>
-          Retry
+          {t("retry")}
         </Button>
       </AlertDescription>
     </Alert>
