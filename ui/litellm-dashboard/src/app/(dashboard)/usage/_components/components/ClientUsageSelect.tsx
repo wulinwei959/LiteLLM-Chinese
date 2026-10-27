@@ -8,13 +8,13 @@ const CLIENT_OPTIONS = [
 ];
 
 export default function ClientUsageSelect({
-  const t = useTranslations("clientUsage");
   value,
   onChange,
 }: {
   value: UsageClient | null;
   onChange: (client: UsageClient | null) => void;
 }) {
+  const t = useTranslations("clientUsage");
   return (
     <SearchSelect
       aria-label={t("viewClientUsage")}
