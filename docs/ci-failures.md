@@ -1,5 +1,7 @@
 # CI 失败记录
 
+> 现状锚（2026-10-27）：`ui-unit` 的 Vitest 当前为 `--maxWorkers=4`、job 超时 90 分钟；依赖安全的 8 条已按「`requires-python >=3.11` + 官方升级 filelock / pillow / next」修复，otel-api 与 msal-node 用带过期时间的 osv 豁免。下文各条里的 `maxWorkers=14` 等是当时实录，不代表现状
+
 ## 2026-10-25 unit / root 分片：select_ui 测试期望与 workflow 参数不一致
 
 - 运行：GitHub Actions run 40227548016（workflow_dispatch，main@d040e4e0）
