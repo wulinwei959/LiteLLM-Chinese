@@ -93,11 +93,15 @@ describe("LoginPage submit payload", () => {
     await screen.findByRole("heading", { name: "登录" });
 
     fireEvent.change(screen.getByLabelText("用户名"), { target: { value: "admin" } });
-    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-1234" } });
+    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-test-key-9f3a" } });
     await user.click(screen.getByRole("button", { name: "登录" }));
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-1234", useV3: false });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({
+      username: "admin",
+      password: "sk-test-key-9f3a",
+      useV3: false,
+    });
     expect(switchToWorkerUrl).not.toHaveBeenCalled();
   });
 
@@ -107,10 +111,14 @@ describe("LoginPage submit payload", () => {
     await screen.findByRole("heading", { name: "登录" });
 
     fireEvent.change(screen.getByLabelText("用户名"), { target: { value: "admin" } });
-    await user.type(screen.getByLabelText("密码"), "sk-1234{Enter}");
+    await user.type(screen.getByLabelText("密码"), "sk-test-key-9f3a{Enter}");
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-1234", useV3: false });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({
+      username: "admin",
+      password: "sk-test-key-9f3a",
+      useV3: false,
+    });
   });
 
   it("blocks submit and shows both required messages when the fields are empty", async () => {
@@ -148,11 +156,11 @@ describe("LoginPage submit payload", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click(await screen.findByText("Worker B"));
     fireEvent.change(screen.getByLabelText("用户名"), { target: { value: "admin" } });
-    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-1234" } });
+    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-test-key-9f3a" } });
     await user.click(screen.getByRole("button", { name: "登录" }));
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-1234", useV3: true });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-test-key-9f3a", useV3: true });
     expect(switchToWorkerUrl).toHaveBeenCalledWith("http://worker-b:4000");
   });
 
@@ -175,11 +183,11 @@ describe("LoginPage submit payload", () => {
     await screen.findByRole("heading", { name: "登录" });
 
     fireEvent.change(screen.getByLabelText("用户名"), { target: { value: "admin" } });
-    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-1234" } });
+    fireEvent.change(screen.getByLabelText("密码"), { target: { value: "sk-test-key-9f3a" } });
     await user.click(screen.getByRole("button", { name: "登录" }));
 
     await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1));
-    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-1234", useV3: true });
+    expect(mockMutate.mock.calls[0][0]).toStrictEqual({ username: "admin", password: "sk-test-key-9f3a", useV3: true });
     expect(switchToWorkerUrl).toHaveBeenCalledWith("http://worker-a:4000");
   });
 });

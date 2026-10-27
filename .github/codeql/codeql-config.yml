@@ -8,11 +8,15 @@ name: "LiteLLM CodeQL config"
 # Re-test periodically as CodeQL improves or the codebase refactors logging.
 query-filters:
   - exclude:
-      id: py/clear-text-logging-sensitive-data  # CWE-312
+      id: py/clear-text-logging-sensitive-data # CWE-312
   - exclude:
-      id: py/polynomial-redos                   # CWE-730
+      id: py/polynomial-redos # CWE-730
 
 paths-ignore:
   - tests
   - docs
   - "**/*.md"
+  - "**/dist/**"
+  - "**/vendor/**"
+  - "**/*.min.js"
+  - litellm/proxy/_experimental/out/**

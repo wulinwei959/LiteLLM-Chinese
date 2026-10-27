@@ -495,6 +495,7 @@ async def start_roi_calculator_sync(
     manager: Annotated[SyncManager, Depends(get_roi_sync_manager)],
     transport: Annotated[httpx.AsyncBaseTransport | None, Depends(get_github_transport)],
 ) -> ROISyncStatus:
+    """Start a ROI calculator estimation sync, returning 202 while it runs in the background."""
     settings: Final = await load_settings(repository)
     public: Final = _public_settings(settings)
     if not public.ready:
@@ -680,6 +681,7 @@ async def test_roi_calculator_connections(
     repository: Annotated[ConfigRepository, Depends(get_roi_config_repository)],
     transport: Annotated[httpx.AsyncBaseTransport | None, Depends(get_github_transport)],
 ) -> ROISettingsResponse:
+    """Test the configured source and estimator connections before a sync."""
     settings: Final = await load_settings(repository)
     public: Final = _public_settings(settings)
     if not public.ready:
@@ -700,6 +702,7 @@ async def reset_roi_calculator_setup(
     _user: Annotated[UserAPIKeyAuth, Depends(write_admin)],
     repository: Annotated[ConfigRepository, Depends(get_roi_config_repository)],
 ) -> ROISettingsResponse:
+    """Reset ROI calculator setup, clearing selected repositories and the sync lock."""
     from uuid import uuid4
 
     store: Final = SyncStore(repository.prisma_client)

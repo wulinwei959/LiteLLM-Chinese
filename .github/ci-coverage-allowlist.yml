@@ -55,6 +55,11 @@ test_paths:
       - tests/integration/sandbox/test_e2b_sandbox.py
       - tests/integration/test_oci_integration.py
       - tests/integration/test_oci_proxy_integration.py
+  - reason: >-
+      本 fork 已删除 codspeed.yml。基准测试跑在免费共享 runner 上只会产生抖动数字，仓库也没有
+      CodSpeed 账户。需要时本地手动跑：codspeed run pytest tests/benchmarks
+    paths:
+      - tests/benchmarks
 
 dockerfiles:
   - reason: >-
@@ -73,3 +78,8 @@ dockerfiles:
       published
     paths:
       - litellm-rust/crates/gateway/Dockerfile
+  - reason: >-
+      本 fork 已删除 compat-matrix-image.yml。该镜像是给上游 Render 定时任务用的，会把官方
+      Claude Code CLI 装进 cron 用户，本部署不跑这套运维
+    paths:
+      - tests/e2e/claude_code/cron_vm/Dockerfile

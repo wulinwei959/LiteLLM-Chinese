@@ -938,10 +938,10 @@ jobs:
             job-timeout-minutes: 60
             dist: loadscope
 
-          - shard: lens-python-310
+          - shard: lens-python-311
             test-path: >-
               tests/unit/proxy/lens
-            python-version: "3.10"
+            python-version: "3.11"
             workers: 0
             reruns: 0
             timeout-minutes: 5
@@ -1322,7 +1322,7 @@ jobs:
     env:
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
       PYTHONPATH: ${{ github.workspace }}
-      UV_PYTHON: "3.10"
+      UV_PYTHON: "3.11"
       OPENAI_VERSION: ${{ matrix.openai-version }}
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
