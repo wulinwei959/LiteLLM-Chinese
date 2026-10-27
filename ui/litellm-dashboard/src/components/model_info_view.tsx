@@ -183,7 +183,7 @@ export default function ModelInfoView({
     const getExistingCredential = async () => {
       if (!accessToken) return;
       if (usingExistingCredential) return;
-      let existingCredentialResponse = await credentialGetCall(accessToken, null, modelId);
+      const existingCredentialResponse = await credentialGetCall(accessToken, null, modelId);
       setExistingCredential({
         credential_name: existingCredentialResponse["credential_name"],
         credential_values: existingCredentialResponse["credential_values"],
@@ -195,7 +195,7 @@ export default function ModelInfoView({
       if (!accessToken) return;
       // Only fetch if we don't have modelData yet
       if (modelData) return;
-      let modelInfoResponse = await modelInfoV1Call(accessToken, modelId);
+      const modelInfoResponse = await modelInfoV1Call(accessToken, modelId);
       let specificModelData = modelInfoResponse.data[0];
       if (specificModelData && !specificModelData.litellm_model_name) {
         specificModelData = {
@@ -255,7 +255,7 @@ export default function ModelInfoView({
 
   const handleReuseCredential = async (values: any) => {
     if (!accessToken) return;
-    let credentialItem = {
+    const credentialItem = {
       credential_name: values.credential_name,
       model_id: modelId,
       credential_info: {
@@ -263,7 +263,7 @@ export default function ModelInfoView({
       },
     };
     toast.info(t("storingCredential"));
-    let credentialResponse = await credentialCreateCall(accessToken, credentialItem);
+    const credentialResponse = await credentialCreateCall(accessToken, credentialItem);
     toast.success(t("credentialStored"));
   };
 
@@ -271,7 +271,6 @@ export default function ModelInfoView({
     values: ModelEditSubmitValues,
     isFieldTouched: (field: TouchedPricingField) => boolean,
   ) => {
-    
     try {
       if (!accessToken) return;
       setIsSaving(true);
@@ -287,7 +286,7 @@ export default function ModelInfoView({
         return;
       }
 
-      let updatedLitellmParams: Record<string, any> = {
+      const updatedLitellmParams: Record<string, any> = {
         ...parsedExtraParams,
         model: values.litellm_model_name,
         api_base: values.api_base,
@@ -445,7 +444,6 @@ export default function ModelInfoView({
   }
 
   const handleTestConnection = async () => {
-    
     if (!accessToken) return;
     if (isComplexityRouterModel) {
       const targets = buildComplexityRouterTestTargets(localModelData ?? modelData);
@@ -492,7 +490,6 @@ export default function ModelInfoView({
   };
 
   const handleDelete = async () => {
-    
     try {
       setDeleteLoading(true);
       if (!accessToken) return;

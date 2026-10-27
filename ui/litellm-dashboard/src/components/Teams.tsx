@@ -426,7 +426,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
   const handleCreate = async (formValues: Record<string, any>) => {
     try {
       if (accessToken != null) {
-        let organizationId = formValues?.organization_id || currentOrg?.organization_id;
+        const organizationId = formValues?.organization_id || currentOrg?.organization_id;
         if (organizationId === "" || typeof organizationId !== "string") {
           formValues.organization_id = null;
         } else {
@@ -596,7 +596,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
       return false;
     }
     for (let i = 0; i < team.members_with_roles.length; i++) {
-      let member = team.members_with_roles[i];
+      const member = team.members_with_roles[i];
       if (member.user_id == userID && member.role == "admin") {
         return true;
       }
@@ -698,7 +698,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
           <PageHeader>
             <PageHeaderTitle>
               <Users />
-              {t("title")}</PageHeaderTitle>
+              {t("title")}
+            </PageHeaderTitle>
             <PageHeaderDescription>{t("listSubtitle")}</PageHeaderDescription>
             <PageHeaderControls>
               <PageTabsList>
@@ -706,7 +707,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <>
                     <UIButton onClick={openCreateTeamModal} data-testid="create-team-button">
                       <Plus className="size-4" />
-                      {t("createTeam")}</UIButton>
+                      {t("createTeam")}
+                    </UIButton>
                     <ToolbarSeparator className="mx-0 h-6" />
                   </>
                 )}
@@ -775,9 +777,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                               }))}
                               disabled={isOrgAdmin && soleOrganizationId !== null && value === soleOrganizationId}
                               allowClear={!isOrgAdmin}
-                              placeholder={
-                                hasNoOrgs ? t("listNoOrganizationsAvailable") : t("listSearchOrganization")
-                              }
+                              placeholder={hasNoOrgs ? t("listNoOrganizationsAvailable") : t("listSearchOrganization")}
                               emptyText={t("listNoOrganizationsAvailable")}
                               onValueChange={(next) => selectCreateTeamOrganization(next, value ?? null, onChange)}
                             />
@@ -786,8 +786,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
 
                         {isOrgAdmin && !isSingleOrg && adminOrgs.length > 1 && (
                           <div className="mb-8 rounded-md border border-info/20 bg-info/10 p-4">
-                            <span className="text-sm text-info">
-                              {t("listSelectOrganizationNotice")}</span>
+                            <span className="text-sm text-info">{t("listSelectOrganizationNotice")}</span>
                           </div>
                         )}
                       </>
@@ -796,10 +795,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <FormField
                     control={form.control}
                     name="models"
-                    label={labelWithHint(
-                      t("models"),
-                      t("listModelsHint"),
-                    )}
+                    label={labelWithHint(t("models"), t("listModelsHint"))}
                   >
                     {({ id, value, onChange }) => (
                       <ModelSelect
@@ -822,7 +818,12 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} width={200} />
                     )}
                   </FormField>
-                  <FormField control={form.control} name="budget_duration" className="mt-8" label={t("listResetBudget")}>
+                  <FormField
+                    control={form.control}
+                    name="budget_duration"
+                    className="mt-8"
+                    label={t("listResetBudget")}
+                  >
                     {({ id, value, onChange }) => (
                       <BudgetDurationDropdown
                         id={id}
@@ -854,10 +855,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <FormField
                     control={form.control}
                     name="tpd_limit"
-                    label={labelWithHint(
-                      t("listTpdLimit"),
-                      t("listTpdLimitHint"),
-                    )}
+                    label={labelWithHint(t("listTpdLimit"), t("listTpdLimitHint"))}
                   >
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
@@ -872,9 +870,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                       schemaFields={teamMetadataSchemaFields}
                       schemaLoading={isTeamMetadataSchemaLoading}
                     />
-                    <FieldDescription>
-                      {t("listMetadataDescription", { example: '{"region": "us"}' })}
-                    </FieldDescription>
+                    <FieldDescription>{t("listMetadataDescription", { example: '{"region": "us"}' })}</FieldDescription>
                   </Field>
 
                   <Collapsible
@@ -899,10 +895,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="team_member_budget"
-                          label={labelWithHint(
-                            t("listTeamMemberBudget"),
-                            t("listTeamMemberBudgetHint"),
-                          )}
+                          label={labelWithHint(t("listTeamMemberBudget"), t("listTeamMemberBudgetHint"))}
                         >
                           {({ ref, value, onChange, ...field }) => (
                             <NumericalInput
@@ -930,22 +923,21 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="team_member_key_duration"
-                          label={labelWithHint(
-                            t("listTeamMemberKeyDuration"),
-                            t("listTeamMemberKeyDurationHint"),
-                          )}
+                          label={labelWithHint(t("listTeamMemberKeyDuration"), t("listTeamMemberKeyDurationHint"))}
                         >
                           {({ ref, value, ...field }) => (
-                            <UIInput {...field} ref={ref} value={value ?? ""} placeholder={t("listTeamMemberKeyDurationPlaceholder")} />
+                            <UIInput
+                              {...field}
+                              ref={ref}
+                              value={value ?? ""}
+                              placeholder={t("listTeamMemberKeyDurationPlaceholder")}
+                            />
                           )}
                         </FormField>
                         <FormField
                           control={form.control}
                           name="team_member_rpm_limit"
-                          label={labelWithHint(
-                            t("listTeamMemberRpmLimit"),
-                            t("listTeamMemberRpmLimitHint"),
-                          )}
+                          label={labelWithHint(t("listTeamMemberRpmLimit"), t("listTeamMemberRpmLimitHint"))}
                         >
                           {({ ref, value, ...field }) => (
                             <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
@@ -954,10 +946,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="team_member_tpm_limit"
-                          label={labelWithHint(
-                            t("listTeamMemberTpmLimit"),
-                            t("listTeamMemberTpmLimitHint"),
-                          )}
+                          label={labelWithHint(t("listTeamMemberTpmLimit"), t("listTeamMemberTpmLimitHint"))}
                         >
                           {({ ref, value, ...field }) => (
                             <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
@@ -967,11 +956,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="secret_manager_settings"
                           label={t("listSecretManagerSettings")}
-                          description={
-                            premiumUser
-                              ? t("listSecretManagerDescription")
-                              : t("secretManagerPremium")
-                          }
+                          description={premiumUser ? t("listSecretManagerDescription") : t("secretManagerPremium")}
                         >
                           {({ ref, value, ...field }) => (
                             <Textarea
@@ -1035,10 +1020,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             control={form.control}
                             name="require_trace_id"
                             className="mt-4"
-                            label={labelWithHint(
-                              t("listRequireTraceId"),
-                              t("listRequireTraceIdHint"),
-                            )}
+                            label={labelWithHint(t("listRequireTraceId"), t("listRequireTraceIdHint"))}
                           >
                             {({ id, value, onChange }) => (
                               <Switch id={id} checked={value === true} onCheckedChange={onChange} />
@@ -1072,10 +1054,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="access_group_ids"
                           className="mt-8"
-                          label={labelWithHint(
-                            t("listAccessGroups"),
-                            t("listAccessGroupsHint"),
-                          )}
+                          label={labelWithHint(t("listAccessGroups"), t("listAccessGroupsHint"))}
                           description={t("listAccessGroupsDescription")}
                         >
                           {({ value, onChange }) => (
@@ -1090,10 +1069,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="allowed_vector_store_ids"
                           className="mt-8"
-                          label={labelWithHint(
-                            t("listAllowedVectorStores"),
-                            t("listAllowedVectorStoresHint"),
-                          )}
+                          label={labelWithHint(t("listAllowedVectorStores"), t("listAllowedVectorStoresHint"))}
                           description={t("listAllowedVectorStoresDescription")}
                         >
                           {({ value, onChange }) => (
@@ -1151,10 +1127,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         control={form.control}
                         name="allowed_mcp_servers_and_groups"
                         className="mt-4"
-                        label={labelWithHint(
-                          t("listAllowedMcpServers"),
-                          t("listAllowedMcpServersHint"),
-                        )}
+                        label={labelWithHint(t("listAllowedMcpServers"), t("listAllowedMcpServersHint"))}
                         description={t("listAllowedMcpServersDescription")}
                       >
                         {({ value, onChange }) => (
@@ -1195,10 +1168,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         control={form.control}
                         name="allowed_agents_and_groups"
                         className="mt-4"
-                        label={labelWithHint(
-                          t("listAllowedAgents"),
-                          t("listAllowedAgentsHint"),
-                        )}
+                        label={labelWithHint(t("listAllowedAgents"), t("listAllowedAgentsHint"))}
                         description={t("listAllowedAgentsDescription")}
                       >
                         {({ value, onChange }) => (
@@ -1227,10 +1197,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         control={form.control}
                         name="object_permission_search_tools"
                         className="mt-4"
-                        label={labelWithHint(
-                          t("listAllowedSearchTools"),
-                          t("listAllowedSearchToolsHint"),
-                        )}
+                        label={labelWithHint(t("listAllowedSearchTools"), t("listAllowedSearchToolsHint"))}
                         description={t("listAllowedSearchToolsDescription")}
                       >
                         {({ value, onChange }) => (
@@ -1259,10 +1226,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         control={form.control}
                         name="object_permission_skills"
                         className="mt-4"
-                        label={labelWithHint(
-                          t("listAllowedSkills"),
-                          t("listAllowedSkillsHint"),
-                        )}
+                        label={labelWithHint(t("listAllowedSkills"), t("listAllowedSkillsHint"))}
                         description={t("listAllowedSkillsDescription")}
                       >
                         {({ value, onChange }) => (
@@ -1325,8 +1289,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
                       <div className="mt-4">
-                        <p className="mb-4 block text-sm text-muted-foreground">
-                          {t("listModelAliasesDescription")}</p>
+                        <p className="mb-4 block text-sm text-muted-foreground">{t("listModelAliasesDescription")}</p>
                         <ModelAliasManager
                           accessToken={accessToken || ""}
                           initialModelAliases={modelAliases}
@@ -1339,7 +1302,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                 </FieldGroup>
                 <div className="mt-[10px] text-right">
                   <UIButton type="submit" data-testid="create-team-submit">
-                    {t("createTeam")}</UIButton>
+                    {t("createTeam")}
+                  </UIButton>
                 </div>
               </form>
             </TooltipProvider>

@@ -267,3 +267,19 @@ theirs = upstream/main 的内容 （上游的新版）
 本轮只做后端：`litellm/`（含 6 处我方 proxy 补丁）、`litellm-rust/`、`backend/`、`tests/`、`packaging/`、`vscode-extension/` 与仓库根部的上游资产按三方合并取上游新版；仪表盘源码不动，仍是 `v1.107.0` 汉化版，只按合并后的后端重生成 `src/lib/http/schema.d.ts`。依赖守住 `requires-python>=3.11` 与 `filelock>=4.2.1` 并随上游放开到 `<3.16`，`uv lock` 重锁后 filelock 4.2.4、pillow 13.0.0、opentelemetry 1.45.1
 
 仪表盘的完整同步另行推进。此前一次尝试把 `ui/litellm-dashboard` 全量三方合并后，80 个双方都改的文件里有大量「上游新 JSX 配我方旧 import」的半成品，且上游这 5 天对 chat、usage、liteadmin 等目录做了成规模的组件重构，机械贴回译文会与上游新签名打架。这部分工作副本保留在 `sync-dashboard-wip` 分支，重接方法与第八节相同：取上游骨架，逐个文件把 `t(...)` 按新结构贴回，再补目录键
+
+## 十一、执行记录（2026-10-27）：仪表盘同步到上游 cfe0100e1
+
+后端 PR #11 合入 main 后，仪表盘侧在 `litellm_ui_sync_cfe0100` 分支完成同步，仍按第八节的做法：`66c8f5b1a9` 作三方基线，逐文件 `base/ours/theirs`，上游新增取上游，上游删除随上游删。
+
+这一轮的实际处理分成三层，按冲突形态择优：
+
+1. 只有一侧改动的文件直接取那一侧（我方 1465 个、上游 33 个、上游新增 83 个）。
+2. 双方都改、上游只动了几行的（`networking.tsx` 之外的 `bulk_create_users_button.tsx`、`price_data_reload.tsx`、`add_pass_through.tsx`、列定义文件等 18 个）取三方合并结果，译文与上游改动同时保住。
+3. 上游把结构改了个底朝天的（chat 附件与 moyai、LiteAdmin 的 Aria 应答、用量页的 client usage 视图、auto router 预设、模型中心 provider 标识、模型编辑参数、团队密钥排序）取上游会与汉化接线拼成半成品：JSX 标签对不上、模块级函数拿不到 `useTranslations`、列定义工厂的译员参数被上游签名吃掉。这批保留我方版本，未被接入的上游新组件与其集成测试一并删掉，列表见下。
+
+译文的贴回用两步：先从 `git diff refs/upstream/main HEAD` 里取「英文行 → 带 `t(...)` 的同一行」的成对差分，按行落到上游版本上；配对要求新行里的键在 `en.json` 的取值确实出现在被替换的旧行里，且要落在整词边界内，避免把 `isChatRoute` 这类标识符误判成 "Chat"。第二步给丢了译员的组件补 `const t = useTranslations("<命名空间>")`，命名空间与函数名都从我方版本反查，缺 `next-intl` import 的再补 import。
+
+收口后的实测口径：生产类型检查 0 条错误，死键 0，静态英文 284 条与基线同数，中文取值未译 215 / 夹中文 0 与基线同数，lint 预算九条不超线（`local/no-large-inline-object-arg` 靠提取 4 处内联对象回到 477 上限内），`knip:ci` 无未用文件。
+
+本轮没有接入的上游新模块（后续按功能补齐时从这里取）：`src/components/chat/`（`ChatFileChip`、`ChatModelPicker`、`attachmentHelpers`、`imageHelpers`、`chatImageStorage`、`runChatRequest`、`moyai/MoyaiChatComposer`、`moyai/MoyaiChatHome`）、`src/components/liteadmin/`（`AriaAnswer`、`AriaAvatar`、`UsageAnswerChart`、`answerExport`、`aria-brand`、`usageChart`）、`usage/_components/components/`（`ClientUsagePanel`、`ClientUsageSelect`、`overview/UsageBreakdownChart`）、`add_model/`（`AutoRouterPresetSelect`、`AutoRouterSimpleSetup`）、`AIHub/ModelHubProviders`、`TeamsPage/TeamMemberSpendBudgetCell`、`shared/BudgetPeriodTooltip`、`utils/modelEditParams`、`key_team_helpers/key_sorting`。

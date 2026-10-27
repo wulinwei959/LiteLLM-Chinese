@@ -14,6 +14,7 @@ vi.mock("./user_edit_view", () => ({
   UserEditView: ({ onSubmit, onCancel }: { onSubmit: (values: any) => void; onCancel: () => void }) => (
     <div data-testid="user-edit-view">
       <button onClick={() => onSubmit({ user_role: "admin", max_budget: 100 })}>Submit</button>
+      <button onClick={() => onSubmit({ max_budget: 100, budget_duration: null })}>Submit with unset duration</button>
       <button onClick={onCancel}>Cancel</button>
     </div>
   ),
@@ -44,15 +45,17 @@ const defaultProps = {
   allowAllUsers: false,
 };
 
+const bulkUpdateResult = (totalRequested: number, successfulUpdates: number) => ({
+  results: [],
+  total_requested: totalRequested,
+  successful_updates: successfulUpdates,
+  failed_updates: 0,
+});
+
 describe("BulkEditUserModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 2,
-      successful_updates: 2,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(2, 2));
     mockTeamBulkMemberAddCall.mockResolvedValue({
       successful_additions: 2,
       failed_additions: 0,
@@ -204,6 +207,18 @@ describe("BulkEditUserModal", () => {
     });
   });
 
+  it("omits an unset reset period from the bulk update payload", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<BulkEditUserModal {...defaultProps} />);
+
+    await user.click(screen.getByRole("button", { name: "Submit with unset duration" }));
+
+    await waitFor(() => {
+      expect(mockUserBulkUpdateUserCall).toHaveBeenCalledWith("test-token", { max_budget: 100 }, ["user1", "user2"]);
+    });
+    expect(mockUserBulkUpdateUserCall.mock.calls[0][1]).not.toHaveProperty("budget_duration");
+  });
+
   it("should call userBulkUpdateUserCall with allUsers flag when update all users is enabled", async () => {
     const user = userEvent.setup();
     renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
@@ -226,12 +241,7 @@ describe("BulkEditUserModal", () => {
 
   it("should show success message after successful user update", async () => {
     const user = userEvent.setup();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 2,
-      successful_updates: 2,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(2, 2));
 
     renderWithProviders(<BulkEditUserModal {...defaultProps} />);
 
@@ -245,12 +255,7 @@ describe("BulkEditUserModal", () => {
 
   it("should show success message for all users update", async () => {
     const user = userEvent.setup();
-    mockUserBulkUpdateUserCall.mockResolvedValue({
-      results: [],
-      total_requested: 100,
-      successful_updates: 100,
-      failed_updates: 0,
-    });
+    mockUserBulkUpdateUserCall.mockResolvedValue(bulkUpdateResult(100, 100));
 
     renderWithProviders(<BulkEditUserModal {...defaultProps} allowAllUsers={true} />);
 

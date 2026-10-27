@@ -644,9 +644,6 @@
     "local/filename-pascal-case": {
       "count": 1
     },
-    "prefer-const": {
-      "count": 4
-    },
     "react-hooks/immutability": {
       "count": 1
     },
@@ -1040,9 +1037,6 @@
     },
     "no-nested-ternary": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/(dashboard)/search-tools/_components/SearchTools.tsx": {
@@ -1120,11 +1114,6 @@
       "count": 1
     }
   },
-  "src/app/(dashboard)/users/_components/BulkEditUsers.tsx": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
   "src/app/(dashboard)/users/_components/index.tsx": {
     "local/filename-pascal-case": {
       "count": 1
@@ -1140,9 +1129,6 @@
   },
   "src/app/(dashboard)/users/_components/view_users.tsx": {
     "local/filename-pascal-case": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     },
     "react-hooks/set-state-in-effect": {
@@ -1313,11 +1299,6 @@
       "count": 1
     }
   },
-  "src/components/Settings/RouterSettings/Fallbacks/Fallbacks.tsx": {
-    "prefer-const": {
-      "count": 2
-    }
-  },
   "src/components/Teams.test.tsx": {
     "max-nested-callbacks": {
       "count": 4
@@ -1331,9 +1312,6 @@
       "count": 1
     },
     "no-nested-ternary": {
-      "count": 2
-    },
-    "prefer-const": {
       "count": 2
     }
   },
@@ -1442,16 +1420,8 @@
       "count": 1
     }
   },
-  "src/components/agent_management/AgentSelector.tsx": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
   "src/components/alerting/alerting_settings.tsx": {
     "local/filename-pascal-case": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     }
   },
@@ -1610,9 +1580,6 @@
   "src/components/email_settings.tsx": {
     "local/filename-pascal-case": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/components/key_info_utils.tsx": {
@@ -1622,9 +1589,6 @@
   },
   "src/components/key_team_helpers/fetch_available_models_team_key.tsx": {
     "local/filename-pascal-case": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     }
   },
@@ -1656,9 +1620,6 @@
       "count": 1
     },
     "no-nested-ternary": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     }
   },
@@ -1753,9 +1714,6 @@
     "local/filename-pascal-case": {
       "count": 1
     },
-    "prefer-const": {
-      "count": 5
-    },
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -1780,9 +1738,6 @@
     },
     "no-restricted-syntax": {
       "count": 140
-    },
-    "prefer-const": {
-      "count": 28
     }
   },
   "src/components/object_permissions_view.tsx": {
@@ -1801,9 +1756,6 @@
     },
     "max-lines": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/components/organization/organization_view.tsx": {
@@ -1844,9 +1796,6 @@
   "src/components/provider_info_helpers.tsx": {
     "local/filename-pascal-case": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 3
     }
   },
   "src/components/public_model_hub.tsx": {
@@ -1875,9 +1824,6 @@
   "src/components/router_settings/index.tsx": {
     "local/filename-pascal-case": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/components/routing_groups/index.tsx": {
@@ -1899,9 +1845,6 @@
     },
     "no-nested-ternary": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 4
     }
   },
   "src/components/shared/advanced_date_picker.tsx": {
@@ -2119,9 +2062,6 @@
     "local/filename-pascal-case": {
       "count": 1
     },
-    "prefer-const": {
-      "count": 3
-    },
     "react-hooks/set-state-in-effect": {
       "count": 2
     }
@@ -2186,11 +2126,6 @@
       "count": 1
     },
     "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "src/utils/dataUtils.test.ts": {
-    "max-nested-callbacks": {
       "count": 1
     }
   },
