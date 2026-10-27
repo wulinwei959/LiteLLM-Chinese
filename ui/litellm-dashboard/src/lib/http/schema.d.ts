@@ -73270,7 +73270,18 @@ export interface operations {
                  *       "query": "latest developments in AI retrieval"
                  *     }
                  */
-                "application/json": unknown;
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
             };
         };
         responses: {
@@ -73331,7 +73342,18 @@ export interface operations {
                  *       "query": "latest developments in AI retrieval"
                  *     }
                  */
-                "application/json": unknown;
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
             };
         };
         responses: {
@@ -83240,7 +83262,18 @@ export interface operations {
                  *       "query": "latest developments in AI retrieval"
                  *     }
                  */
-                "application/json": unknown;
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
             };
         };
         responses: {
@@ -83301,7 +83334,18 @@ export interface operations {
                  *       "query": "latest developments in AI retrieval"
                  *     }
                  */
-                "application/json": unknown;
+                "application/json": {
+                    /** Country */
+                    country?: string;
+                    /** Max Results */
+                    max_results?: number;
+                    /** Max Tokens Per Page */
+                    max_tokens_per_page?: number;
+                    /** Query */
+                    query: string | string[];
+                    /** Search Domain Filter */
+                    search_domain_filter?: string[];
+                };
             };
         };
         responses: {
