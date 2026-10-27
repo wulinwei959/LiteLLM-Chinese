@@ -5317,3 +5317,11 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 验证：新增 6 例单测，与 i18n 守卫合跑 65 例全绿；双向变异各改一枚唯一锚点，门禁分别以 exit 1 报出 `zh value carries no Chinese: common.configValueUpdated` 与 `en value carries Chinese: common.helpIcon`，还原后回到绿色；`knip:ci`、eslint、prettier 通过；消息目录未改，死键仍 0、静态英文基线仍 284
 
 同簇把统计口径对齐并写进 README 的验证一节。按 `i18n-file-inventory.mjs` 的枚举规则复跑，非测试 `.tsx` 955 个、接入 739 个、77.4%、未接入 216 个（199 零命中加 17 有证据，零命中里 `src/app` 路由 88 含 `page.tsx` 40、ui 原语 40、shared 容器 23、其余 48 散在 58 目录），旧记的 954 / 737 / 217 是口径未写明时的漏算。目录叶子按 `dead-keys.py` 的 `flat` 口径数组算一片得 13355，展开数组得 13363，同值 185 两法一致、键树差集 0。全量文件与用例数改为只认 CI `ui-unit` 实录，最近一次现跑 run 40233205085 为 970 文件 13056 例。回填后的最新实录是 run 40249622617（#400，main@4d02d8fd）：973 个文件、13076 例，9 例既有预期失败、真红 0，`Type Errors` no errors，同轮 `ui-unit` 的静态英文与中文取值两道门禁步骤均 success
+
+## 2026-10-27 第 536 簇：上游同步（后端 PR #11 与仪表盘 PR #12）
+
+上游基线经官方克隆逐字节比对确认为 `66c8f5b1a9`，代理侧与依赖先同步到上游 main `cfe0100e1`（PR #11，已合入 main），仪表盘侧随后同步（PR #12）。做法见 `UPSTREAM-SYNC.md` 第十至十一篇：逐文件三方合并，上游小改的文件保住译文与上游改动，上游大改结构的模块本轮保留我方版本，未接入清单已在文档里列出，下一簇按功能补齐
+
+本轮复测：`src/messages/en.json` 与 `zh-CN.json` 摊平后各 13355 叶，键树差集 0，中英同值 185 条（与第 535 簇同口径）；`i18n-file-inventory.mjs` 报未接入非测试 `.tsx` 217 个，其中有可见文案证据 17 个，接入率按 955 个非测试 `.tsx` 计为 738 / 955 = 77.3%（同步把上游新增组件带进来，分母变大，接入数与第 535 簇的 739 基本持平）；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 284 / 基线 284，`check:zh-coverage` 215 / 0 与基线同数；生产 `typecheck` 0 条错误；eslint 变更文件 0 错误、九条预算全部在预算内（`local/no-large-inline-object-arg` 靠提取 4 处内联对象压回 477），`knip:ci` 无未用文件与未解析 import
+
+合并中处理的三件事记在 `UPSTREAM-SYNC.md` 第十一篇：贴回译文时按整词边界校验英文行与键值对应，避免把 `isChatRoute` 误判成 "Chat"；给丢译员的组件补 `useTranslations` 与 `next-intl` import；失败用例与所属模块取同一版本，避免测试跟组件不同源。渲染扫描本轮未复跑，任何后续文案改动都要按第六步之后的表重测
