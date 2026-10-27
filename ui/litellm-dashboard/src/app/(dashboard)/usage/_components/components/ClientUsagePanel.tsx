@@ -64,7 +64,7 @@ export default function ClientUsagePanel({
   scopeError: accessError = null,
   teams = [],
   members = [],
-  defaultScopeLabel = "All users",
+  defaultScopeLabel,
   onTeamChange,
   onUserChange,
   onClose,
@@ -81,6 +81,7 @@ export default function ClientUsagePanel({
   summaryFailed = false,
   onRetry,
 }: ClientUsagePanelProps) {
+  const t = useTranslations("clientUsage");
   const tUsageUseractivityColumn = useTranslations("usage.userActivity.column");
   const tVirtualkeysColumns = useTranslations("virtualKeys.columns");
   const tUsageTeamuserspend = useTranslations("usage.teamUserSpend");
@@ -98,11 +99,11 @@ export default function ClientUsagePanel({
   const personUsage = useClientUsage(personRequest);
   const allUsersEnabled = canChooseUser && !scopedRequest && !accessError;
   const teamLabel = teams.find((team) => team.value === teamId)?.label ?? teamId;
-  const personLabel = members.find((member) => member.value === userId)?.label ?? "Selected user";
+  const personLabel = members.find((member) => member.value === userId)?.label ?? t("selectedUser");
   const selectedScopeLabel = (() => {
-    if (teamId) return `${teamLabel} · ${userId ? personLabel : "All members"}`;
-    if (!canChooseUser) return "My usage";
-    return userId ? "Selected user" : "All users";
+    if (teamId) return `${teamLabel} · ${userId ? personLabel : t("allMembers")}`;
+    if (!canChooseUser) return t("myUsage");
+    return userId ? t("selectedUser") : t("allUsers");
   })();
   const summaryQuery = useTagSummary(startTime, endTime, allUsersEnabled && agent === null);
   const activeAgent = useMemo(
@@ -120,9 +121,8 @@ export default function ClientUsagePanel({
   const personTotals = overviewTotals(personUsage.data.metadata ?? EMPTY_DAILY_ACTIVITY_METADATA, null);
   const pending =
     !accessError && (scopedRequest ? personUsage.loading : (loading || summaryQuery.isLoading) && activeAgent === null);
-  const summaryError = summaryQuery.isError || summaryFailed ? "Could not load client totals" : null;
-  const scopeError =
-    accessError ?? (!canChooseUser && !scopedRequest ? "Sign in to view your client usage" : summaryError);
+  const summaryError = summaryQuery.isError || summaryFailed ? t("loadTotalsFailed") : null;
+  const scopeError = accessError ?? (!canChooseUser && !scopedRequest ? t("signInRequired") : summaryError);
   const error = accessError ?? (scopedRequest ? personUsage.error : scopeError);
   const summary = scopedRequest ? personTotals : agentDetail?.summary;
   const rawBreakdown = scopedRequest
@@ -157,7 +157,7 @@ export default function ClientUsagePanel({
       <SheetContent className="gap-0 data-[side=right]:w-[calc(100%-16px)] data-[side=right]:sm:max-w-[600px]">
         <SheetHeader className="shrink-0 border-b px-6 pt-5 pb-4">
           <Button variant="ghost" size="sm" className="mb-3 w-fit -ml-2 text-muted-foreground" onClick={onClose}>
-            <ArrowLeft className="size-4" /> Back to Usage
+            <ArrowLeft className="size-4" /> {t("backToUsage")}
           </Button>
           <div className="flex items-center gap-3">
             <AgentMark agent={{ id: client, label, logo: claudeLogo.src }} />
@@ -181,14 +181,14 @@ export default function ClientUsagePanel({
           {teams.length > 0 && onTeamChange && (
             <div className="space-y-2">
               <label htmlFor="client-usage-team" className="text-xs font-medium text-muted-foreground">
-                Usage scope
+                {t("usageScope")}
               </label>
               <SearchSelect
                 id="client-usage-team"
-                aria-label="Usage scope"
+                aria-label={t("usageScope")}
                 value={teamId ? `team:${teamId}` : "default"}
                 options={[
-                  { value: "default", label: defaultScopeLabel },
+                  { value: "default", label: defaultScopeLabel ?? t("allUsers") },
                   ...teams.map((team) => ({ ...team, value: `team:${team.value}` })),
                 ]}
                 allowClear={false}
@@ -199,14 +199,14 @@ export default function ClientUsagePanel({
           {teamId && (
             <div className="space-y-2">
               <label htmlFor="client-usage-member" className="text-xs font-medium text-muted-foreground">
-                Team member
+                {t("teamMember")}
               </label>
               <SearchSelect
                 id="client-usage-member"
                 aria-label={tSharedcomponents("scopeTeamMember")}
                 value={userId ? `user:${userId}` : "all"}
                 options={[
-                  { value: "all", label: "All members" },
+                  { value: "all", label: t("allMembers") },
                   ...members.map((member) => ({ ...member, value: `user:${member.value}` })),
                 ]}
                 allowClear={false}
@@ -218,11 +218,11 @@ export default function ClientUsagePanel({
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label htmlFor="client-usage-user" className="text-xs font-medium text-muted-foreground">
-                  Filter by person
+                  {t("filterByPerson")}
                 </label>
                 {userId && (
                   <Button variant="ghost" size="sm" onClick={() => onUserChange(null)}>
-                    All users
+                    {t("allUsers")}
                   </Button>
                 )}
               </div>
@@ -230,13 +230,13 @@ export default function ClientUsagePanel({
             </div>
           )}
           {pending && (
-            <div role="status" aria-label="Loading client usage">
+            <div role="status" aria-label={t("loadingAria")}>
               <Skeleton className="h-24 w-full" />
             </div>
           )}
           {error && (
             <div role="alert" className="rounded-lg border p-4">
-              <p className="font-medium">Could not load client usage</p>
+              <p className="font-medium">{t("couldNotLoad")}</p>
               <p className="mt-1 text-muted-foreground">{error}</p>
               {canRetry && (
                 <Button
@@ -251,13 +251,13 @@ export default function ClientUsagePanel({
                     }
                   }}
                 >
-                  Try again
+                  {t("tryAgain")}
                 </Button>
               )}
             </div>
           )}
           {ready && !summary && (
-            <p className="rounded-lg border p-4 text-muted-foreground">No {label} usage recorded in this date range.</p>
+            <p className="rounded-lg border p-4 text-muted-foreground">{t("noUsageInRange", { client: label })}</p>
           )}
           {ready && summary && (
             <>
@@ -268,7 +268,7 @@ export default function ClientUsagePanel({
               </div>
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No {label} requests in the selected range. Try another date range.
+                  {t("noRequestsInRange", { client: label })}
                   {(canChooseUser || teamId) && " You can also choose another person."}
                 </p>
               ) : (
@@ -288,7 +288,7 @@ export default function ClientUsagePanel({
                         {chartError}
                       </p>
                       <Button variant="outline" size="sm" className="mt-3" onClick={retryModels}>
-                        Retry model breakdown
+                        {t("retryBreakdown")}
                       </Button>
                     </div>
                   )}
@@ -299,7 +299,7 @@ export default function ClientUsagePanel({
                 {scopedRequest
                   ? "Based on retained request logs within the exact selected time range."
                   : "All-user totals use UTC daily aggregates for the selected dates. Filtering by person uses the exact selected times. Cache values are reported counts."}{" "}
-                Spend is the cost recorded by LiteLLM.
+                {t("spendHint")}
               </p>
             </>
           )}
@@ -318,20 +318,26 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
 }
 
 function TokenExplanation({ total, breakdown }: { total: number; breakdown: ClientAgentDetail["tokenBreakdown"] }) {
+  const t = useTranslations("clientUsage");
   const { inputTokens, outputTokens, cacheReadTokens, cacheWriteTokens } = breakdown;
   const freshInput =
     inputTokens !== null && cacheReadTokens !== null && cacheWriteTokens !== null
       ? inputTokens - cacheReadTokens - cacheWriteTokens
       : null;
   const rows = [
-    { label: "Cache reads", value: cacheReadTokens, color: stackedUsageColor(0) },
-    { label: "Cache writes", value: cacheWriteTokens, color: stackedUsageColor(1) },
-    { label: "Uncached input", value: freshInput, color: stackedUsageColor(2) },
-    { label: "Output", value: outputTokens, color: stackedUsageColor(3) },
+    { label: t("cacheReads"), value: cacheReadTokens, color: stackedUsageColor(0) },
+    { label: t("cacheWrites"), value: cacheWriteTokens, color: stackedUsageColor(1) },
+    { label: t("uncachedInput"), value: freshInput, color: stackedUsageColor(2) },
+    { label: t("output"), value: outputTokens, color: stackedUsageColor(3) },
   ];
   const complete = rows.every((row) => row.value !== null);
   return (
-    <Panel icon={Coins} title="Token breakdown" subtitle={`${formatCompact(total)} total tokens`} bodyClassName="gap-3">
+    <Panel
+      icon={Coins}
+      title={t("tokenBreakdown")}
+      subtitle={`${formatCompact(total)} ${t("totalTokensSuffix")}`}
+      bodyClassName="gap-3"
+    >
       {complete && total > 0 && (
         <div aria-hidden="true" className="flex h-2 overflow-hidden rounded-full bg-muted">
           {rows.map((row) => (
@@ -344,7 +350,8 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
       )}
       {cacheReadTokens !== null && total > 0 && (
         <p className="text-xs text-muted-foreground">
-          {((cacheReadTokens / total) * 100).toFixed(1)}% of these tokens are cache reads.
+          {((cacheReadTokens / total) * 100).toFixed(1)}
+          {t("cacheReadSuffix")}
         </p>
       )}
       <dl className="divide-y rounded-lg border px-3 text-xs">
@@ -358,10 +365,7 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
           </div>
         ))}
       </dl>
-      <p className="text-xs leading-5 text-muted-foreground">
-        Total tokens include input, cached input and output. Cached input is priced differently, so token count alone
-        does not explain spend. Compare the same person and dates when checking the count shown by a client.
-      </p>
+      <p className="text-xs leading-5 text-muted-foreground">{t("tokensHint")}</p>
     </Panel>
   );
 }
