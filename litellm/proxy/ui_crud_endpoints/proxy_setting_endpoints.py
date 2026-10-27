@@ -651,30 +651,27 @@ def _store_allowed_ips(general_settings: MutableMapping[str, object], allowed_ip
         ) from owned
 
 
-_ALLOWED_IP_RESULT_SCHEMA: Final = {
-    "200": {
-        "description": "The allowed-IP list was updated",
-        "content": {
-            "application/json": {
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "message": {"type": "string"},
-                        "status": {"type": "string"},
-                    },
-                    "required": ["message", "status"],
-                }
-            }
-        },
-    }
-}
-
-
 @router.post(
     "/add/allowed_ip",
     tags=["Budget & Spend Tracking"],
     dependencies=[Depends(user_api_key_auth)],
-    responses=_ALLOWED_IP_RESULT_SCHEMA,
+    responses={
+        200: {
+            "description": "The allowed-IP list was updated",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {"type": "string"},
+                            "status": {"type": "string"},
+                        },
+                        "required": ["message", "status"],
+                    }
+                }
+            },
+        }
+    },
 )
 async def add_allowed_ip(
     ip_address: IPAddress,
@@ -737,7 +734,23 @@ async def add_allowed_ip(
     "/delete/allowed_ip",
     tags=["Budget & Spend Tracking"],
     dependencies=[Depends(user_api_key_auth)],
-    responses=_ALLOWED_IP_RESULT_SCHEMA,
+    responses={
+        200: {
+            "description": "The allowed-IP list was updated",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {"type": "string"},
+                            "status": {"type": "string"},
+                        },
+                        "required": ["message", "status"],
+                    }
+                }
+            },
+        }
+    },
 )
 async def delete_allowed_ip(
     ip_address: IPAddress,
