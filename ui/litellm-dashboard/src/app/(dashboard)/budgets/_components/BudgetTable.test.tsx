@@ -134,9 +134,10 @@ describe("BudgetTable", () => {
     }
   });
 
-  it("should not make the reset column sortable", async () => {
+  it("should request duration sorting from the server", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+    const onSortingChange = vi.fn();
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ onSortingChange })} />);
     await showColumn(user, "budget_duration");
     const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
     expect(headers).toContain("重置");

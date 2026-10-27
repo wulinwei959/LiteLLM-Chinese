@@ -272,7 +272,15 @@ describe("SearchToolTester", () => {
   });
 
   it("should handle search errors and show notification", async () => {
-    const error = new Error("Search failed");
+    const error = new Error(
+      JSON.stringify({
+        error: {
+          message: "User not allowed to access search tool: exa-search-2",
+          type: "user_search_tool_access_denied",
+          code: "403",
+        },
+      }),
+    );
     vi.mocked(networking.searchToolQueryCall).mockRejectedValue(error);
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const user = userEvent.setup();
@@ -284,6 +292,24 @@ describe("SearchToolTester", () => {
     await waitFor(() => {
       expect(toast.fromError).toHaveBeenCalledWith("查询搜索工具失败");
     });
+    consoleSpy.mockRestore();
+  });
+
+  it("should not show empty results or add history when search fails", async () => {
+    vi.mocked(networking.searchToolQueryCall).mockRejectedValue(new Error("Search failed"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const user = userEvent.setup();
+    render(<SearchToolTester {...defaultProps} />);
+    const input = screen.getByPlaceholderText("Enter your search query...");
+    fireEvent.change(input, { target: { value: "test query" } });
+    await user.click(screen.getByRole("button", { name: /search/i }));
+
+    await waitFor(() => {
+      expect(toast.fromError).toHaveBeenCalled();
+    });
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+    expect(screen.queryByText("test query")).not.toBeInTheDocument();
+    expect(screen.getByText("Test your search tool")).toBeInTheDocument();
     consoleSpy.mockRestore();
   });
 

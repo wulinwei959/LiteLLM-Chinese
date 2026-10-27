@@ -5,9 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { InputCard } from "./InputCard";
 import { ParsedMessage } from "./prettyMessagesTypes";
+import { copyToClipboard } from "@/utils/dataUtils";
+import { toast } from "@/lib/toast";
+
+vi.mock("@/utils/dataUtils", () => ({ copyToClipboard: vi.fn() }));
 
 describe("InputCard", () => {
-  const mockWriteText = vi.fn().mockResolvedValue(undefined);
   const mockMessages: ParsedMessage[] = [
     {
       role: "user",
@@ -17,13 +20,7 @@ describe("InputCard", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    Object.defineProperty(navigator, "clipboard", {
-      value: {
-        writeText: mockWriteText,
-      },
-      writable: true,
-      configurable: true,
-    });
+    vi.mocked(copyToClipboard).mockResolvedValue(true);
   });
 
   it("should render the InputCard component", () => {
@@ -106,13 +103,10 @@ describe("InputCard", () => {
 
     expect(copyButton).toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.click(copyButton);
-    });
+    await user.click(screen.getByRole("button", { name: /copy/i }));
 
-    await waitFor(() => {
-      expect(mockWriteText).toHaveBeenCalledWith("Copy this text");
-    });
+    expect(copyToClipboard).toHaveBeenCalledWith("Copy this text", "Input copied");
+    expect(toast.success).not.toHaveBeenCalled();
   });
 
   it("should toggle collapse state when header is clicked", async () => {

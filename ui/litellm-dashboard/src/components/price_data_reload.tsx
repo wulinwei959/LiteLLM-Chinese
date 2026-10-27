@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Ban, Clock3, Cloud, Database, Info, LoaderCircle, RefreshCw, TriangleAlert } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 import {
   AlertDialog,
@@ -37,6 +36,7 @@ import {
   reloadModelCostMap,
   scheduleModelCostMapReload,
 } from "./networking";
+import { useTranslations } from "next-intl";
 
 interface ReloadStatus {
   scheduled: boolean;
@@ -98,66 +98,65 @@ const isValidReloadInterval = (value: number) => {
 };
 
 const formatDateTime = (dateTimeString: string | null) => {
-  if (!dateTimeString) return null;
+  if (!dateTimeString) return "Never";
   const parsed = new Date(dateTimeString);
   return Number.isNaN(parsed.getTime()) ? dateTimeString : parsed.toLocaleString();
 };
 
-const CostMapProvenanceRows: React.FC<{ sourceInfo: CostMapSourceInfo }> = ({ sourceInfo }) => {
-  const t = useTranslations("models.priceData");
+const CostMapProvenanceRows: React.FC<{ sourceInfo: CostMapSourceInfo }> = ({ sourceInfo }) => (
+  <>
+    {sourceInfo.source_revision && (
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span className="text-muted-foreground">Source revision:</span>
+        <Tooltip>
+          <TooltipTrigger render={<code className="font-mono" />}>
+            {shortRevision(sourceInfo.source_revision)}
+          </TooltipTrigger>
+          <TooltipContent>{sourceInfo.source_revision}</TooltipContent>
+        </Tooltip>
+      </div>
+    )}
 
-  return (
-    <>
-      {sourceInfo.source_revision && (
-        <div className="flex items-center justify-between gap-2 text-xs">
-          <span className="text-muted-foreground">{t("sourceRevision")}</span>
-          <Tooltip>
-            <TooltipTrigger render={<code className="font-mono" />}>
-              {shortRevision(sourceInfo.source_revision)}
-            </TooltipTrigger>
-            <TooltipContent>{sourceInfo.source_revision}</TooltipContent>
-          </Tooltip>
-        </div>
-      )}
+    {sourceInfo.etag && (
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span className="text-muted-foreground">ETag:</span>
+        <Tooltip>
+          <TooltipTrigger render={<code className="max-w-60 truncate font-mono" />}>{sourceInfo.etag}</TooltipTrigger>
+          <TooltipContent>{sourceInfo.etag}</TooltipContent>
+        </Tooltip>
+      </div>
+    )}
 
-      {sourceInfo.etag && (
-        <div className="flex items-center justify-between gap-2 text-xs">
-          <span className="text-muted-foreground">{t("etag")}</span>
-          <Tooltip>
-            <TooltipTrigger render={<code className="max-w-60 truncate font-mono" />}>{sourceInfo.etag}</TooltipTrigger>
-            <TooltipContent>{sourceInfo.etag}</TooltipContent>
-          </Tooltip>
-        </div>
-      )}
+    {sourceInfo.loaded_at && (
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Loaded at:</span>
+        <span className="font-medium">{formatDateTime(sourceInfo.loaded_at)}</span>
+      </div>
+    )}
 
-      {sourceInfo.loaded_at && (
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">{t("loadedAt")}</span>
-          <span className="font-medium">{formatDateTime(sourceInfo.loaded_at)}</span>
-        </div>
-      )}
-
-      {sourceInfo.loaded_at && (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Info className="size-3.5 shrink-0" />
-          <span>{t("workerNote")}</span>
-        </div>
-      )}
-    </>
-  );
-};
+    {sourceInfo.loaded_at && (
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Info className="size-3.5 shrink-0" />
+        <span>
+          Reported by the worker that answered this request. Other workers pick up a reload on their next poll, and the
+          Last run time is the latest reload any worker recorded
+        </span>
+      </div>
+    )}
+  </>
+);
 
 const PriceDataReload: React.FC<PriceDataReloadProps> = ({
   accessToken,
   onReloadSuccess,
-  buttonText,
+  buttonText = "Reload Price Data",
   showIcon = true,
   size = "middle",
   type = "primary",
   className = "",
 }) => {
   const t = useTranslations("models.priceData");
-  const reloadLabel = buttonText ?? t("reloadButton");
+
   const [isLoading, setIsLoading] = useState(false);
   const [isScheduling, setIsScheduling] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -217,16 +216,16 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       const response = await reloadModelCostMap(accessToken);
 
       if (response.status === "success") {
-        toast.success(t("reloadSuccess", { count: response.models_count || 0 }));
+        toast.success(`Price data reloaded successfully! ${response.models_count || 0} models updated.`);
         onReloadSuccess?.();
         await fetchReloadStatus();
         await fetchSourceInfo();
       } else {
-        toast.fromError(t("reloadFailed"));
+        toast.fromError("Failed to reload price data");
       }
     } catch (error) {
       console.error("Error reloading price data:", error);
-      toast.fromError(t("reloadFailedRetry"));
+      toast.fromError("Failed to reload price data. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -240,7 +239,7 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
 
     const intervalHours = Number(hours);
     if (!isValidReloadInterval(intervalHours)) {
-      toast.fromError(t("invalidInterval"));
+      toast.fromError("Hours must be a whole number between 1 and 168");
       return;
     }
 
@@ -249,15 +248,15 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       const response = await scheduleModelCostMapReload(accessToken, intervalHours);
 
       if (response.status === "success") {
-        toast.success(t("scheduleSuccess", { hours: intervalHours }));
+        toast.success(`Periodic reload scheduled for every ${intervalHours} hours`);
         setShowScheduleModal(false);
         await fetchReloadStatus();
       } else {
-        toast.fromError(t("scheduleFailed"));
+        toast.fromError("Failed to schedule periodic reload");
       }
     } catch (error) {
       console.error("Error scheduling reload:", error);
-      toast.fromError(t("scheduleFailedRetry"));
+      toast.fromError("Failed to schedule periodic reload. Please try again.");
     } finally {
       setIsScheduling(false);
     }
@@ -274,21 +273,21 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
       const response = await cancelModelCostMapReload(accessToken);
 
       if (response.status === "success") {
-        toast.success(t("cancelSuccess"));
+        toast.success("Periodic reload cancelled successfully");
         await fetchReloadStatus();
       } else {
-        toast.fromError(t("cancelFailed"));
+        toast.fromError("Failed to cancel periodic reload");
       }
     } catch (error) {
       console.error("Error cancelling reload:", error);
-      toast.fromError(t("cancelFailedRetry"));
+      toast.fromError("Failed to cancel periodic reload. Please try again.");
     } finally {
       setIsCancelling(false);
     }
   };
 
   const getStatusText = () => {
-    if (!reloadStatus?.scheduled) return t("statusNotScheduled");
+    if (!reloadStatus?.scheduled) return "Not scheduled";
     if (!reloadStatus.last_run) return t("statusReady");
     return t("statusActive");
   };
@@ -314,16 +313,18 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               ) : (
                 showIcon && <RefreshCw data-icon="inline-start" />
               )}
-              {reloadLabel}
+              {buttonText}
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>{t("hardRefreshTitle")}</AlertDialogTitle>
-                <AlertDialogDescription>{t("hardRefreshBody")}</AlertDialogDescription>
+                <AlertDialogTitle>Hard Refresh Price Data</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will immediately fetch the latest pricing information from the remote source. Continue?
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{t("no")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleHardRefresh}>{t("yes")}</AlertDialogAction>
+                <AlertDialogCancel>No</AlertDialogCancel>
+                <AlertDialogAction onClick={handleHardRefresh}>Yes</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -331,7 +332,7 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
           {!reloadStatus?.scheduled ? (
             <Button type="button" variant="outline" size={buttonSizes[size]} onClick={() => setShowScheduleModal(true)}>
               <Clock3 data-icon="inline-start" />
-              {t("setUpPeriodicReload")}
+              Set Up Periodic Reload
             </Button>
           ) : (
             <Button
@@ -346,7 +347,7 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               ) : (
                 <Ban data-icon="inline-start" />
               )}
-              {t("cancelPeriodicReload")}
+              Cancel Periodic Reload
             </Button>
           )}
         </div>
@@ -356,23 +357,23 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
             <CardContent className="space-y-2">
               <div className="flex items-center gap-2">
                 {sourceInfo.source === "remote" ? <Cloud className="size-4" /> : <Database className="size-4" />}
-                <span className="text-sm font-medium">{t("pricingDataSource")}</span>
+                <span className="text-sm font-medium">Pricing Data Source</span>
                 <Badge variant="secondary" className="ml-auto uppercase">
-                  {sourceInfo.source === "remote" ? t("remote") : t("local")}
+                  {sourceInfo.source === "remote" ? "Remote" : "Local"}
                 </Badge>
               </div>
 
               <Separator />
 
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">{t("modelsLoaded")}</span>
+                <span className="text-muted-foreground">Models loaded:</span>
                 <span className="font-medium">{sourceInfo.model_count.toLocaleString()}</span>
               </div>
 
               {sourceInfo.url && (
                 <div className="flex items-start justify-between gap-2 text-xs">
                   <span className="shrink-0 text-muted-foreground">
-                    {sourceInfo.source === "remote" ? t("loadedFrom") : t("attemptedUrl")}
+                    {sourceInfo.source === "remote" ? "Loaded from:" : "Attempted URL:"}
                   </span>
                   <Tooltip>
                     <TooltipTrigger render={<span className="max-w-60 truncate text-primary" />}>
@@ -389,7 +390,7 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Info className="size-3.5 shrink-0" />
                   <span>
-                    {t("localModeForced")} <code>LITELLM_LOCAL_MODEL_COST_MAP=True</code>
+                    Local mode forced via <code>LITELLM_LOCAL_MODEL_COST_MAP</code> or <code>LITELLM_OFFLINE_MODE</code>
                   </span>
                 </div>
               )}
@@ -397,7 +398,7 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               {sourceInfo.fallback_reason && (
                 <div className="flex items-start gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-2 py-1.5 text-xs">
                   <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-destructive" />
-                  <span>{t("fellBackToLocal", { reason: sourceInfo.fallback_reason })}</span>
+                  <span>Fell back to local: {sourceInfo.fallback_reason}</span>
                 </div>
               )}
             </CardContent>
@@ -410,22 +411,22 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
               {reloadStatus.scheduled ? (
                 <Badge variant="secondary">
                   <Clock3 />
-                  {t("scheduledEvery", { hours: reloadStatus.interval_hours ?? "" })}
+                  Scheduled every {reloadStatus.interval_hours} hours
                 </Badge>
               ) : (
-                <p className="text-sm text-muted-foreground">{t("noPeriodicReload")}</p>
+                <p className="text-sm text-muted-foreground">No periodic reload scheduled</p>
               )}
 
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">{t("lastRun")}</span>
-                <span>{formatDateTime(reloadStatus.last_run) ?? t("never")}</span>
+                <span className="text-muted-foreground">Last run:</span>
+                <span>{formatDateTime(reloadStatus.last_run)}</span>
               </div>
 
               {reloadStatus.scheduled && (
                 <>
                   {reloadStatus.next_run && (
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">{t("nextRun")}</span>
+                      <span className="text-muted-foreground">Next run:</span>
                       <span>{formatDateTime(reloadStatus.next_run)}</span>
                     </div>
                   )}
@@ -442,31 +443,35 @@ const PriceDataReload: React.FC<PriceDataReloadProps> = ({
         <Dialog open={showScheduleModal} onOpenChange={setShowScheduleModal}>
           <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{t("setUpPeriodicReload")}</DialogTitle>
-              <DialogDescription>{t("scheduleDialogBody")}</DialogDescription>
+              <DialogTitle>Set Up Periodic Reload</DialogTitle>
+              <DialogDescription>
+                Set how often LiteLLM should fetch the latest pricing data from the remote source.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-sm">{t("schedulePrompt")}</p>
+              <p className="text-sm">Set up automatic reload of price data every:</p>
               <InputGroup>
                 <InputGroupInput
                   type="number"
-                  aria-label={t("reloadInterval")}
+                  aria-label="Reload interval in hours"
                   min={1}
                   max={168}
                   value={hours}
                   onChange={(event) => setHours(event.target.value === "" ? "" : Number(event.target.value))}
                 />
-                <InputGroupAddon align="inline-end">{t("hoursUnit")}</InputGroupAddon>
+                <InputGroupAddon align="inline-end">hours</InputGroupAddon>
               </InputGroup>
-              <p className="text-sm text-muted-foreground">{t("scheduleSummary", { hours })}</p>
+              <p className="text-sm text-muted-foreground">
+                This will automatically fetch the latest pricing data from the remote source every {hours} hours.
+              </p>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowScheduleModal(false)}>
-                {t("cancel")}
+                Cancel
               </Button>
               <Button type="button" disabled={isScheduling} onClick={handleScheduleReload}>
                 {isScheduling && <LoaderCircle className="animate-spin" data-icon="inline-start" />}
-                {t("schedule")}
+                Schedule
               </Button>
             </DialogFooter>
           </DialogContent>

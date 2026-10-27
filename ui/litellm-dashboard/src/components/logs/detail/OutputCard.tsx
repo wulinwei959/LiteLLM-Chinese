@@ -4,8 +4,7 @@
  */
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { toast } from "@/lib/toast";
+import { copyToClipboard } from "@/utils/dataUtils";
 import { COLOR_BORDER } from "./constants";
 import { ParsedMessage } from "./prettyMessagesTypes";
 import { SectionHeader } from "./SectionHeader";
@@ -18,14 +17,12 @@ interface OutputCardProps {
 }
 
 export function OutputCard({ message, completionTokens, outputCost }: OutputCardProps) {
-  const t = useTranslations("logs");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleCopy = () => {
     if (!message) return;
 
-    navigator.clipboard.writeText(message.content || "");
-    toast.success(t("cards.outputCopied"));
+    void copyToClipboard(message.content || "", "Output copied");
   };
 
   return (
@@ -45,13 +42,9 @@ export function OutputCard({ message, completionTokens, outputCost }: OutputCard
       >
         <div className="px-4 py-3">
           {message ? (
-            <SimpleMessageBlock
-              label={t("detail.assistantRole")}
-              content={message.content}
-              toolCalls={message.toolCalls}
-            />
+            <SimpleMessageBlock label="ASSISTANT" content={message.content} toolCalls={message.toolCalls} />
           ) : (
-            <span className="text-[13px] text-muted-foreground italic">{t("cards.noResponseData")}</span>
+            <span className="text-[13px] text-muted-foreground italic">No response data available</span>
           )}
         </div>
       </div>

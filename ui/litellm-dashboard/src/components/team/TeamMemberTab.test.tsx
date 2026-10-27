@@ -646,7 +646,7 @@ describe("TeamMembersComponent", () => {
         />,
       );
 
-    it("resets the member's current cycle spend to $0 after confirming, then refreshes the team", async () => {
+    it("resets the member's current period spend to $0 after confirming, then refreshes the team", async () => {
       const user = userEvent.setup();
       POST.mockResolvedValue({ data: {} });
       renderEditableTab();
@@ -699,7 +699,7 @@ describe("TeamMembersComponent", () => {
       expect(POST).not.toHaveBeenCalled();
     });
 
-    it("disables the reset with a reason on members that have no current cycle spend", async () => {
+    it("disables the reset with a reason on members that have no current period spend", async () => {
       const user = userEvent.setup();
       renderEditableTab();
 
@@ -707,7 +707,7 @@ describe("TeamMembersComponent", () => {
         "reset-member-spend",
       );
       await user.hover(resetButton);
-      expect(await screen.findByText("No current cycle spend to reset")).toBeInTheDocument();
+      expect(await screen.findByText("No current period spend to reset")).toBeInTheDocument();
 
       await user.click(resetButton);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

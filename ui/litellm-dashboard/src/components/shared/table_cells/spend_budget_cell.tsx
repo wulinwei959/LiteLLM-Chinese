@@ -15,7 +15,7 @@ interface SpendBudgetCellProps {
   budgetDecimals?: number;
 }
 
-const meterTone = (pct: number): "default" | "warning" | "over" => {
+export const getSpendBudgetMeterTone = (pct: number): "default" | "warning" | "over" => {
   if (pct > 100) return "over";
   if (pct >= 80) return "warning";
   return "default";
@@ -63,7 +63,7 @@ export function SpendBudgetCell({
           })}
         >
           <MeterTrack>
-            <MeterIndicator tone={meterTone(pct)} />
+            <MeterIndicator tone={getSpendBudgetMeterTone(pct)} />
           </MeterTrack>
         </Meter>
       )}

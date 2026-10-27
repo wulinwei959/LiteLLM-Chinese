@@ -61,6 +61,7 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
       onPaginationChange={onPaginationChange}
       columns={columns}
       getRowId={(organization, index) => organization.organization_id || String(index)}
+      defaultColumnVisibility={{ tpm_limit: false, rpm_limit: false }}
       sortingMode="client"
       sorting={sorting}
       onSortingChange={onSortingChange}

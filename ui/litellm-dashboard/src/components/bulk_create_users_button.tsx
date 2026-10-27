@@ -1,10 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import {
-  BULK_USER_CSV_REQUIRED_COLUMNS,
-  type BulkUserCsvColumn,
-  downloadBulkUserCsvTemplate,
-} from "./bulkUsersCsvTemplate";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -22,6 +16,8 @@ import Papa from "papaparse";
 import { CheckCircleIcon, XCircleIcon, ExclamationIcon } from "@heroicons/react/outline";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "@/lib/toast";
+import { downloadBlob } from "@/components/EntityUsageExport/utils";
+import { useTranslations } from "next-intl";
 
 interface BulkCreateUsersProps {
   accessToken: string;
@@ -48,29 +44,6 @@ interface UserData {
 
 const PREVIEW_PAGE_SIZE = 5;
 
-const cellForColumn = (
-  headers: readonly string[],
-  row: readonly unknown[],
-  column: BulkUserCsvColumn,
-): string | undefined => {
-  const cell = row[headers.indexOf(column)];
-  return typeof cell === "string" ? cell.trim() : undefined;
-};
-
-const ColumnHint: React.FC<{ column: BulkUserCsvColumn; required?: boolean; description: string }> = ({
-  column,
-  required,
-  description,
-}) => (
-  <div className="flex items-start">
-    <div className={`w-3 h-3 rounded-full mt-1.5 mr-2 shrink-0 ${required ? "bg-destructive" : "bg-border"}`}></div>
-    <div>
-      <p className="font-medium">{column}</p>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-  </div>
-);
-
 // Define an interface for the UI settings
 interface UISettings {
   PROXY_BASE_URL: string | null;
@@ -85,6 +58,8 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   possibleUIRoles,
   onUsersCreated,
 }) => {
+  const t = useTranslations("users");
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [parsedData, setParsedData] = useState<UserData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -97,8 +72,6 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const csvInputId = React.useId();
-  const t = useTranslations("users");
-  const commonT = useTranslations("common");
 
   useEffect(() => {
     // Get UI settings
@@ -118,6 +91,15 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
     setBaseUrl(base.toString());
   }, [accessToken]);
 
+  const downloadTemplate = () => {
+    const template = [
+      ["user_email", "user_role", "teams", "max_budget", "budget_duration", "models"],
+      ["user@example.com", "internal_user", "team-id-1,team-id-2", "100", "30d", "gpt-3.5-turbo,gpt-4"],
+    ];
+
+    downloadBlob(new Blob([Papa.unparse(template)], { type: "text/csv" }), "bulk_users_template.csv");
+  };
+
   const handleFileUpload = (file: File) => {
     // Reset all error states
     setParseError(null);
@@ -129,14 +111,16 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
 
     // Check file type
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setFileError(t("bulkInvalidFileType", { name: file.name }));
-      toast.fromError(t("bulkInvalidFileTypeToast"));
+      setFileError(`Invalid file type: ${file.name}. Please upload a CSV file (.csv extension).`);
+      toast.fromError("Invalid file type. Please upload a CSV file.");
       return;
     }
 
     // Check file size (limit to 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setFileError(t("bulkFileTooLarge", { size: (file.size / (1024 * 1024)).toFixed(1) }));
+      setFileError(
+        `File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Please upload a CSV file smaller than 5MB.`,
+      );
       return;
     }
 
@@ -144,14 +128,16 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       complete: (results) => {
         // Check if file is empty
         if (!results.data || results.data.length === 0) {
-          setCsvStructureError(t("bulkCsvEmpty"));
+          setCsvStructureError("The CSV file appears to be empty. Please upload a file with data.");
           setParsedData([]);
           return;
         }
 
         // Check if there's only header row
         if (results.data.length === 1) {
-          setCsvStructureError(t("bulkCsvHeadersOnly"));
+          setCsvStructureError(
+            "The CSV file only contains headers but no user data. Please add user data to your CSV.",
+          );
           setParsedData([]);
           return;
         }
@@ -160,14 +146,21 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
 
         // Check if headers exist
         if (headers.length === 0 || (headers.length === 1 && headers[0] === "")) {
-          setCsvStructureError(t("bulkCsvNoHeaders"));
+          setCsvStructureError(
+            "The CSV file doesn't contain any column headers. Please make sure your CSV has headers.",
+          );
           setParsedData([]);
           return;
         }
 
-        const missingColumns = BULK_USER_CSV_REQUIRED_COLUMNS.filter((column) => !headers.includes(column));
+        const requiredColumns = ["user_email", "user_role"];
+
+        // Check if all required columns are present
+        const missingColumns = requiredColumns.filter((col) => !headers.includes(col));
         if (missingColumns.length > 0) {
-          setCsvStructureError(t("bulkMissingColumns", { columns: missingColumns.join(", ") }));
+          setCsvStructureError(
+            `Your CSV is missing these required columns: ${missingColumns.join(", ")}. Please add these columns to your CSV file.`,
+          );
           setParsedData([]);
           return;
         }
@@ -186,19 +179,19 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                 return {
                   rowNumber: index + 2,
                   isValid: false,
-                  error: t("bulkShortRow", { row: index + 2 }),
+                  error: `Row ${index + 2} has fewer columns than the header row. Please ensure all data is properly formatted.`,
                   user_email: "",
                   user_role: "",
                 } as UserData;
               }
 
               const user: UserData = {
-                user_email: cellForColumn(headers, row, "user_email") ?? "",
-                user_role: cellForColumn(headers, row, "user_role") ?? "",
-                teams: cellForColumn(headers, row, "teams"),
-                max_budget: cellForColumn(headers, row, "max_budget"),
-                budget_duration: cellForColumn(headers, row, "budget_duration"),
-                models: cellForColumn(headers, row, "models"),
+                user_email: row[headers.indexOf("user_email")]?.trim() || "",
+                user_role: row[headers.indexOf("user_role")]?.trim() || "",
+                teams: row[headers.indexOf("teams")]?.trim(),
+                max_budget: row[headers.indexOf("max_budget")]?.trim(),
+                budget_duration: row[headers.indexOf("budget_duration")]?.trim(),
+                models: row[headers.indexOf("models")]?.trim(),
                 rowNumber: index + 2,
                 isValid: true,
                 error: "",
@@ -209,34 +202,36 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
 
               // Email validation
               if (!user.user_email) {
-                errors.push(t("bulkEmailRequired"));
+                errors.push("Email is required");
               } else if (!user.user_email.includes("@") || !user.user_email.includes(".")) {
-                errors.push(t("bulkInvalidEmail"));
+                errors.push("Invalid email format (must contain @ and domain)");
               }
 
               // Role validation
               if (!user.user_role) {
-                errors.push(t("bulkRoleRequired"));
+                errors.push("Role is required");
               } else {
                 // Validate user role
                 const validRoles = ["proxy_admin", "proxy_admin_viewer", "internal_user", "internal_user_viewer"];
                 if (!validRoles.includes(user.user_role)) {
-                  errors.push(t("bulkInvalidRole", { role: user.user_role, roles: validRoles.join(", ") }));
+                  errors.push(`Invalid role "${user.user_role}". Must be one of: ${validRoles.join(", ")}`);
                 }
               }
 
               // Budget validation
               if (user.max_budget && user.max_budget.toString().trim() !== "") {
                 if (isNaN(parseFloat(user.max_budget.toString()))) {
-                  errors.push(t("bulkBudgetNotNumber", { value: user.max_budget }));
+                  errors.push(`Max budget "${user.max_budget}" must be a number`);
                 } else if (parseFloat(user.max_budget.toString()) <= 0) {
-                  errors.push(t("bulkBudgetPositive"));
+                  errors.push("Max budget must be greater than 0");
                 }
               }
 
               // Budget duration validation
               if (user.budget_duration && !user.budget_duration.match(/^\d+[dhmwy]$|^\d+mo$/)) {
-                errors.push(t("bulkInvalidDuration", { value: user.budget_duration }));
+                errors.push(
+                  `Invalid budget duration format "${user.budget_duration}". Use format like "30d", "1mo", "2w", "6h"`,
+                );
               }
 
               // Teams validation
@@ -247,7 +242,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   const userTeams = user.teams.split(",").map((t) => t.trim());
                   const invalidTeams = userTeams.filter((t) => !teamIds.includes(t));
                   if (invalidTeams.length > 0) {
-                    errors.push(t("bulkUnknownTeams", { teams: invalidTeams.join(", ") }));
+                    errors.push(`Unknown team(s): ${invalidTeams.join(", ")}`);
                   }
                 }
               }
@@ -270,19 +265,19 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
             setParseError(t("bulkNoValidUsers"));
           } else if (validData.length < userData.length) {
             setParseError(
-              t("bulkRowsWithErrors", { invalid: userData.length - validData.length, total: userData.length }),
+              `Found ${userData.length - validData.length} row(s) with errors out of ${userData.length} total rows. Please correct them before proceeding.`,
             );
           } else {
-            toast.success(t("bulkParsedUsers", { count: validData.length }));
+            toast.success(`Successfully parsed ${validData.length} users`);
           }
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : t("bulkUnknownError");
-          setParseError(t("bulkParseError", { message: errorMessage }));
+          setParseError(`Error parsing CSV: ${errorMessage}`);
           setParsedData([]);
         }
       },
       error: (error) => {
-        setParseError(t("bulkParseFileFailed", { message: error.message }));
+        setParseError(`Failed to parse CSV file: ${error.message}`);
         setParsedData([]);
       },
       header: false,
@@ -493,31 +488,28 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
         <div>
           <div className="flex items-center">
             <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
-            <span className="text-destructive">{t("bulkStatusInvalid")}</span>
+            <span className="text-destructive">Invalid</span>
           </div>
           {record.error && <span className="text-sm text-destructive ml-7">{record.error}</span>}
         </div>
       );
     }
     if (!record.status || record.status === "pending") {
-      return <span className="text-muted-foreground">{commonT("pending")}</span>;
+      return <span className="text-muted-foreground">Pending</span>;
     }
     if (record.status === "success") {
       return (
         <div>
           <div className="flex items-center">
             <CheckCircleIcon className="h-5 w-5 text-success mr-2" />
-            <span className="text-success">{commonT("success")}</span>
+            <span className="text-success">Success</span>
           </div>
           {record.invitation_link && (
             <div className="mt-1">
               <div className="flex items-center">
                 <span className="text-xs text-muted-foreground truncate max-w-[150px]">{record.invitation_link}</span>
-                <CopyToClipboard
-                  text={record.invitation_link}
-                  onCopy={() => toast.success(t("bulkInvitationLinkCopied"))}
-                >
-                  <button className="ml-1 text-info text-xs hover:text-info/80">{commonT("copy")}</button>
+                <CopyToClipboard text={record.invitation_link} onCopy={() => toast.success("Invitation link copied!")}>
+                  <button className="ml-1 text-info text-xs hover:text-info/80">Copy</button>
                 </CopyToClipboard>
               </div>
             </div>
@@ -529,7 +521,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       <div>
         <div className="flex items-center">
           <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
-          <span className="text-destructive">{commonT("failed")}</span>
+          <span className="text-destructive">Failed</span>
         </div>
         {record.error && <span className="text-sm text-destructive ml-7">{JSON.stringify(record.error)}</span>}
       </div>
@@ -549,7 +541,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && setIsModalVisible(false)}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>{t("bulkInviteUsersButton")}</DialogTitle>
+            <DialogTitle>Bulk Invite Users</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col">
             {/* Step indicator */}
@@ -559,33 +551,80 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   <div className="w-8 h-8 rounded-full bg-info text-info-foreground flex items-center justify-center mr-3">
                     1
                   </div>
-                  <h3 className="text-lg font-medium">{t("bulkStep1Title")}</h3>
+                  <h3 className="text-lg font-medium">Download and fill the template</h3>
                 </div>
 
                 <div className="ml-11 mb-6">
-                  <p className="mb-4">{t("bulkStepsIntro")}</p>
+                  <p className="mb-4">Add multiple users at once by following these steps:</p>
                   <ol className="list-decimal list-inside space-y-2 ml-2 mb-4">
-                    <li>{t("bulkStepItem1")}</li>
-                    <li>{t("bulkStepItem2")}</li>
-                    <li>{t("bulkStepItem3")}</li>
-                    <li>{t("bulkStepItem4")}</li>
+                    <li>Download our CSV template</li>
+                    <li>Add your users&apos; information to the spreadsheet</li>
+                    <li>Save the file and upload it here</li>
+                    <li>After creation, download the results file containing the Virtual Keys for each user</li>
                   </ol>
 
                   <div className="bg-muted p-4 rounded-md border border-border mb-4">
-                    <h4 className="font-medium mb-2">{t("bulkTemplateColumnNames")}</h4>
+                    <h4 className="font-medium mb-2">Template Column Names</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <ColumnHint column="user_email" required description={t("bulkColEmailDesc")} />
-                      <ColumnHint column="user_role" required description={t("bulkColRoleDesc")} />
-                      <ColumnHint column="teams" description={t("bulkColTeamsDesc")} />
-                      <ColumnHint column="max_budget" description={t("bulkColBudgetDesc")} />
-                      <ColumnHint column="budget_duration" description={t("bulkColDurationDesc")} />
-                      <ColumnHint column="models" description={t("bulkColModelsDesc")} />
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-destructive mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">user_email</p>
+                          <p className="text-sm text-muted-foreground">User&apos;s email address (required)</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-destructive mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">user_role</p>
+                          <p className="text-sm text-muted-foreground">
+                            User&apos;s role (one of: &quot;proxy_admin&quot;, &quot;proxy_admin_viewer&quot;,
+                            &quot;internal_user&quot;, &quot;internal_user_viewer&quot;)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">teams</p>
+                          <p className="text-sm text-muted-foreground">
+                            Comma-separated team IDs (e.g., &quot;team-1,team-2&quot;)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">max_budget</p>
+                          <p className="text-sm text-muted-foreground">
+                            Maximum budget as a number (e.g., &quot;100&quot;)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">budget_duration</p>
+                          <p className="text-sm text-muted-foreground">
+                            Budget reset period (e.g., &quot;30d&quot;, &quot;1mo&quot;)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
+                        <div>
+                          <p className="font-medium">models</p>
+                          <p className="text-sm text-muted-foreground">
+                            Comma-separated allowed models (e.g., &quot;gpt-3.5-turbo,gpt-4&quot;)
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <Button size="lg" className="w-full md:w-auto" onClick={downloadBulkUserCsvTemplate}>
+                  <Button size="lg" className="w-full md:w-auto" onClick={downloadTemplate}>
                     <Download className="size-4" />
-                    {t("bulkDownloadCsvTemplate")}
+                    Download CSV Template
                   </Button>
                 </div>
 
@@ -619,7 +658,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         </div>
                         <Button variant="outline" size="sm" onClick={removeSelectedFile} className="flex items-center">
                           <Trash2 className="size-4" />
-                          {commonT("remove")}
+                          Remove
                         </Button>
                       </div>
 
@@ -634,7 +673,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                             <div className="w-full bg-border rounded-full h-1.5">
                               <div className="bg-info h-1.5 rounded-full w-full animate-pulse"></div>
                             </div>
-                            <span className="ml-2 text-xs text-info">{commonT("processing")}</span>
+                            <span className="ml-2 text-xs text-info">Processing...</span>
                           </div>
                         )
                       )}
@@ -658,12 +697,10 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                           onChange={handleFileInputChange}
                         />
                         <Upload className="size-[30px] text-muted-foreground mb-2" />
-                        <p className="mb-1">{t("bulkDragDrop")}</p>
-                        <p className="text-sm text-muted-foreground mb-3">{t("bulkOr")}</p>
-                        <span className={buttonVariants({ variant: "outline", size: "sm" })}>
-                          {t("bulkBrowseFiles")}
-                        </span>
-                        <p className="text-xs text-muted-foreground mt-4">{t("bulkOnlyCsv")}</p>
+                        <p className="mb-1">Drag and drop your CSV file here</p>
+                        <p className="text-sm text-muted-foreground mb-3">or</p>
+                        <span className={buttonVariants({ variant: "outline", size: "sm" })}>Browse files</span>
+                        <p className="text-xs text-muted-foreground mt-4">Only CSV files (.csv) are supported</p>
                       </div>
                     </label>
                   )}
@@ -673,9 +710,11 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                       <div className="flex items-start">
                         <ExclamationIcon className="h-5 w-5 shrink-0 text-warning mr-2 mt-0.5" />
                         <div className="min-w-0">
-                          <strong className="text-warning">{t("bulkCsvStructureError")}</strong>
+                          <strong className="text-warning">CSV Structure Error</strong>
                           <p className="text-warning mt-1 mb-0 break-words">{csvStructureError}</p>
-                          <p className="text-warning mt-2 mb-0">{t("bulkUseTemplateHint")}</p>
+                          <p className="text-warning mt-2 mb-0">
+                            Please download our template and ensure your CSV follows the required format.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -703,9 +742,12 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         <p className="text-destructive font-medium break-words">{parseError}</p>
                         {parsedData.some((user) => !user.isValid) && (
                           <ul className="mt-2 list-disc list-inside text-destructive text-sm">
-                            <li>{t("bulkErrCheckTable")}</li>
-                            <li>{t("bulkErrCommonIssues")}</li>
-                            <li>{t("bulkErrFixAndReupload")}</li>
+                            <li>Check the table below for specific errors in each row</li>
+                            <li>
+                              Common issues include invalid email formats, missing required fields, or incorrect role
+                              values
+                            </li>
+                            <li>Fix these issues in your CSV file and upload again</li>
                           </ul>
                         )}
                       </div>
@@ -718,26 +760,21 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                     <div className="flex items-center">
                       {parsedData.some((user) => user.status === "success" || user.status === "failed") ? (
                         <div className="flex items-center">
-                          <p className="text-lg font-medium mr-3">{t("bulkCreationSummary")}</p>
+                          <p className="text-lg font-medium mr-3">Creation Summary</p>
                           <p className="text-sm bg-success/15 text-success px-2 py-1 rounded-sm mr-2">
-                            {t("bulkSuccessfulCount", {
-                              count: parsedData.filter((d) => d.status === "success").length,
-                            })}
+                            {parsedData.filter((d) => d.status === "success").length} Successful
                           </p>
                           {parsedData.some((d) => d.status === "failed") && (
                             <p className="text-sm bg-destructive/15 text-destructive px-2 py-1 rounded-sm">
-                              {t("bulkFailedCount", { count: parsedData.filter((d) => d.status === "failed").length })}
+                              {parsedData.filter((d) => d.status === "failed").length} Failed
                             </p>
                           )}
                         </div>
                       ) : (
                         <div className="flex items-center">
-                          <p className="text-lg font-medium mr-3">{t("bulkUserPreview")}</p>
+                          <p className="text-lg font-medium mr-3">User Preview</p>
                           <p className="text-sm bg-info/15 text-info px-2 py-1 rounded-sm">
-                            {t("bulkValidCount", {
-                              valid: parsedData.filter((d) => d.isValid).length,
-                              total: parsedData.length,
-                            })}
+                            {parsedData.filter((d) => d.isValid).length} of {parsedData.length} users valid
                           </p>
                         </div>
                       )}
@@ -746,15 +783,13 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                     {!parsedData.some((user) => user.status === "success" || user.status === "failed") && (
                       <div className="flex space-x-3">
                         <Button variant="outline" onClick={resetParsedData}>
-                          {commonT("back")}
+                          Back
                         </Button>
                         <Button
                           onClick={handleBulkCreate}
                           disabled={parsedData.filter((d) => d.isValid).length === 0 || isProcessing}
                         >
-                          {isProcessing
-                            ? t("bulkCreating")
-                            : t("bulkCreateUsers", { count: parsedData.filter((d) => d.isValid).length })}
+                          {isProcessing ? "Creating..." : `Create ${parsedData.filter((d) => d.isValid).length} Users`}
                         </Button>
                       </div>
                     )}
@@ -767,9 +802,11 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                           <CheckCircleIcon className="h-5 w-5 text-info" />
                         </div>
                         <div>
-                          <p className="font-medium text-info">{t("bulkCreationComplete")}</p>
+                          <p className="font-medium text-info">User creation complete</p>
                           <p className="block text-sm text-info mt-1">
-                            <span className="font-medium">{t("bulkNextStepLabel")}</span> {t("bulkNextStepHint")}
+                            <span className="font-medium">Next step:</span> Download the credentials file containing
+                            Virtual Keys and invitation links. Users will need these Virtual Keys to make LLM requests
+                            through LiteLLM.
                           </p>
                         </div>
                       </div>
@@ -806,7 +843,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   {pageCount > 1 && (
                     <div className="flex items-center justify-end gap-3 mt-2">
                       <span className="text-sm text-muted-foreground">
-                        {commonT("pagination.pageOf", { page: currentPage + 1, total: pageCount })}
+                        Page {currentPage + 1} of {pageCount}
                       </span>
                       <Button
                         variant="outline"
@@ -814,7 +851,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         onClick={() => setPageIndex(currentPage - 1)}
                         disabled={currentPage === 0}
                       >
-                        {commonT("previous")}
+                        Previous
                       </Button>
                       <Button
                         variant="outline"
@@ -822,7 +859,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         onClick={() => setPageIndex(currentPage + 1)}
                         disabled={currentPage >= pageCount - 1}
                       >
-                        {commonT("next")}
+                        Next
                       </Button>
                     </div>
                   )}
@@ -830,15 +867,13 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   {!parsedData.some((user) => user.status === "success" || user.status === "failed") && (
                     <div className="flex justify-end mt-4">
                       <Button variant="outline" onClick={resetParsedData} className="mr-3">
-                        {commonT("back")}
+                        Back
                       </Button>
                       <Button
                         onClick={handleBulkCreate}
                         disabled={parsedData.filter((d) => d.isValid).length === 0 || isProcessing}
                       >
-                        {isProcessing
-                          ? t("bulkCreating")
-                          : t("bulkCreateUsers", { count: parsedData.filter((d) => d.isValid).length })}
+                        {isProcessing ? "Creating..." : `Create ${parsedData.filter((d) => d.isValid).length} Users`}
                       </Button>
                     </div>
                   )}
