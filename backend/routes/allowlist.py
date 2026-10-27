@@ -85,6 +85,7 @@ BACKEND_PATH_PREFIXES: tuple[str, ...] = (
     # Spend / analytics
     "/spend/",
     "/analytics/",
+    "/roi-calculator/",
     "/lens/",
     "/v1/traces",
     "/v1/logs",
