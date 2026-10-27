@@ -5588,11 +5588,22 @@
     "tabEndpointActivity": "Endpoint Activity",
     "tabErrors": "Errors",
     "askAi": "Ask AI",
-    "noModelsMatch": "No models match \"{query}\" in this date range",
+    "noModelsMatch": "No models match",
     "credentialBannerBody": "When a reusable credential is used, it will appear as a tag prefixed with <code>Credential: </code> in this view.",
     "spendLoadFailed": "Failed to load spend data",
     "agentLoadFailed": "Failed to load agent data",
-    "loadingSettings": "Loading usage settings"
+    "loadingSettings": "Loading usage settings",
+    "endpointActivity": "Endpoint Activity",
+    "keyActivity": "Key Activity",
+    "mcpServerActivity": "MCP Server Activity",
+    "modelActivity": "Model Activity",
+    "userActivityTab": "User Activity",
+    "credentialLabel": "Credential:",
+    "reusableCredentialHint": "When a reusable credential is used, it will appear as a tag prefixed with",
+    "inThisView": "in this view.",
+    "inThisDateRange": "in this date range",
+    "overviewTab": "Overview",
+    "errorsTab": "Errors"
   },
   "logs": {
     "detail": {

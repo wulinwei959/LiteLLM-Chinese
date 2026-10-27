@@ -5588,11 +5588,22 @@
     "tabEndpointActivity": "端点活动",
     "tabErrors": "错误",
     "askAi": "询问 AI",
-    "noModelsMatch": "该时间范围内没有匹配「{query}」的模型",
+    "noModelsMatch": "没有匹配的模型",
     "credentialBannerBody": "使用可复用凭据时，它会在本视图中以带 <code>Credential: </code> 前缀的标签出现。",
     "spendLoadFailed": "加载花费数据失败",
     "agentLoadFailed": "加载代理数据失败",
-    "loadingSettings": "正在加载用量设置"
+    "loadingSettings": "正在加载用量设置",
+    "endpointActivity": "端点活动",
+    "keyActivity": "密钥活动",
+    "mcpServerActivity": "MCP 服务器活动",
+    "modelActivity": "模型活动",
+    "userActivityTab": "用户活动",
+    "credentialLabel": "凭据：",
+    "reusableCredentialHint": "使用可复用凭据时，它会以带前缀的标签出现",
+    "inThisView": "在本视图中。",
+    "inThisDateRange": "在本时间范围内",
+    "overviewTab": "概览",
+    "errorsTab": "错误"
   },
   "logs": {
     "detail": {

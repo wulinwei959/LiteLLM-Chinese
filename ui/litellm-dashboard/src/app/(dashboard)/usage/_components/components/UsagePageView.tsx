@@ -494,7 +494,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
             />
             <Button variant="outline" onClick={() => void copyToClipboard(window.location.href, "Link copied")}>
               <Link2 />
-              Copy Share Link
+              {t("copyShareLink")}
             </Button>
           </div>
         </div>
@@ -516,26 +516,26 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <TabsList variant="line">
                     <TabsTrigger value="cost" className="flex-none px-3">
-                      Overview
+                      {t("overviewTab")}
                     </TabsTrigger>
                     <TabsTrigger value="models" className="flex-none px-3">
-                      Model Activity
+                      {t("modelActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="keys" className="flex-none px-3">
-                      Key Activity
+                      {t("keyActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="users" className="flex-none px-3">
-                      User Activity
+                      {t("userActivityTab")}
                     </TabsTrigger>
                     <TabsTrigger value="mcp" className="flex-none px-3">
-                      MCP Server Activity
+                      {t("mcpServerActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="endpoints" className="flex-none px-3">
-                      Endpoint Activity
+                      {t("endpointActivity")}
                     </TabsTrigger>
                     {isAdmin && (
                       <TabsTrigger value="errors" className="flex-none px-3">
-                        Errors
+                        {t("errorsTab")}
                       </TabsTrigger>
                     )}
                   </TabsList>
@@ -543,7 +543,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                     <AriaUsageTrigger />
                     <Button variant="outline" size="sm" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
-                      Export Data
+                      {t("exportData")}
                     </Button>
                   </div>
                 </div>
@@ -634,7 +634,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                   Object.keys(modelMetrics).length > 0 &&
                   Object.keys(filteredModelMetrics).length === 0 ? (
                     <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-                      No models match &quot;{trimmedModelQuery}&quot; in this date range
+                      “{trimmedModelQuery}” {t("noModelsMatch")} {t("inThisDateRange")}
                     </p>
                   ) : (
                     <ActivityMetrics
@@ -740,9 +740,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                 <Alert variant="info" className="mb-5">
                   <AlertTitle>{t("reusableCredentialsTagTitle")}</AlertTitle>
                   <AlertDescription className="text-inherit">
-                    When a reusable credential is used, it will appear as a tag prefixed with{" "}
-                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">Credential: </code>
-                    in this view.
+                    {t("reusableCredentialHint")}{" "}
+                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">{t("credentialLabel")} </code>
+                    {t("inThisView")}
                   </AlertDescription>
                   <AlertAction>
                     <Button
@@ -851,7 +851,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
         onExport={(exportType, format) =>
           dailyActivityRequest
             ? ENTITY_API.user.exportRows(dailyActivityRequest, exportType, format)
-            : Promise.reject(new Error("Missing access token or date range"))
+            : Promise.reject(new Error("{t("missingTokenOrRange")}"))
         }
         dateRange={dateValue}
         selectedFilters={[]}
