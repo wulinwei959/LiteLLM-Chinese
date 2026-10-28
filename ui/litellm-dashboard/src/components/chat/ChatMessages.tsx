@@ -438,6 +438,7 @@ interface ChatMessageContentProps {
   isStreaming?: boolean;
   isLastMessage?: boolean;
   onEditMessage?: (messageId: string, newContent: string) => void;
+  actions?: React.ReactNode;
 }
 
 export function ChatMessageContent({
@@ -446,24 +447,38 @@ export function ChatMessageContent({
   isStreaming = false,
   isLastMessage = true,
   onEditMessage,
+  actions,
 }: ChatMessageContentProps) {
   if (message.role === "user") {
-    return <UserBubble message={message} onEdit={onEditMessage} isStreaming={isStreaming} />;
+    return (
+      <>
+        <UserBubble message={message} onEdit={onEditMessage} isStreaming={isStreaming} />
+        {actions}
+      </>
+    );
   }
 
   if (message.role === "tool") {
-    return <ToolCard message={message} />;
+    return (
+      <>
+        <ToolCard message={message} />
+        {actions}
+      </>
+    );
   }
 
   return (
-    <AssistantBubble
-      message={message}
-      allowImages={allowImages}
-      isLastMessage={isLastMessage}
-      isStreaming={isStreaming}
-      isTypingIndicator={isLastMessage && isStreaming && message.content === ""}
-      mcpEvents={message.mcpEvents}
-    />
+    <>
+      <AssistantBubble
+        message={message}
+        allowImages={allowImages}
+        isLastMessage={isLastMessage}
+        isStreaming={isStreaming}
+        isTypingIndicator={isLastMessage && isStreaming && message.content === ""}
+        mcpEvents={message.mcpEvents}
+      />
+      {actions}
+    </>
   );
 }
 

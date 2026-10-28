@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download, Users } from "lucide-react";
-import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 
 import { teamSpendByUserCall } from "@/components/networking";
@@ -10,7 +9,6 @@ import { MoneyCell } from "@/components/shared/table_cells";
 import { Button } from "@/components/ui/button";
 
 import { Panel } from "../overview/Primitives";
-import type { UsageTeamUserSpendTranslator } from "@/lib/i18n/translators";
 
 import {
   buildTeamUserSpendCsv,
@@ -22,6 +20,7 @@ import {
   userLabel,
   type TeamUserSpendRow,
 } from "./teamUserSpend";
+import { useTranslations } from "next-intl";
 
 interface TeamUserSpendCardProps {
   accessToken: string | null;
@@ -32,47 +31,41 @@ interface TeamUserSpendCardProps {
 
 const QUIET_HEADER = { headerClassName: "font-normal" };
 
-const buildColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUserSpendRow>[] => [
+const columns: ColumnDef<TeamUserSpendRow>[] = [
+  { header: "Team", accessorFn: teamLabel, id: "team", meta: QUIET_HEADER, cell: ({ row }) => teamLabel(row.original) },
   {
-    header: t("team"),
-    accessorFn: teamLabel,
-    id: "team",
-    meta: QUIET_HEADER,
-    cell: ({ row }) => teamLabel(row.original),
-  },
-  {
-    header: t("user"),
-    accessorFn: (row) => userLabel(row, t("noUser")),
+    header: "User",
+    accessorFn: userLabel,
     id: "user",
     meta: QUIET_HEADER,
-    cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original, t("noUser"))}</span>,
+    cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original)}</span>,
   },
   {
-    header: t("spend"),
+    header: "Spend",
     accessorKey: "spend",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={4} />,
   },
   {
-    header: t("requests"),
+    header: "Requests",
     accessorKey: "api_requests",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.api_requests.toLocaleString(),
   },
   {
-    header: t("successful"),
+    header: "Successful",
     accessorKey: "successful_requests",
     meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
     cell: ({ row }) => row.original.successful_requests.toLocaleString(),
   },
   {
-    header: t("failed"),
+    header: "Failed",
     accessorKey: "failed_requests",
     meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
     cell: ({ row }) => row.original.failed_requests.toLocaleString(),
   },
   {
-    header: t("tokens"),
+    header: "Tokens",
     accessorKey: "total_tokens",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.total_tokens.toLocaleString(),
@@ -81,7 +74,7 @@ const buildColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUserSpendR
 
 const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, startTime, endTime, teamIds }) => {
   const t = useTranslations("usage.teamUserSpend");
-  const columns = buildColumns(t);
+
   const hasTeams = teamIds.length > 0;
   const { data, isLoading } = useQuery({
     queryKey: ["teamSpendByUser", startTime?.toISOString(), endTime?.toISOString(), teamIds],
@@ -100,21 +93,21 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
           variant="outline"
           size="xs"
           disabled={!data || rows.length === 0}
-          onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data, t("noUser")), teamUserSpendCsvFileName(data))}
+          onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data), teamUserSpendCsvFileName(data))}
         >
           <Download />
           {t("downloadCsv")}
         </Button>
       }
     >
-      <p className="mb-3 text-xs text-muted-foreground">{t("attributionHint")}</p>
+      <p className="mb-3 text-xs text-muted-foreground">{t("attributionNote")}</p>
       <DataTable
         columns={columns}
         data={rows}
         getRowId={teamUserSpendRowId}
         isLoading={isLoading}
         maxBodyHeight={320}
-        noDataMessage={teamIds.length === 0 ? t("selectTeamHint") : t("noUserSpend")}
+        noDataMessage={teamIds.length === 0 ? "Select a team to see spend per user" : "No user spend in this range"}
         size="compact"
       />
     </Panel>

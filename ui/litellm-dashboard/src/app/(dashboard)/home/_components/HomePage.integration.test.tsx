@@ -146,7 +146,7 @@ describe("HomePage", () => {
         <HomePage />
       </LiteAdminFrame>,
     );
-    const entry = screen.getByRole("region", { name: "向 LiteAdmin 提问" });
+    const entry = screen.getByRole("region", { name: "Ask Aria Agent" });
     expect(await within(entry).findByPlaceholderText("你想做点什么？")).toBeInTheDocument();
     expect(within(entry).getByRole("button", { name: "发送消息" })).toBeDisabled();
     expect(await screen.findByText("$501.74")).toBeInTheDocument();

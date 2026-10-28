@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
@@ -20,18 +19,19 @@ import {
 } from "./overviewData";
 import { Segmented } from "./Primitives";
 import { providerForModel } from "./modelProvider";
+import { useTranslations } from "next-intl";
 
 const METRIC_OPTIONS = [
-  { value: "spend", labelKey: "metric.spend" },
-  { value: "tokens", labelKey: "metric.tokens" },
-  { value: "requests", labelKey: "metric.requests" },
-] as const satisfies readonly { value: UsageMetric; labelKey: string }[];
+  { value: "spend", label: "Spend" },
+  { value: "tokens", label: "Tokens" },
+  { value: "requests", label: "Requests" },
+] as const satisfies readonly { value: UsageMetric; label: string }[];
 
 const DIMENSION_OPTIONS = [
-  { value: "model_groups", labelKey: "dimension.model" },
-  { value: "models", labelKey: "dimension.deployment" },
-  { value: "providers", labelKey: "dimension.provider" },
-] as const satisfies readonly { value: BreakdownDimension; labelKey: string }[];
+  { value: "model_groups", label: "Model" },
+  { value: "models", label: "Deployment" },
+  { value: "providers", label: "Provider" },
+] as const satisfies readonly { value: BreakdownDimension; label: string }[];
 
 export interface BreakdownState {
   metric: UsageMetric;
@@ -62,19 +62,20 @@ export function BreakdownControls({
   showDimension?: boolean;
 }) {
   const t = useTranslations("usage.overview");
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Segmented
         label={t("breakdown.metric")}
         value={state.metric}
-        options={METRIC_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
+        options={METRIC_OPTIONS}
         onChange={(metric) => onChange({ ...state, metric })}
       />
       {showDimension && (
         <Segmented
           label={t("breakdown.groupBy")}
           value={state.dimension}
-          options={DIMENSION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
+          options={DIMENSION_OPTIONS}
           onChange={(dimension) => onChange({ ...state, dimension })}
         />
       )}
@@ -137,6 +138,7 @@ export function Leaderboard({
   colorByKey?: ReadonlyMap<string, string>;
 }) {
   const t = useTranslations("usage.overview");
+
   const colorOf = (name: string) => {
     if (colorByKey) return colorForModel(name, colorByKey);
     const index = series.labels.indexOf(name);
@@ -153,44 +155,39 @@ export function Leaderboard({
     <div className={cn("grid gap-x-10", columns === 2 && "md:grid-cols-2")}>
       {groups.map((group, groupIndex) => (
         <ol key={groupIndex} className="divide-y divide-border/60">
-          {group.map((row, i) => {
-            const provider = providerForModel(row.key);
-            return (
-              <li
-                key={row.key}
-                className={cn(
-                  "grid grid-cols-[1.25rem_minmax(0,1fr)_auto_3rem] items-center gap-3",
-                  dense ? "py-1.5" : "py-2.5",
+          {group.map((row, i) => (
+            <li
+              key={row.key}
+              className={cn(
+                "grid grid-cols-[1.25rem_minmax(0,1fr)_auto_3rem] items-center gap-3",
+                dense ? "py-1.5" : "py-2.5",
+              )}
+            >
+              <span className="text-xs tabular-nums text-muted-foreground">{groupIndex * half + i + 1}</span>
+              <span className="flex min-w-0 items-center gap-3">
+                {dimension === "providers" ? (
+                  <ProviderLogo provider={row.key} className="size-4 shrink-0" />
+                ) : (
+                  <ModelMark model={row.key} color={colorOf(row.key)} />
                 )}
-              >
-                <span className="text-xs tabular-nums text-muted-foreground">{groupIndex * half + i + 1}</span>
-                <span className="flex min-w-0 items-center gap-3">
-                  {dimension === "providers" ? (
-                    <ProviderLogo provider={row.key} className="size-4 shrink-0" />
-                  ) : (
-                    <ModelMark model={row.key} color={colorOf(row.key)} />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium text-foreground">{row.key}</span>
+                  {providerForModel(row.key) && (
+                    <span className="block truncate text-xs text-muted-foreground">by {providerForModel(row.key)}</span>
                   )}
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-foreground">{row.key}</span>
-                    {provider && (
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {t("byProvider", { provider })}
-                      </span>
-                    )}
+                </span>
+              </span>
+              <span className="text-right">
+                <span className="block text-sm tabular-nums text-foreground">{row.share.toFixed(1)}%</span>
+                {!dense && (
+                  <span className="block text-xs tabular-nums text-muted-foreground">
+                    {formatMetricValue(value(row), metric)}
                   </span>
-                </span>
-                <span className="text-right">
-                  <span className="block text-sm tabular-nums text-foreground">{row.share.toFixed(1)}%</span>
-                  {!dense && (
-                    <span className="block text-xs tabular-nums text-muted-foreground">
-                      {formatMetricValue(value(row), metric)}
-                    </span>
-                  )}
-                </span>
-                <Delta value={row.delta} />
-              </li>
-            );
-          })}
+                )}
+              </span>
+              <Delta value={row.delta} />
+            </li>
+          ))}
         </ol>
       ))}
     </div>

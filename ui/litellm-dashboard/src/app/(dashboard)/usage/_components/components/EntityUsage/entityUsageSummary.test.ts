@@ -1,10 +1,5 @@
-import { hasPtuHours } from "@/app/(dashboard)/usage/_components/components/EntityUsage/entityUsageSummary";
-import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
-import zh from "@/messages/zh-CN.json";
-import { buildCostBreakdownTiles, buildSummaryTiles, hasFlatCost } from "./entityUsageSummary";
-
-const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "usage" });
+import { buildCostBreakdownTiles, buildSummaryTiles, hasFlatCost, hasPtuHours } from "./entityUsageSummary";
 
 const metadata = {
   total_spend: 100,
@@ -40,76 +35,76 @@ describe("hasFlatCost", () => {
 
 describe("buildSummaryTiles", () => {
   it("keeps the row at five tiles either way so adding flat cost never narrows the cards", () => {
-    expect(buildSummaryTiles(t, metadata, false)).toHaveLength(5);
-    expect(buildSummaryTiles(t, metadata, true)).toHaveLength(5);
+    expect(buildSummaryTiles(metadata, false)).toHaveLength(5);
+    expect(buildSummaryTiles(metadata, true)).toHaveLength(5);
   });
 
   it("adds a sixth PTU Hours tile only when asked, after Total Tokens", () => {
     const withPtu = { ...metadata, total_ptu_hours: 1234.5678 };
-    expect(buildSummaryTiles(t, withPtu, true)).toHaveLength(5);
-    const tiles = buildSummaryTiles(t, withPtu, true, true);
+    expect(buildSummaryTiles(withPtu, true)).toHaveLength(5);
+    const tiles = buildSummaryTiles(withPtu, true, true);
     expect(tiles).toHaveLength(6);
     const last = tiles[tiles.length - 1];
-    expect(last.title).toBe("PTU 小时");
+    expect(last.title).toBe("PTU Hours");
     expect(last.value).toBe("1,234.57");
-    expect(last.tooltip).toContain("PTU 小时");
-    expect(tiles[tiles.length - 2].title).toBe("总令牌数");
+    expect(last.tooltip).toContain("PTU-hours");
+    expect(tiles[tiles.length - 2].title).toBe("Total Tokens");
   });
 
   it("treats missing PTU hours as zero when the tile is forced on", () => {
-    const tiles = buildSummaryTiles(t, metadata, false, true);
+    const tiles = buildSummaryTiles(metadata, false, true);
     expect(tiles[tiles.length - 1].value).toBe("0.00");
   });
 
   it("shows request-only spend under the original title when there is no flat cost", () => {
-    const [first] = buildSummaryTiles(t, metadata, false);
-    expect(first.title).toBe("总消费");
+    const [first] = buildSummaryTiles(metadata, false);
+    expect(first.title).toBe("Total Spend");
     expect(first.value).toBe("$100.00");
     expect(first.expandable).toBeUndefined();
   });
 
   it("rolls flat cost into a single expandable Total Cost tile", () => {
-    const [first] = buildSummaryTiles(t, metadata, true);
-    expect(first.title).toBe("总成本");
+    const [first] = buildSummaryTiles(metadata, true);
+    expect(first.title).toBe("Total Cost");
     expect(first.value).toBe("$140.00");
     expect(first.expandable).toBe(true);
     expect(first.tooltip).toBeTruthy();
   });
 
   it("never renders the breakdown titles in the top row", () => {
-    const titles = buildSummaryTiles(t, metadata, true).map((tile) => tile.title);
-    expect(titles).not.toContain("固定成本");
-    expect(titles).not.toContain("请求成本");
+    const titles = buildSummaryTiles(metadata, true).map((t) => t.title);
+    expect(titles).not.toContain("Flat Cost");
+    expect(titles).not.toContain("Request Cost");
   });
 
   it("treats a missing flat cost as zero", () => {
     const { total_flat_cost, ...noFlat } = metadata;
-    expect(buildSummaryTiles(t, noFlat, true)[0].value).toBe("$100.00");
+    expect(buildSummaryTiles(noFlat, true)[0].value).toBe("$100.00");
   });
 });
 
 describe("buildCostBreakdownTiles", () => {
   it("splits the total into request cost and flat cost", () => {
-    const byTitle = Object.fromEntries(buildCostBreakdownTiles(t, metadata).map((tile) => [tile.title, tile.value]));
-    expect(byTitle["请求成本"]).toBe("$100.00");
-    expect(byTitle["固定成本"]).toBe("$40.00");
+    const byTitle = Object.fromEntries(buildCostBreakdownTiles(metadata).map((t) => [t.title, t.value]));
+    expect(byTitle["Request Cost"]).toBe("$100.00");
+    expect(byTitle["Flat Cost"]).toBe("$40.00");
   });
 
   it("adds up to the Total Cost tile so the expanded view reconciles", () => {
     const parse = (v: string) => Number(v.replace(/[$,]/g, ""));
-    const parts = buildCostBreakdownTiles(t, metadata).map((tile) => parse(tile.value));
-    expect(parts[0] + parts[1]).toBe(parse(buildSummaryTiles(t, metadata, true)[0].value));
+    const parts = buildCostBreakdownTiles(metadata).map((t) => parse(t.value));
+    expect(parts[0] + parts[1]).toBe(parse(buildSummaryTiles(metadata, true)[0].value));
   });
 
   it("explains each part, including that flat cost is outside budgets", () => {
-    const byTitle = Object.fromEntries(buildCostBreakdownTiles(t, metadata).map((tile) => [tile.title, tile.tooltip]));
-    expect(byTitle["请求成本"]).toBeTruthy();
-    expect(byTitle["固定成本"]).toContain("预算");
+    const byTitle = Object.fromEntries(buildCostBreakdownTiles(metadata).map((t) => [t.title, t.tooltip]));
+    expect(byTitle["Request Cost"]).toBeTruthy();
+    expect(byTitle["Flat Cost"]).toContain("budget");
   });
 
   it("treats a missing flat cost as zero", () => {
     const { total_flat_cost, ...noFlat } = metadata;
-    const byTitle = Object.fromEntries(buildCostBreakdownTiles(t, noFlat).map((tile) => [tile.title, tile.value]));
-    expect(byTitle["固定成本"]).toBe("$0.00");
+    const byTitle = Object.fromEntries(buildCostBreakdownTiles(noFlat).map((t) => [t.title, t.value]));
+    expect(byTitle["Flat Cost"]).toBe("$0.00");
   });
 });

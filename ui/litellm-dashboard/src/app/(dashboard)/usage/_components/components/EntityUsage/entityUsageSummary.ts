@@ -1,4 +1,3 @@
-import type { UsageTranslator } from "@/lib/i18n/translators";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 export interface SummaryTile {
@@ -7,7 +6,6 @@ export interface SummaryTile {
   className?: string;
   tooltip?: string;
   expandable?: boolean;
-  trendKey?: "spend" | "requests" | "tokens";
 }
 
 interface SpendSummaryMetadata {
@@ -20,12 +18,23 @@ interface SpendSummaryMetadata {
   total_tokens: number;
 }
 
+export const TOTAL_COST_TOOLTIP =
+  "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.";
+
+export const REQUEST_COST_TOOLTIP =
+  "Usage-based cost of the requests this entity sent during the selected period, priced per token.";
+
+export const FLAT_COST_TOOLTIP =
+  "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.";
+
+export const PTU_HOURS_TOOLTIP =
+  "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.";
+
 export const hasFlatCost = (metadata: SpendSummaryMetadata): boolean => (metadata.total_flat_cost ?? 0) > 0;
 
 export const hasPtuHours = (metadata: SpendSummaryMetadata): boolean => (metadata.total_ptu_hours ?? 0) > 0;
 
 export const buildSummaryTiles = (
-  t: UsageTranslator,
   metadata: SpendSummaryMetadata,
   showFlatCost: boolean,
   showPtuHours: boolean = false,
@@ -34,52 +43,44 @@ export const buildSummaryTiles = (
   const ptuHoursTile: SummaryTile[] = showPtuHours
     ? [
         {
-          title: t("entity.ptuHoursTitle"),
+          title: "PTU Hours",
           value: formatNumberWithCommas(metadata.total_ptu_hours ?? 0, 2),
-          tooltip: t("entity.ptuHoursTooltip"),
+          tooltip: PTU_HOURS_TOOLTIP,
         },
       ]
     : [];
   return [
     showFlatCost
       ? {
-          title: t("entity.totalCost"),
+          title: "Total Cost",
           value: `$${formatNumberWithCommas(metadata.total_spend + flatCost, 2)}`,
-          tooltip: t("entity.totalCostTooltip"),
+          tooltip: TOTAL_COST_TOOLTIP,
           expandable: true,
         }
-      : {
-          title: t("entity.totalSpend"),
-          value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
-          trendKey: "spend",
-        },
-    { title: t("totalRequests"), value: metadata.total_api_requests.toLocaleString(), trendKey: "requests" },
+      : { title: "Total Spend", value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
+    { title: "Total Requests", value: metadata.total_api_requests.toLocaleString() },
     {
-      title: t("metrics.successfulRequests"),
+      title: "Successful Requests",
       value: metadata.total_successful_requests.toLocaleString(),
       className: "text-success",
     },
-    {
-      title: t("metrics.failedRequests"),
-      value: metadata.total_failed_requests.toLocaleString(),
-      className: "text-destructive",
-    },
-    { title: t("totalTokens"), value: metadata.total_tokens.toLocaleString(), trendKey: "tokens" },
+    { title: "Failed Requests", value: metadata.total_failed_requests.toLocaleString(), className: "text-destructive" },
+    { title: "Total Tokens", value: metadata.total_tokens.toLocaleString() },
     ...ptuHoursTile,
   ];
 };
 
-export const buildCostBreakdownTiles = (t: UsageTranslator, metadata: SpendSummaryMetadata): SummaryTile[] => [
+export const buildCostBreakdownTiles = (metadata: SpendSummaryMetadata): SummaryTile[] => [
   {
-    title: t("entity.requestCost"),
+    title: "Request Cost",
     value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
     className: "text-info",
-    tooltip: t("entity.requestCostTooltip"),
+    tooltip: REQUEST_COST_TOOLTIP,
   },
   {
-    title: t("entity.flatCost"),
+    title: "Flat Cost",
     value: `$${formatNumberWithCommas(metadata.total_flat_cost ?? 0, 2)}`,
     className: "text-violet-600",
-    tooltip: t("entity.flatCostTooltip"),
+    tooltip: FLAT_COST_TOOLTIP,
   },
 ];

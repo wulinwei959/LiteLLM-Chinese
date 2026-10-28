@@ -32,6 +32,8 @@ describe("EndpointUsageBarChart", () => {
     expect(screen.getByText("各端点成功与失败请求数")).toBeInTheDocument();
     expect(screen.getByText("成功请求")).toBeInTheDocument();
     expect(screen.getByText("失败请求")).toBeInTheDocument();
+    expect(screen.getByText("160")).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
   });
 
   it("renders stacked brand-blue and red bars per endpoint", () => {

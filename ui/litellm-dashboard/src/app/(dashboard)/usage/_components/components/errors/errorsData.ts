@@ -1,7 +1,3 @@
-import type { useTranslations } from "next-intl";
-
-export type ErrorsTranslator = ReturnType<typeof useTranslations<"usage.errors">>;
-
 export interface RequestErrorDailyEntry {
   date: string;
   successful_requests: number;
@@ -34,37 +30,36 @@ export interface RequestErrorActivity {
 export const ERROR_ENTITY_KINDS = ["key", "team", "user", "model"] as const;
 export type ErrorEntityKind = (typeof ERROR_ENTITY_KINDS)[number];
 
-export const errorEntityLabel = (kind: ErrorEntityKind, t: ErrorsTranslator): { singular: string; plural: string } =>
-  ({
-    key: { singular: t("entity.key.singular"), plural: t("entity.key.plural") },
-    team: { singular: t("entity.team.singular"), plural: t("entity.team.plural") },
-    user: { singular: t("entity.user.singular"), plural: t("entity.user.plural") },
-    model: { singular: t("entity.model.singular"), plural: t("entity.model.plural") },
-  })[kind];
-
-const STATUS_LABEL_KEY: Record<number, string> = {
-  400: "status.badRequest",
-  401: "status.unauthorized",
-  402: "status.paymentRequired",
-  403: "status.forbidden",
-  404: "status.notFound",
-  408: "status.requestTimeout",
-  413: "status.payloadTooLarge",
-  422: "status.unprocessableEntity",
-  429: "status.rateLimited",
-  500: "status.internalServerError",
-  502: "status.badGateway",
-  503: "status.serviceUnavailable",
-  504: "status.gatewayTimeout",
+export const ERROR_ENTITY_LABEL: Record<ErrorEntityKind, { singular: string; plural: string }> = {
+  key: { singular: "Virtual key", plural: "Virtual keys" },
+  team: { singular: "Team", plural: "Teams" },
+  user: { singular: "User", plural: "Users" },
+  model: { singular: "Model", plural: "Models" },
 };
 
-export const statusCodeLabel = (code: number, t: ErrorsTranslator): string => {
-  if (code === 0) return t("status.notRecorded");
-  const known = STATUS_LABEL_KEY[code];
-  if (known) return t(known as Parameters<ErrorsTranslator>[0]);
-  if (code >= 500) return t("status.serverError");
-  if (code >= 400) return t("status.clientError");
-  return t("status.error");
+const STATUS_LABELS: Record<number, string> = {
+  400: "Bad Request",
+  401: "Unauthorized",
+  402: "Payment Required",
+  403: "Forbidden",
+  404: "Not Found",
+  408: "Request Timeout",
+  413: "Payload Too Large",
+  422: "Unprocessable Entity",
+  429: "Rate Limited",
+  500: "Internal Server Error",
+  502: "Bad Gateway",
+  503: "Service Unavailable",
+  504: "Gateway Timeout",
+};
+
+export const statusCodeLabel = (code: number): string => {
+  if (code === 0) return "Not recorded";
+  const known = STATUS_LABELS[code];
+  if (known) return known;
+  if (code >= 500) return "Server Error";
+  if (code >= 400) return "Client Error";
+  return "Error";
 };
 
 export const errorRate = (failed: number, total: number): number | null => (total > 0 ? (failed / total) * 100 : null);
@@ -115,16 +110,16 @@ export interface ErrorSeries {
 }
 
 export const ERROR_SERIES_MAX_CODES = 6;
+export const ERROR_SERIES_OTHER = "Other";
 
-const seriesKey = (code: number, t: ErrorsTranslator): string => (code === 0 ? t("status.noStatus") : String(code));
+const seriesKey = (code: number): string => (code === 0 ? "No status" : String(code));
 
-export const errorSeries = (activity: RequestErrorActivity, t: ErrorsTranslator): ErrorSeries => {
-  const other = t("other");
+export const errorSeries = (activity: RequestErrorActivity): ErrorSeries => {
   const ranked = [...activity.by_status_code]
     .filter((row) => row.failed_requests > 0)
     .sort((a, b) => b.failed_requests - a.failed_requests || a.status_code - b.status_code);
   const shown = ranked.slice(0, ERROR_SERIES_MAX_CODES).map((row) => row.status_code);
-  const codes = shown.map((code) => seriesKey(code, t));
+  const codes = shown.map(seriesKey);
   const needsOther = ranked.length > shown.length || activity.by_date.some(hasUnrecordedFailures);
   const rows = [...activity.by_date]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -132,13 +127,13 @@ export const errorSeries = (activity: RequestErrorActivity, t: ErrorsTranslator)
       const requests = day.successful_requests + day.failed_requests;
       const counts: Record<string, number> = Object.fromEntries(
         shown.map((code) => [
-          seriesKey(code, t),
+          seriesKey(code),
           day.by_status_code.find((entry) => entry.status_code === code)?.failed_requests ?? 0,
         ]),
       );
       const recorded = Object.values(counts).reduce((sum, count) => sum + count, 0);
-      const otherCounts: Record<string, number> = needsOther
-        ? { [other]: Math.max(0, day.failed_requests - recorded) }
+      const other: Record<string, number> = needsOther
+        ? { [ERROR_SERIES_OTHER]: Math.max(0, day.failed_requests - recorded) }
         : {};
       return {
         date: day.date,
@@ -146,17 +141,17 @@ export const errorSeries = (activity: RequestErrorActivity, t: ErrorsTranslator)
         failed: day.failed_requests,
         rate: errorRate(day.failed_requests, requests) ?? 0,
         ...counts,
-        ...otherCounts,
+        ...other,
       };
     });
-  return { rows, codes: needsOther ? [...codes, other] : codes };
+  return { rows, codes: needsOther ? [...codes, ERROR_SERIES_OTHER] : codes };
 };
 
 export type ErrorRateView = "total" | "status";
 
-export const errorRateViewOptions = (t: ErrorsTranslator): readonly { value: ErrorRateView; label: string }[] => [
-  { value: "total", label: t("view.total") },
-  { value: "status", label: t("view.byStatusCode") },
+export const ERROR_RATE_VIEW_OPTIONS: readonly { value: ErrorRateView; label: string }[] = [
+  { value: "total", label: "Total" },
+  { value: "status", label: "By status code" },
 ];
 
 export const rateByStatusRows = (series: ErrorSeries): ErrorSeriesRow[] =>
@@ -178,18 +173,18 @@ export interface StatusCodeRow {
   share: number;
 }
 
-export const statusCodeRows = (activity: RequestErrorActivity, t: ErrorsTranslator): StatusCodeRow[] => {
+export const statusCodeRows = (activity: RequestErrorActivity): StatusCodeRow[] => {
   const recorded = activity.by_status_code.reduce((sum, row) => sum + row.failed_requests, 0);
   const notRecorded = Math.max(0, activity.total_failed_requests - recorded);
   const recordedRows = activity.by_status_code
     .filter((row) => row.failed_requests > 0)
     .map((row) => ({
       status_code: row.status_code,
-      label: statusCodeLabel(row.status_code, t),
+      label: statusCodeLabel(row.status_code),
       failed_requests: row.failed_requests,
     }));
   const unrecordedRows =
-    notRecorded > 0 ? [{ status_code: 0, label: statusCodeLabel(0, t), failed_requests: notRecorded }] : [];
+    notRecorded > 0 ? [{ status_code: 0, label: statusCodeLabel(0), failed_requests: notRecorded }] : [];
   const total = activity.total_failed_requests || 1;
   return [...recordedRows, ...unrecordedRows]
     .sort((a, b) => b.failed_requests - a.failed_requests || a.status_code - b.status_code)
@@ -205,11 +200,7 @@ export interface ErrorEntityRow {
   topStatus: string | null;
 }
 
-export const entityRows = (
-  activity: RequestErrorActivity,
-  kind: ErrorEntityKind,
-  t: ErrorsTranslator,
-): ErrorEntityRow[] => {
+export const entityRows = (activity: RequestErrorActivity, kind: ErrorEntityKind): ErrorEntityRow[] => {
   const source = { key: activity.by_key, team: activity.by_team, user: activity.by_user, model: activity.by_model }[
     kind
   ];
@@ -222,6 +213,6 @@ export const entityRows = (
     topStatus:
       entry.top_status_code === null
         ? null
-        : `${entry.top_status_code === 0 ? t("status.noStatus") : entry.top_status_code} · ${entry.top_status_code_requests.toLocaleString()}`,
+        : `${entry.top_status_code === 0 ? "No status" : entry.top_status_code} · ${entry.top_status_code_requests.toLocaleString()}`,
   }));
 };

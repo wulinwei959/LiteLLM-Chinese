@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { LineChart, STACKED_USAGE_PALETTE, StackedUsageChart } from "@/components/shared/charts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -17,16 +16,14 @@ import {
   errorSeries,
   type ErrorRateView,
   type ErrorSeries,
-  errorRateViewOptions,
   rateByStatusRows,
   errorSummary,
   formatRate,
   statusCodeRows,
   type ErrorEntityKind,
   type RequestErrorActivity,
-  errorEntityLabel,
-  type ErrorsTranslator,
 } from "./errorsData";
+import { useTranslations } from "next-intl";
 
 interface ErrorsTabProps {
   activity: RequestErrorActivity | null;
@@ -77,30 +74,57 @@ function PanelBody({
 }
 
 function rateChartEmpty(
+  t: ReturnType<typeof useTranslations>,
   rateView: ErrorRateView,
   series: ErrorSeries,
   noTraffic: boolean,
-  t: ErrorsTranslator,
 ): string | null {
-  if (noTraffic || series.rows.length === 0) return t("empty.noRequests");
-  if (rateView === "status" && series.codes.length === 0) return t("empty.noFailedRequests");
+  if (noTraffic || series.rows.length === 0) return t("emptyNoRequests");
+  if (rateView === "status" && series.codes.length === 0) return t("emptyNoFailed");
   return null;
 }
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
   const t = useTranslations("usage.errors");
-  const tc = useTranslations("common");
+  const entityLabels = {
+    key: { singular: t("entityKey"), plural: t("entityKeyPlural") },
+    team: { singular: t("entityTeam"), plural: t("entityTeamPlural") },
+    user: { singular: t("entityUser"), plural: t("entityUserPlural") },
+    model: { singular: t("entityModel"), plural: t("entityModelPlural") },
+  } as const;
+  const entityOptions = ERROR_ENTITY_KINDS.map((entry) => ({ value: entry, label: entityLabels[entry].plural }));
+  const rateViewOptions = [
+    { value: "total" as const, label: t("viewTotal") },
+    { value: "status" as const, label: t("viewStatus") },
+  ];
+  const statusLabel = (code: number): string => {
+    const known: Readonly<Record<number, string>> = {
+      400: t("status400"),
+      401: t("status401"),
+      402: t("status402"),
+      403: t("status403"),
+      404: t("status404"),
+      408: t("status408"),
+      413: t("status413"),
+      422: t("status422"),
+      429: t("status429"),
+      500: t("status500"),
+      502: t("status502"),
+      503: t("status503"),
+      504: t("status504"),
+    };
+    if (code === 0) return t("statusNotRecorded");
+    if (known[code]) return known[code];
+    if (code >= 500) return t("statusServer");
+    if (code >= 400) return t("statusClient");
+    return t("statusError");
+  };
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
-  const entityOptions = useMemo(
-    () =>
-      ERROR_ENTITY_KINDS.map((entityKind) => ({ value: entityKind, label: errorEntityLabel(entityKind, t).plural })),
-    [t],
-  );
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
-  const series = useMemo(() => (activity ? errorSeries(activity, t) : { rows: [], codes: [] }), [activity, t]);
-  const statusRows = useMemo(() => (activity ? statusCodeRows(activity, t) : []), [activity, t]);
-  const rows = useMemo(() => (activity ? entityRows(activity, kind, t) : []), [activity, kind, t]);
+  const series = useMemo(() => (activity ? errorSeries(activity) : { rows: [], codes: [] }), [activity]);
+  const statusRows = useMemo(() => (activity ? statusCodeRows(activity) : []), [activity]);
+  const rows = useMemo(() => (activity ? entityRows(activity, kind) : []), [activity, kind]);
   const failedByDate = useMemo(() => new Map(series.rows.map((row) => [row.date, row.failed])), [series]);
   const rateRows = useMemo(
     () =>
@@ -111,15 +135,14 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     [series, rateView],
   );
   const noTraffic = summary !== null && summary.requests === 0;
-  const rateEmpty = rateChartEmpty(rateView, series, noTraffic, t);
-  const entity = errorEntityLabel(kind, t);
+  const rateEmpty = rateChartEmpty(t, rateView, series, noTraffic);
 
   if (userScoped) {
     return (
       <Alert role="status">
         <AlertCircle />
-        <AlertTitle>{t("alert.deploymentWide.title")}</AlertTitle>
-        <AlertDescription>{t("alert.deploymentWide.body")}</AlertDescription>
+        <AlertTitle>{t("deploymentWideTitle")}</AlertTitle>
+        <AlertDescription>{t("userScopedHint")}</AlertDescription>
       </Alert>
     );
   }
@@ -127,8 +150,8 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     return (
       <Alert variant="destructive" role="alert">
         <AlertCircle />
-        <AlertTitle>{t("alert.loadFailed.title")}</AlertTitle>
-        <AlertDescription>{t("alert.loadFailed.body")}</AlertDescription>
+        <AlertTitle>{t("loadFailedTitle")}</AlertTitle>
+        <AlertDescription>{t("loadFailedBody")}</AlertDescription>
       </Alert>
     );
   }
@@ -136,48 +159,37 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
   return (
     <div className="grid gap-3" data-testid="usage-errors-tab">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCell label={t("stat.errorRate")}>
+        <StatCell label={t("errorRate")}>
           <Stat
-            label={t("stat.errorRate")}
+            label={t("errorRate")}
             value={summary ? formatRate(summary.rate) : null}
             pending={loading}
             tone={summary && summary.failed > 0 ? "destructive" : undefined}
-            hint={
-              summary
-                ? t("stat.failedOfRequests", { failed: count(summary.failed), requests: count(summary.requests) })
-                : undefined
-            }
+            hint={summary ? `${count(summary.failed)} of ${count(summary.requests)} requests` : undefined}
           />
         </StatCell>
-        <StatCell label={t("stat.failedRequests")}>
-          <Stat label={t("stat.failedRequests")} value={summary ? count(summary.failed) : null} pending={loading} />
+        <StatCell label={t("failedRequests")}>
+          <Stat label={t("failedRequests")} value={summary ? count(summary.failed) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.clientErrors")}>
-          <Stat label={t("stat.clientErrors")} value={summary ? count(summary.clientErrors) : null} pending={loading} />
+        <StatCell label={t("clientErrors")}>
+          <Stat label={t("clientErrors")} value={summary ? count(summary.clientErrors) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.serverErrors")}>
-          <Stat label={t("stat.serverErrors")} value={summary ? count(summary.serverErrors) : null} pending={loading} />
+        <StatCell label={t("serverErrors")}>
+          <Stat label={t("serverErrors")} value={summary ? count(summary.serverErrors) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.rateLimited")}>
-          <Stat label={t("stat.rateLimited")} value={summary ? count(summary.rateLimited) : null} pending={loading} />
+        <StatCell label={t("rateLimited")}>
+          <Stat label={t("rateLimited")} value={summary ? count(summary.rateLimited) : null} pending={loading} />
         </StatCell>
-        <StatCell label={t("stat.authFailures")}>
-          <Stat label={t("stat.authFailures")} value={summary ? count(summary.authFailures) : null} pending={loading} />
+        <StatCell label={t("authFailures")}>
+          <Stat label={t("authFailures")} value={summary ? count(summary.authFailures) : null} pending={loading} />
         </StatCell>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Panel
-          title={t("panel.errorRate.title")}
-          subtitle={t("panel.errorRate.subtitle")}
-          action={
-            <Segmented
-              label={t("control.show")}
-              value={rateView}
-              options={errorRateViewOptions(t)}
-              onChange={setRateView}
-            />
-          }
+          title={t("errorRateOverTime")}
+          subtitle={t("rateSubtitle")}
+          action={<Segmented label={t("show")} value={rateView} options={rateViewOptions} onChange={setRateView} />}
         >
           <PanelBody loading={loading} height="h-64" empty={rateEmpty}>
             <LineChart
@@ -196,11 +208,11 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             />
           </PanelBody>
         </Panel>
-        <Panel title={t("panel.failedByStatus.title")} subtitle={t("panel.failedByStatus.subtitle")}>
+        <Panel title={t("byStatusTitle")} subtitle={t("statusSubtitle")}>
           <PanelBody
             loading={loading}
             height="h-64"
-            empty={series.rows.every((row) => row.failed === 0) ? t("empty.noFailedRequests") : null}
+            empty={series.rows.every((row) => row.failed === 0) ? "No failed requests in this range" : null}
           >
             <StackedUsageChart
               data={series.rows}
@@ -209,12 +221,12 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               xLabel={shortDate}
               format={count}
               totalFor={(date) => failedByDate.get(date)}
-              totalLabel={tc("failed")}
+              totalLabel="failed"
               className="h-64"
             />
             <ul
               className={cn("flex flex-wrap gap-x-4 gap-y-1 pb-4 text-xs text-muted-foreground", PANEL_INSET_X)}
-              aria-label={t("chart.statusCodesAria")}
+              aria-label={t("statusChartAria")}
             >
               {series.codes.map((code, index) => (
                 <li key={code} className="flex items-center gap-1.5">
@@ -232,13 +244,13 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
       </div>
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <Panel title={t("panel.byStatusCode.title")} subtitle={t("panel.byStatusCode.subtitle")}>
+        <Panel title={t("byStatusCode")} subtitle={t("byStatusSubtitle")}>
           <PanelBody
             loading={loading}
             height="h-48"
-            empty={statusRows.length === 0 ? t("empty.noFailedRequests") : null}
+            empty={statusRows.length === 0 ? "No failed requests in this range" : null}
           >
-            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("chart.failedByStatusAria")}>
+            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("statusListAria")}>
               {statusRows.map((row) => (
                 <li
                   key={row.status_code}
@@ -246,7 +258,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
                 >
                   <span className="font-medium tabular-nums">{row.status_code === 0 ? "—" : row.status_code}</span>
                   <span className="min-w-0">
-                    <span className="block truncate text-foreground">{row.label}</span>
+                    <span className="block truncate text-foreground">{statusLabel(row.status_code)}</span>
                     <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                       <span className="block h-full rounded-full bg-destructive" style={{ width: `${row.share}%` }} />
                     </span>
@@ -261,23 +273,23 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
         </Panel>
 
         <Panel
-          title={t("panel.byIdentity.title")}
-          subtitle={t("panel.byIdentity.subtitle")}
-          action={<Segmented label={t("control.groupBy")} value={kind} options={entityOptions} onChange={setKind} />}
+          title={t("failuresByIdentity")}
+          subtitle={t("identitySubtitle")}
+          action={<Segmented label={t("groupBy")} value={kind} options={entityOptions} onChange={setKind} />}
         >
           <PanelBody
             loading={loading}
             height="h-48"
-            empty={rows.length === 0 ? t("empty.noEntitiesWithFailures", { entity: entity.plural }) : null}
+            empty={rows.length === 0 ? t("emptyIdentity", { entity: entityLabels[kind].plural.toLowerCase() }) : null}
           >
-            <Table aria-label={t("chart.rankedByFailedAria", { entity: entity.plural })}>
+            <Table aria-label={t("tableAria", { entity: entityLabels[kind].plural })}>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{entity.singular}</TableHead>
-                  <TableHead className="text-right">{t("column.requests")}</TableHead>
-                  <TableHead className="text-right">{t("column.failed")}</TableHead>
-                  <TableHead>{t("column.errorRate")}</TableHead>
-                  <TableHead>{t("column.topStatus")}</TableHead>
+                  <TableHead>{entityLabels[kind].singular}</TableHead>
+                  <TableHead className="text-right">{t("requestsHeader")}</TableHead>
+                  <TableHead className="text-right">{t("failedHeader")}</TableHead>
+                  <TableHead>{t("errorRate")}</TableHead>
+                  <TableHead>{t("topStatus")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -306,7 +318,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           </PanelBody>
           <div className={cn("flex justify-end pb-4 pt-2", PANEL_INSET_X)}>
             <Button variant="outline" size="sm" nativeButton={false} render={<Link href={uiHref("logs")} />}>
-              {t("action.inspectInLogs")}
+              {t("inspectInLogs")}
               <ArrowUpRight />
             </Button>
           </div>

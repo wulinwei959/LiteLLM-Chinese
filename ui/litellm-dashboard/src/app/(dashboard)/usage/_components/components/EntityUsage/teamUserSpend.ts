@@ -4,9 +4,11 @@ import type { TeamUserSpendResponse } from "@/components/networking";
 
 export type TeamUserSpendRow = TeamUserSpendResponse["results"][number];
 
-export const userLabel = (row: TeamUserSpendRow, noUserLabel: string): string => {
+export const NO_USER_LABEL = "(no user)";
+
+export const userLabel = (row: TeamUserSpendRow): string => {
   const identity = row.user_email || row.user_alias;
-  return identity || row.user_id || noUserLabel;
+  return identity || row.user_id || NO_USER_LABEL;
 };
 
 export const teamLabel = (row: TeamUserSpendRow): string => row.team_alias || row.team_id;
@@ -16,14 +18,14 @@ export const teamUserSpendRowId = (row: TeamUserSpendRow): string => `${row.team
 export const sortBySpendDesc = (rows: readonly TeamUserSpendRow[]): TeamUserSpendRow[] =>
   [...rows].sort((a, b) => b.spend - a.spend || teamLabel(a).localeCompare(teamLabel(b)));
 
-export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse, noUserLabel: string): string =>
+export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string =>
   Papa.unparse(
     sortBySpendDesc(response.results).map((row) => ({
       "Start Date": response.start_date,
       "End Date": response.end_date,
       Team: teamLabel(row),
       "Team ID": row.team_id,
-      User: userLabel(row, noUserLabel),
+      User: userLabel(row),
       "User ID": row.user_id,
       "User Email": row.user_email ?? "",
       "Spend (USD)": row.spend,

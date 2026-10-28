@@ -5325,3 +5325,9 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 本轮复测：`src/messages/en.json` 与 `zh-CN.json` 摊平后各 13355 叶，键树差集 0，中英同值 185 条（与第 535 簇同口径）；`i18n-file-inventory.mjs` 报未接入非测试 `.tsx` 217 个，其中有可见文案证据 17 个，接入率按 955 个非测试 `.tsx` 计为 738 / 955 = 77.3%（同步把上游新增组件带进来，分母变大，接入数与第 535 簇的 739 基本持平）；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 284 / 基线 284，`check:zh-coverage` 215 / 0 与基线同数；生产 `typecheck` 0 条错误；eslint 变更文件 0 错误、九条预算全部在预算内（`local/no-large-inline-object-arg` 靠提取 4 处内联对象压回 477），`knip:ci` 无未用文件与未解析 import
 
 合并中处理的三件事记在 `UPSTREAM-SYNC.md` 第十一篇：贴回译文时按整词边界校验英文行与键值对应，避免把 `isChatRoute` 误判成 "Chat"；给丢译员的组件补 `useTranslations` 与 `next-intl` import；失败用例与所属模块取同一版本，避免测试跟组件不同源。渲染扫描本轮未复跑，任何后续文案改动都要按第六步之后的表重测
+
+## 2026-10-28 第 537 簇：接回用量页 client usage 与 LiteAdmin Aria
+
+承接第 536 簇的延迟清单，本轮接回用量页 client usage 视图、LiteAdmin 的 Aria 应答与用量图、上游新版日期选择器与 `ErrorState`；`ChatMessageContent` 增加 `actions` 槽位给导出按钮用。做法与踩坑记在 `UPSTREAM-SYNC.md` 第十二篇，核心是「逐文件改 + `tsc` 校验、变差回滚」
+
+复测：死键 0（清掉 100 枚失效旧键）、静态英文 287/287（+3 条模型侧提示按口径冻结）、中文取值 215/0、生产 `typecheck` 0 错、`knip:ci` 干净、受影响测试 84 文件 984 例全绿（13 份上游测试留待按本仓 convention 重写，清单在同篇）。仍未接入的 chat 附件与 moyai、auto router 预设、模型中心 provider 标识等，按批继续

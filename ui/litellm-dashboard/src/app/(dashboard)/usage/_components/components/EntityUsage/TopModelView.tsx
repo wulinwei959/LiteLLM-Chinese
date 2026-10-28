@@ -1,12 +1,12 @@
 import { BarChart } from "@/components/shared/charts";
-import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslations } from "next-intl";
+import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { useState } from "react";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { Segmented } from "../overview/Primitives";
 import { providerForModel } from "../overview/modelProvider";
+import { useTranslations } from "next-intl";
 
 type TopModel = {
   key: string;
@@ -52,35 +52,36 @@ function ModelName({ name }: { name: string | undefined }) {
 
 export default function TopModelView({ topModels, topModelsLimit, setTopModelsLimit }: TopModelViewProps) {
   const t = useTranslations("usage.topModelView");
-  const [modelViewMode, setModelViewMode] = useState<"chart" | "table">("table");
+
+  const [modelViewMode, setModelViewMode] = useState<ViewMode>("table");
 
   const columns = [
     {
-      header: t("colModel"),
+      header: "Model",
       accessorKey: "key",
       meta: QUIET_HEADER,
       cell: (info: any) => <ModelName name={info.getValue()} />,
     },
     {
-      header: t("colSpend"),
+      header: "Spend (USD)",
       accessorKey: "spend",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
     },
     {
-      header: t("colSuccessful"),
+      header: "Successful",
       accessorKey: "successful_requests",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-success">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
-      header: t("colFailed"),
+      header: "Failed",
       accessorKey: "failed_requests",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-destructive">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
-      header: t("colTokens"),
+      header: "Tokens",
       accessorKey: "tokens",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => info.getValue()?.toLocaleString() || 0,
@@ -90,26 +91,14 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
 
   return (
     <>
-      <div className="mb-4 flex justify-between items-center">
-        <Tabs value={String(topModelsLimit)} onValueChange={(value: string) => setTopModelsLimit(Number(value))}>
-          <TabsList aria-label={t("modelCountAria")}>
-            {TOP_MODEL_LIMITS.map((limit) => (
-              <TabsTrigger key={limit} value={String(limit)} className="flex-none px-3">
-                {limit}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <Tabs value={modelViewMode} onValueChange={(value: string) => setModelViewMode(value as "chart" | "table")}>
-          <TabsList aria-label={t("viewModeAria")}>
-            <TabsTrigger value="table" className="flex-none px-3">
-              {t("tableView")}
-            </TabsTrigger>
-            <TabsTrigger value="chart" className="flex-none px-3">
-              {t("chartView")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <Segmented
+          label={t("modelCountAria")}
+          value={String(topModelsLimit)}
+          options={LIMIT_OPTIONS}
+          onChange={(limit) => setTopModelsLimit(Number(limit))}
+        />
+        <Segmented label={t("viewModeAria")} value={modelViewMode} options={VIEW_OPTIONS} onChange={setModelViewMode} />
       </div>
       {modelViewMode === "chart" ? (
         <div className="relative max-h-[600px] overflow-y-auto">
