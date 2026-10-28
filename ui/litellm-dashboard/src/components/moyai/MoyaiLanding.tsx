@@ -171,7 +171,8 @@ function LogoWall({ title, items, footnote }: { title: string; items: LogoItem[]
   );
 }
 
-function GithubCta({ label = "Star Moyai on GitHub" }: { label?: string }) {
+function GithubCta({ label }: { label?: string }) {
+  const t = useTranslations("moyai");
   return (
     <a
       href={MOYAI_GITHUB_URL}
@@ -180,7 +181,7 @@ function GithubCta({ label = "Star Moyai on GitHub" }: { label?: string }) {
       className={`${styles.cta} group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-base font-semibold text-[#05070d] transition-transform hover:scale-[1.03]`}
     >
       <Github className="size-5" />
-      <span>{label}</span>
+      <span>{label ?? t("githubCta")}</span>
       <Star className="size-4 fill-[#ffb98a] text-[#ffb98a] transition-transform group-hover:rotate-[72deg]" />
     </a>
   );

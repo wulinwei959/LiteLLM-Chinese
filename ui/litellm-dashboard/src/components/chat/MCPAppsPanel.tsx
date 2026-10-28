@@ -348,8 +348,8 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
   const emptyStateText = () => {
     if (servers.length === 0) {
       return connectMode
-        ? "No MCP servers are available to this connection yet. Ask an admin to grant your user or team access."
-        : "No MCP servers configured. Add servers in Tools -> MCP Servers.";
+        ? t("appsPanel.noServersAvailable")
+        : t("appsPanel.noServersConfigured");
     }
     return activeTab === "connected" ? t("appsPanel.noConnectedServers") : t("appsPanel.noSearchMatches");
   };
@@ -446,7 +446,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
           )}
           <div className="flex-1">
             <h2 className="m-0 mb-1 text-[22px] font-bold text-foreground">{name}</h2>
-            <p className="m-0 text-sm text-muted-foreground">{detailServer.description ?? "MCP server"}</p>
+            <p className="m-0 text-sm text-muted-foreground">{detailServer.description ?? t("appsPanel.serverFallback")}</p>
           </div>
           {renderDetailAction()}
         </div>
@@ -516,10 +516,10 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
             )}
           </div>
           {connectMode ? (
-            <p className="m-0 text-[13px] text-muted-foreground">Click a server to see its tools and connect</p>
+            <p className="m-0 text-[13px] text-muted-foreground">{t("appsPanel.subtitleConnect")}</p>
           ) : (
             <div className="flex items-center gap-3">
-              <p className="m-0 text-[13px] text-muted-foreground">Browse tools, authenticate once, use in chat</p>
+              <p className="m-0 text-[13px] text-muted-foreground">{t("appsPanel.subtitleBrowse")}</p>
               {loadingCounts ? (
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin" />

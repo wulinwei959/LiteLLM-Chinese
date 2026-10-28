@@ -179,7 +179,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
         <p className="text-sm text-muted-foreground m-0">
           View your virtual keys and spend
           {premiumUser &&
-            ". Rotate keys to generate new credentials while optionally keeping the old key valid during a grace period"}
+            t("keysPanel.rotateHint")}
         </p>
       </div>
 
@@ -192,7 +192,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                 <TableHead className={cn("text-xs font-semibold uppercase tracking-wide", NUMERIC_CELL_CLASS)}>
                   Spend
                 </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">Expires</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">Created</TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />
@@ -274,7 +274,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                     </TableCell>
                     {premiumUser && (
                       <TableCell className="text-right">
-                        <Button variant="outline" size="xs" onClick={() => openRotateModal(record)} title="Rotate key">
+                        <Button variant="outline" size="xs" onClick={() => openRotateModal(record)} title={t("keysPanel.rotateTooltip")}>
                           <RefreshCw className="h-3 w-3" />
                           Rotate
                         </Button>

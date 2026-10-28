@@ -150,7 +150,7 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
           <Link className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
           <p className="m-0">{t("credentialsPanel.emptyTitle")}</p>
           <p className="m-0 mt-1 text-xs">
-            Go to <span className="font-medium">Integrations</span> and click{" "}
+            Go to <span className="font-medium">{t("shell.navIntegrations")}</span> and click{" "}
             <span className="font-medium">Connect</span> to authorize an MCP server
           </p>
         </div>

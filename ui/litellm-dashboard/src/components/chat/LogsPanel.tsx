@@ -158,9 +158,9 @@ function LogsTable({ rows, onRowClick }: { rows: LogRow[]; onRowClick: (row: Log
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="text-[11px] font-medium uppercase tracking-wide">Time</TableHead>
+            <TableHead className="text-[11px] font-medium uppercase tracking-wide">{t("logsPanel.colTime")}</TableHead>
             <TableHead className="text-[11px] font-medium uppercase tracking-wide">{t("logsPanel.colModel")}</TableHead>
-            <TableHead className="text-[11px] font-medium uppercase tracking-wide">Status</TableHead>
+            <TableHead className="text-[11px] font-medium uppercase tracking-wide">{commonT("status")}</TableHead>
             <TableHead className="text-right text-[11px] font-medium uppercase tracking-wide">{t("logsPanel.colTokens")}</TableHead>
             <TableHead className="text-right text-[11px] font-medium uppercase tracking-wide">{t("logsPanel.colDuration")}</TableHead>
             <TableHead className="text-right text-[11px] font-medium uppercase tracking-wide">{t("logsPanel.colCost")}</TableHead>
@@ -234,7 +234,7 @@ function LogDetailDialog({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Request</div>
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("logsPanel.sectionRequest")}</div>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : (
@@ -242,7 +242,7 @@ function LogDetailDialog({
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Response</div>
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("logsPanel.sectionResponse")}</div>
               {isLoading ? <Skeleton className="h-16 w-full" /> : <JsonBlock value={details?.response} />}
             </div>
           </div>
