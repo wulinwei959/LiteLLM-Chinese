@@ -15044,7 +15044,22 @@
       "workspaceLinked": "已关联的工作区",
       "virtualKeyIssued": "已签发的虚拟密钥",
       "modelsAvailable": "个模型可通过 LiteLLM 使用"
-    }
+    },
+    "homeWhatCreating": "我们要创建什么？",
+    "homeWhatAreWe": "我们要",
+    "homeBuilding": "创建什么？",
+    "homeRecentChats": "最近聊天",
+    "homeNoRecentChats": "此浏览器还没有最近聊天",
+    "homeStartWithAPrompt": "从提示词开始",
+    "starterReviewCodeLabel": "审查代码",
+    "starterReviewCodeDetail": "找出边界情况",
+    "starterReviewCodePrompt": "帮我审查改动中的 bug 与可改进之处。",
+    "starterFixBugLabel": "修复 bug",
+    "starterFixBugDetail": "追查到问题根源",
+    "starterFixBugPrompt": "帮我调查并修复这个 bug：",
+    "starterPlanFeatureLabel": "规划功能",
+    "starterPlanFeatureDetail": "把下一个改动讲清楚",
+    "starterPlanFeaturePrompt": "帮我规划并实现这个功能："
   },
   "clientUsage": {
     "viewClientUsage": "查看客户端用量",

@@ -1,24 +1,9 @@
 import type { ReactNode } from "react";
 import { ArrowUpRight, Bug, Clock3, Code2, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import type { Conversation } from "../types";
 import "./moyai-chat.css";
-
-const starters = [
-  {
-    label: "Review code",
-    detail: "Find the edge cases",
-    prompt: "Review my changes for bugs and improvements.",
-    Icon: Code2,
-  },
-  { label: "Fix a bug", detail: "Trace it to the source", prompt: "Help me investigate and fix this bug: ", Icon: Bug },
-  {
-    label: "Plan a feature",
-    detail: "Make the next change clear",
-    prompt: "Help me plan and implement this feature: ",
-    Icon: ListChecks,
-  },
-];
 
 export default function MoyaiChatHome({
   children,
@@ -37,6 +22,22 @@ export default function MoyaiChatHome({
   onSelectConversation: (id: string) => void;
   onPrompt: (prompt: string) => void;
 }) {
+  const t = useTranslations("moyai");
+  const starters = [
+    {
+      label: t("starterReviewCodeLabel"),
+      detail: t("starterReviewCodeDetail"),
+      prompt: t("starterReviewCodePrompt"),
+      Icon: Code2,
+    },
+    { label: t("starterFixBugLabel"), detail: t("starterFixBugDetail"), prompt: t("starterFixBugPrompt"), Icon: Bug },
+    {
+      label: t("starterPlanFeatureLabel"),
+      detail: t("starterPlanFeatureDetail"),
+      prompt: t("starterPlanFeaturePrompt"),
+      Icon: ListChecks,
+    },
+  ];
   const recent = [...conversations].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3);
   return (
     <section className="moyai-chat-home">
@@ -45,10 +46,10 @@ export default function MoyaiChatHome({
         <header className="moyai-chat-home-header">
           <h1>
             {imageMode ? (
-              "What are we creating?"
+              t("homeWhatCreating")
             ) : (
               <>
-                What are we <span>building?</span>
+                {t("homeWhatAreWe")} <span>{t("homeBuilding")}</span>
               </>
             )}
           </h1>
@@ -56,11 +57,11 @@ export default function MoyaiChatHome({
         {children}
         <section className="moyai-chat-home-recent" aria-labelledby="recent-chats-heading">
           <div className="moyai-chat-home-recent-header">
-            <h2 id="recent-chats-heading">Recent chats</h2>
+            <h2 id="recent-chats-heading">{t("homeRecentChats")}</h2>
           </div>
           {recent.length === 0 && (
             <p className="text-muted-foreground" role="status">
-              No recent chats in this browser yet.
+              {t("homeNoRecentChats")}
             </p>
           )}
           <ul>
@@ -83,10 +84,10 @@ export default function MoyaiChatHome({
           <div
             className="moyai-chat-home-starters"
             role="group"
-            aria-label="Start with a prompt"
+            aria-label={t("homeStartWithAPrompt")}
             aria-hidden={Boolean(draft.trim())}
           >
-            <p className="moyai-chat-home-starters-heading">Start with a prompt</p>
+            <p className="moyai-chat-home-starters-heading">{t("homeStartWithAPrompt")}</p>
             {starters.map(({ label, detail, prompt, Icon }) => (
               <Button
                 key={label}

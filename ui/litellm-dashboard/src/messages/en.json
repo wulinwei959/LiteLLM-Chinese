@@ -15044,7 +15044,22 @@
       "workspaceLinked": "Workspace linked",
       "virtualKeyIssued": "Virtual key issued",
       "modelsAvailable": "models available through LiteLLM"
-    }
+    },
+    "homeWhatCreating": "What are we creating?",
+    "homeWhatAreWe": "What are we",
+    "homeBuilding": "building?",
+    "homeRecentChats": "Recent chats",
+    "homeNoRecentChats": "No recent chats in this browser yet.",
+    "homeStartWithAPrompt": "Start with a prompt",
+    "starterReviewCodeLabel": "Review code",
+    "starterReviewCodeDetail": "Find the edge cases",
+    "starterReviewCodePrompt": "Review my changes for bugs and improvements.",
+    "starterFixBugLabel": "Fix a bug",
+    "starterFixBugDetail": "Trace it to the source",
+    "starterFixBugPrompt": "Help me investigate and fix this bug: ",
+    "starterPlanFeatureLabel": "Plan a feature",
+    "starterPlanFeatureDetail": "Make the next change clear",
+    "starterPlanFeaturePrompt": "Help me plan and implement this feature: "
   },
   "clientUsage": {
     "viewClientUsage": "View client usage",
