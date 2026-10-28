@@ -1,10 +1,11 @@
 import { observeResponseHeaders, type ResponseHeadersListener } from "@/lib/http/observeResponseHeaders";
+import { createModuleTranslator } from "@/lib/i18n/moduleTranslator";
 import openai from "openai";
+import type { ResponseFunctionToolCall, ResponseInputItem } from "openai/resources/responses/responses";
 import { MessageType } from "../chat_ui/types";
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
 import { getGatewayBaseUrl, getProxyBaseUrl } from "@/components/networking";
 import { toast } from "@/lib/toast";
-import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 import { parseUsageCost } from "./usage_cost";
 import { buildPlaygroundHeaders, type CustomHeaders } from "./request_headers";
@@ -18,6 +19,10 @@ import {
 } from "./code_interpreter_handler";
 
 export type { CodeInterpreterResult } from "./code_interpreter_handler";
+
+export interface ResponsesMessage extends MessageType {
+  mcpEvents?: MCPEvent[];
+}
 
 interface ResponseOutputPart {
   type?: string;
@@ -63,8 +68,7 @@ const responseAsEvents = (response: NonStreamedResponse): SynthesizedResponseEve
 };
 
 export async function makeOpenAIResponsesRequest(
-  t: PlaygroundTranslator,
-  messages: MessageType[],
+  messages: ResponsesMessage[],
   updateTextUI: (role: string, delta: string, model?: string) => void,
   selectedModel: string,
   accessToken: string | null,
@@ -92,6 +96,7 @@ export async function makeOpenAIResponsesRequest(
   customHeaders?: CustomHeaders,
   onResponseHeaders?: ResponseHeadersListener,
 ) {
+  const t = createModuleTranslator("playground");
   if (!accessToken) {
     throw new Error(t("llmCalls.virtualKeyRequired"));
   }
@@ -123,22 +128,32 @@ export async function makeOpenAIResponsesRequest(
     let firstTokenReceived = false;
     let servedFromResponseCache = false;
 
-    // Format messages for the API
-    const formattedInput = messages.map((message) => {
-      // If content is already an array (multimodal), use it directly
-      if (Array.isArray(message.content)) {
-        return {
-          role: message.role,
-          content: message.content,
-          type: "message",
-        };
-      }
-      // Otherwise, wrap text content in the expected format
-      return {
-        role: message.role,
-        content: message.content,
-        type: "message",
-      };
+    const formattedInput = messages.flatMap((message) => {
+      const mcpInput =
+        message.role === "assistant"
+          ? (message.mcpEvents ?? []).flatMap<ResponseFunctionToolCall | ResponseInputItem.FunctionCallOutput>(
+              (event) => {
+                const item = event.item;
+                const callId = item?.id || event.item_id;
+                if (event.type !== "response.output_item.done" || item?.type !== "mcp_call" || !callId) {
+                  return [];
+                }
+                if (!item.name || typeof item.arguments !== "string" || typeof item.output !== "string") {
+                  return [];
+                }
+                return [
+                  { type: "function_call", call_id: callId, name: item.name, arguments: item.arguments },
+                  { type: "function_call_output", call_id: callId, output: item.output },
+                ];
+              },
+            )
+          : [];
+      return [
+        ...mcpInput,
+        ...(mcpInput.length > 0 && message.content === ""
+          ? []
+          : [{ role: message.role, content: message.content, type: "message" }]),
+      ];
     });
 
     // Build tools array

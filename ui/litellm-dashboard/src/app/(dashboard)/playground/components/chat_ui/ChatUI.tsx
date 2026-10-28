@@ -881,7 +881,10 @@ const ChatUI: React.FC<ChatUIProps> = ({
       displayMessage = createDisplayMessage(audioMessage, false);
     } else if (endpointType === EndpointType.MCP && selectedMCPDirectTool) {
       // For MCP direct mode, show tool name and arguments from form
-      const mcpMessage = t("chat.mcpTool", { tool: selectedMCPDirectTool, args: JSON.stringify(mcpToolArguments, null, 2) });
+      const mcpMessage = t("chat.mcpTool", {
+        tool: selectedMCPDirectTool,
+        args: JSON.stringify(mcpToolArguments, null, 2),
+      });
       displayMessage = createDisplayMessage(mcpMessage, false);
     } else {
       displayMessage = createDisplayMessage(inputMessage, false);
@@ -1003,7 +1006,6 @@ const ChatUI: React.FC<ChatUIProps> = ({
           }
 
           await makeOpenAIResponsesRequest(
-            t,
             apiChatHistory,
             (role, delta, model) => updateTextUI(role, delta, model),
             selectedModel,
@@ -1278,7 +1280,9 @@ const ChatUI: React.FC<ChatUIProps> = ({
                     }}
                   >
                     <SelectTrigger className="w-full" size="sm" aria-label={t("config.virtualKeySource")}>
-                      <SelectValue>{apiKeySource === "custom" ? t("config.customKey") : t("config.session")}</SelectValue>
+                      <SelectValue>
+                        {apiKeySource === "custom" ? t("config.customKey") : t("config.session")}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="session">{t("config.session")}</SelectItem>
@@ -1420,7 +1424,9 @@ const ChatUI: React.FC<ChatUIProps> = ({
                             <Settings className="size-3.5" />
                           </PopoverTrigger>
                           <PopoverContent side="right" className="w-auto p-0">
-                            <div className="border-b border-border px-4 py-2 text-sm font-medium">{t("config.modelSettings")}</div>
+                            <div className="border-b border-border px-4 py-2 text-sm font-medium">
+                              {t("config.modelSettings")}
+                            </div>
                             <AdditionalModelSettings
                               showAdvancedParams={isChatModel()}
                               temperature={temperature}
@@ -1452,9 +1458,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                           >
                             <Settings className="size-3.5" />
                           </TooltipTrigger>
-                          <TooltipContent>
-                            {t("config.advancedParamsUnavailable")}
-                          </TooltipContent>
+                          <TooltipContent>{t("config.advancedParamsUnavailable")}</TooltipContent>
                         </Tooltip>
                       )}
                     </div>
@@ -1499,9 +1503,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       }))}
                     />
                     {agentInfo.length === 0 && (
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        {t("config.noAgentsFound")}
-                      </p>
+                      <p className="mt-2 text-xs text-muted-foreground">{t("config.noAgentsFound")}</p>
                     )}
                   </div>
                 )}
@@ -1524,9 +1526,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       <ListPlus className="mr-2 size-4" aria-hidden="true" /> {t("config.customHeaders")}
                     </label>
                     <KeyValueInput value={customHeaderPairs} onChange={setCustomHeaderPairs} />
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {t("config.customHeadersHint")}
-                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">{t("config.customHeadersHint")}</p>
                   </div>
                 )}
 
@@ -1865,7 +1865,10 @@ const ChatUI: React.FC<ChatUIProps> = ({
 
                     {isLoading && (
                       <div className="my-4 flex items-center justify-center">
-                        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label={commonT("loading")} />
+                        <Loader2
+                          className="size-6 animate-spin text-muted-foreground"
+                          aria-label={commonT("loading")}
+                        />
                       </div>
                     )}
                     {chatHistory.length > 0 && <div aria-hidden className="h-[calc(100%-3rem)]" />}
@@ -1898,9 +1901,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         >
                           <ImageIcon className="mb-2 size-6 text-muted-foreground" aria-hidden="true" />
                           <p className="text-sm">{t("chat.imageUpload.clickOrDrag")}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {t("chat.imageUpload.formats")}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{t("chat.imageUpload.formats")}</p>
                           <input
                             type="file"
                             accept={IMAGE_EDIT_ACCEPT}
@@ -1977,9 +1978,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         >
                           <Volume2 className="mb-2 size-6 text-muted-foreground" aria-hidden="true" />
                           <p className="text-sm">{t("chat.audioUpload.clickOrDrag")}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {t("chat.audioUpload.formats")}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{t("chat.audioUpload.formats")}</p>
                           <input
                             type="file"
                             accept={AUDIO_ACCEPT}
@@ -2053,20 +2052,18 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       </div>
                       {!isLoading && (
                         <div className="flex flex-wrap gap-2">
-                          {[
-                            t("chat.sampleSalesData"),
-                            t("chat.compareProvidersChart"),
-                            t("chat.pricingDataChart"),
-                          ].map((prompt, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs transition-colors hover:border-info/30 hover:bg-info/10 hover:text-info"
-                              onClick={() => setInputMessage(prompt)} // lgtm[js/xss-through-dom]
-                            >
-                              {prompt}
-                            </button>
-                          ))}
+                          {[t("chat.sampleSalesData"), t("chat.compareProvidersChart"), t("chat.pricingDataChart")].map(
+                            (prompt, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs transition-colors hover:border-info/30 hover:bg-info/10 hover:text-info"
+                                onClick={() => setInputMessage(prompt)} // lgtm[js/xss-through-dom]
+                              >
+                                {prompt}
+                              </button>
+                            ),
+                          )}
                         </div>
                       )}
                     </div>
@@ -2085,7 +2082,11 @@ const ChatUI: React.FC<ChatUIProps> = ({
                     suggestions={
                       endpointType === EndpointType.A2A_AGENTS
                         ? [t("chat.suggestions.a2a.0"), t("chat.suggestions.a2a.1"), t("chat.suggestions.a2a.2")]
-                        : [t("chat.suggestions.default.0"), t("chat.suggestions.default.1"), t("chat.suggestions.default.2")]
+                        : [
+                            t("chat.suggestions.default.0"),
+                            t("chat.suggestions.default.1"),
+                            t("chat.suggestions.default.2"),
+                          ]
                     }
                     onSuggestionSelect={setInputMessage}
                     tools={

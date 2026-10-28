@@ -1,8 +1,8 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../tests/test-utils";
 import ConnectFlowBanner from "./ConnectFlowBanner";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const locationDescriptor = Object.getOwnPropertyDescriptor(window, "location")!;
 
@@ -36,7 +36,6 @@ it("carries a challenged scope through the connect button into vendor authorizat
         server_name: "Scoped tools",
         connected: false,
         requested_scopes: ["tools.write"],
-        servers: null,
       }}
       accessToken="caller"
       onConnected={vi.fn()}
@@ -47,7 +46,7 @@ it("carries a challenged scope through the connect button into vendor authorizat
   expect(new URL(window.location.href, window.location.origin).pathname).toBe(
     "/v1/mcp/server/oauth/server-1/authorize",
   );
-  expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
 });
 
@@ -78,7 +77,6 @@ it("starts consent for the next upstream in the same connect flow", async () => 
     server_name: "First",
     connected: false,
     requested_scopes: ["first.write"],
-    servers: null,
   };
   const { rerender } = renderWithProviders(<ConnectFlowBanner {...props} flow={first} />);
   await waitFor(() => expect(window.location.href).toContain("scope=first.write"));
@@ -90,5 +88,5 @@ it("starts consent for the next upstream in the same connect flow", async () => 
   );
   await waitFor(() => expect(window.location.href).toContain("scope=second.write"));
   expect(new URL(window.location.href, window.location.origin).pathname).toBe("/v1/mcp/server/oauth/second/authorize");
-  expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
 });

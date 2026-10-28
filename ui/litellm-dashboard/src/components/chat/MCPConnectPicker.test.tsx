@@ -1,11 +1,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { renderWithProviders } from "../../../tests/test-utils";
 import MCPConnectPicker from "./MCPConnectPicker";
 import { fetchMCPServers } from "../networking";
 import type { MCPServer } from "../mcp_tools/types";
 import { setServerRootPath } from "@/lib/serverRootPath";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("../networking", () => ({
   fetchMCPServers: vi.fn(),

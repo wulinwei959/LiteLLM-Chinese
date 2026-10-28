@@ -8234,6 +8234,7 @@
     "connectFlow": {
       "fallbackClient": "该应用",
       "fallbackServer": "所请求的 MCP 服务器",
+      "connectServer": "连接{server}",
       "failedTitle": "无法继续连接",
       "failedBody": "网关无法验证此次连接。取消即可返回{client}。",
       "unscopedTitle": "将你的 MCP 服务器连接到{client}",
@@ -8252,8 +8253,8 @@
     },
     "appsPanel": {
       "title": "MCP 服务器",
-      "beta": "Beta 版",
-      "loadingTools": "正在加载工具...",
+      "beta": "测试版",
+      "loadingTools": "正在加载工具…",
       "searchPlaceholder": "搜索服务器...",
       "connect": "连接",
       "connecting": "正在连接…",
@@ -8292,7 +8293,10 @@
       "stopped": "已停止",
       "toolCall": "工具调用",
       "arguments": "参数",
-      "result": "结果"
+      "result": "结果",
+      "openImage": "打开图片",
+      "imageUnavailable": "—— 图片不可用。新建聊天并附加已保存的副本即可再次使用。",
+      "creatingImage": "正在生成图片…"
     },
     "keysPanel": {
       "title": "你的 API 密钥",
@@ -8344,7 +8348,8 @@
       "requestsCount": "{count, number} 次请求",
       "pageOf": " · 第 {page} 页，共 {totalPages} 页",
       "previousPage": "上一页",
-      "nextPage": "下一页"
+      "nextPage": "下一页",
+      "colStatus": "状态"
     },
     "conversationList": {
       "newTitle": "新对话",
@@ -8359,7 +8364,13 @@
       "searchPlaceholder": "搜索会话…",
       "noSearchResults": "未找到会话",
       "empty": "还没有会话",
-      "emptyHint": "在上方开始新对话"
+      "emptyHint": "在上方开始新对话",
+      "delete": "删除",
+      "noChatsYet": "这里还没有聊天。",
+      "searchConversations": "搜索会话",
+      "ariaConversationTitle": "会话标题",
+      "ariaRename": "重命名 {title}",
+      "ariaDelete": "删除 {title}"
     },
     "credentialsPanel": {
       "title": "应用凭证",
@@ -8377,7 +8388,10 @@
       "expired": "已过期",
       "expiresInDays": "{count, number} 天后过期",
       "expiresInHours": "{count, number} 小时后过期",
-      "expiresInMinutes": "{count, number} 分钟后过期"
+      "expiresInMinutes": "{count, number} 分钟后过期",
+      "colStatus": "状态",
+      "colActions": "操作",
+      "connectHint": "前往{integrations}并点击{connect}以授权 MCP 服务器"
     },
     "usagePanel": {
       "title": "你的用量",
@@ -8390,17 +8404,33 @@
       "failedCount": "{count, number} 次失败",
       "empty": "该时间段没有用量数据",
       "dailySpend": "每日花费",
-      "dailyRequests": "每日请求"
+      "dailyRequests": "每日请求",
+      "noUsageData": "此期间没有用量数据"
     },
     "shell": {
-      "betaWarning": "这是 pre-v0 阶段的功能，请勿在生产环境使用，它可能随时变化。欢迎在<link>这里</link>分享反馈。",
+      "betaWarning": "这是 v0 之前的预览功能，请勿在生产环境使用，内容可能随时变化",
       "newChat": "新建对话",
       "navChats": "对话",
       "navIntegrations": "集成",
       "navCredentials": "凭证",
       "navApiKeys": "API 密钥",
       "navLogs": "日志",
-      "navUsage": "用量"
+      "navUsage": "用量",
+      "ariaSearchChats": "搜索聊天",
+      "searchTitle": "搜索聊天（⌘K）",
+      "ariaChatWorkspace": "聊天工作区",
+      "navModels": "模型",
+      "workspace": "工作区",
+      "shareFeedback": "分享反馈",
+      "ariaOrgLogo": "组织徽标",
+      "settings": "设置",
+      "signOut": "退出登录",
+      "ariaChatNavigation": "聊天导航",
+      "ariaOpenNavigation": "打开聊天导航",
+      "openSidebar": "打开侧栏",
+      "closeSidebar": "关闭侧栏",
+      "litellmChat": "LiteLLM 聊天",
+      "navDescription": "会话与聊天工作区导航"
     },
     "page": {
       "suggestions": {
@@ -8424,6 +8454,23 @@
       "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。",
       "partialResponseSaved": "[出现错误，部分回复已保存。]",
       "connectedTools": "{count, plural, other {# 个工具已连接}}"
+    },
+    "attachments": {
+      "chooseFileError": "请选择图片、PDF、Word（.docx）、Excel（.xlsx）、文本或代码文件。",
+      "chooseImageError": "请选择 PNG、JPEG、WebP 或 GIF 图片。",
+      "noImageReturned": "模型没有返回图片。请更换提示词或图片模型。",
+      "storageBlocked": "附件存储被其他浏览器标签页占用。",
+      "storageUnavailable": "附件存储不可用。",
+      "deleteFailed": "无法删除已保存的附件。",
+      "restoreFailed": "无法恢复已保存的附件。",
+      "saveFailed": "无法保存附件。",
+      "deleteCanceled": "已取消删除已保存的附件。",
+      "restoreCanceled": "已取消恢复已保存的附件。",
+      "saveCanceled": "已取消保存附件。"
+    },
+    "composer": {
+      "message": "消息",
+      "stopRequest": "停止请求"
     }
   },
   "playground": {
@@ -14187,8 +14234,10 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "对话",
+      "chatDescription": "面向 LLM、MCP 和智能体的聊天界面",
       "chatDisabledHint": "管理员可在设置中启用",
-      "moyaiDescription": "云端编码智能体"
+      "moyaiDescription": "云端编码智能体",
+      "ariaSwitchWorkspace": "切换工作区，当前：{current}"
     },
     "docsLink": {
       "docs": "文档"
@@ -14785,8 +14834,6 @@
     "group": {
       "ignoredAndSnoozed": "已忽略和已静音",
       "critical": "严重",
-      "warning": "警告",
-      "critical": "严重",
       "warning": "警告"
     },
     "title": {
@@ -14990,6 +15037,8 @@
     "fullWalkthrough": "在 GitHub 上看完整教程",
     "quickConnect": "快速连接",
     "quickConnectTitle": "快速连接 Moyai",
+    "connect": "连接",
+    "connecting": "正在连接",
     "moyaiUrl": "Moyai 地址",
     "urlPlaceholder": "https://moyai.your-company.com",
     "confirmHint": "你会在 Moyai 工作区里以管理员身份确认，然后直接回到这里",
@@ -15017,7 +15066,22 @@
       "workspaceLinked": "已关联的工作区",
       "virtualKeyIssued": "已签发的虚拟密钥",
       "modelsAvailable": "个模型可通过 LiteLLM 使用"
-    }
+    },
+    "homeWhatCreating": "我们要创建什么？",
+    "homeWhatAreWe": "我们要",
+    "homeBuilding": "创建什么？",
+    "homeRecentChats": "最近聊天",
+    "homeNoRecentChats": "此浏览器还没有最近聊天",
+    "homeStartWithAPrompt": "从提示词开始",
+    "starterReviewCodeLabel": "审查代码",
+    "starterReviewCodeDetail": "找出边界情况",
+    "starterReviewCodePrompt": "帮我审查改动中的 bug 与可改进之处。",
+    "starterFixBugLabel": "修复 bug",
+    "starterFixBugDetail": "追查到问题根源",
+    "starterFixBugPrompt": "帮我调查并修复这个 bug：",
+    "starterPlanFeatureLabel": "规划功能",
+    "starterPlanFeatureDetail": "把下一个改动讲清楚",
+    "starterPlanFeaturePrompt": "帮我规划并实现这个功能："
   },
   "clientUsage": {
     "viewClientUsage": "查看客户端用量",

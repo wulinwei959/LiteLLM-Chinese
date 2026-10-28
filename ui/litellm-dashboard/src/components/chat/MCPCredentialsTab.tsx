@@ -37,10 +37,10 @@ function relativeTime(commonT: CommonTranslator, isoString: string | null | unde
     const diffSec = Math.floor(diffMs / 1000);
     if (diffSec < 60) return commonT("justNow");
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return commonT("minutesAgo", { count: diffMin });
+    if (diffMin < 60) return `${diffMin}m ago`;
     const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return commonT("hoursAgo", { count: diffHr });
-    return commonT("daysAgo", { count: Math.floor(diffHr / 24) });
+    if (diffHr < 24) return `${diffHr}h ago`;
+    return `${Math.floor(diffHr / 24)}d ago`;
   } catch {
     return "";
   }
@@ -121,10 +121,10 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
                   {t("credentialsPanel.colConnected")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  {commonT("status")}
+                  {t("credentialsPanel.colStatus")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground text-right">
-                  {commonT("actions")}
+                  {t("credentialsPanel.colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -153,8 +153,9 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
           <Link className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
           <p className="m-0">{t("credentialsPanel.emptyTitle")}</p>
           <p className="m-0 mt-1 text-xs">
-            {t.rich("credentialsPanel.emptyHint", {
-              b: (chunks) => <span className="font-medium">{chunks}</span>,
+            {t("credentialsPanel.connectHint", {
+              integrations: t("shell.navIntegrations"),
+              connect: t("appsPanel.connect"),
             })}
           </p>
         </div>
@@ -170,10 +171,10 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
                   {t("credentialsPanel.colConnected")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  {commonT("status")}
+                  {t("credentialsPanel.colStatus")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground text-right">
-                  {commonT("actions")}
+                  {t("credentialsPanel.colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>

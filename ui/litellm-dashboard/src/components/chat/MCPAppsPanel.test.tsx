@@ -1,9 +1,9 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LocaleProvider } from "@/contexts/LocaleContext";
+import { QueryClient } from "@tanstack/react-query";
 import MCPAppsPanel from "./MCPAppsPanel";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { fetchMCPServers, listMCPTools } from "../networking";
 import type { MCPServer } from "../mcp_tools/types";
 import { setServerRootPath } from "@/lib/serverRootPath";
@@ -40,13 +40,7 @@ const servers = [
 ] as MCPServer[];
 
 const renderPanel = () =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel accessToken="tok" selectedServers={[]} onChange={vi.fn()} />
-      </LocaleProvider>
-    </QueryClientProvider>,
-  );
+  renderWithProviders(<MCPAppsPanel accessToken="tok" selectedServers={[]} onChange={vi.fn()} />);
 
 describe("MCPAppsPanel logos", () => {
   afterEach(() => {
@@ -113,17 +107,8 @@ const connectServers = [
 ] as MCPServer[];
 
 const renderConnectPanel = (connectMode: boolean, selectedServers: string[] = []) =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel
-          accessToken="tok"
-          selectedServers={selectedServers}
-          onChange={vi.fn()}
-          connectMode={connectMode}
-        />
-      </LocaleProvider>
-    </QueryClientProvider>,
+  renderWithProviders(
+    <MCPAppsPanel accessToken="tok" selectedServers={selectedServers} onChange={vi.fn()} connectMode={connectMode} />,
   );
 
 describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
@@ -200,20 +185,8 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
       { server_id: "s-drop", server_name: "revoked_srv", auth_type: "none", connected_app_reachable: reachable },
     ] as MCPServer[];
 
-  const ConnectPanel = ({
-    token,
-    onChange,
-    client,
-  }: {
-    token: string;
-    onChange: (servers: string[]) => void;
-    client: QueryClient;
-  }) => (
-    <QueryClientProvider client={client}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel accessToken={token} selectedServers={[]} onChange={onChange} connectMode />
-      </LocaleProvider>
-    </QueryClientProvider>
+  const ConnectPanel = ({ token, onChange }: { token: string; onChange: (servers: string[]) => void }) => (
+    <MCPAppsPanel accessToken={token} selectedServers={[]} onChange={onChange} connectMode />
   );
 
   const newClient = () => new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -223,12 +196,12 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     vi.mocked(listMCPTools).mockResolvedValue({ tools: [] });
 
     const client = newClient();
-    const { rerender } = render(<ConnectPanel token="tok" onChange={vi.fn()} client={client} />);
+    const { rerender } = renderWithProviders(<ConnectPanel token="tok" onChange={vi.fn()} />);
 
     fireEvent.click(await screen.findByText("revoked_srv"));
     expect(await screen.findByRole("heading", { name: "revoked_srv" })).toBeInTheDocument();
 
-    rerender(<ConnectPanel token="tok-refreshed" onChange={vi.fn()} client={client} />);
+    rerender(<ConnectPanel token="tok-refreshed" onChange={vi.fn()} />);
 
     await waitFor(() => expect(screen.queryByRole("heading", { name: "revoked_srv" })).not.toBeInTheDocument());
     expect(screen.queryByRole("button", { name: "连接" })).not.toBeInTheDocument();
@@ -242,7 +215,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     const onChange = vi.fn();
     const client = newClient();
-    const { rerender } = render(<ConnectPanel token="tok" onChange={onChange} client={client} />);
+    const { rerender } = renderWithProviders(<ConnectPanel token="tok" onChange={onChange} />);
 
     fireEvent.click(await screen.findByText("revoked_srv"));
     expect(await screen.findByRole("heading", { name: "revoked_srv" })).toBeInTheDocument();
@@ -251,7 +224,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     vi.mocked(listMCPTools).mockImplementationOnce(() => new Promise((resolve) => (finishConnect = resolve)));
     fireEvent.click(screen.getByRole("button", { name: "连接" }));
 
-    rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} client={client} />);
+    rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} />);
     await waitFor(() => expect(screen.queryByRole("heading", { name: "revoked_srv" })).not.toBeInTheDocument());
 
     await act(async () => {
@@ -272,7 +245,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     const onChange = vi.fn();
     const client = newClient();
-    const { rerender } = render(<ConnectPanel token="tok" onChange={onChange} client={client} />);
+    const { rerender } = renderWithProviders(<ConnectPanel token="tok" onChange={onChange} />);
 
     fireEvent.click(await screen.findByText("revoked_srv"));
     expect(await screen.findByRole("heading", { name: "revoked_srv" })).toBeInTheDocument();
@@ -281,7 +254,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     vi.mocked(listMCPTools).mockImplementationOnce(() => new Promise((resolve) => (finishConnect = resolve)));
     fireEvent.click(screen.getByRole("button", { name: "连接" }));
 
-    rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} client={client} />);
+    rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} />);
 
     await act(async () => {
       finishRefetch(revocable(false));
@@ -300,8 +273,8 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     vi.mocked(listMCPTools).mockResolvedValue({ tools: [] });
 
     const client = newClient();
-    const { rerender } = render(<ConnectPanel token="tok" onChange={vi.fn()} client={client} />);
-    rerender(<ConnectPanel token="tok-refreshed" onChange={vi.fn()} client={client} />);
+    const { rerender } = renderWithProviders(<ConnectPanel token="tok" onChange={vi.fn()} />);
+    rerender(<ConnectPanel token="tok-refreshed" onChange={vi.fn()} />);
 
     expect(await screen.findByText("reachable_srv")).toBeInTheDocument();
 

@@ -197,7 +197,6 @@ export default function ChatConversationPage() {
 
       try {
         await makeOpenAIResponsesRequest(
-          llmT,
           history,
           (_role: string, chunk: string) => {
             accumulatedContent += chunk;

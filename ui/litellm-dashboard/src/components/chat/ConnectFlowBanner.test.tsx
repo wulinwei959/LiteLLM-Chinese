@@ -48,7 +48,7 @@ describe("ConnectFlowBanner", () => {
     expect(form).toHaveAttribute("action", "https://gateway.example.com/authorize/complete");
     expect(screen.getByDisplayValue("flow-handle-123")).toHaveAttribute("name", "flow");
     expect(form.innerHTML).not.toContain("token");
-    expect(screen.getByRole("button", { name: /完成连接/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "完成连接" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "取消" })).not.toBeInTheDocument();
   });
 
@@ -75,10 +75,10 @@ describe("ConnectFlowBanner", () => {
     );
 
     expect(screen.getByText("允许https://claude.ai使用alpha, beta")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Connect alpha" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Connect beta" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接alpha" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接beta" })).toBeInTheDocument();
     expect(startOAuthFlow).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
 
     rerender(

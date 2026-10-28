@@ -22,12 +22,12 @@ describe("MoyaiLanding", () => {
 
     const input = await screen.findByLabelText("Moyai 地址");
     fireEvent.change(input, { target: { value: "javascript:alert(1)" } });
-    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
+    fireEvent.click(screen.getByRole("button", { name: "连接" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("http 或 https");
     expect(onQuickConnect).not.toHaveBeenCalled();
 
     fireEvent.change(input, { target: { value: "  https://moyai.example.com/  " } });
-    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
+    fireEvent.click(screen.getByRole("button", { name: "连接" }));
     expect(onQuickConnect).toHaveBeenCalledWith("https://moyai.example.com");
   });
 
@@ -42,14 +42,14 @@ describe("MoyaiLanding", () => {
     renderWithProviders(<MoyaiLanding />);
 
     expect(screen.getByRole("link", { name: /在 GitHub 上为 Moyai 点星/ })).toHaveAttribute("href", MOYAI_GITHUB_URL);
-    expect(screen.getByRole("link", { name: /在 GitHub 上看完整教程/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
+    expect(screen.getByRole("link", { name: /观看演示/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
     expect(screen.getByRole("link", { name: /读发布文章/ })).toHaveAttribute("href", MOYAI_LAUNCH_POST_URL);
   });
 
   it("shows the GitHub fallback when the demo image fails to load", () => {
     renderWithProviders(<MoyaiLanding />);
 
-    const demoImg = screen.getByAltText(/Moyai 演示：/);
+    const demoImg = screen.getByAltText(/Moyai 演示/);
     fireEvent.error(demoImg);
 
     expect(screen.getByText("在 GitHub 上观看演示")).toBeInTheDocument();

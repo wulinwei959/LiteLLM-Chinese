@@ -85,7 +85,7 @@ export const OAuth2ConnectButton: React.FC<OAuth2ConnectButtonProps> = ({
           : "text-primary-foreground bg-primary cursor-pointer hover:bg-primary/90"
       }`}
     >
-      {loading ? "Connecting\u2026" : "Connect"}
+      {loading ? t("appsPanel.connecting") : t("appsPanel.connect")}
     </span>
   );
 };
@@ -273,7 +273,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
     try {
       const result = await listMCPTools(accessToken, server.server_id);
       if (result?.error) {
-        toast.warning(`Could not load tools for ${serverName}`);
+        toast.warning(t("appsPanel.loadToolsFailed", { server: serverName }));
         return;
       }
       if (connectableNow(server.server_id) === undefined) return;
@@ -281,7 +281,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
         onChange([...selectedServersRef.current, serverName]);
       }
     } catch {
-      toast.warning(`Could not load tools for ${serverName}`);
+      toast.warning(t("appsPanel.loadToolsFailed", { server: serverName }));
     } finally {
       setTogglingOn((prev) => {
         const next = new Set(prev);
@@ -516,14 +516,10 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
             )}
           </div>
           {connectMode ? (
-            <p className="m-0 text-[13px] text-muted-foreground">
-              {t("appsPanel.subtitleConnect")}
-            </p>
+            <p className="m-0 text-[13px] text-muted-foreground">{t("appsPanel.subtitleConnect")}</p>
           ) : (
             <div className="flex items-center gap-3">
-              <p className="m-0 text-[13px] text-muted-foreground">
-                {t("appsPanel.subtitleBrowse")}
-              </p>
+              <p className="m-0 text-[13px] text-muted-foreground">{t("appsPanel.subtitleBrowse")}</p>
               {loadingCounts ? (
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -614,7 +610,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-foreground truncate">{name}</div>
                   <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
-                    <span className="truncate">{server.description ?? "MCP server"}</span>
+                    <span className="truncate">{server.description ?? t("appsPanel.serverFallback")}</span>
                     {count !== undefined ? (
                       count > 0 ? (
                         <span className="shrink-0 flex items-center gap-1 text-muted-foreground">

@@ -132,7 +132,6 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
     case EndpointType.RESPONSES: {
       const continuing = chat.useApiSessionManagement && chat.responsesSessionId;
       return makeOpenAIResponsesRequest(
-        t,
         (continuing ? [userMessage] : [...textHistory(history), userMessage]) as MessageType[],
         (role, delta, servedModel) => chat.updateTextUI(role, delta, servedModel),
         model,

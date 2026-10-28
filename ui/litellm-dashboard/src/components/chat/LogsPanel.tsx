@@ -229,12 +229,10 @@ function LogDetailDialog({
               <div className="rounded-md border bg-card p-3">
                 <div className="mb-0.5 text-xs text-muted-foreground">{t("logsPanel.colTokens")}</div>
                 <div className="text-sm text-foreground">
-                  {formatTokens(log.total_tokens)} (
                   {commonT("tokensInAndOut", {
                     prompt: formatTokens(log.prompt_tokens),
                     completion: formatTokens(log.completion_tokens),
                   })}
-                  )
                 </div>
               </div>
               <div className="rounded-md border bg-card p-3">

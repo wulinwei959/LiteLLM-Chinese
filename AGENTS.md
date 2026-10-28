@@ -175,3 +175,17 @@ lint 预算计数、待接队列与活项清单。重测方法见
 - 在 `ui/litellm-dashboard` 里跑 prettier/eslint 要传当前目录相对路径，不要传仓库根相对路径（会报 No files matching）
 - 该项目的 vitest 没有 `--reporter=basic`，用默认或 `--reporter=dot`；全量 61 个失败文件整跑约 2.5 分钟，放后台等通知，不要 `sleep` 轮询
 - 批量翻面断言只替换"失败信息里测试实际查找的那条串"，再对到 `en.json` 同值在 `zh-CN.json` 的词条；正则形式的期望（`/edit settings/i` 等）抓不到，需按文件单独看；同一文案可能有多套译法，以组件实际使用的命名空间为准
+
+## Windows 迁移与跨层转义坑
+
+2026-10-28 的记录，来自 WSL 迁回 Windows 后的 chat/moyai 回贴收尾，逐条已验证，下回按规避写法做。
+
+- JS 正则的 `.` 不匹配 `\r`（行终止符）。CRLF 文件按 `\n` split 后每行尾部残留 `\r`，所有 `$` 锚定的正则全部静默失配（内容看着对、匹配为 0，当天门禁解析 121 条泄漏全部漏网就是这个）。跨层读文件先做 `replace(/\r\n/g, "\n")` 归一化再匹配，或逐行剥尾部 `\r`
+- PowerShell 与 wsl.exe 与 bash 的多层转义不可靠：内联 `node -e` 与 `bash -lc` 的嵌套引号、反斜杠反复失败且形态诡异。复杂操作一律写脚本文件（apply_patch 落到 D:\codex，WSL 侧经 /mnt/d 跑，Windows 侧直接 node 跑），脚本内每步带失败即抛的验证
+- 渲染层会解码 HTML 实体，补丁文本与工具输出里的 < 会被吃成 <。生成的代码里需要实体的字符串用 String.fromCharCode 码点构造，绝不手写实体
+- CRLF 文件上 apply_patch 报成功不代表落盘（ChatShell 的 hook 插入出现过一次静默丢失），关键写入立即用 node 按 JSON.stringify 字节级回读验证
+- exec 工具的默认 CWD 是注册的工作区根，该目录删除后所有命令孵化直接失败（目录名称无效 os error 267），每条命令显式传 workdir，并在应用里把会话工作区改挂到存活的目录
+- 权限配置在受限与完全访问之间切换时，执行身份随之切换（codexsandboxoffline 与 wulin），WSL 访问、文件写权限、凭据可见性全部跟着变。跨模式工作前先 whoami 确认身份再动手
+- spawnSync("npm") 在 Windows 报 ENOENT（要 npm.cmd 且 cmd 需 shell），更稳的做法是上游命令输出落文件后读文件，不让脚本自己 spawn 包管理器
+- git 的 github 代理配置（http.https://github.com/.proxy）是仓库本地的，重新克隆后必须重加，否则直连 github.com 超时；LAN Gitea 的凭据同理，新克隆要先配 credential helper 或凭据存储
+- 上游基线对象（66c8f5b1a9、cfe0100e1）fetch 一次后就留在本地对象库，回贴脚本直接 git show 本地引用即可，不再依赖任何外部镜像路径

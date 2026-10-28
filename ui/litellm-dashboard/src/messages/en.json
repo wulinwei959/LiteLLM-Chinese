@@ -8234,6 +8234,7 @@
     "connectFlow": {
       "fallbackClient": "the application",
       "fallbackServer": "the requested MCP server",
+      "connectServer": "Connect {server}",
       "failedTitle": "The connection cannot continue",
       "failedBody": "The gateway could not validate this connection. Cancel to return to {client}.",
       "unscopedTitle": "Connect your MCP servers to {client}",
@@ -8292,7 +8293,10 @@
       "stopped": "[stopped]",
       "toolCall": "Tool call",
       "arguments": "Arguments",
-      "result": "Result"
+      "result": "Result",
+      "openImage": "Open image",
+      "imageUnavailable": "— image unavailable. Start a new chat and attach a saved copy to use it again.",
+      "creatingImage": "Creating your image…"
     },
     "keysPanel": {
       "title": "Your API Keys",
@@ -8344,7 +8348,8 @@
       "requestsCount": "{count, plural, one {# request} other {# requests}}",
       "pageOf": " · Page {page} of {totalPages}",
       "previousPage": "Previous",
-      "nextPage": "Next"
+      "nextPage": "Next",
+      "colStatus": "Status"
     },
     "conversationList": {
       "newTitle": "New conversation",
@@ -8359,7 +8364,13 @@
       "searchPlaceholder": "Search conversations…",
       "noSearchResults": "No conversations found",
       "empty": "No conversations yet",
-      "emptyHint": "Start a new chat above"
+      "emptyHint": "Start a new chat above",
+      "delete": "Delete",
+      "noChatsYet": "No chats here yet.",
+      "searchConversations": "Search conversations",
+      "ariaConversationTitle": "Conversation title",
+      "ariaRename": "Rename {title}",
+      "ariaDelete": "Delete {title}"
     },
     "credentialsPanel": {
       "title": "App Credentials",
@@ -8377,7 +8388,10 @@
       "expired": "Expired",
       "expiresInDays": "Expires in {count, number}d",
       "expiresInHours": "Expires in {count, number}h",
-      "expiresInMinutes": "Expires in {count, number}m"
+      "expiresInMinutes": "Expires in {count, number}m",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "connectHint": "Go to {integrations} and click {connect} to authorize an MCP server"
     },
     "usagePanel": {
       "title": "Your Usage",
@@ -8390,17 +8404,33 @@
       "failedCount": "{count, number} failed",
       "empty": "No usage data for this period",
       "dailySpend": "Daily Spend",
-      "dailyRequests": "Daily Requests"
+      "dailyRequests": "Daily Requests",
+      "noUsageData": "No usage data for this period"
     },
     "shell": {
-      "betaWarning": "This is a pre-v0 feature. Do not use in production, it may change unexpectedly. Please share feedback <link>here</link>.",
+      "betaWarning": "Chat is a pre-v0 preview and may change unexpectedly. Do not use in production.",
       "newChat": "New Chat",
       "navChats": "Chats",
       "navIntegrations": "Integrations",
       "navCredentials": "Credentials",
       "navApiKeys": "API Keys",
       "navLogs": "Logs",
-      "navUsage": "Usage"
+      "navUsage": "Usage",
+      "ariaSearchChats": "Search chats",
+      "searchTitle": "Search chats (⌘K)",
+      "ariaChatWorkspace": "Chat workspace",
+      "navModels": "Models",
+      "workspace": "Workspace",
+      "shareFeedback": "Share feedback",
+      "ariaOrgLogo": "Organization logo",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "ariaChatNavigation": "Chat navigation",
+      "ariaOpenNavigation": "Open chat navigation",
+      "openSidebar": "Open sidebar",
+      "closeSidebar": "Close sidebar",
+      "litellmChat": "LiteLLM Chat",
+      "navDescription": "Conversations and chat workspace navigation"
     },
     "page": {
       "suggestions": {
@@ -8424,6 +8454,23 @@
       "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here.",
       "partialResponseSaved": "[Something went wrong. The partial response has been saved.]",
       "connectedTools": "{count, plural, one {# tool connected} other {# tools connected}}"
+    },
+    "attachments": {
+      "chooseFileError": "Choose an image, PDF, Word (.docx), Excel (.xlsx), text, or code file.",
+      "chooseImageError": "Choose a PNG, JPEG, WebP, or GIF image.",
+      "noImageReturned": "The model did not return an image. Try another prompt or image model.",
+      "storageBlocked": "Attachment storage is blocked by another browser tab.",
+      "storageUnavailable": "Attachment storage is unavailable.",
+      "deleteFailed": "Could not delete saved attachments.",
+      "restoreFailed": "Could not restore saved attachments.",
+      "saveFailed": "Could not save the attachment.",
+      "deleteCanceled": "Deleting saved attachments was canceled.",
+      "restoreCanceled": "Restoring saved attachments was canceled.",
+      "saveCanceled": "Saving the attachment was canceled."
+    },
+    "composer": {
+      "message": "Message",
+      "stopRequest": "Stop request"
     }
   },
   "playground": {
@@ -14191,8 +14238,10 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "Chat",
+      "chatDescription": "Chat UI for using LLMs, MCPs, Agents",
       "chatDisabledHint": "Admins can enable in Settings",
-      "moyaiDescription": "Cloud Coding Agent"
+      "moyaiDescription": "Cloud Coding Agent",
+      "ariaSwitchWorkspace": "Switch workspace, current: {current}"
     },
     "docsLink": {
       "docs": "Docs"
@@ -14992,6 +15041,8 @@
     "fullWalkthrough": "Full walkthrough on GitHub",
     "quickConnect": "Quick connect",
     "quickConnectTitle": "Quick connect Moyai",
+    "connect": "Connect",
+    "connecting": "Connecting",
     "moyaiUrl": "Moyai URL",
     "urlPlaceholder": "https://moyai.your-company.com",
     "confirmHint": "You'll confirm on your Moyai workspace as an admin, then come straight back",
@@ -15019,7 +15070,22 @@
       "workspaceLinked": "Workspace linked",
       "virtualKeyIssued": "Virtual key issued",
       "modelsAvailable": "models available through LiteLLM"
-    }
+    },
+    "homeWhatCreating": "What are we creating?",
+    "homeWhatAreWe": "What are we",
+    "homeBuilding": "building?",
+    "homeRecentChats": "Recent chats",
+    "homeNoRecentChats": "No recent chats in this browser yet.",
+    "homeStartWithAPrompt": "Start with a prompt",
+    "starterReviewCodeLabel": "Review code",
+    "starterReviewCodeDetail": "Find the edge cases",
+    "starterReviewCodePrompt": "Review my changes for bugs and improvements.",
+    "starterFixBugLabel": "Fix a bug",
+    "starterFixBugDetail": "Trace it to the source",
+    "starterFixBugPrompt": "Help me investigate and fix this bug: ",
+    "starterPlanFeatureLabel": "Plan a feature",
+    "starterPlanFeatureDetail": "Make the next change clear",
+    "starterPlanFeaturePrompt": "Help me plan and implement this feature: "
   },
   "clientUsage": {
     "viewClientUsage": "View client usage",

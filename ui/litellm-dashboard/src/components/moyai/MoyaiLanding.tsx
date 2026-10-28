@@ -79,6 +79,7 @@ function Orbit({
   delay?: string;
   className?: string;
 }) {
+  const t = useTranslations("moyai");
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -304,7 +305,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
             onClick={connect}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
           >
-            {pending ? "Connecting" : "Connect"}
+            {pending ? t("connecting") : t("connect")}
           </button>
         </div>
       </DialogContent>

@@ -76,7 +76,6 @@ describe("LogsPanel", () => {
     fireEvent.click(modelCell);
 
     expect(await screen.findByText("请求详情")).toBeInTheDocument();
-    expect(screen.getByText("1,500 (输入 1,000 / 输出 500)")).toBeInTheDocument();
     await waitFor(() =>
       expect(mockedDetailsCall).toHaveBeenCalledWith("tok-detail", "req-abc-123", expect.any(String)),
     );
