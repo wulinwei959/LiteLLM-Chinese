@@ -238,7 +238,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                 <TableHead className={cn("text-xs font-semibold uppercase tracking-wide", NUMERIC_CELL_CLASS)}>
                   Spend
                 </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">Expires</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">Created</TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />

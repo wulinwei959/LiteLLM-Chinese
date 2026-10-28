@@ -8393,14 +8393,27 @@
       "dailyRequests": "每日请求"
     },
     "shell": {
-      "betaWarning": "这是 pre-v0 阶段的功能，请勿在生产环境使用，它可能随时变化。欢迎在<link>这里</link>分享反馈。",
+      "betaWarning": "这是 v0 之前的预览功能，请勿在生产环境使用，内容可能随时变化",
       "newChat": "新建对话",
       "navChats": "对话",
       "navIntegrations": "集成",
       "navCredentials": "凭证",
       "navApiKeys": "API 密钥",
       "navLogs": "日志",
-      "navUsage": "用量"
+      "navUsage": "用量",
+      "ariaSearchChats": "搜索聊天",
+      "searchTitle": "搜索聊天（⌘K）",
+      "ariaChatWorkspace": "聊天工作区",
+      "navModels": "模型",
+      "workspace": "工作区",
+      "shareFeedback": "分享反馈",
+      "ariaOrgLogo": "组织徽标",
+      "settings": "设置",
+      "signOut": "退出登录",
+      "ariaChatNavigation": "聊天导航",
+      "ariaOpenNavigation": "打开聊天导航",
+      "litellmChat": "LiteLLM 聊天",
+      "navDescription": "会话与聊天工作区导航"
     },
     "page": {
       "suggestions": {
@@ -8535,8 +8548,16 @@
         "image": "描述您想生成的图片..."
       },
       "suggestions": {
-        "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
-        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
+        "a2a": [
+          "你能帮我做什么？",
+          "介绍一下你自己",
+          "你能执行什么任务？"
+        ],
+        "default": [
+          "写一首诗",
+          "解释量子计算",
+          "起草一封礼貌的会议请求邮件"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -8638,8 +8659,16 @@
       "attachmentReady": "附件已准备好发送",
       "provideVirtualKey": "请提供虚拟密钥或选择当前 UI 会话",
       "errorFetching": "获取响应出错: {error}",
-      "genericFollowUps": ["能总结一下要点吗？", "你做了什么假设？", "后续步骤是什么？"],
-      "suggestedPrompts": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
+      "genericFollowUps": [
+        "能总结一下要点吗？",
+        "你做了什么假设？",
+        "后续步骤是什么？"
+      ],
+      "suggestedPrompts": [
+        "写一首诗",
+        "解释量子计算",
+        "起草一封礼貌的会议请求邮件"
+      ],
       "syncSettings": "跨模型同步设置",
       "syncSettingsLabel": "跨模型同步设置",
       "generalSettings": "常规设置",
@@ -14784,8 +14813,6 @@
     "loading": "正在加载部署警告",
     "group": {
       "ignoredAndSnoozed": "已忽略和已静音",
-      "critical": "严重",
-      "warning": "警告",
       "critical": "严重",
       "warning": "警告"
     },

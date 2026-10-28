@@ -8393,14 +8393,27 @@
       "dailyRequests": "Daily Requests"
     },
     "shell": {
-      "betaWarning": "This is a pre-v0 feature. Do not use in production, it may change unexpectedly. Please share feedback <link>here</link>.",
+      "betaWarning": "Chat is a pre-v0 preview and may change unexpectedly. Do not use in production.",
       "newChat": "New Chat",
       "navChats": "Chats",
       "navIntegrations": "Integrations",
       "navCredentials": "Credentials",
       "navApiKeys": "API Keys",
       "navLogs": "Logs",
-      "navUsage": "Usage"
+      "navUsage": "Usage",
+      "ariaSearchChats": "Search chats",
+      "searchTitle": "Search chats (⌘K)",
+      "ariaChatWorkspace": "Chat workspace",
+      "navModels": "Models",
+      "workspace": "Workspace",
+      "shareFeedback": "Share feedback",
+      "ariaOrgLogo": "Organization logo",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "ariaChatNavigation": "Chat navigation",
+      "ariaOpenNavigation": "Open chat navigation",
+      "litellmChat": "LiteLLM Chat",
+      "navDescription": "Conversations and chat workspace navigation"
     },
     "page": {
       "suggestions": {
@@ -8535,8 +8548,16 @@
         "image": "Describe the image you want to generate..."
       },
       "suggestions": {
-        "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
-        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
+        "a2a": [
+          "What can you help me with?",
+          "Tell me about yourself",
+          "What tasks can you perform?"
+        ],
+        "default": [
+          "Write me a poem",
+          "Explain quantum computing",
+          "Draft a polite email requesting a meeting"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -8643,7 +8664,11 @@
         "What assumptions did you make?",
         "What are the next steps?"
       ],
-      "suggestedPrompts": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
+      "suggestedPrompts": [
+        "Write me a poem",
+        "Explain quantum computing",
+        "Draft a polite email requesting a meeting"
+      ],
       "syncSettings": "Sync Settings Across Models",
       "syncSettingsLabel": "Sync Settings Across Models",
       "generalSettings": "General Settings",

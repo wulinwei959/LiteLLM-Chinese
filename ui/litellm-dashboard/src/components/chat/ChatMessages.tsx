@@ -257,7 +257,7 @@ function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubblePro
                 }
               />
               <TooltipContent>
-                <p>Edit message</p>
+                <p>{t("messages.editMessage")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
