@@ -97,6 +97,7 @@ function StatusBadge({ status }: { status?: string }) {
 }
 
 function JsonBlock({ value }: { value: unknown }) {
+  const t = useTranslations("chat");
   if (value == null || value === "") {
     return <p className="m-0 text-xs text-muted-foreground">{t("logsPanel.notAvailable")}</p>;
   }
@@ -126,6 +127,7 @@ function LogsSkeleton() {
 }
 
 function LogsEmpty() {
+  const t = useTranslations("chat");
   return (
     <div className="rounded-lg border border-dashed py-12 text-center text-sm text-muted-foreground">
       <ScrollText className="mx-auto mb-3 h-6 w-6 text-muted-foreground/50" />
@@ -135,6 +137,8 @@ function LogsEmpty() {
 }
 
 function LogsError({ onRetry }: { onRetry: () => void }) {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   return (
     <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 text-center text-sm text-muted-foreground">
       <AlertCircle className="h-6 w-6 text-destructive/70" />
@@ -147,6 +151,8 @@ function LogsError({ onRetry }: { onRetry: () => void }) {
 }
 
 function LogsTable({ rows, onRowClick }: { rows: LogRow[]; onRowClick: (row: LogRow) => void }) {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   return (
     <div className="overflow-hidden rounded-lg border">
       <Table>
@@ -194,6 +200,8 @@ function LogDetailDialog({
   isLoading: boolean;
   onClose: () => void;
 }) {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   return (
     <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl">
@@ -245,6 +253,7 @@ function LogDetailDialog({
 }
 
 const LogsPanel: React.FC<Props> = ({ accessToken, userId }) => {
+  const t = useTranslations("chat");
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
   const [page, setPage] = useState(1);
   const [selectedLog, setSelectedLog] = useState<LogRow | null>(null);

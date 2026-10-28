@@ -79,6 +79,7 @@ function Orbit({
   delay?: string;
   className?: string;
 }) {
+  const t = useTranslations("moyai");
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -200,6 +201,7 @@ function SecondaryCta({ href, icon, children }: { href: string; icon: React.Reac
 }
 
 function DemoPreview() {
+  const t = useTranslations("moyai");
   const [failed, setFailed] = useState(false);
   return (
     <a
@@ -236,6 +238,7 @@ function DemoPreview() {
 }
 
 function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) => Promise<void> | void }) {
+  const t = useTranslations("moyai");
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -312,10 +315,10 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
 }
 
 const STATS = [
-  { value: "79%", label: "cheaper than our Devin bill" },
-  { value: "100+", label: "providers through LiteLLM" },
-  { value: "6", label: "agent harnesses" },
-];
+  { value: "79%", labelKey: "statCost" },
+  { value: "100+", labelKey: "statProviders" },
+  { value: "6", labelKey: "statHarnesses" },
+] as const;
 
 export default function MoyaiLanding({
   canQuickConnect = false,
@@ -324,6 +327,7 @@ export default function MoyaiLanding({
   canQuickConnect?: boolean;
   onQuickConnect?: (url: string) => Promise<void> | void;
 }) {
+  const t = useTranslations("moyai");
   const heroRef = useRef<HTMLElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   const starsRef = useCanvasScene(startStarfield);

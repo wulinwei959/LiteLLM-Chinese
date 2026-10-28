@@ -33,9 +33,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
 import dayjs from "dayjs";
 import { Conversation } from "./types";
-import { DEFAULT_CONVERSATION_TITLE } from "./useChatHistory";
 import type { ChatTranslator } from "@/lib/i18n/translators";
 
 interface Props {
@@ -248,6 +248,7 @@ interface SearchModalProps {
 }
 
 const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect, onClose }) => {
+  const t = useTranslations("chat");
   const [query, setQuery] = useState("");
   const [wasOpen, setWasOpen] = useState(open);
 

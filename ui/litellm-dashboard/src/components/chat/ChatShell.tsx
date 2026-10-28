@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   Plus,
   MessageSquare,
@@ -78,6 +79,7 @@ function NavItem({ icon, label, onClick, active = false }: NavItemProps) {
 }
 
 const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const t = useTranslations("chat");
   const router = useRouter();
   const pathname = stripTrailingSlash(usePathname() ?? "");
   const {

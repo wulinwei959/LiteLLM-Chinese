@@ -270,7 +270,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                       )}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-[13px]">
-                      {relativeTime(record.created_at)}
+                      {relativeTime(commonT, record.created_at)}
                     </TableCell>
                     {premiumUser && (
                       <TableCell className="text-right">

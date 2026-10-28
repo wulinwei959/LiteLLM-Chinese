@@ -58,7 +58,7 @@ const MCPConnectPicker: React.FC<Props> = ({ accessToken, selectedServers, onCha
     try {
       const result = await listMCPTools(accessToken, serverName);
       if (result?.error) {
-        toast.warning(t("connectPicker.loadToolsFailed", { server: serverName }));
+      toast.warning(t("connectPicker.loadToolsFailed", { server: serverName }));
         return;
       }
       onChange([...selectedServers, serverName]);

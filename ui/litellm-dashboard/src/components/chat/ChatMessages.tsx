@@ -157,6 +157,7 @@ interface UserBubbleProps {
 }
 
 function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubbleProps) {
+  const t = useTranslations("chat");
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(message.content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -292,6 +293,7 @@ function AssistantBubble({
   mcpEvents,
   actions,
 }: AssistantBubbleProps) {
+  const t = useTranslations("chat");
   const [reasoningKey, setReasoningKey] = useState(0);
   const prevStreamingRef = useRef<boolean>(isStreaming);
 
@@ -409,6 +411,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function ThinkingPlaceholder() {
+  const t = useTranslations("chat");
   return (
     <>
       <style>{`
@@ -457,6 +460,7 @@ interface ToolCardProps {
 }
 
 function ToolCard({ message }: ToolCardProps) {
+  const t = useTranslations("chat");
   const redactedArgs = message.toolArgs ? redactSensitiveValues(message.toolArgs) : undefined;
   const [open, setOpen] = useState(false);
 

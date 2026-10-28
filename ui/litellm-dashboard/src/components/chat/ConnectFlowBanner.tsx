@@ -37,7 +37,10 @@ const copyFor = (
     flow?.state === "multi" && flow.servers ? flow.servers.map((s) => s.server_name ?? s.server_id).join(", ") : null;
   const serverLabel = multiServerLabel ?? flow?.server_name ?? t("connectFlow.fallbackServer");
   if (failed || flow === undefined || flow.state === "stale") {
-    return [t("connectFlow.failedTitle"), t("connectFlow.failedBody", { client: clientLabel })];
+    return [
+      t("connectFlow.failedTitle"),
+      t("connectFlow.failedBody", { client: clientLabel }),
+    ];
   }
   if (flow.state === "unscoped") {
     return [
@@ -57,7 +60,7 @@ const copyFor = (
   }
   if (flow.state === "interactive" && !flow.connected) {
     return [
-      t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
+    t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
       t("connectFlow.interactiveBody", { client: clientLabel, server: serverLabel }),
     ];
   }
@@ -95,7 +98,7 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
   const canCancel = state !== "unscoped";
   const loopbackClient = isLoopbackOrigin(flow?.client_origin ?? null);
   const vendorServers = vendorServersFor(state, flow);
-const copy = copyFor(t, flow, failed);
+  const copy = copyFor(t, flow, failed);
 
   return (
     <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 px-5 py-4">

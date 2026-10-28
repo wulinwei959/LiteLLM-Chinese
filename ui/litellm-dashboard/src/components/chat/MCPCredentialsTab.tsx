@@ -46,7 +46,7 @@ function relativeTime(commonT: CommonTranslator, isoString: string | null | unde
   }
 }
 
-function expiryLabel(isoString: string | null | undefined): {
+function expiryLabel(t: ChatTranslator, isoString: string | null | undefined): {
   text: string;
   variant: "secondary" | "destructive" | "outline";
 } {
@@ -176,12 +176,12 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
             <TableBody>
               {credentials.map((cred) => {
                 const isRevoking = revoking.has(cred.server_id);
-                const exp = expiryLabel(cred.expires_at);
+                const exp = expiryLabel(t, cred.expires_at);
                 return (
                   <TableRow key={cred.server_id}>
                     <TableCell className="text-sm font-medium">{displayName(cred)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {relativeTime(cred.connected_at) || "\u2014"}
+                      {relativeTime(commonT, cred.connected_at) || "\u2014"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={exp.variant}>{exp.text}</Badge>
