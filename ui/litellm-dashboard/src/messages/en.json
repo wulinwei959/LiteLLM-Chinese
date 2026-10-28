@@ -8292,7 +8292,10 @@
       "stopped": "[stopped]",
       "toolCall": "Tool call",
       "arguments": "Arguments",
-      "result": "Result"
+      "result": "Result",
+      "openImage": "Open image",
+      "imageUnavailable": "— image unavailable. Start a new chat and attach a saved copy to use it again.",
+      "creatingImage": "Creating your image…"
     },
     "keysPanel": {
       "title": "Your API Keys",
@@ -8324,7 +8327,9 @@
       "errDurationRequired": "Expiration is required for expired keys",
       "errGraceFormat": "Must be a duration like 24h, 2d",
       "toastRotated": "Key rotated successfully",
-      "toastRotateFailed": "Failed to rotate key"
+      "toastRotateFailed": "Failed to rotate key",
+      "currentLabel": "Current:",
+      "newLabel": "New:"
     },
     "logsPanel": {
       "title": "Your Logs",
@@ -8344,7 +8349,8 @@
       "requestsCount": "{count, plural, one {# request} other {# requests}}",
       "pageOf": " · Page {page} of {totalPages}",
       "previousPage": "Previous",
-      "nextPage": "Next"
+      "nextPage": "Next",
+      "colStatus": "Status"
     },
     "conversationList": {
       "newTitle": "New conversation",

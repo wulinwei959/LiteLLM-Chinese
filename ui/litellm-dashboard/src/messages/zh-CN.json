@@ -8292,7 +8292,10 @@
       "stopped": "已停止",
       "toolCall": "工具调用",
       "arguments": "参数",
-      "result": "结果"
+      "result": "结果",
+      "openImage": "打开图片",
+      "imageUnavailable": "—— 图片不可用。新建聊天并附加已保存的副本即可再次使用。",
+      "creatingImage": "正在生成图片…"
     },
     "keysPanel": {
       "title": "你的 API 密钥",
@@ -8324,7 +8327,9 @@
       "errDurationRequired": "已过期的密钥必须填写过期时长",
       "errGraceFormat": "请填写形如 24h、2d 的时长",
       "toastRotated": "密钥轮换成功",
-      "toastRotateFailed": "密钥轮换失败"
+      "toastRotateFailed": "密钥轮换失败",
+      "currentLabel": "当前：",
+      "newLabel": "新密钥："
     },
     "logsPanel": {
       "title": "你的日志",
@@ -8344,7 +8349,8 @@
       "requestsCount": "{count, number} 次请求",
       "pageOf": " · 第 {page} 页，共 {totalPages} 页",
       "previousPage": "上一页",
-      "nextPage": "下一页"
+      "nextPage": "下一页",
+      "colStatus": "状态"
     },
     "conversationList": {
       "newTitle": "新对话",

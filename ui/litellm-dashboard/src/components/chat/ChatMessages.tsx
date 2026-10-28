@@ -100,12 +100,13 @@ const markdownWithoutImages: Components = {
 };
 
 function ChatImage({ image, allowImages }: { image: ChatImageAttachment; allowImages: boolean }) {
+  const t = useTranslations("chat");
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   if (!allowImages) return <span className="text-sm text-muted-foreground">{image.name}</span>;
   if (!isChatImageUrl(image.url) || failedUrl === image.url) {
     return (
       <div className="rounded-xl border bg-muted p-4 text-sm text-muted-foreground">
-        {image.name} — image unavailable. Start a new chat and attach a saved copy to use it again.
+        {image.name} {t("messages.imageUnavailable")}
       </div>
     );
   }
@@ -128,7 +129,7 @@ function ChatImage({ image, allowImages }: { image: ChatImageAttachment; allowIm
         role="link"
         render={<a href={image.url} target="_blank" rel="noopener noreferrer" download={image.name} />}
       >
-        Open image
+        {t("messages.openImage")}
       </Button>
     </figure>
   );
@@ -158,6 +159,7 @@ interface UserBubbleProps {
 
 function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubbleProps) {
   const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(message.content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -223,10 +225,10 @@ function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubblePro
                 setEditing(false);
               }}
             >
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button size="sm" onClick={handleSave} disabled={!editValue.trim() && !message.attachments?.length}>
-              Save & Send
+              {t("messages.saveAndSend")}
             </Button>
           </div>
         </div>
@@ -313,7 +315,7 @@ function AssistantBubble({
       return (
         <div role="status" className="w-full max-w-sm space-y-3">
           <Skeleton className="aspect-square w-full rounded-2xl" />
-          <p className="text-sm text-muted-foreground">Creating your image…</p>
+          <p className="text-sm text-muted-foreground">{t("messages.creatingImage")}</p>
         </div>
       );
     }
@@ -350,7 +352,7 @@ function AssistantBubble({
         >
           {mainContent}
         </ReactMarkdown>
-        {stoppedSuffix && <span className="text-muted-foreground italic"> [stopped]</span>}
+        {stoppedSuffix && <span className="text-muted-foreground italic"> {t("messages.stopped")}</span>}
       </BubbleContent>
 
       {actions ?? (mainContent.trim() && <CopyButton text={mainContent} />)}
@@ -475,7 +477,7 @@ function ToolCard({ message }: ToolCardProps) {
           {redactedArgs !== undefined && (
             <div className={message.toolResult ? "mb-3" : ""}>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Arguments
+                {t("messages.arguments")}
               </div>
               <pre className="m-0 p-2 bg-muted rounded-md text-xs font-mono whitespace-pre-wrap break-words text-foreground">
                 {JSON.stringify(redactedArgs, null, 2)}
@@ -485,7 +487,7 @@ function ToolCard({ message }: ToolCardProps) {
           {message.toolResult && (
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Result
+                {t("messages.result")}
               </div>
               <div className="text-[13px] text-foreground whitespace-pre-wrap break-words font-mono">
                 {message.toolResult}

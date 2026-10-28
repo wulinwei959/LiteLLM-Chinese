@@ -177,7 +177,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
       <div className="mb-4">
         <h2 className="text-base font-semibold text-foreground mb-0.5">{t("keysPanel.title")}</h2>
         <p className="text-sm text-muted-foreground m-0">
-          View your virtual keys and spend
+          {t("keysPanel.subtitle")}
           {premiumUser &&
             t("keysPanel.rotateHint")}
         </p>
@@ -190,10 +190,10 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
               <TableRow className="bg-muted/50">
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colKey")}</TableHead>
                 <TableHead className={cn("text-xs font-semibold uppercase tracking-wide", NUMERIC_CELL_CLASS)}>
-                  Spend
+                  {t("keysPanel.colSpend")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">Created</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colCreated")}</TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />
                 )}
@@ -227,7 +227,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
       ) : keys.length === 0 ? (
         <div className="text-center text-muted-foreground text-sm py-12 border border-dashed rounded-lg">
           <KeyRound className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
-          No keys found
+          {commonT("noKeysFound")}
         </div>
       ) : (
         <div className="rounded-lg border overflow-hidden">
@@ -239,7 +239,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                   Spend
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">Created</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colCreated")}</TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />
                 )}
@@ -276,7 +276,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                       <TableCell className="text-right">
                         <Button variant="outline" size="xs" onClick={() => openRotateModal(record)} title={t("keysPanel.rotateTooltip")}>
                           <RefreshCw className="h-3 w-3" />
-                          Rotate
+                          {t("keysPanel.rotate")}
                         </Button>
                       </TableCell>
                     )}
@@ -297,7 +297,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
           {regeneratedKey ? (
             <div>
               <div className="rounded-lg border border-warning/20 bg-warning/10 px-3 py-2 text-sm text-warning mb-4">
-                Save this key now; you will not see it again
+                {t("keysPanel.saveKeyWarning")}
               </div>
               <div className="text-xs text-muted-foreground mb-1">{t("keysPanel.newKey")}</div>
               <div className="bg-muted border rounded-md px-4 py-3 font-mono text-sm break-all text-foreground">
@@ -369,7 +369,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
             {regeneratedKey ? (
               <>
                 <Button variant="outline" onClick={closeModal}>
-                  Close
+                  {commonT("close")}
                 </Button>
                 <CopyToClipboard text={regeneratedKey} onCopy={() => setCopied(true)}>
                   <Button>
@@ -381,7 +381,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
             ) : (
               <>
                 <Button variant="outline" onClick={closeModal}>
-                  Cancel
+                  {commonT("cancel")}
                 </Button>
                 <Button onClick={handleRegenerate} disabled={isRegenerating}>
                   {isRegenerating ? (
