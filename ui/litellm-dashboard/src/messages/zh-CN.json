@@ -8383,7 +8383,10 @@
       "expired": "已过期",
       "expiresInDays": "{count, number} 天后过期",
       "expiresInHours": "{count, number} 小时后过期",
-      "expiresInMinutes": "{count, number} 分钟后过期"
+      "expiresInMinutes": "{count, number} 分钟后过期",
+      "colStatus": "状态",
+      "colActions": "操作",
+      "connectHint": "前往{integrations}并点击{connect}以授权 MCP 服务器"
     },
     "usagePanel": {
       "title": "你的用量",

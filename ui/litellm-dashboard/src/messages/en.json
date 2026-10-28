@@ -8383,7 +8383,10 @@
       "expired": "Expired",
       "expiresInDays": "Expires in {count, number}d",
       "expiresInHours": "Expires in {count, number}h",
-      "expiresInMinutes": "Expires in {count, number}m"
+      "expiresInMinutes": "Expires in {count, number}m",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "connectHint": "Go to {integrations} and click {connect} to authorize an MCP server"
     },
     "usagePanel": {
       "title": "Your Usage",

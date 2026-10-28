@@ -112,16 +112,16 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  App
+                  {t("credentialsPanel.colApp")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Connected
+                  {t("credentialsPanel.colConnected")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Status
+                  {t("credentialsPanel.colStatus")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground text-right">
-                  Actions
+                  {t("credentialsPanel.colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -150,8 +150,10 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
           <Link className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
           <p className="m-0">{t("credentialsPanel.emptyTitle")}</p>
           <p className="m-0 mt-1 text-xs">
-            Go to <span className="font-medium">{t("shell.navIntegrations")}</span> and click{" "}
-            <span className="font-medium">Connect</span> to authorize an MCP server
+            {t("credentialsPanel.connectHint", {
+              integrations: t("shell.navIntegrations"),
+              connect: t("appsPanel.connect"),
+            })}
           </p>
         </div>
       ) : (
@@ -160,16 +162,16 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  App
+                  {t("credentialsPanel.colApp")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Connected
+                  {t("credentialsPanel.colConnected")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Status
+                  {t("credentialsPanel.colStatus")}
                 </TableHead>
                 <TableHead className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground text-right">
-                  Actions
+                  {t("credentialsPanel.colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -209,14 +211,13 @@ const MCPCredentialsTab: React.FC<Props> = ({ accessToken }) => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>{t("credentialsPanel.revokeTitle")}</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This removes the stored OAuth credential for {displayName(cred)}. You&apos;ll need to
-                              reconnect to use it in chat again.
+                              {t("credentialsPanel.revokeDescription", { name: displayName(cred) })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>
                             <AlertDialogAction variant="destructive" onClick={() => handleRevoke(cred.server_id)}>
-                              Revoke
+                              {t("credentialsPanel.revoke")}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
