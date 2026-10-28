@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LocaleProvider } from "@/contexts/LocaleContext";
 import MCPAppsPanel from "./MCPAppsPanel";
 import { fetchMCPServers, listMCPTools } from "../networking";
 import type { MCPServer } from "../mcp_tools/types";
@@ -42,9 +41,7 @@ const servers = [
 const renderPanel = () =>
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel accessToken="tok" selectedServers={[]} onChange={vi.fn()} />
-      </LocaleProvider>
+      <MCPAppsPanel accessToken="tok" selectedServers={[]} onChange={vi.fn()} />
     </QueryClientProvider>,
   );
 
@@ -115,14 +112,7 @@ const connectServers = [
 const renderConnectPanel = (connectMode: boolean, selectedServers: string[] = []) =>
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel
-          accessToken="tok"
-          selectedServers={selectedServers}
-          onChange={vi.fn()}
-          connectMode={connectMode}
-        />
-      </LocaleProvider>
+      <MCPAppsPanel accessToken="tok" selectedServers={selectedServers} onChange={vi.fn()} connectMode={connectMode} />
     </QueryClientProvider>,
   );
 
@@ -140,9 +130,9 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     expect(await screen.findByText("reachable_srv")).toBeInTheDocument();
     expect(vi.mocked(fetchMCPServers)).toHaveBeenCalledWith("tok", undefined, true);
     expect(screen.queryByText("unreachable_srv")).not.toBeInTheDocument();
-    expect(screen.getByText("已连接 (1)")).toBeInTheDocument();
+    expect(screen.getByText("Connected (1)")).toBeInTheDocument();
     expect(screen.getByText("service_tool")).toBeInTheDocument();
-    expect(screen.queryByText("连接", { exact: true })).not.toBeInTheDocument();
+    expect(screen.queryByText("Connect", { exact: true })).not.toBeInTheDocument();
     const toolCountFetchedIds = vi.mocked(listMCPTools).mock.calls.map((call) => call[1]);
     expect(toolCountFetchedIds).toContain("s-reach");
     expect(toolCountFetchedIds).not.toContain("s-unreach");
@@ -165,8 +155,8 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     fireEvent.click(await screen.findByText("unsupported_srv"));
     expect(await screen.findByRole("heading", { name: "unsupported_srv" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "连接" })).not.toBeInTheDocument();
-    expect(screen.getByText("该连接不支持此服务器")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect" })).not.toBeInTheDocument();
+    expect(screen.getByText("Not supported on this connection")).toBeInTheDocument();
   });
 
   it("keeps the detail-view Connect action outside connect mode", async () => {
@@ -177,7 +167,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     fireEvent.click(await screen.findByText("unreachable_srv"));
     expect(await screen.findByRole("heading", { name: "unreachable_srv" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "连接" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Connect" })).toBeInTheDocument();
   });
 
   it("ignores the flag and skips no server outside connect mode", async () => {
@@ -189,7 +179,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     expect(await screen.findByText("unreachable_srv")).toBeInTheDocument();
     expect(vi.mocked(fetchMCPServers)).toHaveBeenCalledWith("tok", undefined, false);
     expect(screen.queryByText("Not available to connected apps")).not.toBeInTheDocument();
-    expect(screen.getByText("已连接 (2)")).toBeInTheDocument();
+    expect(screen.getByText("Connected (2)")).toBeInTheDocument();
     const toolCountFetchedIds = vi.mocked(listMCPTools).mock.calls.map((call) => call[1]);
     expect(toolCountFetchedIds).toContain("s-unreach");
   });
@@ -210,9 +200,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     client: QueryClient;
   }) => (
     <QueryClientProvider client={client}>
-      <LocaleProvider locale="zh-CN">
-        <MCPAppsPanel accessToken={token} selectedServers={[]} onChange={onChange} connectMode />
-      </LocaleProvider>
+      <MCPAppsPanel accessToken={token} selectedServers={[]} onChange={onChange} connectMode />
     </QueryClientProvider>
   );
 
@@ -231,7 +219,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     rerender(<ConnectPanel token="tok-refreshed" onChange={vi.fn()} client={client} />);
 
     await waitFor(() => expect(screen.queryByRole("heading", { name: "revoked_srv" })).not.toBeInTheDocument());
-    expect(screen.queryByRole("button", { name: "连接" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect" })).not.toBeInTheDocument();
     expect(screen.queryByText("revoked_srv")).not.toBeInTheDocument();
     expect(screen.getByText("reachable_srv")).toBeInTheDocument();
   });
@@ -249,7 +237,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     let finishConnect: (result: { tools: never[] }) => void = () => {};
     vi.mocked(listMCPTools).mockImplementationOnce(() => new Promise((resolve) => (finishConnect = resolve)));
-    fireEvent.click(screen.getByRole("button", { name: "连接" }));
+    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
 
     rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} client={client} />);
     await waitFor(() => expect(screen.queryByRole("heading", { name: "revoked_srv" })).not.toBeInTheDocument());
@@ -260,7 +248,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     expect(onChange).not.toHaveBeenCalled();
     expect(screen.queryByText("revoked_srv")).not.toBeInTheDocument();
-    expect(screen.getByText("已连接", { exact: false })).toHaveTextContent("已连接");
+    expect(screen.getByText("Connected", { exact: false })).toHaveTextContent("Connected");
   });
 
   it("does not select a server when Connect resolves in the same tick the refetch drops it", async () => {
@@ -279,7 +267,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
 
     let finishConnect: (result: { tools: never[] }) => void = () => {};
     vi.mocked(listMCPTools).mockImplementationOnce(() => new Promise((resolve) => (finishConnect = resolve)));
-    fireEvent.click(screen.getByRole("button", { name: "连接" }));
+    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
 
     rerender(<ConnectPanel token="tok-refreshed" onChange={onChange} client={client} />);
 

@@ -1003,7 +1003,6 @@ const ChatUI: React.FC<ChatUIProps> = ({
           }
 
           await makeOpenAIResponsesRequest(
-            t,
             apiChatHistory,
             (role, delta, model) => updateTextUI(role, delta, model),
             selectedModel,

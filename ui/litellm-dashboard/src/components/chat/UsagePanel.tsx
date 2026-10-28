@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
 import { BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { dailyActivityAggregatedCall } from "../networking";
@@ -91,8 +90,6 @@ const TIME_RANGE_OPTIONS: { value: TimeRange; label: string }[] = [
 ];
 
 const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
-  const t = useTranslations("chat");
-  const commonT = useTranslations("common");
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const { start, end } = getDateRange(timeRange);
 
@@ -120,26 +117,20 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
 
   const statCards: Array<{ label: string; value: string; sub?: string; subVariant?: "error" }> = meta
     ? [
-        { label: t("usagePanel.totalSpend"), value: `$${meta.total_spend.toFixed(2)}` },
-        { label: t("usagePanel.apiRequests"), value: formatNumber(meta.total_api_requests) },
+        { label: "Total Spend", value: `$${meta.total_spend.toFixed(2)}` },
+        { label: "API Requests", value: formatNumber(meta.total_api_requests) },
         {
-          label: t("usagePanel.tokensUsed"),
+          label: "Tokens Used",
           value: formatNumber(meta.total_tokens),
-          sub: commonT("tokensInAndOut", {
-            prompt: formatNumber(meta.total_prompt_tokens),
-            completion: formatNumber(meta.total_completion_tokens),
-          }),
+          sub: `${formatNumber(meta.total_prompt_tokens)} in / ${formatNumber(meta.total_completion_tokens)} out`,
         },
         {
-          label: t("usagePanel.successRate"),
+          label: "Success Rate",
           value:
             meta.total_api_requests > 0
               ? `${((meta.total_successful_requests / meta.total_api_requests) * 100).toFixed(1)}%`
-              : t("usagePanel.na"),
-          sub:
-            meta.total_failed_requests > 0
-              ? t("usagePanel.failedCount", { count: meta.total_failed_requests })
-              : undefined,
+              : "N/A",
+          sub: meta.total_failed_requests > 0 ? `${meta.total_failed_requests} failed` : undefined,
           subVariant: meta.total_failed_requests > 0 ? "error" : undefined,
         },
       ]
@@ -149,8 +140,8 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground mb-0.5">{t("usagePanel.title")}</h2>
-          <p className="text-sm text-muted-foreground m-0">{t("usagePanel.subtitle")}</p>
+          <h2 className="text-base font-semibold text-foreground mb-0.5">Your Usage</h2>
+          <p className="text-sm text-muted-foreground m-0">Spend and request activity</p>
         </div>
         <div className="flex gap-1">
           {TIME_RANGE_OPTIONS.map((opt) => (
@@ -178,7 +169,7 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
       ) : !meta || meta.total_api_requests === 0 ? (
         <div className="text-center text-muted-foreground text-sm py-12 border border-dashed rounded-lg">
           <BarChart3 className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
-          {t("usagePanel.empty")}
+          No usage data for this period
         </div>
       ) : (
         <div>
@@ -203,11 +194,11 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
           {dailyData.length > 1 && (
             <div className="grid grid-cols-2 gap-3">
               <div className="border rounded-lg p-4 bg-card">
-                <div className="text-xs text-muted-foreground mb-2">{t("usagePanel.dailySpend")}</div>
+                <div className="text-xs text-muted-foreground mb-2">Daily Spend</div>
                 <SparklineBar data={dailySpend} maxVal={maxSpend} />
               </div>
               <div className="border rounded-lg p-4 bg-card">
-                <div className="text-xs text-muted-foreground mb-2">{t("usagePanel.dailyRequests")}</div>
+                <div className="text-xs text-muted-foreground mb-2">Daily Requests</div>
                 <SparklineBar data={dailyRequests} maxVal={maxRequests} />
               </div>
             </div>
