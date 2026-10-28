@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import { ArrowUpRight, Check, ExternalLink } from "lucide-react";
 import moyaiHead from "../../../public/assets/moyai/moyai-head.svg";
@@ -15,10 +16,11 @@ export default function MoyaiConnected({
   keyAlias?: string | null;
   models?: number | null;
 }) {
+  const t = useTranslations("moyai");
   const rows = [
-    { label: "Workspace linked", value: moyaiUrl },
-    { label: "Virtual key issued", value: keyAlias },
-    { label: "models available through LiteLLM", value: models != null ? `${models}` : null, prefix: true },
+    { label: t("rows.workspaceLinked"), value: moyaiUrl },
+    { label: t("rows.virtualKeyIssued"), value: keyAlias },
+    { label: t("rows.modelsAvailable"), value: models != null ? `${models}` : null, prefix: true },
   ];
 
   return (

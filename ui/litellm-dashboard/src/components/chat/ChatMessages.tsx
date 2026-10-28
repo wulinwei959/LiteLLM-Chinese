@@ -1,5 +1,10 @@
 "use client";
 
+function OmittedImage({ alt }: { alt?: string }) {
+  const t = useTranslations("chat");
+  return <span>{alt || t("messages.imageOmitted")}</span>;
+}
+
 import { Wrench, Copy, Check, Pencil } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -9,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -201,7 +207,7 @@ function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubblePro
           ) : null}
           <Textarea
             ref={textareaRef}
-            aria-label="Edit message"
+            aria-label={t("messages.editMessage")}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -238,7 +244,7 @@ function UserBubble({ message, allowImages, onEdit, isStreaming }: UserBubblePro
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    aria-label="Edit message"
+                    aria-label={t("messages.editMessage")}
                     onClick={() => {
                       setEditValue(message.content);
                       setEditing(true);
@@ -320,8 +326,8 @@ function AssistantBubble({
 
   let mainContent = message.content;
   let stoppedSuffix = false;
-  if (mainContent.endsWith("[stopped]")) {
-    mainContent = mainContent.slice(0, -"[stopped]".length);
+  if (mainContent.endsWith(t("messages.stopped"))) {
+    mainContent = mainContent.slice(0, -t("messages.stopped").length);
     stoppedSuffix = true;
   }
 
@@ -362,6 +368,8 @@ function AssistantBubble({
 }
 
 function CopyButton({ text }: { text: string }) {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -383,7 +391,7 @@ function CopyButton({ text }: { text: string }) {
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label={copied ? "Copied message" : "Copy message"}
+                aria-label={copied ? t("messages.copiedMessage") : t("messages.copyMessage")}
                 onClick={handleCopy}
                 className={copied ? "text-success" : "text-muted-foreground hover:text-foreground"}
               >
@@ -392,7 +400,7 @@ function CopyButton({ text }: { text: string }) {
             }
           />
           <TooltipContent>
-            <p>{copied ? "Copied!" : "Copy"}</p>
+            <p>{copied ? t("messages.copied") : commonT("copy")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -413,7 +421,7 @@ function ThinkingPlaceholder() {
         }
       `}</style>
       <div className="inline-flex items-center gap-1.5 px-2.5 mb-2 bg-muted/50 border rounded-lg text-xs text-muted-foreground">
-        <span className="chat-thinking-text py-1">Thinking...</span>
+        <span className="chat-thinking-text py-1">{t("messages.thinking")}</span>
       </div>
     </>
   );
@@ -457,7 +465,7 @@ function ToolCard({ message }: ToolCardProps) {
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger className="flex items-center gap-1.5 text-[13px] px-3 py-2 border rounded-lg bg-muted/50 hover:bg-muted transition-colors w-full text-left">
           <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="font-medium text-foreground">{message.toolName ?? "Tool call"}</span>
+          <span className="font-medium text-foreground">{message.toolName ?? t("messages.toolCall")}</span>
         </CollapsibleTrigger>
         <CollapsibleContent className="border border-t-0 rounded-b-lg px-3 py-2 bg-muted/30">
           {redactedArgs !== undefined && (

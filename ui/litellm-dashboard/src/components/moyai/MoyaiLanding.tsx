@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, Github, Play, Plug, Star } from "lucide-react";
 import moyaiHead from "../../../public/assets/moyai/moyai-head.svg";
@@ -149,6 +150,7 @@ function Orbit({
 }
 
 function LogoWall({ title, items, footnote }: { title: string; items: LogoItem[]; footnote: string }) {
+  const t = useTranslations("moyai");
   return (
     <figure className="m-0 rounded-2xl bg-white/[0.03] p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
       <figcaption className="mb-4 text-xs uppercase tracking-[0.16em] text-[#a6aab3]">{title}</figcaption>
@@ -215,12 +217,12 @@ function DemoPreview() {
       {failed ? (
         <div className="flex aspect-[1196/720] flex-col items-center justify-center gap-3 text-[#c2c6d0]">
           <Play className="size-10" />
-          <span>Watch the demo on GitHub</span>
+          <span>{t("watchDemoOnGithub")}</span>
         </div>
       ) : (
         <img
           src={MOYAI_DEMO_GIF_URL}
-          alt="Moyai demo: picking a harness and model, then running a task"
+          alt={t("demoAlt")}
           className="block aspect-[1196/720] w-full bg-white object-cover"
           loading="lazy"
           onError={() => setFailed(true)}
@@ -242,7 +244,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
   const connect = async () => {
     const normalized = normalizeMoyaiUrl(url);
     if (!normalized) {
-      setError("Enter a full http or https URL, without credentials");
+      setError(t("urlIncomplete"));
       return;
     }
     setError(null);
@@ -250,7 +252,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
     try {
       await onQuickConnect(normalized);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start quick connect");
+      setError(e instanceof Error ? e.message : t("quickConnectFailed"));
       setPending(false);
     }
   };
@@ -271,7 +273,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Quick connect Moyai</DialogTitle>
+          <DialogTitle>{t("quickConnectTitle")}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <label htmlFor="moyai-quick-connect-url" className="text-sm font-medium">
@@ -282,7 +284,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://moyai.your-company.com"
+            placeholder={t("urlPlaceholder")}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
           <p className="m-0 text-xs text-muted-foreground">
@@ -373,7 +375,7 @@ export default function MoyaiLanding({
                 <QuickConnectDialog onQuickConnect={onQuickConnect} />
               </span>
             ) : (
-              <span>Already have Moyai deployed? Ask a proxy admin to connect it</span>
+              <span>{t("alreadyDeployedHint")}</span>
             )}
           </div>
         </div>
@@ -393,7 +395,7 @@ export default function MoyaiLanding({
           <span className="text-[clamp(18px,2vw,28px)] font-medium tracking-[-0.02em] text-white">
             Works with Claude Code and Codex
           </span>
-          <span className="text-[15px] text-[rgba(240,236,228,0.8)]">Self-hosted · 100+ providers through LiteLLM</span>
+          <span className="text-[15px] text-[rgba(240,236,228,0.8)]">{t("selfHosted")}</span>
         </div>
       </section>
 
@@ -407,7 +409,7 @@ export default function MoyaiLanding({
               <div className="bg-gradient-to-b from-white to-[#9cc3ff] bg-clip-text text-4xl font-semibold tracking-[-0.03em] text-transparent">
                 {s.value}
               </div>
-              <div className="mt-1 text-sm text-[#a6aab3]">{s.label}</div>
+              <div className="mt-1 text-sm text-[#a6aab3]">{t(s.labelKey)}</div>
             </div>
           ))}
         </div>
@@ -423,12 +425,12 @@ export default function MoyaiLanding({
 
         <div className="mt-16 grid gap-4 md:grid-cols-2">
           <LogoWall
-            title="Any harness"
+            title={t("anyHarness")}
             items={HARNESSES}
             footnote="Pick the harness per session. Same workspace, tools and permissions."
           />
           <LogoWall
-            title="Any model, any provider"
+            title={t("anyModel")}
             items={PROVIDERS}
             footnote="Routed through your LiteLLM gateway, with spend tracked per teammate."
           />
@@ -451,7 +453,7 @@ export default function MoyaiLanding({
             git clone {MOYAI_GITHUB_URL}.git
           </code>
           <div className="relative z-raised flex flex-wrap items-center justify-center gap-3">
-            <GithubCta label="Get Moyai on GitHub" />
+            <GithubCta label={t("getOnGithub")} />
             <SecondaryCta href={MOYAI_LAUNCH_POST_URL} icon={<ArrowUpRight className="size-4" />}>
               Read the launch post
             </SecondaryCta>

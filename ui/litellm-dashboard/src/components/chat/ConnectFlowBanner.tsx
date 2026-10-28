@@ -1,6 +1,9 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
+
+import type { ChatTranslator } from "@/lib/i18n/translators";
 import { CheckCircle } from "lucide-react";
 import { getProxyBaseUrl, ConnectFlowStatus } from "@/components/networking";
 import { OAuth2ConnectButton } from "@/components/chat/MCPAppsPanel";
@@ -24,41 +27,43 @@ export function isLoopbackOrigin(origin: string | null): boolean {
   }
 }
 
-const copyFor = (flow: ConnectFlowStatus | undefined, failed: boolean): readonly [string, string] => {
-  const clientLabel = flow?.client_origin ?? "the application";
-  const serverLabel = flow?.server_name ?? "the requested MCP server";
-  const serverNames = flow?.servers?.map((server) => server.server_name).join(", ") ?? "";
+const copyFor = (
+  t: ChatTranslator,
+  flow: ConnectFlowStatus | undefined,
+  failed: boolean,
+): readonly [string, string] => {
+  const clientLabel = flow?.client_origin ?? t("connectFlow.fallbackClient");
+  const multiServerLabel =
+    flow?.state === "multi" && flow.servers ? flow.servers.map((s) => s.server_name ?? s.server_id).join(", ") : null;
+  const serverLabel = multiServerLabel ?? flow?.server_name ?? t("connectFlow.fallbackServer");
   if (failed || flow === undefined || flow.state === "stale") {
-    return [
-      "The connection cannot continue",
-      `The gateway could not validate this connection. Cancel to return to ${clientLabel}.`,
-    ];
+    return [t("connectFlow.failedTitle"), t("connectFlow.failedBody", { client: clientLabel })];
   }
   if (flow.state === "unscoped") {
     return [
-      `Connect your MCP servers to ${clientLabel}`,
-      `Authorize the servers you want to use below, then click Finish connecting to return to ${clientLabel}.`,
+      t("connectFlow.unscopedTitle", { client: clientLabel }),
+      t("connectFlow.unscopedBody", { client: clientLabel }),
     ];
   }
   if (flow.state === "multi") {
     const allServersConnected =
       flow.servers !== null && flow.servers.length > 0 && flow.servers.every((server) => server.connected);
     return [
-      `Allow ${clientLabel} to use ${serverNames}`,
+      t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
       allServersConnected
-        ? `Click Finish connecting to give ${clientLabel} access to ${serverNames} as you.`
-        : `Authorize each requested server below to continue, or cancel to send ${clientLabel} away.`,
+        ? t("connectFlow.readyBody", { client: clientLabel, server: serverLabel })
+        : t("connectFlow.multiBody", { client: clientLabel, server: serverLabel }),
     ];
   }
   if (flow.state === "interactive" && !flow.connected) {
     return [
-      `Allow ${clientLabel} to use ${serverLabel}`,
-      `Authorize ${serverLabel} below to continue, or cancel to send ${clientLabel} away.`,
+      t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
+      t("connectFlow.interactiveBody", { client: clientLabel, server: serverLabel }),
     ];
   }
   return [
-    `Allow ${clientLabel} to use ${serverLabel}`,
-    `Click Finish connecting to give ${clientLabel} access to ${serverLabel} as you.`,
+    t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
+    t("connectFlow.readyBody", { client: clientLabel, server: serverLabel }),
   ];
 };
 
@@ -83,13 +88,14 @@ const vendorServersFor = (
 };
 
 const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onConnected, failed }) => {
+  const t = useTranslations("chat");
   const action = `${getProxyBaseUrl()}/authorize/complete`;
   const state = failed || flow === undefined ? "stale" : flow.state;
   const canFinish = canFinishConnectFlow(state, flow);
   const canCancel = state !== "unscoped";
   const loopbackClient = isLoopbackOrigin(flow?.client_origin ?? null);
   const vendorServers = vendorServersFor(state, flow);
-  const copy = copyFor(flow, failed);
+const copy = copyFor(t, flow, failed);
 
   return (
     <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 px-5 py-4">

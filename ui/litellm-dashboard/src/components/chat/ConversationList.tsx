@@ -1,5 +1,20 @@
 "use client";
 
+// The DateGroup strings are internal bucket ids (they key the map and fix the
+// order); only this label step turns them into user-facing copy.
+const dateGroupLabel = (t: ChatTranslator, group: DateGroup): string => {
+  switch (group) {
+    case "Recents":
+      return t("conversationList.dateGroup.recents");
+    case "Yesterday":
+      return t("conversationList.dateGroup.yesterday");
+    case "Last 7 Days":
+      return t("conversationList.dateGroup.last7Days");
+    default:
+      return t("conversationList.dateGroup.older");
+  }
+};
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Pencil, Trash2, Search, MessageSquare, Clock3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +35,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dayjs from "dayjs";
 import { Conversation } from "./types";
+import { DEFAULT_CONVERSATION_TITLE } from "./useChatHistory";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 
 interface Props {
   conversations: Conversation[];
@@ -72,6 +89,8 @@ interface ConversationRowProps {
 }
 
 const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSelect, onDelete, onRename }) => {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(conv.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -169,7 +188,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                   }
                 />
                 <TooltipContent side="bottom">
-                  <p>Rename</p>
+                  <p>{commonT("rename")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -194,17 +213,17 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                     }
                   />
                   <TooltipContent side="bottom">
-                    <p>Delete</p>
+                    <p>{commonT("delete")}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <AlertDialogContent className="chat-theme">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
-                  <AlertDialogDescription>This action cannot be undone</AlertDialogDescription>
+                  <AlertDialogTitle>{t("conversationList.deleteTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("conversationList.deleteDescription")}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => onDelete(conv.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

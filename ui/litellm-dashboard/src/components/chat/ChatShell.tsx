@@ -103,10 +103,10 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isChatsRoute = pathname === routes.chats;
   const accountName = userEmail?.split("@")[0] || userId || "Account";
   const workspaceItems = [
-    { label: "Credentials", route: routes.credentials, Icon: KeyRound },
-    { label: "API Keys", route: routes.apiKeys, Icon: Lock },
-    { label: "Logs", route: routes.logs, Icon: ScrollText },
-    { label: "Usage", route: routes.usage, Icon: BarChart3 },
+    { label: t("shell.navCredentials"), route: routes.credentials, Icon: KeyRound },
+    { label: t("shell.navApiKeys"), route: routes.apiKeys, Icon: Lock },
+    { label: t("shell.navLogs"), route: routes.logs, Icon: ScrollText },
+    { label: t("shell.navUsage"), route: routes.usage, Icon: BarChart3 },
   ];
   const workspaceActive = workspaceItems.some((item) => item.route === pathname);
   const navigate = (href: string) => {
@@ -150,7 +150,7 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <nav aria-label="Chat workspace" className="moyai-chat-destinations">
         <NavItem
           icon={<MessageSquare className="size-4" />}
-          label="Chats"
+          label={t("shell.navChats")}
           onClick={() => navigate(routes.chats)}
           active={isChatsRoute}
         />
@@ -162,7 +162,7 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         />
         <NavItem
           icon={<LayoutGrid className="size-4" />}
-          label="Integrations"
+          label={t("shell.navIntegrations")}
           onClick={() => navigate(routes.integrations)}
           active={pathname === routes.integrations}
         />
