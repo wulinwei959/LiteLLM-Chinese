@@ -1,7 +1,8 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, screen, waitFor } from "@testing-library/react";
 import ConnectFlowSurface from "./ConnectFlowSurface";
+import { testQueryClient } from "../../../tests/test-utils";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { fetchConnectFlow } from "@/components/networking";
 
 const { startOAuthFlow, state, onSuccess } = vi.hoisted(() => ({
@@ -48,13 +49,10 @@ const flow = (state: "unscoped" | "interactive" | "m2m" | "multi" | "stale", con
 });
 
 const renderSurface = () =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <ConnectFlowSurface accessToken="token-123" selectedServers={[]} onChange={vi.fn()} />
-    </QueryClientProvider>,
-  );
+  renderWithProviders(<ConnectFlowSurface accessToken="token-123" selectedServers={[]} onChange={vi.fn()} />);
 
 afterEach(() => {
+  testQueryClient.clear();
   state.oauthReturn = null;
   state.connectFlow = null;
   onSuccess.current = undefined;
@@ -63,6 +61,9 @@ afterEach(() => {
 });
 
 describe("ConnectFlowSurface", () => {
+  beforeEach(() => {
+    testQueryClient.clear();
+  });
   it.each([
     { result: flow("unscoped"), grid: true, finish: true, cancel: false, oauthStarts: 0 },
     { result: flow("interactive", false), grid: false, finish: false, cancel: true, oauthStarts: 1 },
@@ -76,11 +77,11 @@ describe("ConnectFlowSurface", () => {
       vi.mocked(fetchConnectFlow).mockResolvedValue(result);
       renderSurface();
 
-      await screen.findByRole("button", { name: /finish connecting|cancel|connect/i });
+      await screen.findByRole("button", { name: /完成连接|取消|连接/i });
       await waitFor(() => expect(startOAuthFlow).toHaveBeenCalledTimes(oauthStarts));
       expect(screen.queryByTestId("mcp-apps-panel") !== null).toBe(grid);
-      expect(screen.queryByRole("button", { name: /finish connecting/i }) !== null).toBe(finish);
-      expect(screen.queryByRole("button", { name: "Cancel" }) !== null).toBe(cancel);
+      expect(screen.queryByRole("button", { name: "完成连接" }) !== null).toBe(finish);
+      expect(screen.queryByRole("button", { name: "取消" }) !== null).toBe(cancel);
     },
   );
 
@@ -90,8 +91,8 @@ describe("ConnectFlowSurface", () => {
     renderSurface();
 
     expect(screen.queryByTestId("mcp-apps-panel")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute("value", "deny");
+    expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toHaveAttribute("value", "deny");
   });
 
   it("keeps the grid and Finish hidden when flow validation fails", async () => {
@@ -99,9 +100,9 @@ describe("ConnectFlowSurface", () => {
     vi.mocked(fetchConnectFlow).mockRejectedValue(new Error("invalid flow"));
     renderSurface();
 
-    await screen.findByRole("button", { name: "Cancel" });
+    await screen.findByRole("button", { name: "取消" });
     expect(screen.queryByTestId("mcp-apps-panel")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
   });
 
   it("refetches the sealed flow after the vendor connection completes", async () => {
@@ -114,7 +115,7 @@ describe("ConnectFlowSurface", () => {
     await waitFor(() => expect(startOAuthFlow).toHaveBeenCalledOnce());
     await act(async () => onSuccess.current?.());
 
-    await screen.findByRole("button", { name: /finish connecting/i });
+    await screen.findByRole("button", { name: "完成连接" });
   });
 
   it("renders the ordinary panel without a flow handle", () => {

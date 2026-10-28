@@ -376,14 +376,14 @@ describe("PlaygroundChat", () => {
     responsesRequest
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
         await first.promise;
-        args[16]?.("resp-stopped");
+        args[15]?.("resp-stopped");
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[16]?.("resp-fresh");
-        args[2]("assistant", "fresh reply", args[3]);
+        args[15]?.("resp-fresh");
+        args[1]("assistant", "fresh reply", args[2]);
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[2]("assistant", "third reply", args[3]);
+        args[1]("assistant", "third reply", args[2]);
       });
     preload({ endpointType: "responses", selectedModel: "gpt-fast", useApiSessionManagement: "true" });
     renderChat();
@@ -399,7 +399,7 @@ describe("PlaygroundChat", () => {
     await send(user, "third");
 
     await waitFor(() => expect(responsesRequest).toHaveBeenCalledTimes(3));
-    expect((responsesRequest.mock.calls[2] as ResponsesArgs)[15]).toBe("resp-fresh");
+    expect((responsesRequest.mock.calls[2] as ResponsesArgs)[14]).toBe("resp-fresh");
   });
 
   it("ignores a stopped request that finishes after a newer one started", async () => {
@@ -475,9 +475,7 @@ describe("PlaygroundChat", () => {
 
     await send(user, "hello");
     expect(await screen.findByText("cross-origin reply")).toBeInTheDocument();
-    expect(
-      screen.getByText("只有从代理打开控制台时才会报告策略"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("只有从代理打开控制台时才会报告策略")).toBeInTheDocument();
     expect(screen.queryByText(/policies ran on this request/)).not.toBeInTheDocument();
   });
 
@@ -553,9 +551,7 @@ describe("PlaygroundChat", () => {
     await user.click(screen.getByRole("button", { name: "接口" }));
     await user.click(await screen.findByRole("menuitemradio", { name: "/v1/audio/transcriptions" }));
 
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "接口" })).toHaveTextContent("audio/transcriptions"),
-    );
+    await waitFor(() => expect(screen.getByRole("button", { name: "接口" })).toHaveTextContent("audio/transcriptions"));
     expect(screen.queryByRole("button", { name: "移除 notes.pdf" })).not.toBeInTheDocument();
   });
 
@@ -565,10 +561,10 @@ describe("PlaygroundChat", () => {
     responsesRequest
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
         await first.promise;
-        args[19]?.({ code: "print('stopped run')", containerId: "c-1", annotations: [] });
+        args[18]?.({ code: "print('stopped run')", containerId: "c-1", annotations: [] });
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[2]("assistant", "fresh reply", args[3]);
+        args[1]("assistant", "fresh reply", args[2]);
       });
     preload({ endpointType: "responses", selectedModel: "gpt-fast" });
     renderChat();

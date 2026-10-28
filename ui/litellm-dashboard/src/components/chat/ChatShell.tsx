@@ -134,7 +134,7 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
+          aria-label={collapsed ? t("shell.openSidebar") : t("shell.closeSidebar")}
           aria-expanded={!collapsed}
           onClick={() => (isDesktop ? setSidebarCollapsed(!sidebarCollapsed) : setSidebarOpen(false))}
         >

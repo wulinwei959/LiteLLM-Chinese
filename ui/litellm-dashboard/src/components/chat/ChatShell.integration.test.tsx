@@ -58,12 +58,12 @@ describe("ChatShell", () => {
         <div />
       </ChatShell>,
     );
-    expect(screen.getByRole("button", { name: "Chats" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Models" })).not.toHaveAttribute("aria-current");
-    expect(screen.getByRole("button", { name: "Workspace" })).not.toHaveAttribute("aria-current");
-    expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Switch workspace, current: Chat" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "对话" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "模型" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "工作区" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "设置" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "退出登录" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "切换工作区，当前：聊天" })).toBeInTheDocument();
     expect(screen.getByTestId("conversation-list")).toBeInTheDocument();
   });
 
@@ -75,9 +75,9 @@ describe("ChatShell", () => {
       </ChatShell>,
     );
 
-    expect(screen.getByRole("button", { name: "Models" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Chats" })).not.toHaveAttribute("aria-current");
-    expect(screen.getByRole("button", { name: "Workspace" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "模型" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "对话" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "工作区" })).not.toHaveAttribute("aria-current");
   });
 
   it("should mark API Keys active while still showing the conversation list", () => {
@@ -87,8 +87,8 @@ describe("ChatShell", () => {
         <div />
       </ChatShell>,
     );
-    expect(screen.getByRole("button", { name: "Workspace" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Chats" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "工作区" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "对话" })).not.toHaveAttribute("aria-current");
     expect(screen.getByTestId("conversation-list")).toBeInTheDocument();
   });
 
@@ -99,17 +99,17 @@ describe("ChatShell", () => {
         <div />
       </ChatShell>,
     );
-    await user.click(screen.getByRole("button", { name: "Integrations" }));
+    await user.click(screen.getByRole("button", { name: "集成" }));
     expect(mockPush).toHaveBeenCalledWith("/ui/chat/integrations");
-    await user.click(screen.getByRole("button", { name: "Models" }));
+    await user.click(screen.getByRole("button", { name: "模型" }));
     expect(mockPush).toHaveBeenCalledWith("/ui/chat/models");
     for (const [label, href] of [
-      ["Credentials", "/ui/chat/credentials"],
-      ["API Keys", "/ui/chat/api-keys"],
-      ["Usage", "/ui/chat/usage"],
-      ["Logs", "/ui/chat/logs"],
+      ["凭证", "/ui/chat/credentials"],
+      ["API 密钥", "/ui/chat/api-keys"],
+      ["用量", "/ui/chat/usage"],
+      ["日志", "/ui/chat/logs"],
     ]) {
-      await user.click(screen.getByRole("button", { name: "Workspace" }));
+      await user.click(screen.getByRole("button", { name: "工作区" }));
       await user.click(await screen.findByRole("menuitem", { name: label, exact: true }));
       expect(mockPush).toHaveBeenCalledWith(href);
     }
@@ -123,10 +123,10 @@ describe("ChatShell", () => {
         <div />
       </ChatShell>,
     );
-    expect(screen.getByRole("button", { name: "Workspace" })).toHaveAttribute("aria-current", "page");
-    await user.click(screen.getByRole("button", { name: "Workspace" }));
-    expect(await screen.findByRole("menuitem", { name: "Usage", exact: true })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("menuitem", { name: "Logs", exact: true })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "工作区" })).toHaveAttribute("aria-current", "page");
+    await user.click(screen.getByRole("button", { name: "工作区" }));
+    expect(await screen.findByRole("menuitem", { name: "用量", exact: true })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("menuitem", { name: "日志", exact: true })).not.toHaveAttribute("aria-current");
   });
 
   it("should collapse and reopen the desktop rail", async () => {
@@ -136,13 +136,13 @@ describe("ChatShell", () => {
         <div />
       </ChatShell>,
     );
-    await user.click(screen.getByRole("button", { name: "Close sidebar" }));
-    expect(screen.getByRole("button", { name: "Open sidebar" })).toHaveAttribute("aria-expanded", "false");
-    await user.click(screen.getByRole("button", { name: "Switch workspace, current: Chat" }));
-    expect(await screen.findByRole("menuitem", { name: "AI Gateway", exact: true })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "关闭侧栏" }));
+    expect(screen.getByRole("button", { name: "打开侧栏" })).toHaveAttribute("aria-expanded", "false");
+    await user.click(screen.getByRole("button", { name: "切换工作区，当前：聊天" }));
+    expect(await screen.findByRole("menuitem", { name: "AI 网关", exact: true })).toBeInTheDocument();
     await user.keyboard("{Escape}");
-    await user.click(screen.getByRole("button", { name: "Open sidebar" }));
-    expect(screen.getByRole("button", { name: "Close sidebar" })).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByRole("button", { name: "打开侧栏" }));
+    expect(screen.getByRole("button", { name: "关闭侧栏" })).toHaveAttribute("aria-expanded", "true");
   });
 
   it("should open mobile navigation and close it after selecting Models", async () => {
@@ -154,11 +154,11 @@ describe("ChatShell", () => {
       </ChatShell>,
     );
 
-    expect(screen.queryByRole("navigation", { name: "Chat workspace" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Switch workspace, current: Chat" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Open chat navigation" }));
-    expect(await screen.findByRole("dialog", { name: "LiteLLM Chat" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Models" }));
+    expect(screen.queryByRole("navigation", { name: "聊天工作区" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "切换工作区，当前：聊天" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "打开聊天导航" }));
+    expect(await screen.findByRole("dialog", { name: "LiteLLM 聊天" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "模型" }));
 
     expect(mockPush).toHaveBeenCalledWith("/ui/chat/models");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
@@ -174,9 +174,9 @@ describe("ChatShell", () => {
       </ChatShell>,
     );
 
-    const trigger = screen.getByRole("button", { name: "Open chat navigation" });
+    const trigger = screen.getByRole("button", { name: "打开聊天导航" });
     await user.click(trigger);
-    expect(await screen.findByRole("dialog", { name: "LiteLLM Chat" })).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "LiteLLM 聊天" })).toBeInTheDocument();
     await user.keyboard("{Escape}");
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

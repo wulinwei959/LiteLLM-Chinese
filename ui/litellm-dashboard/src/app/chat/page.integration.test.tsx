@@ -64,10 +64,10 @@ vi.mock("@/contexts/ChatShellContext", () => ({
   },
 }));
 
-const ONE_TURN_ARG_COUNT = 26;
-const ON_TIMING_DATA_INDEX = 8;
-const ON_USAGE_DATA_INDEX = 9;
-const ON_TOTAL_LATENCY_INDEX = 25;
+const ONE_TURN_ARG_COUNT = 25;
+const ON_TIMING_DATA_INDEX = 7;
+const ON_USAGE_DATA_INDEX = 8;
+const ON_TOTAL_LATENCY_INDEX = 24;
 
 async function sendOneMessage(): Promise<void> {
   renderWithProviders(
@@ -92,7 +92,7 @@ describe("/ui/chat request metrics", () => {
 
   it("renders latency, TTFT, token counts and cost reported for the assistant turn", async () => {
     mockMakeOpenAIResponsesRequest.mockImplementation(async (...args: unknown[]) => {
-      const updateTextUI = args[2] as (role: string, delta: string) => void;
+      const updateTextUI = args[1] as (role: string, delta: string) => void;
       const onTimingData = args[ON_TIMING_DATA_INDEX] as ((ttft: number) => void) | undefined;
       const onUsageData = args[ON_USAGE_DATA_INDEX] as ((usage: Record<string, number>) => void) | undefined;
       const onTotalLatency = args[ON_TOTAL_LATENCY_INDEX] as ((latency: number) => void) | undefined;
@@ -127,7 +127,7 @@ describe("/ui/chat request metrics", () => {
 
   it("shows no metrics bar for a turn the provider reported no usage for", async () => {
     mockMakeOpenAIResponsesRequest.mockImplementation(async (...args: unknown[]) => {
-      const updateTextUI = args[2] as (role: string, delta: string) => void;
+      const updateTextUI = args[1] as (role: string, delta: string) => void;
       updateTextUI("assistant", "No usage here.");
     });
 

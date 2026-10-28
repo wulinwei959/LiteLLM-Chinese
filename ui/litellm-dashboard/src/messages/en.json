@@ -8368,7 +8368,9 @@
       "delete": "Delete",
       "noChatsYet": "No chats here yet.",
       "searchConversations": "Search conversations",
-      "ariaConversationTitle": "Conversation title"
+      "ariaConversationTitle": "Conversation title",
+      "ariaRename": "Rename {title}",
+      "ariaDelete": "Delete {title}"
     },
     "credentialsPanel": {
       "title": "App Credentials",
@@ -8425,6 +8427,8 @@
       "signOut": "Sign out",
       "ariaChatNavigation": "Chat navigation",
       "ariaOpenNavigation": "Open chat navigation",
+      "openSidebar": "Open sidebar",
+      "closeSidebar": "Close sidebar",
       "litellmChat": "LiteLLM Chat",
       "navDescription": "Conversations and chat workspace navigation"
     },
@@ -14236,7 +14240,8 @@
       "chat": "Chat",
       "chatDescription": "Chat UI for using LLMs, MCPs, Agents",
       "chatDisabledHint": "Admins can enable in Settings",
-      "moyaiDescription": "Cloud Coding Agent"
+      "moyaiDescription": "Cloud Coding Agent",
+      "ariaSwitchWorkspace": "Switch workspace, current: {current}"
     },
     "docsLink": {
       "docs": "Docs"

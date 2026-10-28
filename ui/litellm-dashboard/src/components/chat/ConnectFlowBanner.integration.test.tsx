@@ -1,7 +1,8 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import ConnectFlowBanner from "./ConnectFlowBanner";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const locationDescriptor = Object.getOwnPropertyDescriptor(window, "location")!;
 
@@ -25,7 +26,7 @@ it("carries a challenged scope through the connect button into vendor authorizat
       pathname: "/ui/connect",
     },
   });
-  render(
+  renderWithProviders(
     <ConnectFlowBanner
       flowHandle="flow-handle"
       flow={{
@@ -45,8 +46,8 @@ it("carries a challenged scope through the connect button into vendor authorizat
   expect(new URL(window.location.href, window.location.origin).pathname).toBe(
     "/v1/mcp/server/oauth/server-1/authorize",
   );
-  expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
 });
 
 it("starts consent for the next upstream in the same connect flow", async () => {
@@ -77,7 +78,7 @@ it("starts consent for the next upstream in the same connect flow", async () => 
     connected: false,
     requested_scopes: ["first.write"],
   };
-  const { rerender } = render(<ConnectFlowBanner {...props} flow={first} />);
+  const { rerender } = renderWithProviders(<ConnectFlowBanner {...props} flow={first} />);
   await waitFor(() => expect(window.location.href).toContain("scope=first.write"));
   rerender(
     <ConnectFlowBanner
@@ -87,5 +88,5 @@ it("starts consent for the next upstream in the same connect flow", async () => 
   );
   await waitFor(() => expect(window.location.href).toContain("scope=second.write"));
   expect(new URL(window.location.href, window.location.origin).pathname).toBe("/v1/mcp/server/oauth/second/authorize");
-  expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
 });

@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import MoyaiChatHome from "./MoyaiChatHome";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import type { Conversation } from "../types";
 
 function homeProps(overrides: Partial<ComponentProps<typeof MoyaiChatHome>> = {}) {
@@ -23,11 +24,11 @@ function conversation(id: string, updatedAt: number): Conversation {
 
 describe("MoyaiChatHome", () => {
   it("should render the Moyai welcome and composer", () => {
-    render(<MoyaiChatHome {...homeProps()} />);
-    expect(screen.getByRole("heading", { level: 1, name: "What are we building?" })).toBeInTheDocument();
+    renderWithProviders(<MoyaiChatHome {...homeProps()} />);
+    expect(screen.getByRole("heading", { level: 1, name: "我们要 创建什么？" })).toBeInTheDocument();
     expect(screen.getByText("Chat composer")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Recent chats" })).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("No recent chats in this browser yet.");
+    expect(screen.getByRole("heading", { name: "最近聊天" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("此浏览器还没有最近聊天");
   });
 
   it("should show the three most recently updated chats and open the selected one", () => {
@@ -38,8 +39,8 @@ describe("MoyaiChatHome", () => {
       conversation("fourth", 2),
     ];
     const props = homeProps({ conversations });
-    render(<MoyaiChatHome {...props} />);
-    const recent = screen.getByRole("region", { name: "Recent chats" });
+    renderWithProviders(<MoyaiChatHome {...props} />);
+    const recent = screen.getByRole("region", { name: "最近聊天" });
     const buttons = within(recent).getAllByRole("button");
     expect(buttons.map((button) => button.textContent)).toEqual(["Chat second", "Chat third", "Chat fourth"]);
     expect(screen.queryByRole("button", { name: "Chat first" })).not.toBeInTheDocument();
@@ -52,18 +53,18 @@ describe("MoyaiChatHome", () => {
 
   it("should pass a starter prompt to the composer without submitting it", () => {
     const props = homeProps();
-    render(<MoyaiChatHome {...props} />);
+    renderWithProviders(<MoyaiChatHome {...props} />);
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /Review code/ }));
+      fireEvent.click(screen.getByRole("button", { name: /审查代码/ }));
     });
-    expect(props.onPrompt).toHaveBeenCalledWith("Review my changes for bugs and improvements.");
+    expect(props.onPrompt).toHaveBeenCalledWith("帮我审查改动中的 bug 与可改进之处。");
     expect(props.onSelectConversation).not.toHaveBeenCalled();
   });
 
   it("should disable starters during a request", () => {
     const props = homeProps({ busy: true });
-    render(<MoyaiChatHome {...props} />);
-    const starter = screen.getByRole("button", { name: /Review code/ });
+    renderWithProviders(<MoyaiChatHome {...props} />);
+    const starter = screen.getByRole("button", { name: /审查代码/ });
     expect(starter).toBeDisabled();
     act(() => {
       fireEvent.click(starter);
@@ -72,15 +73,15 @@ describe("MoyaiChatHome", () => {
   });
 
   it("should hide starter choices from assistive technology once a draft is present", () => {
-    render(<MoyaiChatHome {...homeProps({ draft: "My current prompt" })} />);
-    expect(screen.queryByRole("group", { name: "Start with a prompt" })).not.toBeInTheDocument();
+    renderWithProviders(<MoyaiChatHome {...homeProps({ draft: "My current prompt" })} />);
+    expect(screen.queryByRole("group", { name: "从提示词开始" })).not.toBeInTheDocument();
     for (const button of screen.getAllByRole("button", { hidden: true })) expect(button).toBeDisabled();
   });
 
   it("should show the image welcome without code starter prompts in image mode", () => {
-    render(<MoyaiChatHome {...homeProps({ imageMode: true })} />);
-    expect(screen.getByRole("heading", { level: 1, name: "What are we creating?" })).toBeInTheDocument();
-    expect(screen.queryByRole("group", { name: "Start with a prompt" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Review code/ })).not.toBeInTheDocument();
+    renderWithProviders(<MoyaiChatHome {...homeProps({ imageMode: true })} />);
+    expect(screen.getByRole("heading", { level: 1, name: "我们要创建什么？" })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "从提示词开始" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /审查代码/ })).not.toBeInTheDocument();
   });
 });

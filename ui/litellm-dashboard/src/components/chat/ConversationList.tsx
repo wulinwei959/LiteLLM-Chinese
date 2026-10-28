@@ -180,7 +180,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                       onClick={startEditing}
                       variant="ghost"
                       size="icon-xs"
-                      aria-label={`Rename ${conv.title}`}
+                      aria-label={t("conversationList.ariaRename", { title: conv.title })}
                       className="text-muted-foreground"
                     >
                       <Pencil className="h-3 w-3" />
@@ -203,7 +203,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                           <Button
                             variant="ghost"
                             size="icon-xs"
-                            aria-label={`Delete ${conv.title}`}
+                            aria-label={t("conversationList.ariaDelete", { title: conv.title })}
                             className="text-muted-foreground hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />

@@ -8368,7 +8368,9 @@
       "delete": "删除",
       "noChatsYet": "这里还没有聊天。",
       "searchConversations": "搜索会话",
-      "ariaConversationTitle": "会话标题"
+      "ariaConversationTitle": "会话标题",
+      "ariaRename": "重命名 {title}",
+      "ariaDelete": "删除 {title}"
     },
     "credentialsPanel": {
       "title": "应用凭证",
@@ -8425,6 +8427,8 @@
       "signOut": "退出登录",
       "ariaChatNavigation": "聊天导航",
       "ariaOpenNavigation": "打开聊天导航",
+      "openSidebar": "打开侧栏",
+      "closeSidebar": "关闭侧栏",
       "litellmChat": "LiteLLM 聊天",
       "navDescription": "会话与聊天工作区导航"
     },
@@ -14232,7 +14236,8 @@
       "chat": "对话",
       "chatDescription": "面向 LLM、MCP 和智能体的聊天界面",
       "chatDisabledHint": "管理员可在设置中启用",
-      "moyaiDescription": "云端编码智能体"
+      "moyaiDescription": "云端编码智能体",
+      "ariaSwitchWorkspace": "切换工作区，当前：{current}"
     },
     "docsLink": {
       "docs": "文档"

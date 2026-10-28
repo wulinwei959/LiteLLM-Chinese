@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import ConversationList from "./ConversationList";
+import { renderWithProviders } from "../../../tests/test-utils";
 import type { Conversation } from "./types";
 
 const conversations: Conversation[] = [
@@ -27,7 +28,7 @@ const conversations: Conversation[] = [
 
 describe("ConversationList navigation", () => {
   it("should render named conversation actions and the active selection", () => {
-    render(
+    renderWithProviders(
       <ConversationList
         conversations={conversations}
         activeConversationId="design"
@@ -38,14 +39,14 @@ describe("ConversationList navigation", () => {
     );
 
     expect(screen.getByRole("button", { name: "Design review", exact: true })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Rename Design review" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Delete Design review" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重命名 Design review" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "删除 Design review" })).toBeInTheDocument();
   });
 
   it("should select a conversation with the keyboard", async () => {
     const onSelect = vi.fn();
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <ConversationList
         conversations={conversations}
         activeConversationId={null}
@@ -56,7 +57,7 @@ describe("ConversationList navigation", () => {
     );
 
     await user.tab();
-    expect(screen.getByRole("button", { name: "Search chats" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "搜索聊天" })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: "Design review", exact: true })).toHaveFocus();
     await user.keyboard("{Enter}");
@@ -66,7 +67,7 @@ describe("ConversationList navigation", () => {
   it("should filter chats from visible search and select a result", async () => {
     const onSelect = vi.fn();
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <ConversationList
         conversations={conversations}
         activeConversationId={null}
@@ -76,11 +77,9 @@ describe("ConversationList navigation", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Search chats" }));
-    const dialog = await screen.findByRole("dialog", { name: "Search conversations" });
-    act(() =>
-      fireEvent.change(screen.getByRole("textbox", { name: "Search conversations" }), { target: { value: "photo" } }),
-    );
+    await user.click(screen.getByRole("button", { name: "搜索聊天" }));
+    const dialog = await screen.findByRole("dialog", { name: "搜索会话" });
+    act(() => fireEvent.change(screen.getByRole("textbox", { name: "搜索会话" }), { target: { value: "photo" } }));
     expect(within(dialog).queryByRole("button", { name: /Design review/ })).not.toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: /Photo ideas/ }));
     expect(onSelect).toHaveBeenCalledWith("photos");

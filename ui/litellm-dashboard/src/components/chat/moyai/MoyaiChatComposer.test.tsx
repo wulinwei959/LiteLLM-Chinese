@@ -1,7 +1,8 @@
-import { act, createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { act, createEvent, fireEvent, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import MoyaiChatComposer from "./MoyaiChatComposer";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 function composerProps(overrides: Partial<ComponentProps<typeof MoyaiChatComposer>> = {}) {
   return {
@@ -12,7 +13,7 @@ function composerProps(overrides: Partial<ComponentProps<typeof MoyaiChatCompose
     placeholder: "Describe a change, paste an error, or ask a question…",
     isLoading: false,
     submitDisabled: false,
-    submitLabel: "Send",
+    submitLabel: "发送",
     ...overrides,
   };
 }
@@ -24,18 +25,18 @@ describe("MoyaiChatComposer", () => {
       tools: <span>Attach an image</span>,
       modelPicker: <span>Choose a model</span>,
     });
-    render(<MoyaiChatComposer {...props} />);
-    expect(screen.getByRole("textbox", { name: "Message" })).toHaveValue("Explain this code");
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    expect(screen.getByRole("textbox", { name: "消息" })).toHaveValue("Explain this code");
     expect(screen.getByRole("img", { name: "Attached design" })).toBeInTheDocument();
     expect(screen.getByText("Attach an image")).toBeInTheDocument();
     expect(screen.getByText("Choose a model")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
   });
 
   it("should forward draft changes and submit on Enter", () => {
     const props = composerProps();
-    render(<MoyaiChatComposer {...props} />);
-    const editor = screen.getByRole("textbox", { name: "Message" });
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    const editor = screen.getByRole("textbox", { name: "消息" });
     act(() => {
       fireEvent.change(editor, { target: { value: "New prompt" } });
     });
@@ -50,8 +51,8 @@ describe("MoyaiChatComposer", () => {
 
   it("should keep Shift+Enter available for a new line", () => {
     const props = composerProps();
-    render(<MoyaiChatComposer {...props} />);
-    const editor = screen.getByRole("textbox", { name: "Message" });
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    const editor = screen.getByRole("textbox", { name: "消息" });
     const enter = createEvent.keyDown(editor, { key: "Enter", code: "Enter", shiftKey: true });
     act(() => {
       fireEvent(editor, enter);
@@ -62,8 +63,8 @@ describe("MoyaiChatComposer", () => {
 
   it("should let IME composition consume Enter without submitting", () => {
     const props = composerProps();
-    render(<MoyaiChatComposer {...props} />);
-    const editor = screen.getByRole("textbox", { name: "Message" });
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    const editor = screen.getByRole("textbox", { name: "消息" });
     const enter = createEvent.keyDown(editor, { key: "Enter", code: "Enter", isComposing: true });
     act(() => {
       fireEvent(editor, enter);
@@ -74,28 +75,28 @@ describe("MoyaiChatComposer", () => {
 
   it("should block both click and Enter submission while submission is disabled", () => {
     const props = composerProps({ submitDisabled: true });
-    render(<MoyaiChatComposer {...props} />);
-    const send = screen.getByRole("button", { name: "Send" });
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    const send = screen.getByRole("button", { name: "发送" });
     expect(send).toBeDisabled();
     act(() => {
       fireEvent.click(send);
     });
     act(() => {
-      fireEvent.keyDown(screen.getByRole("textbox", { name: "Message" }), { key: "Enter" });
+      fireEvent.keyDown(screen.getByRole("textbox", { name: "消息" }), { key: "Enter" });
     });
     expect(props.onSubmit).not.toHaveBeenCalled();
   });
 
   it("should stop an active request and prevent another Enter submission", () => {
     const props = composerProps({ isLoading: true });
-    render(<MoyaiChatComposer {...props} />);
-    expect(screen.queryByRole("button", { name: "Send" })).not.toBeInTheDocument();
+    renderWithProviders(<MoyaiChatComposer {...props} />);
+    expect(screen.queryByRole("button", { name: "发送" })).not.toBeInTheDocument();
     act(() => {
-      fireEvent.keyDown(screen.getByRole("textbox", { name: "Message" }), { key: "Enter" });
+      fireEvent.keyDown(screen.getByRole("textbox", { name: "消息" }), { key: "Enter" });
     });
     expect(props.onSubmit).not.toHaveBeenCalled();
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Stop request" }));
+      fireEvent.click(screen.getByRole("button", { name: "停止请求" }));
     });
     expect(props.onCancel).toHaveBeenCalledOnce();
   });
@@ -103,11 +104,11 @@ describe("MoyaiChatComposer", () => {
   it("should forward pasted files to the attachment handler", () => {
     const onPaste = vi.fn();
     const props = composerProps({ onPaste });
-    render(<MoyaiChatComposer {...props} />);
+    renderWithProviders(<MoyaiChatComposer {...props} />);
     const image = new File(["image"], "design.png", { type: "image/png" });
     const clipboardData = { files: [image], items: [{ kind: "file", type: "image/png", getAsFile: () => image }] };
     act(() => {
-      fireEvent.paste(screen.getByRole("textbox", { name: "Message" }), { clipboardData });
+      fireEvent.paste(screen.getByRole("textbox", { name: "消息" }), { clipboardData });
     });
     expect(onPaste).toHaveBeenCalledOnce();
     expect(onPaste.mock.calls[0][0].clipboardData).toBe(clipboardData);

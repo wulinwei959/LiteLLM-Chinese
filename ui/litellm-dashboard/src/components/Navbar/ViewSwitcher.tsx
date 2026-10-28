@@ -183,7 +183,7 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={`Switch workspace, current: ${activeLabel}`}
+        aria-label={navT("ariaSwitchWorkspace", { current: activeLabel })}
         render={
           <Button
             type="button"
