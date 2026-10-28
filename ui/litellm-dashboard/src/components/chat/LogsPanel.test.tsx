@@ -57,14 +57,14 @@ describe("LogsPanel", () => {
 
     expect(await screen.findByText("gpt-4o")).toBeInTheDocument();
     expect(screen.getByText("1,500")).toBeInTheDocument();
-    expect(screen.getByText("Success")).toBeInTheDocument();
+    expect(screen.getByText("成功")).toBeInTheDocument();
   });
 
   it("shows an empty state when there are no logs", async () => {
     mockedLogsCall.mockResolvedValue(paginated([]));
     renderWithProviders(<LogsPanel accessToken="tok-empty" userId="user-1" />);
 
-    expect(await screen.findByText("No logs for this period")).toBeInTheDocument();
+    expect(await screen.findByText("该时间段没有日志")).toBeInTheDocument();
   });
 
   it("opens the detail dialog and lazily loads request/response when a row is clicked", async () => {
@@ -75,7 +75,7 @@ describe("LogsPanel", () => {
 
     fireEvent.click(modelCell);
 
-    expect(await screen.findByText("Request details")).toBeInTheDocument();
+    expect(await screen.findByText("请求详情")).toBeInTheDocument();
     await waitFor(() =>
       expect(mockedDetailsCall).toHaveBeenCalledWith("tok-detail", "req-abc-123", expect.any(String)),
     );
@@ -85,8 +85,8 @@ describe("LogsPanel", () => {
     mockedLogsCall.mockRejectedValue(new Error("boom"));
     renderWithProviders(<LogsPanel accessToken="tok-err" userId="user-1" />);
 
-    expect(await screen.findByText("Failed to load your logs")).toBeInTheDocument();
-    expect(screen.queryByText("No logs for this period")).not.toBeInTheDocument();
+    expect(await screen.findByText("加载你的日志失败")).toBeInTheDocument();
+    expect(screen.queryByText("该时间段没有日志")).not.toBeInTheDocument();
   });
 
   it("falls back to proxy_server_request when messages is empty for the request payload", async () => {

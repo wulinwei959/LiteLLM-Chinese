@@ -37,10 +37,7 @@ const copyFor = (
     flow?.state === "multi" && flow.servers ? flow.servers.map((s) => s.server_name ?? s.server_id).join(", ") : null;
   const serverLabel = multiServerLabel ?? flow?.server_name ?? t("connectFlow.fallbackServer");
   if (failed || flow === undefined || flow.state === "stale") {
-    return [
-      t("connectFlow.failedTitle"),
-      t("connectFlow.failedBody", { client: clientLabel }),
-    ];
+    return [t("connectFlow.failedTitle"), t("connectFlow.failedBody", { client: clientLabel })];
   }
   if (flow.state === "unscoped") {
     return [
@@ -60,7 +57,7 @@ const copyFor = (
   }
   if (flow.state === "interactive" && !flow.connected) {
     return [
-    t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
+      t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
       t("connectFlow.interactiveBody", { client: clientLabel, server: serverLabel }),
     ];
   }
@@ -119,7 +116,11 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
               onConnect={onConnected}
               scopes={flow?.requested_scopes}
               variant="button"
-              buttonLabel={state === "multi" ? `Connect ${server.server_name ?? server.server_id}` : undefined}
+              buttonLabel={
+                state === "multi"
+                  ? t("connectFlow.connectServer", { server: server.server_name ?? server.server_id })
+                  : undefined
+              }
               {...(state === "multi"
                 ? {}
                 : { autoStartKey: `litellm-mcp-autostart:${flowHandle}:${server.server_id}` })}
@@ -132,7 +133,7 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
                 type="submit"
                 className="h-[38px] rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                Finish connecting
+                {t("connectFlow.finish")}
               </button>
             )}
             {canCancel && (
@@ -142,13 +143,13 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
                 value="deny"
                 className="ml-2 h-[38px] rounded-md border px-4 text-sm font-semibold text-foreground hover:bg-accent/40"
               >
-                Cancel
+                {t("connectFlow.cancel")}
               </button>
             )}
             {loopbackClient && (
               <label className="mt-2 flex items-center gap-2 text-[13px] text-muted-foreground">
                 <input type="checkbox" name="delivery" value="manual" />
-                My client is on a remote or SSH machine
+                {t("connectFlow.remoteClient")}
               </label>
             )}
           </form>

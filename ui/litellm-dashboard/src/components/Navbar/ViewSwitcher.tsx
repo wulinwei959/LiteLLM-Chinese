@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,14 +27,24 @@ function isWorkspaceRoute(pathname: string, workspace: string): boolean {
   return routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
-function activeWorkspaceFor(
-  isChatRoute: boolean,
-  isMoyaiRoute: boolean,
-  pluginLabel: string | undefined,
-): { label: string; icon: WorkspaceIconName } {
-  if (isChatRoute) return { label: "Chat", icon: CHAT };
+interface ActiveWorkspaceInput {
+  isChatRoute: boolean;
+  isMoyaiRoute: boolean;
+  pluginLabel: string | undefined;
+  chatLabel: string;
+  gatewayLabel: string;
+}
+
+function activeWorkspaceFor({
+  isChatRoute,
+  isMoyaiRoute,
+  pluginLabel,
+  chatLabel,
+  gatewayLabel,
+}: ActiveWorkspaceInput): { label: string; icon: WorkspaceIconName } {
+  if (isChatRoute) return { label: chatLabel, icon: CHAT };
   if (isMoyaiRoute) return { label: "Moyai", icon: MOYAI };
-  return { label: pluginLabel ?? "AI Gateway", icon: GATEWAY };
+  return { label: pluginLabel ?? gatewayLabel, icon: GATEWAY };
 }
 
 function WorkspaceIcon({ workspace }: { workspace: WorkspaceIconName }) {
@@ -82,6 +93,8 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
   const { mode, setMode, plugins } = usePluginMode();
   const { data: uiSettings } = useUISettings();
   const pathname = usePathname();
+  const viewT = useTranslations("viewSwitcher");
+  const navT = useTranslations("navbar.viewSwitcher");
 
   const chatEnabled = Boolean(uiSettings?.values?.enable_chat_ui);
   const moyaiUrl = (uiSettings?.values?.moyai_url as string | undefined) ?? null;
@@ -91,14 +104,16 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
   const isMoyaiRoute = isWorkspaceRoute(normalizedPathname, MOYAI);
   const isStandaloneRoute = isChatRoute || isMoyaiRoute;
 
-  const { label: activeLabel, icon: activeIcon } = activeWorkspaceFor(
+  const { label: activeLabel, icon: activeIcon } = activeWorkspaceFor({
     isChatRoute,
     isMoyaiRoute,
-    plugins.find((p) => p.name === mode)?.display_name,
-  );
+    pluginLabel: plugins.find((p) => p.name === mode)?.display_name,
+    chatLabel: viewT("chat"),
+    gatewayLabel: viewT("aiGateway"),
+  });
 
   const modeEntries = [
-    { key: GATEWAY, label: "AI Gateway" },
+    { key: GATEWAY, label: viewT("aiGateway") },
     ...plugins.map((p) => ({ key: p.name, label: p.display_name })),
   ];
 
@@ -117,11 +132,11 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
         <span className="flex items-center gap-2">
           <WorkspaceIcon workspace={CHAT} />
           <span className="flex max-w-[220px] flex-col">
-            <span className="font-medium">Chat</span>{" "}
-            <span className="text-xs leading-snug text-muted-foreground">Chat UI for using LLMs, MCPs, Agents</span>{" "}
+            <span className="font-medium">{viewT("chat")}</span>{" "}
+            <span className="text-xs leading-snug text-muted-foreground">{navT("chatDescription")}</span>{" "}
             {!chatEnabled && (
               <span className="whitespace-normal text-xs leading-snug text-muted-foreground">
-                Admins can enable in Settings
+                {navT("chatDisabledHint")}
               </span>
             )}
           </span>
@@ -155,7 +170,7 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
             <WorkspaceIcon workspace={MOYAI} />
             <span className="flex flex-col">
               <span className="font-medium">Moyai</span>{" "}
-              <span className="text-xs leading-snug text-muted-foreground">Cloud Coding Agent</span>
+              <span className="text-xs leading-snug text-muted-foreground">{navT("moyaiDescription")}</span>
             </span>
           </span>
           {isMoyaiRoute && <Check className="size-4 text-info" />}

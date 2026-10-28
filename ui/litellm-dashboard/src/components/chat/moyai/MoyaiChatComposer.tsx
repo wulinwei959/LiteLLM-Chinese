@@ -1,4 +1,5 @@
 import type { ClipboardEventHandler, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,11 +36,12 @@ export default function MoyaiChatComposer({
   modelPicker,
   inConversation = false,
 }: MoyaiChatComposerProps) {
+  const t = useTranslations("chat");
   const send = () => {
     if (!submitDisabled && !isLoading) onSubmit();
   };
   const sendButton = isLoading ? (
-    <Button type="button" size="icon" aria-label="Stop request" onClick={onCancel}>
+    <Button type="button" size="icon" aria-label={t("composer.stopRequest")} onClick={onCancel}>
       <Square className="size-4" />
     </Button>
   ) : (
@@ -56,7 +58,7 @@ export default function MoyaiChatComposer({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
-            aria-label="Message"
+            aria-label={t("composer.message")}
             onPaste={onPaste}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {

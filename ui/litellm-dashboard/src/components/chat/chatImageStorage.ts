@@ -1,11 +1,12 @@
 import type { ChatAttachment, Conversation } from "./types";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 
 const DATABASE_NAME = "litellm_chat_media_v1";
 const STORE_NAME = "images";
 let databasePromise: Promise<IDBDatabase> | undefined;
 const imageWrites = new Map<string, Promise<void>>();
 
-function openDatabase(): Promise<IDBDatabase> {
+function openDatabase(t: ChatTranslator): Promise<IDBDatabase> {
   if (!databasePromise) {
     databasePromise = new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open(DATABASE_NAME, 1);
@@ -21,8 +22,8 @@ function openDatabase(): Promise<IDBDatabase> {
         };
         resolve(database);
       };
-      request.onerror = () => reject(request.error ?? new Error("Attachment storage is unavailable."));
-      request.onblocked = () => reject(new Error("Attachment storage is blocked by another browser tab."));
+      request.onerror = () => reject(request.error ?? new Error(t("attachments.storageUnavailable")));
+      request.onblocked = () => reject(new Error(t("attachments.storageBlocked")));
     }).catch((error: unknown) => {
       databasePromise = undefined;
       throw error;
@@ -37,7 +38,7 @@ export function getConversationImages(conversations: Conversation[]): ChatAttach
   );
 }
 
-export function persistChatImages(userId: string, images: ChatAttachment[]): Promise<void> {
+export function persistChatImages(userId: string, images: ChatAttachment[], t: ChatTranslator): Promise<void> {
   return Promise.all(
     images
       .filter((image) => image.url.startsWith("data:"))
@@ -45,16 +46,15 @@ export function persistChatImages(userId: string, images: ChatAttachment[]): Pro
         const key = JSON.stringify([userId, image.id]);
         let write = imageWrites.get(key);
         if (!write) {
-          write = openDatabase()
+          write = openDatabase(t)
             .then(
               (database) =>
                 new Promise<void>((resolve, reject) => {
                   const transaction = database.transaction(STORE_NAME, "readwrite");
                   transaction.objectStore(STORE_NAME).put({ userId, id: image.id, url: image.url });
                   transaction.oncomplete = () => resolve();
-                  transaction.onerror = () => reject(transaction.error ?? new Error("Could not save the attachment."));
-                  transaction.onabort = () =>
-                    reject(transaction.error ?? new Error("Saving the attachment was canceled."));
+                  transaction.onerror = () => reject(transaction.error ?? new Error(t("attachments.saveFailed")));
+                  transaction.onabort = () => reject(transaction.error ?? new Error(t("attachments.saveCanceled")));
                 }),
             )
             .catch((error: unknown) => {
@@ -68,9 +68,9 @@ export function persistChatImages(userId: string, images: ChatAttachment[]): Pro
   ).then(() => undefined);
 }
 
-export async function loadChatImages(userId: string, ids: string[]): Promise<Map<string, string>> {
+export async function loadChatImages(userId: string, ids: string[], t: ChatTranslator): Promise<Map<string, string>> {
   if (!ids.length) return new Map();
-  const database = await openDatabase();
+  const database = await openDatabase(t);
   return new Promise((resolve, reject) => {
     const transaction = database.transaction(STORE_NAME, "readonly");
     const loaded = new Map<string, string>();
@@ -81,21 +81,21 @@ export async function loadChatImages(userId: string, ids: string[]): Promise<Map
       };
     }
     transaction.oncomplete = () => resolve(loaded);
-    transaction.onerror = () => reject(transaction.error ?? new Error("Could not restore saved attachments."));
-    transaction.onabort = () => reject(transaction.error ?? new Error("Restoring saved attachments was canceled."));
+    transaction.onerror = () => reject(transaction.error ?? new Error(t("attachments.restoreFailed")));
+    transaction.onabort = () => reject(transaction.error ?? new Error(t("attachments.restoreCanceled")));
   });
 }
 
-export async function deleteChatImages(userId: string, ids: string[]): Promise<void> {
+export async function deleteChatImages(userId: string, ids: string[], t: ChatTranslator): Promise<void> {
   if (!ids.length) return;
   for (const id of ids) imageWrites.delete(JSON.stringify([userId, id]));
-  const database = await openDatabase();
+  const database = await openDatabase(t);
   return new Promise((resolve, reject) => {
     const transaction = database.transaction(STORE_NAME, "readwrite");
     for (const id of ids) transaction.objectStore(STORE_NAME).delete([userId, id]);
     transaction.oncomplete = () => resolve();
-    transaction.onerror = () => reject(transaction.error ?? new Error("Could not delete saved attachments."));
-    transaction.onabort = () => reject(transaction.error ?? new Error("Deleting saved attachments was canceled."));
+    transaction.onerror = () => reject(transaction.error ?? new Error(t("attachments.deleteFailed")));
+    transaction.onabort = () => reject(transaction.error ?? new Error(t("attachments.deleteCanceled")));
   });
 }
 

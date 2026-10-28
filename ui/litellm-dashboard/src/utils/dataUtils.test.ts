@@ -215,6 +215,10 @@ describe("dataUtils", () => {
         document.body.removeChild = vi.fn();
       });
 
+      const throwDomError = () => {
+        throw new Error("DOM error");
+      };
+
       it("should fall back to execCommand when clipboard API is not available", async () => {
         const result = await copyToClipboard("test text", "已复制到剪贴板");
 
@@ -258,9 +262,7 @@ describe("dataUtils", () => {
       });
 
       it("should handle DOM manipulation errors", async () => {
-        document.createElement = vi.fn().mockImplementation(() => {
-          throw new Error("DOM error");
-        });
+        document.createElement = vi.fn(throwDomError);
 
         const result = await copyToClipboard("test text", "已复制到剪贴板");
 

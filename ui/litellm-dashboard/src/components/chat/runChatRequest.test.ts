@@ -4,6 +4,8 @@ import { makeOpenAIResponsesRequest } from "@/components/llm_calls/responses_api
 import { generateChatImages } from "./imageHelpers";
 import { toResponsesMessages } from "./attachmentHelpers";
 import { runChatRequest } from "./runChatRequest";
+import { enMessagesFor } from "@tests/i18nStub";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 import type { MCPEvent } from "./types";
 
 vi.mock("@/components/llm_calls/responses_api", () => ({ makeOpenAIResponsesRequest: vi.fn() }));
@@ -21,6 +23,7 @@ function requestOptions(overrides: Partial<Parameters<typeof runChatRequest>[0]>
     prompt: "Hello",
     accessToken: "test-token",
     signal: new AbortController().signal,
+    t,
     messages: [{ role: "user" as const, content: "Hello" }],
     previousResponseId: "previous-response",
     mcpServers: ["search"],
@@ -34,6 +37,7 @@ const event: MCPEvent = {
   type: "response.output_item.done",
   item: { type: "mcp_call", id: "tool-call-1", name: "lookup", arguments: "{}", output: "Saved result" },
 };
+const t = enMessagesFor("chat") as unknown as ChatTranslator;
 
 describe("runChatRequest", () => {
   beforeEach(() => {
@@ -150,6 +154,7 @@ describe("runChatRequest", () => {
       model: "image-model",
       accessToken: "test-token",
       signal: options.signal,
+      t: options.t,
     };
     expect(generateChatImages).toHaveBeenCalledWith(expectedRequest);
   });

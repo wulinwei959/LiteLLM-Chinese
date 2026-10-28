@@ -125,15 +125,21 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
         {
           label: t("usagePanel.tokensUsed"),
           value: formatNumber(meta.total_tokens),
-          sub: `${formatNumber(meta.total_prompt_tokens)} in / ${formatNumber(meta.total_completion_tokens)} out`,
+          sub: commonT("tokensInAndOut", {
+            prompt: formatNumber(meta.total_prompt_tokens),
+            completion: formatNumber(meta.total_completion_tokens),
+          }),
         },
         {
           label: t("usagePanel.successRate"),
           value:
             meta.total_api_requests > 0
               ? `${((meta.total_successful_requests / meta.total_api_requests) * 100).toFixed(1)}%`
-              : "N/A",
-          sub: meta.total_failed_requests > 0 ? `${meta.total_failed_requests} failed` : undefined,
+              : t("usagePanel.na"),
+          sub:
+            meta.total_failed_requests > 0
+              ? t("usagePanel.failedCount", { count: meta.total_failed_requests })
+              : undefined,
           subVariant: meta.total_failed_requests > 0 ? "error" : undefined,
         },
       ]
@@ -172,7 +178,7 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
       ) : !meta || meta.total_api_requests === 0 ? (
         <div className="text-center text-muted-foreground text-sm py-12 border border-dashed rounded-lg">
           <BarChart3 className="h-6 w-6 mb-3 mx-auto text-muted-foreground/50" />
-          No usage data for this period
+          {t("usagePanel.noUsageData")}
         </div>
       ) : (
         <div>

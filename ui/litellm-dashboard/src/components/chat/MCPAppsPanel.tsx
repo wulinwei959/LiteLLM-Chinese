@@ -85,7 +85,7 @@ export const OAuth2ConnectButton: React.FC<OAuth2ConnectButtonProps> = ({
           : "text-primary-foreground bg-primary cursor-pointer hover:bg-primary/90"
       }`}
     >
-      {loading ? "Connecting\u2026" : t("appsPanel.connect")}
+      {loading ? t("appsPanel.connecting") : t("appsPanel.connect")}
     </span>
   );
 };
@@ -157,7 +157,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
       if (isUnsupportedOnGatewayConnect(s.auth_type)) return t("appsPanel.notSupportedOnConnection");
       return null;
     },
-    [connectMode],
+    [connectMode, t],
   );
 
   const connectableNow = useCallback(
@@ -273,7 +273,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
     try {
       const result = await listMCPTools(accessToken, server.server_id);
       if (result?.error) {
-        toast.warning(`Could not load tools for ${serverName}`);
+        toast.warning(t("appsPanel.loadToolsFailed", { server: serverName }));
         return;
       }
       if (connectableNow(server.server_id) === undefined) return;
@@ -281,7 +281,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
         onChange([...selectedServersRef.current, serverName]);
       }
     } catch {
-      toast.warning(`Could not load tools for ${serverName}`);
+      toast.warning(t("appsPanel.loadToolsFailed", { server: serverName }));
     } finally {
       setTogglingOn((prev) => {
         const next = new Set(prev);
@@ -347,9 +347,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
 
   const emptyStateText = () => {
     if (servers.length === 0) {
-      return connectMode
-        ? t("appsPanel.noServersAvailable")
-        : t("appsPanel.noServersConfigured");
+      return connectMode ? t("appsPanel.noServersAvailable") : t("appsPanel.noServersConfigured");
     }
     return activeTab === "connected" ? t("appsPanel.noConnectedServers") : t("appsPanel.noSearchMatches");
   };
@@ -401,7 +399,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
             }}
             className="font-semibold h-[38px] min-w-[110px]"
           >
-            Disconnect
+            {t("appsPanel.disconnect")}
           </Button>
         );
       }
@@ -426,7 +424,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
           className="-ml-3 mb-5 gap-1.5 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" />
-          Back
+          {t("appsPanel.back")}
         </Button>
 
         <div className="flex items-start gap-5 mb-7">
@@ -446,7 +444,9 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
           )}
           <div className="flex-1">
             <h2 className="m-0 mb-1 text-[22px] font-bold text-foreground">{name}</h2>
-            <p className="m-0 text-sm text-muted-foreground">{detailServer.description ?? t("appsPanel.serverFallback")}</p>
+            <p className="m-0 text-sm text-muted-foreground">
+              {detailServer.description ?? t("appsPanel.serverFallback")}
+            </p>
           </div>
           {renderDetailAction()}
         </div>
@@ -511,7 +511,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
             <h2 className="m-0 text-lg font-semibold text-foreground">{t("appsPanel.title")}</h2>
             {!connectMode && (
               <span className="text-[10px] font-semibold text-primary bg-primary/10 rounded px-1.5 py-0.5 uppercase tracking-wider">
-                Beta
+                {t("appsPanel.beta")}
               </span>
             )}
           </div>
@@ -523,7 +523,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
               {loadingCounts ? (
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin" />
-                  Loading tools...
+                  {t("appsPanel.loadingTools")}
                 </span>
               ) : totalTools > 0 ? (
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -548,10 +548,11 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)} className="mb-4">
         <TabsList variant="line" className="border-b rounded-none w-full justify-start h-auto p-0">
           <TabsTrigger value="all" className="rounded-none px-4 py-2 text-[13px]">
-            All
+            {t("appsPanel.filterAll")}
           </TabsTrigger>
           <TabsTrigger value="connected" className="rounded-none px-4 py-2 text-[13px]">
-            Connected{connectedCount > 0 ? ` (${connectedCount})` : ""}
+            {t("appsPanel.filterConnected")}
+            {connectedCount > 0 ? ` (${connectedCount})` : ""}
           </TabsTrigger>
         </TabsList>
       </Tabs>

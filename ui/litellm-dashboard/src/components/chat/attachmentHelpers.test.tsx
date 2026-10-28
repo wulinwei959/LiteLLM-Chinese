@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readChatAttachment, toResponsesMessages } from "./attachmentHelpers";
 import { MAX_CHAT_IMAGE_BYTES } from "./imageHelpers";
+import { enMessagesFor } from "@tests/i18nStub";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 import type { ChatFileAttachment, MCPEvent } from "./types";
 
 const file: ChatFileAttachment = {
@@ -10,6 +12,7 @@ const file: ChatFileAttachment = {
   mimeType: "application/pdf",
   url: "data:application/pdf;base64,cGRm",
 };
+const t = enMessagesFor("chat") as unknown as ChatTranslator;
 
 describe("chat attachments", () => {
   it.each([
@@ -19,19 +22,21 @@ describe("chat attachments", () => {
     ["notes.txt", "text/plain"],
     ["example.py", "text/plain"],
   ])("should read %s with its canonical MIME type even when the browser omits it", async (name, mimeType) => {
-    const attachment = await readChatAttachment(new File(["fixture"], name));
+    const attachment = await readChatAttachment(new File(["fixture"], name), t);
     const expected = { kind: "file", name, mimeType, url: `data:${mimeType};base64,Zml4dHVyZQ==` };
     expect(attachment).toMatchObject(expected);
   });
 
   it("should reject unsupported, empty, and oversized documents", async () => {
-    await expect(readChatAttachment(new File(["binary"], "installer.exe"))).rejects.toThrow("Choose an image, PDF");
-    await expect(readChatAttachment(new File(["binary"], "file.constructor"))).rejects.toThrow("Choose an image, PDF");
-    await expect(readChatAttachment(new File(["legacy"], "legacy.xls"))).rejects.toThrow("Excel (.xlsx)");
-    await expect(readChatAttachment(new File([], "empty.pdf"))).rejects.toThrow("empty");
+    await expect(readChatAttachment(new File(["binary"], "installer.exe"), t)).rejects.toThrow("Choose an image, PDF");
+    await expect(readChatAttachment(new File(["binary"], "file.constructor"), t)).rejects.toThrow(
+      "Choose an image, PDF",
+    );
+    await expect(readChatAttachment(new File(["legacy"], "legacy.xls"), t)).rejects.toThrow("Excel (.xlsx)");
+    await expect(readChatAttachment(new File([], "empty.pdf"), t)).rejects.toThrow("empty");
     const large = new File(["pdf"], "large.pdf");
     Object.defineProperty(large, "size", { value: MAX_CHAT_IMAGE_BYTES + 1 });
-    await expect(readChatAttachment(large)).rejects.toThrow("10 MB");
+    await expect(readChatAttachment(large, t)).rejects.toThrow("10 MB");
   });
 
   it("should preserve mixed files, images, and tool-only assistant history for Responses", () => {

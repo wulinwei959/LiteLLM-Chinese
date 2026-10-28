@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import type { ConnectFlowStatus } from "@/components/networking";
+import { renderWithProviders } from "../../../tests/test-utils";
 import ConnectFlowBanner, { isLoopbackOrigin } from "./ConnectFlowBanner";
 
 const { startOAuthFlow } = vi.hoisted(() => ({ startOAuthFlow: vi.fn() }));
@@ -28,7 +29,7 @@ const unscoped = (client_origin: string): ConnectFlowStatus => ({
 });
 
 const renderBanner = (clientOrigin: string) =>
-  render(
+  renderWithProviders(
     <ConnectFlowBanner
       flowHandle="flow-handle-123"
       flow={unscoped(clientOrigin)}
@@ -47,8 +48,8 @@ describe("ConnectFlowBanner", () => {
     expect(form).toHaveAttribute("action", "https://gateway.example.com/authorize/complete");
     expect(screen.getByDisplayValue("flow-handle-123")).toHaveAttribute("name", "flow");
     expect(form.innerHTML).not.toContain("token");
-    expect(screen.getByRole("button", { name: /finish connecting/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "完成连接" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "取消" })).not.toBeInTheDocument();
   });
 
   it("lists multi-server consent and requires every server before finishing", () => {
@@ -63,7 +64,7 @@ describe("ConnectFlowBanner", () => {
         { server_id: "beta-id", server_name: "beta", connected: false },
       ],
     };
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <ConnectFlowBanner
         flowHandle="flow-handle-123"
         flow={flow}
@@ -73,12 +74,12 @@ describe("ConnectFlowBanner", () => {
       />,
     );
 
-    expect(screen.getByText("Allow https://claude.ai to use alpha, beta")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Connect alpha" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Connect beta" })).toBeInTheDocument();
+    expect(screen.getByText("允许https://claude.ai使用alpha, beta")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接alpha" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接beta" })).toBeInTheDocument();
     expect(startOAuthFlow).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "完成连接" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
 
     rerender(
       <ConnectFlowBanner
@@ -94,7 +95,7 @@ describe("ConnectFlowBanner", () => {
     );
 
     expect(
-      screen.getByText("Click Finish connecting to give https://claude.ai access to alpha, beta as you."),
+      screen.getByText("点击“完成连接”，以你的身份让https://claude.ai获得访问alpha, beta的权限。"),
     ).toBeInTheDocument();
   });
 

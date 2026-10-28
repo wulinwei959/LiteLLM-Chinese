@@ -1,6 +1,7 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act, waitFor, type RenderHookOptions } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useChatHistory } from "./useChatHistory";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { deleteChatImages, loadChatImages, persistChatImages } from "./chatImageStorage";
 import type { Conversation } from "./types";
 
@@ -25,6 +26,11 @@ const savedConversation: Conversation = {
   ],
 };
 
+const renderHistoryHook = <TProps>(
+  callback: (props: TProps) => ReturnType<typeof useChatHistory>,
+  options?: RenderHookOptions<TProps>,
+) => renderHook(callback, { wrapper: LocaleProvider, ...options });
+
 describe("useChatHistory", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -37,7 +43,7 @@ describe("useChatHistory", () => {
   });
 
   it("should render without leaking conversations between different users on the same browser", () => {
-    const { result: alice } = renderHook(({ userId }) => useChatHistory(null, userId), {
+    const { result: alice } = renderHistoryHook(({ userId }) => useChatHistory(null, userId), {
       initialProps: { userId: "alice" },
     });
     act(() => {
@@ -45,14 +51,14 @@ describe("useChatHistory", () => {
     });
     expect(alice.current.conversations).toHaveLength(1);
 
-    const { result: bob } = renderHook(({ userId }) => useChatHistory(null, userId), {
+    const { result: bob } = renderHistoryHook(({ userId }) => useChatHistory(null, userId), {
       initialProps: { userId: "bob" },
     });
     expect(bob.current.conversations).toHaveLength(0);
   });
 
   it("should reload conversations scoped to the new user when userId changes", () => {
-    const { result, rerender } = renderHook(({ userId }) => useChatHistory(null, userId), {
+    const { result, rerender } = renderHistoryHook(({ userId }) => useChatHistory(null, userId), {
       initialProps: { userId: "alice" },
     });
     act(() => {
@@ -74,7 +80,7 @@ describe("useChatHistory", () => {
         finishSaving = resolve;
       }),
     );
-    const { result } = renderHook(() => useChatHistory(null, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = result.current.createConversation("vision-model");
@@ -99,17 +105,17 @@ describe("useChatHistory", () => {
 
   it("should restore images from the current user's media store", async () => {
     localStorage.setItem(aliceStorageKey, JSON.stringify([savedConversation]));
-    const { result } = renderHook(() => useChatHistory(savedConversation.id, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(savedConversation.id, "alice"));
     await waitFor(() => expect(result.current.activeConversation?.messages[0].attachments?.[0].url).toBe(image.url));
-    expect(loadChatImages).toHaveBeenCalledWith("alice", [image.id]);
-    const { result: bob } = renderHook(() => useChatHistory(null, "bob"));
+    expect(loadChatImages).toHaveBeenCalledWith("alice", [image.id], expect.any(Function));
+    const { result: bob } = renderHistoryHook(() => useChatHistory(null, "bob"));
     expect(bob.current.conversations).toEqual([]);
-    expect(loadChatImages).not.toHaveBeenCalledWith("bob", expect.anything());
+    expect(loadChatImages).not.toHaveBeenCalledWith("bob", expect.anything(), expect.anything());
   });
 
   it("should retain the previous saved history if storing an image fails", async () => {
     vi.mocked(persistChatImages).mockRejectedValue(new Error("Quota exceeded"));
-    const { result } = renderHook(() => useChatHistory(null, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = result.current.createConversation("vision-model");
@@ -126,7 +132,7 @@ describe("useChatHistory", () => {
   it("should report missing saved images without discarding their history", async () => {
     localStorage.setItem(aliceStorageKey, JSON.stringify([savedConversation]));
     vi.mocked(loadChatImages).mockResolvedValue(new Map());
-    const { result } = renderHook(() => useChatHistory(savedConversation.id, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(savedConversation.id, "alice"));
     await waitFor(() => expect(result.current.storageUnavailable).toBe(true));
     expect(result.current.activeConversation?.messages[0].content).toBe("Describe this");
     expect(result.current.activeConversation?.messages[0].attachments?.[0].id).toBe(image.id);
@@ -134,7 +140,7 @@ describe("useChatHistory", () => {
 
   it("should remove media only after the conversation deletion has been saved", async () => {
     localStorage.setItem(aliceStorageKey, JSON.stringify([savedConversation]));
-    const { result } = renderHook(() => useChatHistory(savedConversation.id, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(savedConversation.id, "alice"));
     await waitFor(() => expect(result.current.activeConversation?.messages[0].attachments?.[0].url).toBe(image.url));
     vi.mocked(deleteChatImages).mockImplementation(async () => {
       expect(JSON.parse(localStorage.getItem(aliceStorageKey)!)).toEqual([]);
@@ -142,12 +148,12 @@ describe("useChatHistory", () => {
     act(() => {
       result.current.deleteConversation(savedConversation.id);
     });
-    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id]));
+    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id], expect.any(Function)));
   });
 
   it("should keep saved media when the localStorage deletion cannot be committed", async () => {
     localStorage.setItem(aliceStorageKey, JSON.stringify([savedConversation]));
-    const { result } = renderHook(() => useChatHistory(savedConversation.id, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(savedConversation.id, "alice"));
     await waitFor(() => expect(result.current.activeConversation?.messages[0].attachments?.[0].url).toBe(image.url));
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("Storage blocked");
@@ -167,7 +173,7 @@ describe("useChatHistory", () => {
         finishSaving = resolve;
       }),
     );
-    const { result } = renderHook(() => useChatHistory(null, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = result.current.createConversation("vision-model");
@@ -182,14 +188,14 @@ describe("useChatHistory", () => {
     await act(async () => {
       finishSaving();
     });
-    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id]));
+    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id], expect.any(Function)));
     expect(JSON.parse(localStorage.getItem(aliceStorageKey)!)).toEqual([]);
   });
 
   it("should allow deleting a conversation whose image can no longer be restored", async () => {
     localStorage.setItem(aliceStorageKey, JSON.stringify([savedConversation]));
     vi.mocked(loadChatImages).mockResolvedValue(new Map());
-    const { result } = renderHook(() => useChatHistory(savedConversation.id, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(savedConversation.id, "alice"));
     await waitFor(() => expect(result.current.storageUnavailable).toBe(true));
     act(() => {
       result.current.deleteConversation(savedConversation.id);
@@ -204,7 +210,7 @@ describe("useChatHistory", () => {
 
   it("should resume saving when an image that exceeded storage quota is removed", async () => {
     vi.mocked(persistChatImages).mockRejectedValue(new Error("Quota exceeded"));
-    const { result } = renderHook(() => useChatHistory(null, "alice"));
+    const { result } = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = result.current.createConversation("vision-model");
@@ -227,7 +233,7 @@ describe("useChatHistory", () => {
         finishSaving = resolve;
       }),
     );
-    const first = renderHook(() => useChatHistory(null, "alice"));
+    const first = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = first.result.current.createConversation("vision-model");
@@ -236,7 +242,7 @@ describe("useChatHistory", () => {
       first.result.current.appendMessage(id, { role: "user", content: "Describe", attachments: [image] });
     });
     first.unmount();
-    const second = renderHook(() => useChatHistory(id, "alice"));
+    const second = renderHistoryHook(() => useChatHistory(id, "alice"));
     act(() => {
       second.result.current.deleteConversation(id);
     });
@@ -245,7 +251,7 @@ describe("useChatHistory", () => {
     });
     expect(JSON.parse(localStorage.getItem(aliceStorageKey)!)).toEqual([]);
     expect(second.result.current.conversations).toEqual([]);
-    expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id]);
+    expect(deleteChatImages).toHaveBeenCalledWith("alice", [image.id], expect.any(Function));
   });
   it("should save, restore, and delete document bytes with the existing user-scoped media store", async () => {
     const file = {
@@ -255,7 +261,7 @@ describe("useChatHistory", () => {
       mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       url: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,ZmlsZQ==",
     };
-    const first = renderHook(() => useChatHistory(null, "alice"));
+    const first = renderHistoryHook(() => useChatHistory(null, "alice"));
     let id!: string;
     act(() => {
       id = first.result.current.createConversation("file-model");
@@ -263,17 +269,17 @@ describe("useChatHistory", () => {
     act(() => {
       first.result.current.appendMessage(id, { role: "user", content: "Read this", attachments: [file] });
     });
-    await waitFor(() => expect(persistChatImages).toHaveBeenCalledWith("alice", [file]));
+    await waitFor(() => expect(persistChatImages).toHaveBeenCalledWith("alice", [file], expect.any(Function)));
     await waitFor(() => expect(localStorage.getItem(aliceStorageKey)).toContain("brief.docx"));
     expect(localStorage.getItem(aliceStorageKey)).not.toContain(file.url);
     first.unmount();
     vi.mocked(loadChatImages).mockResolvedValue(new Map([[file.id, file.url]]));
-    const restored = renderHook(() => useChatHistory(id, "alice"));
+    const restored = renderHistoryHook(() => useChatHistory(id, "alice"));
     await waitFor(() => expect(restored.result.current.activeConversation?.messages[0].attachments).toEqual([file]));
     act(() => {
       restored.result.current.deleteConversation(id);
     });
-    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [file.id]));
+    await waitFor(() => expect(deleteChatImages).toHaveBeenCalledWith("alice", [file.id], expect.any(Function)));
     expect(JSON.parse(localStorage.getItem(aliceStorageKey)!)).toEqual([]);
   });
 });

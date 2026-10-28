@@ -140,7 +140,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
       {editing ? (
         <Input
           ref={inputRef}
-          aria-label="Conversation title"
+          aria-label={t("conversationList.ariaConversationTitle")}
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -228,7 +228,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                     onClick={() => onDelete(conv.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    {t("conversationList.delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -269,13 +269,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="chat-theme sm:max-w-[480px] p-4 gap-0">
-        <DialogTitle className="sr-only">Search conversations</DialogTitle>
+        <DialogTitle className="sr-only">{t("conversationList.searchConversations")}</DialogTitle>
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             autoFocus
-            aria-label="Search conversations"
-            placeholder="Search conversations\u2026"
+            aria-label={t("conversationList.searchConversations")}
+            placeholder={t("conversationList.searchPlaceholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-9"
@@ -284,7 +284,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
 
         <ScrollArea className="h-[320px]">
           {filtered.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm">{t("conversationList.noSearchResults")}</div>
+            <div className="text-center py-6 text-muted-foreground text-sm">
+              {t("conversationList.noSearchResults")}
+            </div>
           ) : (
             filtered.map((conv) => {
               return (
@@ -319,6 +321,7 @@ const ConversationList: React.FC<Props> = ({
   onSearchOpenChange,
   hideSearchButton = false,
 }) => {
+  const t = useTranslations("chat");
   const [localSearchOpen, setLocalSearchOpen] = useState(false);
   const searchModalOpen = searchOpen ?? localSearchOpen;
   const setSearchModalOpen = onSearchOpenChange ?? setLocalSearchOpen;
@@ -351,7 +354,7 @@ const ConversationList: React.FC<Props> = ({
               className="chat-nav-item w-full justify-start gap-2.5 text-muted-foreground hover:bg-sidebar-accent"
             >
               <Search className="size-4" />
-              Search chats
+              {t("shell.ariaSearchChats")}
             </Button>
           </div>
         )}
@@ -360,17 +363,19 @@ const ConversationList: React.FC<Props> = ({
             <div>
               <div className="moyai-chat-history-heading flex items-center gap-2 text-xs text-sidebar-foreground">
                 <Clock3 className="size-3.5" aria-hidden="true" />
-                <span className="flex-1">Recent</span>
+                <span className="flex-1">{t("conversationList.dateGroup.recents")}</span>
                 <span>0</span>
               </div>
-              <p className="moyai-chat-empty-history text-xs text-muted-foreground">No chats here yet.</p>
+              <p className="moyai-chat-empty-history text-xs text-muted-foreground">
+                {t("conversationList.noChatsYet")}
+              </p>
             </div>
           ) : (
             grouped.map(({ group, items }) => (
               <div key={group} className="mb-2">
                 <div className="moyai-chat-history-heading flex items-center gap-2 px-2 pt-2 pb-1 text-xs font-normal text-sidebar-foreground">
                   <Clock3 className="size-3.5" aria-hidden="true" />
-                  {group === "Recents" ? "Recent" : group}
+                  {dateGroupLabel(t, group)}
                 </div>
                 {items.map((conv) => (
                   <ConversationRow

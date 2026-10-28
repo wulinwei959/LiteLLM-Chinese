@@ -2,6 +2,8 @@ import { toResponsesMessages } from "./attachmentHelpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import OpenAI from "openai";
 import { generateChatImages, isChatImageUrl, MAX_CHAT_IMAGE_BYTES, readChatImage } from "./imageHelpers";
+import { enMessagesFor } from "@tests/i18nStub";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 
 const { generate } = vi.hoisted(() => ({ generate: vi.fn() }));
 vi.mock("openai", () => ({
@@ -12,6 +14,7 @@ vi.mock("openai", () => ({
 vi.mock("@/components/networking", () => ({ getGatewayBaseUrl: () => "https://gateway.example/v1" }));
 
 const image = { id: "image-1", name: "design.png", url: "data:image/png;base64,aW1hZ2U=" };
+const t = enMessagesFor("chat") as unknown as ChatTranslator;
 
 describe("chat image helpers", () => {
   beforeEach(() => {
@@ -19,19 +22,19 @@ describe("chat image helpers", () => {
   });
 
   it("should read supported images for preview and requests", async () => {
-    const result = await readChatImage(new File(["image"], "design.png", { type: "image/png" }));
+    const result = await readChatImage(new File(["image"], "design.png", { type: "image/png" }), t);
     const expected = { id: expect.any(String), name: "design.png", url: image.url, mimeType: "image/png" };
     expect(result).toEqual(expected);
   });
 
   it("should reject unsupported, empty, and oversized uploads", async () => {
-    await expect(readChatImage(new File(["pdf"], "design.pdf", { type: "application/pdf" }))).rejects.toThrow(
+    await expect(readChatImage(new File(["pdf"], "design.pdf", { type: "application/pdf" }), t)).rejects.toThrow(
       "PNG, JPEG",
     );
-    await expect(readChatImage(new File([], "empty.png", { type: "image/png" }))).rejects.toThrow("empty");
+    await expect(readChatImage(new File([], "empty.png", { type: "image/png" }), t)).rejects.toThrow("empty");
     const large = new File(["image"], "large.png", { type: "image/png" });
     Object.defineProperty(large, "size", { value: MAX_CHAT_IMAGE_BYTES + 1 });
-    await expect(readChatImage(large)).rejects.toThrow("10 MB");
+    await expect(readChatImage(large, t)).rejects.toThrow("10 MB");
   });
 
   it("should replay user image attachments using Responses API input parts", () => {
@@ -77,6 +80,7 @@ describe("chat image helpers", () => {
       model: "company-image-model",
       accessToken: "test-token",
       signal,
+      t,
     };
     const result = await generateChatImages(request);
     expect(OpenAI).toHaveBeenCalledWith({
@@ -90,19 +94,19 @@ describe("chat image helpers", () => {
 
   it("should surface generation failures and aborts to the caller", async () => {
     generate.mockResolvedValue({ data: [] });
-    await expect(generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token" })).rejects.toThrow(
+    await expect(generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token", t })).rejects.toThrow(
       "did not return an image",
     );
     const aborted = new DOMException("Stopped", "AbortError");
     generate.mockRejectedValue(aborted);
-    await expect(generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token" })).rejects.toBe(
+    await expect(generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token", t })).rejects.toBe(
       aborted,
     );
   });
 
   it("should preserve the generated image format returned by the provider", async () => {
     generate.mockResolvedValue({ output_format: "webp", data: [{ b64_json: "aW1hZ2U=" }] });
-    const images = await generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token" });
+    const images = await generateChatImages({ prompt: "Boat", model: "image-model", accessToken: "token", t });
     expect(images[0].url).toBe("data:image/webp;base64,aW1hZ2U=");
   });
 });

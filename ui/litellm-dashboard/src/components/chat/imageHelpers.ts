@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { v4 as uuid } from "uuid";
 import { getGatewayBaseUrl } from "@/components/networking";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 import type { ChatImageAttachment } from "./types";
 
 export const MAX_CHAT_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -18,8 +19,8 @@ export function isChatImageUrl(url: string): boolean {
   }
 }
 
-export async function readChatImage(file: File): Promise<ChatImageAttachment> {
-  if (!IMAGE_TYPES.has(file.type)) throw new Error("Choose a PNG, JPEG, WebP, or GIF image.");
+export async function readChatImage(file: File, t: ChatTranslator): Promise<ChatImageAttachment> {
+  if (!IMAGE_TYPES.has(file.type)) throw new Error(t("attachments.chooseImageError"));
   if (file.size === 0) throw new Error(`${file.name} is empty. Choose another image.`);
   if (file.size > MAX_CHAT_IMAGE_BYTES) {
     throw new Error(`${file.name} is too large. Images must be 10 MB or smaller.`);
@@ -42,11 +43,13 @@ export async function generateChatImages({
   model,
   accessToken,
   signal,
+  t,
 }: {
   prompt: string;
   model: string;
   accessToken: string;
   signal?: AbortSignal;
+  t: ChatTranslator;
 }): Promise<ChatImageAttachment[]> {
   const client = new OpenAI({ apiKey: accessToken, baseURL: getGatewayBaseUrl(), dangerouslyAllowBrowser: true });
   const response = await client.images.generate({ model, prompt }, { signal });
@@ -56,6 +59,6 @@ export async function generateChatImages({
     if (!url || !isChatImageUrl(url)) return [];
     return [{ id: uuid(), name: `Generated image ${index + 1}`, url }];
   });
-  if (!images.length) throw new Error("The model did not return an image. Try another prompt or image model.");
+  if (!images.length) throw new Error(t("attachments.noImageReturned"));
   return images;
 }

@@ -51,10 +51,10 @@ function relativeTime(commonT: CommonTranslator, isoString: string | null | unde
     const diffSec = Math.floor(diffMs / 1000);
     if (diffSec < 60) return commonT("justNow");
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffMin < 60) return commonT("minutesAgo", { count: diffMin });
     const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr}h ago`;
-    return `${Math.floor(diffHr / 24)}d ago`;
+    if (diffHr < 24) return commonT("hoursAgo", { count: diffHr });
+    return commonT("daysAgo", { count: Math.floor(diffHr / 24) });
   } catch {
     return "";
   }
@@ -178,8 +178,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
         <h2 className="text-base font-semibold text-foreground mb-0.5">{t("keysPanel.title")}</h2>
         <p className="text-sm text-muted-foreground m-0">
           {t("keysPanel.subtitle")}
-          {premiumUser &&
-            t("keysPanel.rotateHint")}
+          {premiumUser && t("keysPanel.rotateHint")}
         </p>
       </div>
 
@@ -192,8 +191,12 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                 <TableHead className={cn("text-xs font-semibold uppercase tracking-wide", NUMERIC_CELL_CLASS)}>
                   {t("keysPanel.colSpend")}
                 </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colCreated")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">
+                  {t("keysPanel.colExpires")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">
+                  {t("keysPanel.colCreated")}
+                </TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />
                 )}
@@ -236,10 +239,14 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
               <TableRow className="bg-muted/50">
                 <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colKey")}</TableHead>
                 <TableHead className={cn("text-xs font-semibold uppercase tracking-wide", NUMERIC_CELL_CLASS)}>
-                  Spend
+                  {t("keysPanel.colSpend")}
                 </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colExpires")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide">{t("keysPanel.colCreated")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">
+                  {t("keysPanel.colExpires")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide">
+                  {t("keysPanel.colCreated")}
+                </TableHead>
                 {premiumUser && (
                   <TableHead className="text-xs font-semibold uppercase tracking-wide text-right w-[80px]" />
                 )}
@@ -274,7 +281,12 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                     </TableCell>
                     {premiumUser && (
                       <TableCell className="text-right">
-                        <Button variant="outline" size="xs" onClick={() => openRotateModal(record)} title={t("keysPanel.rotateTooltip")}>
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          onClick={() => openRotateModal(record)}
+                          title={t("keysPanel.rotateTooltip")}
+                        >
                           <RefreshCw className="h-3 w-3" />
                           {t("keysPanel.rotate")}
                         </Button>
@@ -347,10 +359,14 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                   />
                   {formErrors.duration && <p className="text-xs text-destructive">{formErrors.duration}</p>}
                   <p className={`text-xs ${keyIsExpired ? "text-destructive" : "text-muted-foreground"}`}>
-                    Current: {rotateTarget?.expires ? formatExpiresUtc(rotateTarget.expires) : commonT("never")}
-                    {keyIsExpired && " (expired)"}
+                    {t("keysPanel.currentExpiry", {
+                      expiry: rotateTarget?.expires ? formatExpiresUtc(rotateTarget.expires) : commonT("never"),
+                    })}
+                    {keyIsExpired && t("keysPanel.expiredSuffix")}
                   </p>
-                  {newExpiryTime && <p className="text-xs text-success">New: {newExpiryTime}</p>}
+                  {newExpiryTime && (
+                    <p className="text-xs text-success">{t("keysPanel.newExpiry", { expiry: newExpiryTime })}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label>{t("keysPanel.labelGracePeriod")}</Label>
@@ -389,7 +405,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                   ) : (
                     <RefreshCw className="h-4 w-4 mr-1.5" />
                   )}
-                  Rotate
+                  {t("keysPanel.rotate")}
                 </Button>
               </>
             )}

@@ -8234,6 +8234,7 @@
     "connectFlow": {
       "fallbackClient": "该应用",
       "fallbackServer": "所请求的 MCP 服务器",
+      "connectServer": "连接{server}",
       "failedTitle": "无法继续连接",
       "failedBody": "网关无法验证此次连接。取消即可返回{client}。",
       "unscopedTitle": "将你的 MCP 服务器连接到{client}",
@@ -8252,8 +8253,8 @@
     },
     "appsPanel": {
       "title": "MCP 服务器",
-      "beta": "Beta 版",
-      "loadingTools": "正在加载工具...",
+      "beta": "测试版",
+      "loadingTools": "正在加载工具…",
       "searchPlaceholder": "搜索服务器...",
       "connect": "连接",
       "connecting": "正在连接…",
@@ -8327,9 +8328,7 @@
       "errDurationRequired": "已过期的密钥必须填写过期时长",
       "errGraceFormat": "请填写形如 24h、2d 的时长",
       "toastRotated": "密钥轮换成功",
-      "toastRotateFailed": "密钥轮换失败",
-      "currentLabel": "当前：",
-      "newLabel": "新密钥："
+      "toastRotateFailed": "密钥轮换失败"
     },
     "logsPanel": {
       "title": "你的日志",
@@ -8365,7 +8364,11 @@
       "searchPlaceholder": "搜索会话…",
       "noSearchResults": "未找到会话",
       "empty": "还没有会话",
-      "emptyHint": "在上方开始新对话"
+      "emptyHint": "在上方开始新对话",
+      "delete": "删除",
+      "noChatsYet": "这里还没有聊天。",
+      "searchConversations": "搜索会话",
+      "ariaConversationTitle": "会话标题"
     },
     "credentialsPanel": {
       "title": "应用凭证",
@@ -8399,7 +8402,8 @@
       "failedCount": "{count, number} 次失败",
       "empty": "该时间段没有用量数据",
       "dailySpend": "每日花费",
-      "dailyRequests": "每日请求"
+      "dailyRequests": "每日请求",
+      "noUsageData": "此期间没有用量数据"
     },
     "shell": {
       "betaWarning": "这是 v0 之前的预览功能，请勿在生产环境使用，内容可能随时变化",
@@ -8446,6 +8450,23 @@
       "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。",
       "partialResponseSaved": "[出现错误，部分回复已保存。]",
       "connectedTools": "{count, plural, other {# 个工具已连接}}"
+    },
+    "attachments": {
+      "chooseFileError": "请选择图片、PDF、Word（.docx）、Excel（.xlsx）、文本或代码文件。",
+      "chooseImageError": "请选择 PNG、JPEG、WebP 或 GIF 图片。",
+      "noImageReturned": "模型没有返回图片。请更换提示词或图片模型。",
+      "storageBlocked": "附件存储被其他浏览器标签页占用。",
+      "storageUnavailable": "附件存储不可用。",
+      "deleteFailed": "无法删除已保存的附件。",
+      "restoreFailed": "无法恢复已保存的附件。",
+      "saveFailed": "无法保存附件。",
+      "deleteCanceled": "已取消删除已保存的附件。",
+      "restoreCanceled": "已取消恢复已保存的附件。",
+      "saveCanceled": "已取消保存附件。"
+    },
+    "composer": {
+      "message": "消息",
+      "stopRequest": "停止请求"
     }
   },
   "playground": {
@@ -8557,16 +8578,8 @@
         "image": "描述您想生成的图片..."
       },
       "suggestions": {
-        "a2a": [
-          "你能帮我做什么？",
-          "介绍一下你自己",
-          "你能执行什么任务？"
-        ],
-        "default": [
-          "写一首诗",
-          "解释量子计算",
-          "起草一封礼貌的会议请求邮件"
-        ]
+        "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
+        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -8668,16 +8681,8 @@
       "attachmentReady": "附件已准备好发送",
       "provideVirtualKey": "请提供虚拟密钥或选择当前 UI 会话",
       "errorFetching": "获取响应出错: {error}",
-      "genericFollowUps": [
-        "能总结一下要点吗？",
-        "你做了什么假设？",
-        "后续步骤是什么？"
-      ],
-      "suggestedPrompts": [
-        "写一首诗",
-        "解释量子计算",
-        "起草一封礼貌的会议请求邮件"
-      ],
+      "genericFollowUps": ["能总结一下要点吗？", "你做了什么假设？", "后续步骤是什么？"],
+      "suggestedPrompts": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
       "syncSettings": "跨模型同步设置",
       "syncSettingsLabel": "跨模型同步设置",
       "generalSettings": "常规设置",
@@ -14225,6 +14230,7 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "对话",
+      "chatDescription": "面向 LLM、MCP 和智能体的聊天界面",
       "chatDisabledHint": "管理员可在设置中启用",
       "moyaiDescription": "云端编码智能体"
     },

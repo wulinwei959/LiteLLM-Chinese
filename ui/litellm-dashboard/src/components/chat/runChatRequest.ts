@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { makeOpenAIResponsesRequest } from "@/components/llm_calls/responses_api";
 import { generateChatImages } from "./imageHelpers";
 import { toResponsesMessages } from "./attachmentHelpers";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 import type { AssistantMessageUpdate, ChatMessage, MCPEvent } from "./types";
 
 interface ChatRequestOptions {
@@ -10,6 +11,7 @@ interface ChatRequestOptions {
   prompt: string;
   accessToken: string;
   signal: AbortSignal;
+  t: ChatTranslator;
   messages: Pick<
     ChatMessage,
     "role" | "content" | "attachments" | "generatedImages" | "imageGeneration" | "mcpEvents"
@@ -41,6 +43,7 @@ export async function runChatRequest({
   prompt,
   accessToken,
   signal,
+  t,
   messages,
   previousResponseId,
   mcpServers,
@@ -54,7 +57,7 @@ export async function runChatRequest({
   try {
     signal.throwIfAborted();
     if (mode === "image") {
-      const imageRequest = { prompt, model, accessToken, signal };
+      const imageRequest = { prompt, model, accessToken, signal, t };
       const generatedImages = await generateChatImages(imageRequest);
       signal.throwIfAborted();
       onUpdate({ generatedImages });

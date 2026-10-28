@@ -8234,6 +8234,7 @@
     "connectFlow": {
       "fallbackClient": "the application",
       "fallbackServer": "the requested MCP server",
+      "connectServer": "Connect {server}",
       "failedTitle": "The connection cannot continue",
       "failedBody": "The gateway could not validate this connection. Cancel to return to {client}.",
       "unscopedTitle": "Connect your MCP servers to {client}",
@@ -8327,9 +8328,7 @@
       "errDurationRequired": "Expiration is required for expired keys",
       "errGraceFormat": "Must be a duration like 24h, 2d",
       "toastRotated": "Key rotated successfully",
-      "toastRotateFailed": "Failed to rotate key",
-      "currentLabel": "Current:",
-      "newLabel": "New:"
+      "toastRotateFailed": "Failed to rotate key"
     },
     "logsPanel": {
       "title": "Your Logs",
@@ -8365,7 +8364,11 @@
       "searchPlaceholder": "Search conversations…",
       "noSearchResults": "No conversations found",
       "empty": "No conversations yet",
-      "emptyHint": "Start a new chat above"
+      "emptyHint": "Start a new chat above",
+      "delete": "Delete",
+      "noChatsYet": "No chats here yet.",
+      "searchConversations": "Search conversations",
+      "ariaConversationTitle": "Conversation title"
     },
     "credentialsPanel": {
       "title": "App Credentials",
@@ -8399,7 +8402,8 @@
       "failedCount": "{count, number} failed",
       "empty": "No usage data for this period",
       "dailySpend": "Daily Spend",
-      "dailyRequests": "Daily Requests"
+      "dailyRequests": "Daily Requests",
+      "noUsageData": "No usage data for this period"
     },
     "shell": {
       "betaWarning": "Chat is a pre-v0 preview and may change unexpectedly. Do not use in production.",
@@ -8446,6 +8450,23 @@
       "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here.",
       "partialResponseSaved": "[Something went wrong. The partial response has been saved.]",
       "connectedTools": "{count, plural, one {# tool connected} other {# tools connected}}"
+    },
+    "attachments": {
+      "chooseFileError": "Choose an image, PDF, Word (.docx), Excel (.xlsx), text, or code file.",
+      "chooseImageError": "Choose a PNG, JPEG, WebP, or GIF image.",
+      "noImageReturned": "The model did not return an image. Try another prompt or image model.",
+      "storageBlocked": "Attachment storage is blocked by another browser tab.",
+      "storageUnavailable": "Attachment storage is unavailable.",
+      "deleteFailed": "Could not delete saved attachments.",
+      "restoreFailed": "Could not restore saved attachments.",
+      "saveFailed": "Could not save the attachment.",
+      "deleteCanceled": "Deleting saved attachments was canceled.",
+      "restoreCanceled": "Restoring saved attachments was canceled.",
+      "saveCanceled": "Saving the attachment was canceled."
+    },
+    "composer": {
+      "message": "Message",
+      "stopRequest": "Stop request"
     }
   },
   "playground": {
@@ -8557,16 +8578,8 @@
         "image": "Describe the image you want to generate..."
       },
       "suggestions": {
-        "a2a": [
-          "What can you help me with?",
-          "Tell me about yourself",
-          "What tasks can you perform?"
-        ],
-        "default": [
-          "Write me a poem",
-          "Explain quantum computing",
-          "Draft a polite email requesting a meeting"
-        ]
+        "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
+        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -8673,11 +8686,7 @@
         "What assumptions did you make?",
         "What are the next steps?"
       ],
-      "suggestedPrompts": [
-        "Write me a poem",
-        "Explain quantum computing",
-        "Draft a polite email requesting a meeting"
-      ],
+      "suggestedPrompts": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
       "syncSettings": "Sync Settings Across Models",
       "syncSettingsLabel": "Sync Settings Across Models",
       "generalSettings": "General Settings",
@@ -14225,6 +14234,7 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "Chat",
+      "chatDescription": "Chat UI for using LLMs, MCPs, Agents",
       "chatDisabledHint": "Admins can enable in Settings",
       "moyaiDescription": "Cloud Coding Agent"
     },
