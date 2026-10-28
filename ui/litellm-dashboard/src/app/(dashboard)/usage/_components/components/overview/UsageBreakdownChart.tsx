@@ -61,7 +61,12 @@ export default function UsageBreakdownChart({
       action={
         <>
           <BreakdownControls state={state} onChange={(next) => setMetric(next.metric)} showDimension={false} />
-          <Segmented label={t("bucketSize")} value={granularity} options={GRANULARITY_OPTIONS} onChange={setGranularity} />
+          <Segmented
+            label={t("bucketSize")}
+            value={granularity}
+            options={GRANULARITY_OPTIONS}
+            onChange={setGranularity}
+          />
           <Segmented label={t("scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
         </>
       }

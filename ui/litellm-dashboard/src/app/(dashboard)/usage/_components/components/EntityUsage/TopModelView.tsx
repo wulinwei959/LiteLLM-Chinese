@@ -98,12 +98,7 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
           options={LIMIT_OPTIONS}
           onChange={(limit) => setTopModelsLimit(Number(limit))}
         />
-        <Segmented
-          label={t("viewModeAria")}
-          value={modelViewMode}
-          options={VIEW_OPTIONS}
-          onChange={setModelViewMode}
-        />
+        <Segmented label={t("viewModeAria")} value={modelViewMode} options={VIEW_OPTIONS} onChange={setModelViewMode} />
       </div>
       {modelViewMode === "chart" ? (
         <div className="relative max-h-[600px] overflow-y-auto">

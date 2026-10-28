@@ -12,12 +12,10 @@ import { uiHref } from "@/utils/uiHref";
 import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented, Stat } from "../overview/Primitives";
 import {
   ERROR_ENTITY_KINDS,
-  ERROR_ENTITY_LABEL,
   entityRows,
   errorSeries,
   type ErrorRateView,
   type ErrorSeries,
-  ERROR_RATE_VIEW_OPTIONS,
   rateByStatusRows,
   errorSummary,
   formatRate,
