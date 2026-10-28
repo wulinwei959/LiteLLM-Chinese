@@ -13,9 +13,7 @@ const currentUiLocale = (): UiLocale =>
     ? document.documentElement.lang
     : DEFAULT_UI_LOCALE;
 
-export const createModuleTranslator = <Namespace extends keyof typeof enMessages & string>(
-  namespace: Namespace,
-) => {
+export const createModuleTranslator = <Namespace extends keyof typeof enMessages & string>(namespace: Namespace) => {
   const locale = currentUiLocale();
   return createTranslator({ locale, messages: MESSAGES[locale], namespace });
 };

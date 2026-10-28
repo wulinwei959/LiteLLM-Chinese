@@ -194,9 +194,7 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <p className="px-2 py-1 text-xs text-muted-foreground">
-              {t("shell.betaWarning")}
-            </p>
+            <p className="px-2 py-1 text-xs text-muted-foreground">{t("shell.betaWarning")}</p>
             <DropdownMenuItem
               render={
                 <a href="https://github.com/BerriAI/litellm/discussions/32085" target="_blank" rel="noreferrer" />
@@ -248,7 +246,12 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {accountName}
         </span>
         <ThemeToggle />
-        <Button variant="ghost" size="icon-sm" aria-label={t("shell.settings")} onClick={() => navigate(routes.credentials)}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t("shell.settings")}
+          onClick={() => navigate(routes.credentials)}
+        >
           <Settings className="size-4" />
         </Button>
         <Button variant="ghost" size="icon-sm" aria-label={t("shell.signOut")} onClick={handleLogout}>

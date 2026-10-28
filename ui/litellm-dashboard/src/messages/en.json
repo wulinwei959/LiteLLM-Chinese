@@ -15036,6 +15036,8 @@
     "fullWalkthrough": "Full walkthrough on GitHub",
     "quickConnect": "Quick connect",
     "quickConnectTitle": "Quick connect Moyai",
+    "connect": "Connect",
+    "connecting": "Connecting",
     "moyaiUrl": "Moyai URL",
     "urlPlaceholder": "https://moyai.your-company.com",
     "confirmHint": "You'll confirm on your Moyai workspace as an admin, then come straight back",

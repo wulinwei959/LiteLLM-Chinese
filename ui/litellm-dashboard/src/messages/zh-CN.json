@@ -15032,6 +15032,8 @@
     "fullWalkthrough": "在 GitHub 上看完整教程",
     "quickConnect": "快速连接",
     "quickConnectTitle": "快速连接 Moyai",
+    "connect": "连接",
+    "connecting": "正在连接",
     "moyaiUrl": "Moyai 地址",
     "urlPlaceholder": "https://moyai.your-company.com",
     "confirmHint": "你会在 Moyai 工作区里以管理员身份确认，然后直接回到这里",

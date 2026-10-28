@@ -291,9 +291,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
             placeholder={t("urlPlaceholder")}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
-          <p className="m-0 text-xs text-muted-foreground">
-            {t("confirmHint")}
-          </p>
+          <p className="m-0 text-xs text-muted-foreground">{t("confirmHint")}</p>
           {error && (
             <p role="alert" className="m-0 text-xs text-red-500">
               {error}
@@ -307,7 +305,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
             onClick={connect}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
           >
-            {pending ? "Connecting" : "Connect"}
+            {pending ? t("connecting") : t("connect")}
           </button>
         </div>
       </DialogContent>
@@ -422,9 +420,7 @@ export default function MoyaiLanding({
         <h2 className="mb-3 mt-20 text-center text-[clamp(28px,3.2vw,44px)] font-medium leading-tight tracking-[-0.03em] text-white">
           {t("seeItInAction")}
         </h2>
-        <p className="mx-auto mb-8 mt-0 max-w-2xl text-center text-[17px] text-[#c2c6d0]">
-          {t("actionDescription")}
-        </p>
+        <p className="mx-auto mb-8 mt-0 max-w-2xl text-center text-[17px] text-[#c2c6d0]">{t("actionDescription")}</p>
         <DemoPreview />
 
         <div className="mt-16 grid gap-4 md:grid-cols-2">

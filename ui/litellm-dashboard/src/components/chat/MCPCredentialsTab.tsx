@@ -46,7 +46,10 @@ function relativeTime(commonT: CommonTranslator, isoString: string | null | unde
   }
 }
 
-function expiryLabel(t: ChatTranslator, isoString: string | null | undefined): {
+function expiryLabel(
+  t: ChatTranslator,
+  isoString: string | null | undefined,
+): {
   text: string;
   variant: "secondary" | "destructive" | "outline";
 } {
