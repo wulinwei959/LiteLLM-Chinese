@@ -5158,7 +5158,7 @@
     "missingTokenOrRange": "缺少访问令牌或日期范围",
     "title": "用量",
     "viewSelect": {
-      "title": "用量视图",
+      "title": "用量",
       "description": "选择要查看的用量数据",
       "global": "全局用量",
       "yourUsage": "我的用量",

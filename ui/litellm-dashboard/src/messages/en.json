@@ -5158,7 +5158,7 @@
     "missingTokenOrRange": "Missing access token or date range",
     "title": "Usage",
     "viewSelect": {
-      "title": "Usage View",
+      "title": "Usage",
       "description": "Select the usage data you want to view",
       "global": "Global Usage",
       "yourUsage": "Your Usage",
