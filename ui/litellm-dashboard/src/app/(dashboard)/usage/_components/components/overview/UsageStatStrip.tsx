@@ -115,7 +115,11 @@ export default function UsageStatStrip({
             label={t("statStrip.avgLatency")}
             value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
             pending={loading}
-            hint={totals.successRate === null ? undefined : t("statStrip.successRate", { rate: totals.successRate.toFixed(1) })}
+            hint={
+              totals.successRate === null
+                ? undefined
+                : t("statStrip.successRate", { rate: totals.successRate.toFixed(1) })
+            }
           />
         </div>
       </StatCell>

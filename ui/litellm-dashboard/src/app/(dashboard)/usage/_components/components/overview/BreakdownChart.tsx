@@ -54,15 +54,21 @@ export function BreakdownControls({
 }) {
   const t = useTranslations("usage.overview");
   const metricOptions = useMemo(
-    () => METRIC_VALUES.map((value) => ({ value, label: t(`metric.${value}`) })),
+    () =>
+      METRIC_VALUES.map((value) => {
+        if (value === "spend") return { value, label: t("metric.spend") };
+        if (value === "tokens") return { value, label: t("metric.tokens") };
+        return { value, label: t("metric.requests") };
+      }),
     [t],
   );
   const dimensionOptions = useMemo(
     () =>
-      DIMENSION_VALUES.map((value) => ({
-        value,
-        label: t(`dimension.${value === "model_groups" ? "model" : value === "models" ? "deployment" : "provider"}`),
-      })),
+      DIMENSION_VALUES.map((value) => {
+        if (value === "model_groups") return { value, label: t("dimension.model") };
+        if (value === "models") return { value, label: t("dimension.deployment") };
+        return { value, label: t("dimension.provider") };
+      }),
     [t],
   );
 

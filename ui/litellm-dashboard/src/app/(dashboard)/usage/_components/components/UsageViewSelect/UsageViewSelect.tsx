@@ -145,8 +145,7 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
   const getFilteredOptions = () => {
     return visibleOptions(userRole, canViewTagUsage, isOrgAdmin).map((option) => {
       const label = option.value === "global" && !isAdmin ? t("yourUsage") : t(LABEL_KEYS[option.iconKey]);
-      const desc =
-        option.value === "global" && !isAdmin ? t("yourUsageDesc") : t(DESCRIPTION_KEYS[option.iconKey]);
+      const desc = option.value === "global" && !isAdmin ? t("yourUsageDesc") : t(DESCRIPTION_KEYS[option.iconKey]);
       return {
         value: option.value,
         label,

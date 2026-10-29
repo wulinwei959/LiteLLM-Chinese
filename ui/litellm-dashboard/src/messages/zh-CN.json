@@ -8601,16 +8601,8 @@
         "image": "描述您想生成的图片..."
       },
       "suggestions": {
-        "a2a": [
-          "你能帮我做什么？",
-          "介绍一下你自己",
-          "你能执行什么任务？"
-        ],
-        "default": [
-          "写一首诗",
-          "解释量子计算",
-          "起草一封礼貌的会议请求邮件"
-        ]
+        "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
+        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -8712,16 +8704,8 @@
       "attachmentReady": "附件已准备好发送",
       "provideVirtualKey": "请提供虚拟密钥或选择当前 UI 会话",
       "errorFetching": "获取响应出错: {error}",
-      "genericFollowUps": [
-        "能总结一下要点吗？",
-        "你做了什么假设？",
-        "后续步骤是什么？"
-      ],
-      "suggestedPrompts": [
-        "写一首诗",
-        "解释量子计算",
-        "起草一封礼貌的会议请求邮件"
-      ],
+      "genericFollowUps": ["能总结一下要点吗？", "你做了什么假设？", "后续步骤是什么？"],
+      "suggestedPrompts": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
       "syncSettings": "跨模型同步设置",
       "syncSettingsLabel": "跨模型同步设置",
       "generalSettings": "常规设置",
@@ -13993,7 +13977,7 @@
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
     "label": "选择时间范围",
-      "selectDateRange": "选择日期范围",
+    "selectDateRange": "选择日期范围",
     "apply": "应用",
     "cancel": "取消"
   },

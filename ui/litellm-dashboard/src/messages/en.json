@@ -8601,16 +8601,8 @@
         "image": "Describe the image you want to generate..."
       },
       "suggestions": {
-        "a2a": [
-          "What can you help me with?",
-          "Tell me about yourself",
-          "What tasks can you perform?"
-        ],
-        "default": [
-          "Write me a poem",
-          "Explain quantum computing",
-          "Draft a polite email requesting a meeting"
-        ]
+        "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
+        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -8717,11 +8709,7 @@
         "What assumptions did you make?",
         "What are the next steps?"
       ],
-      "suggestedPrompts": [
-        "Write me a poem",
-        "Explain quantum computing",
-        "Draft a polite email requesting a meeting"
-      ],
+      "suggestedPrompts": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
       "syncSettings": "Sync Settings Across Models",
       "syncSettingsLabel": "Sync Settings Across Models",
       "generalSettings": "General Settings",
@@ -13993,7 +13981,7 @@
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
     "label": "Select Time Range",
-      "selectDateRange": "Select date range",
+    "selectDateRange": "Select date range",
     "apply": "Apply",
     "cancel": "Cancel"
   },
