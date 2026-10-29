@@ -5157,6 +5157,30 @@
   "usage": {
     "missingTokenOrRange": "Missing access token or date range",
     "title": "Usage",
+    "viewSelect": {
+      "title": "Usage View",
+      "description": "Select the usage data you want to view",
+      "global": "Global Usage",
+      "yourUsage": "Your Usage",
+      "myUsage": "Your Usage",
+      "organization": "Organization Usage",
+      "team": "Team Usage",
+      "customer": "Customer Usage",
+      "tag": "Tag Usage",
+      "agent": "Agent Usage (A2A)",
+      "user": "User Usage",
+      "userAgentActivity": "User Agent Activity",
+      "globalDesc": "View usage across all resources",
+      "yourUsageDesc": "View your usage",
+      "myUsageDesc": "View your own usage",
+      "organizationDesc": "View usage across all organizations",
+      "teamDesc": "View usage by team",
+      "customerDesc": "View usage by customer accounts",
+      "tagDesc": "View usage grouped by tags",
+      "agentDesc": "View usage by AI agents",
+      "userDesc": "View usage by individual users",
+      "userAgentActivityDesc": "View detailed user agent activity logs"
+    },
     "tabs": {
       "cost": "Cost",
       "models": "Model Activity",
@@ -5301,18 +5325,6 @@
       "enterpriseOnlyFeature": "✨ {tag} (Enterprise only Feature)",
       "getStartedPerTag": "Get Started by Tracking cost per tag",
       "here": "here"
-    },
-    "viewSelect": {
-      "title": "Usage View",
-      "description": "Select the usage data you want to view",
-      "global": "Global Usage",
-      "organization": "Organization Usage",
-      "team": "Team Usage",
-      "customer": "Customer Usage",
-      "tag": "Tag Usage",
-      "agent": "Agent Usage (A2A)",
-      "user": "User Usage",
-      "agentDesc": "View usage by AI agents"
     },
     "endpointUsage": {
       "endpoint": "Endpoint",
@@ -5581,7 +5593,14 @@
         "tokens": "Tokens",
         "spend": "Spend",
         "requests": "Requests"
-      }
+      },
+      "noBudget": "No budget set",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "linear": "Linear",
+      "log": "Log",
+      "usageTitle": "{granularity} usage",
+      "usageByModel": "{granularity} {metric} by model (top 8, rest grouped as Other)"
     },
     "userActivity": {
       "error": {
@@ -8582,8 +8601,16 @@
         "image": "Describe the image you want to generate..."
       },
       "suggestions": {
-        "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
-        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
+        "a2a": [
+          "What can you help me with?",
+          "Tell me about yourself",
+          "What tasks can you perform?"
+        ],
+        "default": [
+          "Write me a poem",
+          "Explain quantum computing",
+          "Draft a polite email requesting a meeting"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -8690,7 +8717,11 @@
         "What assumptions did you make?",
         "What are the next steps?"
       ],
-      "suggestedPrompts": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
+      "suggestedPrompts": [
+        "Write me a poem",
+        "Explain quantum computing",
+        "Draft a polite email requesting a meeting"
+      ],
       "syncSettings": "Sync Settings Across Models",
       "syncSettingsLabel": "Sync Settings Across Models",
       "generalSettings": "General Settings",
@@ -13961,6 +13992,8 @@
     "to": "To:",
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
+    "label": "Select Time Range",
+      "selectDateRange": "Select date range",
     "apply": "Apply",
     "cancel": "Cancel"
   },

@@ -811,11 +811,6 @@
       "text": "by"
     },
     {
-      "file": "src/app/(dashboard)/usage/_components/components/overview/UsageStatStrip.tsx",
-      "kind": "jsx",
-      "text": "failed"
-    },
-    {
       "file": "src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx",
       "kind": "error",
       "text": "Failed to load default user settings"

@@ -5337,3 +5337,9 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 承接第 537 簇延迟清单，PR #14 把 chat 图片附件与 moyai 工作台接回，覆盖 `ChatFileChip`、`attachmentHelpers`、`chatImageStorage`、`imageHelpers`、`moyai/MoyaiChatComposer` 与 `moyai/MoyaiChatHome`；上游新增但未接线的 `ChatModelPicker` 删除。目录键按「上游英文值 → 我方译文键」成对贴回，模块级函数继续走译员注入
 
 复测：`en.json` 与 `zh-CN.json` 摊平后各 13482 叶，键树差集 0，中英同值 185；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 287 / 基线 287，`check:zh-coverage` 215 / 0 与基线同数；生产 `typecheck` 0 错，`knip:ci` 干净。本轮没有复跑渲染扫描，后续文案改动要按第六步之后的表重测。仍未接入的 auto router 预设、模型中心 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义新排序字段，按批继续
+
+## 2026-10-29 第 539 簇：渲染扫描复跑与用量域英文清账
+
+PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 25 条新英文泄漏，集中在 PR #13/#14 接回的用量域：usage 17 条、caching 2 条、cost-optimization 3 条、home 3 条。逐条溯源修复：`UsageStatStrip` 五枚硬编码串接既有 `usage.overview.statStrip` 键；`UsageBreakdownChart` 粒度与标度选项、标题副题改 `t()` 动态构建，`BreakdownChart` 指标与维度选项同法处理；`UsageViewSelect` 九组视图标签与描述接 `usage.viewSelect` 扁平键；`advanced_date_picker` 默认 label 与 moment 英文月份格式改 `Intl.DateTimeFormat` 按 `undefined` locale 渲染；`overviewData.formatDayLabel` 与 `ClientUsagePanel.dateLabel` 从硬编码 `"en-US"` 改 `undefined`（图表轴 Oct/Sep 变 10月/9月），周桶标签去掉 `Wk of ` 前缀（图表标题已标明粒度）。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，不再要求 Playwright 下载的 Chromium
+
+复测：`en.json` 与 `zh-CN.json` 摊平后各 13502 叶（+20），键树差集 0，中英同值 185；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 286 / 基线 286（一条 resolved 撤出），`check:zh-coverage` 215 / 0 与基线同数；渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线；生产 `typecheck` 0 错

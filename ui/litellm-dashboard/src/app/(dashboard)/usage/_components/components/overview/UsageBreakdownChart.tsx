@@ -18,15 +18,8 @@ import {
 import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented } from "./Primitives";
 import { useTranslations } from "next-intl";
 
-const METRIC_NOUN: Record<UsageMetric, string> = { spend: "spend", tokens: "tokens", requests: "requests" };
-const GRANULARITY_OPTIONS = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-] as const satisfies readonly { value: Granularity; label: string }[];
-const SCALE_OPTIONS = [
-  { value: "linear", label: "Linear" },
-  { value: "log", label: "Log" },
-] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+const GRANULARITY_VALUES = ["day", "week"] as const satisfies readonly Granularity[];
+const SCALE_VALUES = ["linear", "log"] as const satisfies readonly StackedUsageScale[];
 
 interface UsageBreakdownChartProps {
   results: readonly DailyData[];
@@ -48,6 +41,15 @@ export default function UsageBreakdownChart({
   const state: BreakdownState = { metric, dimension };
   const [granularity, setGranularity] = useState<Granularity>("day");
   const [scale, setScale] = useState<StackedUsageScale>("linear");
+  const granularityLabel = t(granularity === "day" ? "daily" : "weekly");
+  const granularityOptions = useMemo(
+    () => GRANULARITY_VALUES.map((value) => ({ value, label: t(value === "day" ? "daily" : "weekly") })),
+    [t],
+  );
+  const scaleOptions = useMemo(
+    () => SCALE_VALUES.map((value) => ({ value, label: t(value === "linear" ? "linear" : "log") })),
+    [t],
+  );
   const modelColors = useMemo(() => colorByModel ?? modelColorMap(results), [colorByModel, results]);
   const { series: dailySeries, ranking } = useBreakdown(results, state, 8, modelColors);
   const series = useMemo(() => bucketSeries(dailySeries, granularity), [dailySeries, granularity]);
@@ -56,18 +58,18 @@ export default function UsageBreakdownChart({
 
   return (
     <Panel
-      title={`${granularity === "day" ? "Daily" : "Weekly"} usage`}
-      subtitle={`${granularity === "day" ? "Daily" : "Weekly"} ${METRIC_NOUN[state.metric]} by model (top 8, rest grouped as Other)`}
+      title={t("usageTitle", { granularity: granularityLabel })}
+      subtitle={t("usageByModel", { granularity: granularityLabel, metric: t(`metric.${state.metric}`) })}
       action={
         <>
           <BreakdownControls state={state} onChange={(next) => setMetric(next.metric)} showDimension={false} />
           <Segmented
             label={t("bucketSize")}
             value={granularity}
-            options={GRANULARITY_OPTIONS}
+            options={granularityOptions}
             onChange={setGranularity}
           />
-          <Segmented label={t("scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+          <Segmented label={t("scale")} value={scale} options={scaleOptions} onChange={setScale} />
         </>
       }
       bodyClassName="px-0 pt-4 pb-0"

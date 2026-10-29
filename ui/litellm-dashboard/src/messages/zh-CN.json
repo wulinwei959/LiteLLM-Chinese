@@ -5157,6 +5157,30 @@
   "usage": {
     "missingTokenOrRange": "缺少访问令牌或日期范围",
     "title": "用量",
+    "viewSelect": {
+      "title": "用量视图",
+      "description": "选择要查看的用量数据",
+      "global": "全局用量",
+      "yourUsage": "我的用量",
+      "myUsage": "我的用量",
+      "organization": "组织用量",
+      "team": "团队用量",
+      "customer": "客户用量",
+      "tag": "标签用量",
+      "agent": "智能体用量（A2A）",
+      "user": "用户用量",
+      "userAgentActivity": "用户代理活动",
+      "globalDesc": "查看所有资源的用量",
+      "yourUsageDesc": "查看你的用量",
+      "myUsageDesc": "查看你自己的用量",
+      "organizationDesc": "查看所有组织的用量",
+      "teamDesc": "按团队查看用量",
+      "customerDesc": "按客户账户查看用量",
+      "tagDesc": "按标签查看用量",
+      "agentDesc": "按智能体查看用量",
+      "userDesc": "按用户查看用量",
+      "userAgentActivityDesc": "查看用户代理活动日志"
+    },
     "tabs": {
       "cost": "成本",
       "models": "模型活动",
@@ -5301,18 +5325,6 @@
       "enterpriseOnlyFeature": "✨ {tag}（仅企业版功能）",
       "getStartedPerTag": "通过追踪每个标签的费用开始使用",
       "here": "此处"
-    },
-    "viewSelect": {
-      "title": "用量视图",
-      "description": "选择要查看的用量数据",
-      "global": "全局用量",
-      "organization": "组织用量",
-      "team": "团队用量",
-      "customer": "客户用量",
-      "tag": "标签用量",
-      "agent": "智能体用量（A2A）",
-      "user": "用户用量",
-      "agentDesc": "按智能体查看用量"
     },
     "endpointUsage": {
       "endpoint": "端点",
@@ -5581,7 +5593,14 @@
         "tokens": "Token 数",
         "spend": "花费",
         "requests": "请求数"
-      }
+      },
+      "noBudget": "未设预算",
+      "daily": "按日",
+      "weekly": "按周",
+      "linear": "线性",
+      "log": "对数",
+      "usageTitle": "{granularity}用量",
+      "usageByModel": "{granularity}{metric}，按模型（前 8 名，其余归入其他）"
     },
     "userActivity": {
       "error": {
@@ -8582,8 +8601,16 @@
         "image": "描述您想生成的图片..."
       },
       "suggestions": {
-        "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
-        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
+        "a2a": [
+          "你能帮我做什么？",
+          "介绍一下你自己",
+          "你能执行什么任务？"
+        ],
+        "default": [
+          "写一首诗",
+          "解释量子计算",
+          "起草一封礼貌的会议请求邮件"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -8685,8 +8712,16 @@
       "attachmentReady": "附件已准备好发送",
       "provideVirtualKey": "请提供虚拟密钥或选择当前 UI 会话",
       "errorFetching": "获取响应出错: {error}",
-      "genericFollowUps": ["能总结一下要点吗？", "你做了什么假设？", "后续步骤是什么？"],
-      "suggestedPrompts": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
+      "genericFollowUps": [
+        "能总结一下要点吗？",
+        "你做了什么假设？",
+        "后续步骤是什么？"
+      ],
+      "suggestedPrompts": [
+        "写一首诗",
+        "解释量子计算",
+        "起草一封礼貌的会议请求邮件"
+      ],
       "syncSettings": "跨模型同步设置",
       "syncSettingsLabel": "跨模型同步设置",
       "generalSettings": "常规设置",
@@ -13957,6 +13992,8 @@
     "to": "至：",
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
+    "label": "选择时间范围",
+      "selectDateRange": "选择日期范围",
     "apply": "应用",
     "cancel": "取消"
   },

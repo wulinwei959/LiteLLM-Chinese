@@ -38,7 +38,7 @@ export default function UsageStatStrip({
           label={t("statStrip.spend")}
           value={formatUsd(totals.spend)}
           pending={loading}
-          hint={budget ? `of ${formatUsd(budget)} budget` : "No budget set"}
+          hint={budget ? t("statStrip.ofBudget", { amount: formatUsd(budget) }) : t("noBudget")}
         />
       </StatCell>
       <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-14" />}>
@@ -56,7 +56,7 @@ export default function UsageStatStrip({
               <span className={totals.failed > 0 ? "text-destructive tabular-nums" : "tabular-nums"}>
                 {totals.failed.toLocaleString()}
               </span>{" "}
-              failed
+              {t("statStrip.failed")}
             </span>
           </div>
         )}
@@ -65,9 +65,9 @@ export default function UsageStatStrip({
         <Stat
           label={t("statStrip.totalTokens")}
           value={loading ? null : formatCompact(totals.tokens)}
-          exact={`${totals.tokens.toLocaleString()} tokens`}
+          exact={`${totals.tokens.toLocaleString()} ${t("tokensSuffix")}`}
           pending={loading}
-          hint={loading ? undefined : `${formatCompact(totals.cacheReadTokens)} cache read`}
+          hint={loading ? undefined : t("statStrip.cacheRead", { count: formatCompact(totals.cacheReadTokens) })}
         />
         {!loading && (
           <Popover>
@@ -115,7 +115,7 @@ export default function UsageStatStrip({
             label={t("statStrip.avgLatency")}
             value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
             pending={loading}
-            hint={totals.successRate === null ? undefined : `${totals.successRate.toFixed(1)}% success rate`}
+            hint={totals.successRate === null ? undefined : t("statStrip.successRate", { rate: totals.successRate.toFixed(1) })}
           />
         </div>
       </StatCell>

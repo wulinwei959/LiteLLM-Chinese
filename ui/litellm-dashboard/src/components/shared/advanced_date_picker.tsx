@@ -36,13 +36,14 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   value,
   onValueChange,
   presetShortLabel = null,
-  label = "Select Time Range",
+  label,
   className,
   showTimeRange = true,
   align = "right",
   compact = false,
 }) => {
   const t = useTranslations("advancedDatePicker");
+  const displayLabel = label ?? t("label");
 
   const inputId = useId();
   const [isOpen, setIsOpen] = useState(false);
@@ -119,10 +120,16 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   }, [isOpen]);
 
   const formatDisplayRange = useCallback((from: Date | undefined, to: Date | undefined) => {
-    if (!from || !to) return "Select date range";
+    if (!from || !to) return t("selectDateRange");
 
     const formatDateTime = (date: Date) => {
-      return moment(date).format("D MMM, HH:mm");
+      return new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(date);
     };
 
     return `${formatDateTime(from)} - ${formatDateTime(to)}`;
@@ -242,7 +249,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     <div
       className={cn("flex items-center gap-3", compact && "w-full min-w-0 flex-col items-stretch gap-1.5", className)}
     >
-      {label && <p className="text-sm font-medium text-foreground whitespace-nowrap">{label}</p>}
+      {displayLabel && <p className="text-sm font-medium text-foreground whitespace-nowrap">{displayLabel}</p>}
       <div className={cn("relative", compact && "w-full min-w-0")} ref={dropdownRef}>
         {/* Main input display */}
         <button
@@ -405,11 +412,27 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     <div className={cn("bg-info/10 p-3 rounded-md space-y-1", compact && "col-span-2")}>
                       <div className="text-xs text-info">
                         <span className="font-medium">{t("from")}</span>{" "}
-                        {moment(tempValue.from).format("MMM D, YYYY [at] HH:mm:ss")}
+                        {new Intl.DateTimeFormat(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        }).format(tempValue.from)}
                       </div>
                       <div className="text-xs text-info">
                         <span className="font-medium">{t("to")}</span>{" "}
-                        {moment(tempValue.to).format("MMM D, YYYY [at] HH:mm:ss")}
+                        {new Intl.DateTimeFormat(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        }).format(tempValue.to)}
                       </div>
                     </div>
                   )}
