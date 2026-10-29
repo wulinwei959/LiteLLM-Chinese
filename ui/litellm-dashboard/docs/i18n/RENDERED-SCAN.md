@@ -2,7 +2,7 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-24 第 533 簇。lens 追踪观察页批量接入完成：批量工具改写 vendor 166 个源文件、10 处手工位点接线，`SignalSettings.tsx` 一处在模块顶层解引用 getter 导致 lens 整页崩溃（`needs a translator: register one before the package renders`）改惰性求值修掉，`TracingSetupCard` 三条赋给变量的英文 message 分支漏抽、新开 3 键接线。基线从 138 撤到 60，38 页 0 渲染错误、0 条新发现。剩余 60 条按页是 lens 8（入门页示例追踪时间轴的 span 标识符，判数据保留）、api-reference 31、transform-request 20、model-insights 1（`session`，`session_id` API 字段词）；白名单净增 ClickHouse、Docker、Helm、Kubernetes、HTTP 5 条品牌词
+最近一次复跑：2026-10-29 第 539 簇。PR #14/#15 合并后复跑，38 页 0 渲染错误，撞出 25 条新英文泄漏（usage 17、caching 2、cost-optimization 3、home 3），全部集中在 PR #13/#14 接回的用量域。逐条溯源修复后复扫归零：`UsageStatStrip`、`UsageBreakdownChart`、`BreakdownChart`、`UsageViewSelect`、`advanced_date_picker`、`overviewData`、`ClientUsagePanel` 的硬编码英文与 `en-US` locale 格式化全部接翻译键或改按当前 locale 渲染，图表月份轴从 Oct/Sep 变 10月/9月。基线维持 60 条，0 条新发现。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，不再要求 Playwright 下载的 Chromium。剩余 60 条按页是 lens 8、api-reference 31、transform-request 20、model-insights 1
 
 （沿革）第 532 簇把第 530 簇进基线的零头（除 lens 86、api-reference 31、transform-request 20 外的 25 条）逐条甄别完：6 条真漏接键（model-insights 的 Requests/Spend/Linear/Log、telemetry 的面包屑 Telemetry、cost-tracking 的 Docs 按钮默认值），18 条判技术 token 或品牌名进 `ALLOWED_ENGLISH`，`model-insights` 的 `session` 判保留（`session_id` API 字段词）。基线从 162 撤到 138，38 页 0 渲染错误、0 条新发现
 

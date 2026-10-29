@@ -97,7 +97,7 @@ const main = async () => {
   const proxyUrl = PROXY_URL || "http://localhost:4000";
   const stubServer = PROXY_URL ? null : await startStubProxy(new URL(proxyUrl).port || "4000");
 
-  const browser = await chromium.launch().catch((error) => {
+  const browser = await chromium.launch({ channel: "chrome" }).catch((error) => {
     throw new Error(
       `Chromium could not start: ${String(error).split("\n")[0]}\n` +
         "On Linux the browser needs system libraries; `npx playwright install --with-deps chromium` installs them.",

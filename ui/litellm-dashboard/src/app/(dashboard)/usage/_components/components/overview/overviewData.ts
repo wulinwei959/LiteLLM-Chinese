@@ -79,7 +79,7 @@ const seriesKey = (index: number) => `s${index}`;
 const formatDayLabel = (date: string): string => {
   const parsed = new Date(`${date}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return date;
-  return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return parsed.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 };
 
 const sortByDate = (results: readonly DailyData[]) =>
@@ -157,7 +157,7 @@ export const bucketSeries = (series: Series, granularity: Granularity): Series =
     const members = series.data.filter((day) => bucketStart(day.date) === start);
     return {
       date: start,
-      label: `Wk of ${formatDayLabel(start)}`,
+      label: formatDayLabel(start),
       ...Object.fromEntries(
         series.keys.map((key) => [key, members.reduce((sum, day) => sum + Number(day[key] ?? 0), 0)]),
       ),

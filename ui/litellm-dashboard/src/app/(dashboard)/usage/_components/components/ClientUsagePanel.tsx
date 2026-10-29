@@ -53,7 +53,7 @@ interface ClientUsagePanelProps {
   onRetry?: () => void;
 }
 
-const dateLabel = (date: Date | null) => date?.toLocaleDateString("en-US", { month: "short", day: "numeric" }) ?? "—";
+const dateLabel = (date: Date | null) => date?.toLocaleDateString(undefined, { month: "short", day: "numeric" }) ?? "—";
 const countLabel = (value: number | null) => (value === null ? "Unavailable" : value.toLocaleString());
 
 export default function ClientUsagePanel({

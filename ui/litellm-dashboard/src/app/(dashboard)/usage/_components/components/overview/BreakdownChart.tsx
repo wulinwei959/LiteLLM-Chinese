@@ -21,17 +21,8 @@ import { Segmented } from "./Primitives";
 import { providerForModel } from "./modelProvider";
 import { useTranslations } from "next-intl";
 
-const METRIC_OPTIONS = [
-  { value: "spend", label: "Spend" },
-  { value: "tokens", label: "Tokens" },
-  { value: "requests", label: "Requests" },
-] as const satisfies readonly { value: UsageMetric; label: string }[];
-
-const DIMENSION_OPTIONS = [
-  { value: "model_groups", label: "Model" },
-  { value: "models", label: "Deployment" },
-  { value: "providers", label: "Provider" },
-] as const satisfies readonly { value: BreakdownDimension; label: string }[];
+const METRIC_VALUES = ["spend", "tokens", "requests"] as const satisfies readonly UsageMetric[];
+const DIMENSION_VALUES = ["model_groups", "models", "providers"] as const satisfies readonly BreakdownDimension[];
 
 export interface BreakdownState {
   metric: UsageMetric;
@@ -62,20 +53,38 @@ export function BreakdownControls({
   showDimension?: boolean;
 }) {
   const t = useTranslations("usage.overview");
+  const metricOptions = useMemo(
+    () =>
+      METRIC_VALUES.map((value) => {
+        if (value === "spend") return { value, label: t("metric.spend") };
+        if (value === "tokens") return { value, label: t("metric.tokens") };
+        return { value, label: t("metric.requests") };
+      }),
+    [t],
+  );
+  const dimensionOptions = useMemo(
+    () =>
+      DIMENSION_VALUES.map((value) => {
+        if (value === "model_groups") return { value, label: t("dimension.model") };
+        if (value === "models") return { value, label: t("dimension.deployment") };
+        return { value, label: t("dimension.provider") };
+      }),
+    [t],
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Segmented
         label={t("breakdown.metric")}
         value={state.metric}
-        options={METRIC_OPTIONS}
+        options={metricOptions}
         onChange={(metric) => onChange({ ...state, metric })}
       />
       {showDimension && (
         <Segmented
           label={t("breakdown.groupBy")}
           value={state.dimension}
-          options={DIMENSION_OPTIONS}
+          options={dimensionOptions}
           onChange={(dimension) => onChange({ ...state, dimension })}
         />
       )}

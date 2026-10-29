@@ -303,3 +303,9 @@ PR #12 为保汉化把几块结构变动过大的上游界面留在我方版本�
 目录键按「上游英文值 → 我方译文键」成对贴回，模块级函数继续走译员注入。收口实测：`en.json` 与 `zh-CN.json` 摊平后各 13482 叶，键树差集 0，中英同值 185；死键 0，静态英文 287/287，中文取值 215/0；生产 `typecheck` 0 错，`knip:ci` 干净。
 
 仍未接入：auto router 预设选择、模型中心 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入。
+
+## 十四、执行记录（2026-10-29）：渲染扫描复跑与用量域英文清账
+
+PR #14 与 PR #15（OSV 修复）合并后按 `WORKFLOW.md` 第六步复跑渲染扫描，38 页 0 渲染错误，撞出 25 条新英文泄漏，全部集中在 PR #13/#14 接回的用量域。逐条溯源修复 `UsageStatStrip`、`UsageBreakdownChart`、`BreakdownChart`、`UsageViewSelect`、`advanced_date_picker`、`overviewData` 与 `ClientUsagePanel` 的硬编码英文与 `en-US` locale 格式化，图表月份轴从 Oct/Sep 变 10月/9月。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，解决 Playwright Chromium 下载超时问题
+
+收口实测：渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线；`check:dead-keys` 0，`check:english-leaks` 286/286，`check:zh-coverage` 215/0；生产 `typecheck` 0 错。目录摊平后各 13502 叶（+20）。详细账记在 `PROGRESS.md` 第 539 簇
