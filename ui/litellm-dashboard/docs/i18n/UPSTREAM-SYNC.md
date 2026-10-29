@@ -294,4 +294,12 @@ PR #12 为保汉化把几块结构变动过大的上游界面留在我方版本�
 
 上游这 13 份测试本轮没有移植，随组件接入一并移除，留待专门一批按本仓 convention 重写（渲染走 `renderWithProviders`、断言中文、不测内部结构）：`ClientUsagePanel.integration`、`EntityUsage.test`、`SpendByProvider.test`、`TopModelView.test`、`UsagePageView.test`、`ErrorsTab.test`、`TopAgents.integration`、`UsageBreakdownChart.integration`、`UsageStatStrip.integration`、`AriaAnswer.integration`、`LiteAdmin.integration`、`operations.test`、`advanced_date_picker.test`。
 
-仍未接入：chat 的图片附件与 moyai 工作台、auto router 预设选择、模型中心的 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入。
+仍未接入：auto router 预设选择、模型中心的 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。chat 的图片附件与 moyai 工作台已由下一篇接回。按同一流程一批批接入。
+
+## 十三、执行记录（2026-10-29）：接回 chat 图片附件与 moyai
+
+承接第十二节遗留清单，PR #14 把 chat 图片附件与 moyai 工作台接回，具体覆盖 `ChatFileChip`、`attachmentHelpers`、`chatImageStorage`、`imageHelpers`、`moyai/MoyaiChatComposer` 与 `moyai/MoyaiChatHome`。上游新增的 `ChatModelPicker` 因未接线而删除，后续如需启用可按新接口重新接入。
+
+目录键按「上游英文值 → 我方译文键」成对贴回，模块级函数继续走译员注入。收口实测：`en.json` 与 `zh-CN.json` 摊平后各 13482 叶，键树差集 0，中英同值 185；死键 0，静态英文 287/287，中文取值 215/0；生产 `typecheck` 0 错，`knip:ci` 干净。
+
+仍未接入：auto router 预设选择、模型中心 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入。

@@ -5331,3 +5331,9 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 承接第 536 簇的延迟清单，本轮接回用量页 client usage 视图、LiteAdmin 的 Aria 应答与用量图、上游新版日期选择器与 `ErrorState`；`ChatMessageContent` 增加 `actions` 槽位给导出按钮用。做法与踩坑记在 `UPSTREAM-SYNC.md` 第十二篇，核心是「逐文件改 + `tsc` 校验、变差回滚」
 
 复测：死键 0（清掉 100 枚失效旧键）、静态英文 287/287（+3 条模型侧提示按口径冻结）、中文取值 215/0、生产 `typecheck` 0 错、`knip:ci` 干净、受影响测试 84 文件 984 例全绿（13 份上游测试留待按本仓 convention 重写，清单在同篇）。仍未接入的 chat 附件与 moyai、auto router 预设、模型中心 provider 标识等，按批继续
+
+## 2026-10-29 第 538 簇：接回 chat 图片附件与 moyai 文案
+
+承接第 537 簇延迟清单，PR #14 把 chat 图片附件与 moyai 工作台接回，覆盖 `ChatFileChip`、`attachmentHelpers`、`chatImageStorage`、`imageHelpers`、`moyai/MoyaiChatComposer` 与 `moyai/MoyaiChatHome`；上游新增但未接线的 `ChatModelPicker` 删除。目录键按「上游英文值 → 我方译文键」成对贴回，模块级函数继续走译员注入
+
+复测：`en.json` 与 `zh-CN.json` 摊平后各 13482 叶，键树差集 0，中英同值 185；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 287 / 基线 287，`check:zh-coverage` 215 / 0 与基线同数；生产 `typecheck` 0 错，`knip:ci` 干净。本轮没有复跑渲染扫描，后续文案改动要按第六步之后的表重测。仍未接入的 auto router 预设、模型中心 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义新排序字段，按批继续
