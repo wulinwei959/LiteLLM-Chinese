@@ -5,17 +5,16 @@ import moment from "moment";
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import AdvancedDatePicker from "./advanced_date_picker";
 
-const rangeName = (from: Date, to: Date): string => {
-  const fmt = (d: Date) =>
-    new Intl.DateTimeFormat(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(d);
-  return `${fmt(from)} - ${fmt(to)}`;
+const RANGE_FORMAT: Intl.DateTimeFormatOptions = {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
 };
+
+const rangeName = (from: Date, to: Date): string =>
+  `${new Intl.DateTimeFormat(undefined, RANGE_FORMAT).format(from)} - ${new Intl.DateTimeFormat(undefined, RANGE_FORMAT).format(to)}`;
 
 // Polyfill requestIdleCallback for test environment
 beforeAll(() => {
@@ -66,12 +65,16 @@ describe("AdvancedDatePicker", () => {
           presetShortLabel={preset}
         />,
       );
-      fireEvent.click(screen.getByRole("button", { name: rangeName(new Date(2027, 0, 1), new Date(2027, 0, 1, 23, 59, 59, 999)) }));
+      fireEvent.click(
+        screen.getByRole("button", { name: rangeName(new Date(2027, 0, 1), new Date(2027, 0, 1, 23, 59, 59, 999)) }),
+      );
       expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByRole("button", { name: /今天/ })).toHaveAttribute("aria-pressed", "false");
       fireEvent.click(screen.getByRole("button", { name: /今天/ }));
       fireEvent.click(screen.getByRole("button", { name: "取消" }));
-      fireEvent.click(screen.getByRole("button", { name: rangeName(new Date(2027, 0, 1), new Date(2027, 0, 1, 23, 59, 59, 999)) }));
+      fireEvent.click(
+        screen.getByRole("button", { name: rangeName(new Date(2027, 0, 1), new Date(2027, 0, 1, 23, 59, 59, 999)) }),
+      );
       expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
     } finally {
       vi.useRealTimers();

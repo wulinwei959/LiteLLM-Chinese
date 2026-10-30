@@ -106,33 +106,29 @@ function Page() {
   return null;
 }
 
-function renderWidget(
-  Menu?: ComponentType<{ onLogout: () => void }>,
-  showHome = false,
-  showUsage = false,
-) {
+function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome = false, showUsage = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   const tree = (home = showHome, usage = showUsage) => (
     <QueryClientProvider client={client}>
       <Toaster />
       <LocaleProvider locale="zh-CN">
-      <NextIntlClientProvider locale="zh-CN" messages={zhMessages}>
-        <AuthProvider>
-          <SessionReady />
-          {Menu && <Menu onLogout={() => undefined} />}
-          <LiteAdminFrame>
-            <Page />
-            {home && <LiteAdminHome />}
-            <LiteAdmin />
-            {usage && (
-              <>
-                <AriaUsageComposer />
-                <AriaUsageTrigger />
-              </>
-            )}
-          </LiteAdminFrame>
-        </AuthProvider>
-      </NextIntlClientProvider>
+        <NextIntlClientProvider locale="zh-CN" messages={zhMessages}>
+          <AuthProvider>
+            <SessionReady />
+            {Menu && <Menu onLogout={() => undefined} />}
+            <LiteAdminFrame>
+              <Page />
+              {home && <LiteAdminHome />}
+              <LiteAdmin />
+              {usage && (
+                <>
+                  <AriaUsageComposer />
+                  <AriaUsageTrigger />
+                </>
+              )}
+            </LiteAdminFrame>
+          </AuthProvider>
+        </NextIntlClientProvider>
       </LocaleProvider>
     </QueryClientProvider>
   );
@@ -162,6 +158,60 @@ function completionResponse(message: ModelReply | undefined) {
   return json(completion);
 }
 
+function uiReply(
+  path: string,
+  request: Request,
+  options: GatewayOptions,
+  settings: NonNullable<GatewayOptions["settings"]>,
+): Response | undefined {
+  if (path.endsWith("/litellm-ui-config")) {
+    const uiConfig = {
+      proxy_base_url: MANAGEMENT,
+      server_root_path: "",
+      admin_ui_disabled: false,
+      use_si_terminology: options.useSiTerminology,
+    };
+    return json(uiConfig);
+  }
+  if (path.endsWith("/health/readiness/details")) return json({ status: "healthy" });
+  if (path.endsWith("/sso/get/ui_settings")) {
+    if (typeof settings === "function") return settings(request);
+    return json({ PROXY_BASE_URL: MANAGEMENT, LITELLM_UI_API_DOC_BASE_URL: settings.target }, settings.status);
+  }
+  return undefined;
+}
+
+function modelReply(path: string, options: GatewayOptions): Response | undefined {
+  if (path.endsWith("/model_group/info")) {
+    return json({
+      data: options.models ?? [
+        { model_group: "a-embedding", mode: "embedding" },
+        { model_group: "chat-model", mode: "chat" },
+      ],
+    });
+  }
+  if (path.endsWith("/models")) {
+    if (typeof options.callableModels === "function") return options.callableModels();
+    const names = options.callableModels ??
+      options.models?.map((model) => model.model_group) ?? ["a-embedding", "chat-model"];
+    return json({ data: names.map((id) => ({ id })) });
+  }
+  return undefined;
+}
+
+function operationReply(path: string, options: GatewayOptions, body: Record<string, unknown>): Response | undefined {
+  if (path.endsWith("/team/info"))
+    return options.read ? options.read() : json({ team_info: { team_id: "team-1", max_budget: 40 } });
+  if (path.endsWith("/user/daily/activity/aggregated"))
+    return options.usage ? options.usage() : json({ results: [], metadata: { total_spend: 12.34 } });
+  if (path.endsWith("/team/update"))
+    return options.write ? options.write() : json({ team_id: "team-1", max_budget: body.max_budget });
+  if (path.endsWith("/key/generate"))
+    return options.write ? options.write() : json({ key: NEW_KEY, key_alias: "Widget key" });
+  if (path.endsWith("/key/update")) return json(body);
+  return undefined;
+}
+
 function gateway(
   replies: (ModelReply | Promise<ModelReply> | ((request: RecordedRequest) => ModelReply))[],
   options: GatewayOptions = {},
@@ -171,51 +221,23 @@ function gateway(
   transport.mockImplementation(async (input, init) => {
     const request = input instanceof Request ? input : new Request(new URL(String(input), "http://localhost"), init);
     const body: Record<string, unknown> = request.method === "GET" ? {} : await request.clone().json();
-    const recorded = { url: request.url, headers: request.headers, body, signal: request.signal };
+    const recorded: RecordedRequest = {
+      url: request.url,
+      headers: request.headers,
+      body,
+      signal: request.signal,
+    };
     const path = new URL(request.url).pathname;
     if (path.endsWith("/ui/litellm-runtime-config.json")) return json({});
     if (path.endsWith("/management/v1/users/me")) return json({ ...signedInUser, user_email: null });
     requests.push(recorded);
-    if (path.endsWith("/litellm-ui-config")) {
-      const uiConfig = {
-        proxy_base_url: MANAGEMENT,
-        server_root_path: "",
-        admin_ui_disabled: false,
-        use_si_terminology: options.useSiTerminology,
-      };
-      return json(uiConfig);
-    }
-    if (path.endsWith("/health/readiness/details")) return json({ status: "healthy" });
-    if (path.endsWith("/sso/get/ui_settings")) {
-      if (typeof settings === "function") return settings(request);
-      return json({ PROXY_BASE_URL: MANAGEMENT, LITELLM_UI_API_DOC_BASE_URL: settings.target }, settings.status);
-    }
-    if (path.endsWith("/model_group/info"))
-      return json({
-        data: options.models ?? [
-          { model_group: "a-embedding", mode: "embedding" },
-          { model_group: "chat-model", mode: "chat" },
-        ],
-      });
-    if (path.endsWith("/models")) {
-      if (typeof options.callableModels === "function") return options.callableModels();
-      const names = options.callableModels ??
-        options.models?.map((model) => model.model_group) ?? ["a-embedding", "chat-model"];
-      return json({ data: names.map((id) => ({ id })) });
-    }
     if (path.endsWith("/chat/completions")) {
       const reply = replies.shift();
       return completionResponse(typeof reply === "function" ? reply(recorded) : await reply);
     }
-    if (path.endsWith("/team/info"))
-      return options.read ? options.read() : json({ team_info: { team_id: "team-1", max_budget: 40 } });
-    if (path.endsWith("/user/daily/activity/aggregated"))
-      return options.usage ? options.usage() : json({ results: [], metadata: { total_spend: 12.34 } });
-    if (path.endsWith("/team/update"))
-      return options.write ? options.write() : json({ team_id: "team-1", max_budget: body.max_budget });
-    if (path.endsWith("/key/generate"))
-      return options.write ? options.write() : json({ key: NEW_KEY, key_alias: "Widget key" });
-    if (path.endsWith("/key/update")) return json(body);
+    const reply =
+      uiReply(path, request, options, settings) ?? modelReply(path, options) ?? operationReply(path, options, body);
+    if (reply) return reply;
     throw new Error(`Unexpected request: ${request.url}`);
   });
   return requests;

@@ -365,3 +365,15 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 收口实测：9 个测试文件合计 330 例全绿，全量 994 文件 13534 例（9 例既有预期失败）全绿；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0
 
 剩余 4 份待重写：`AriaAnswer.integration`、`LiteAdmin.integration`、`operations.test`、`advanced_date_picker.test`
+
+## 二十、执行记录（2026-10-30）：上游测试重写第二批（LiteAdmin 与日期选择器）
+
+第二十篇记第二批，也就是队列里最后的三份上游测试：`AriaAnswer.integration`、`LiteAdmin.integration`、`advanced_date_picker.test`。队列里另外点名的 `operations.test` 与 `AriaAvatar.test` 在上游基线 `cfe0100e1` 里不存在，liteadmin 目录只有 agent、answerExport、toolResults、usageChart 四份单测且本地已有，因此 13 份测试到此全部收口
+
+重写过程修掉两处真实文案泄漏。`date_range_presets` 的五个预设标签此前硬编码英文，改成键名后在组件里翻译，两侧各加 5 键；LiteAdmin 面板头部两句描述同样硬编码，接上 `assistantUsageDescription` 与 `assistantGatewayDescription`
+
+测试环境差异三处。上游用 `TerminologyContext` 区分 AI 与 SI 称谓，本仓没有该上下文，测试改用 `NextIntlClientProvider` 与 `LocaleProvider`，AI/SI 两组参数收敛为固定 AI 文案；上游「隐藏 Aria Agent」开关在本仓名为「隐藏 LiteAdmin」；上游按英文月名断言的日期触发器改为按 `Intl` 现算
+
+收口实测：三份测试 106 例全绿；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线
+
+至此队列第 4 项完成。剩余：公开模型页与模型信息页的 provider 图标，以及长期账（测试文件类型错误、zod 消息工厂化、巨型文件拆分）

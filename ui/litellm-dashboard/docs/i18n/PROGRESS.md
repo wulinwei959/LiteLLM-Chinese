@@ -5393,3 +5393,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 有三处与上游环境不同。UsagePage 的 URL 状态用例依赖上游测试工具的 `resetUrlUpdateQueueOnMount` 与 `onUrlUpdate` 时序，本地测试工具没有这个选项，去掉依赖该时序的断言，保留 `aria-selected`、告警与不发起越权请求这些行为断言。`EntityUsage` 的客户多选在本地没有实现，删掉两份对应用例。`ErrorsTab` 与 `UsagePageView` 的表格可访问名与本仓列定义不一致，改为按行内容定位表格
 
 复测：本轮 9 个文件合计 330 例全绿，全量 994 文件 13534 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
+
+## 2026-10-30 第 545 簇：上游测试重写第二批（LiteAdmin 与日期选择器）
+
+承接第 544 簇，本轮重写剩余的三份上游测试：AriaAnswer 集成测试 6 例、LiteAdmin 集成测试 76 例、高级日期选择器 24 例。队列里列的 operations.test 与 AriaAvatar.test 在上游基线 `cfe0100e1` 里并不存在（liteadmin 只有 agent、answerExport、toolResults、usageChart 四份单测，本地已有），13 份测试到此收口
+
+重写过程修掉两处真实文案泄漏。`date_range_presets` 的五个预设标签（Today、Last 7 days、Last 30 days、Month to date、Year to date）一直是硬编码英文，改为键名并在组件里翻译，两侧各加 5 键；LiteAdmin 面板头部两句描述（用量模式与网关模式）同样硬编码，接上 `assistantUsageDescription` 与 `assistantGatewayDescription`
+
+测试环境有三处与上游不同。上游用 `TerminologyContext` 切换 AI/SI 称谓，本仓没有这个上下文，测试改成 `NextIntlClientProvider` 加 `LocaleProvider`，并把 AI/SI 两组参数收敛为固定 AI 文案；上游「隐藏 Aria Agent」开关在本仓叫「隐藏 LiteAdmin」，断言同步；上游按英文日期名断言的触发器改成按 `Intl` 现算
+
+复测：三份测试 106 例全绿，全量 988 文件 13428 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
