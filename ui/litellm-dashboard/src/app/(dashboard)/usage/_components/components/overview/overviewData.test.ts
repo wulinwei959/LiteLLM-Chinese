@@ -11,6 +11,9 @@ import {
   seriesBy,
 } from "./overviewData";
 
+const localDayLabel = (date: string): string =>
+  new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
 const metrics = (spend: number) => ({
   spend,
   prompt_tokens: 0,
@@ -47,7 +50,7 @@ describe("seriesBy", () => {
     const series = seriesBy([day("2026-10-01", 10, { date: 3, label: 2, Other: 4 })], "model_groups", "spend");
     const [point] = series.data;
     expect(point.date).toBe("2026-10-01");
-    expect(point.label).toBe("Oct 1");
+    expect(point.label).toBe(localDayLabel("2026-10-01"));
     const valueOf = (name: string) => point[series.keys[series.labels.indexOf(name)]];
     expect(valueOf("Other")).toBe(4);
     expect(valueOf("date")).toBe(3);
@@ -70,7 +73,7 @@ describe("bucketTotals", () => {
     const totals = bucketTotals(series);
     expect(totals.get("2025-01-01")).toBe(5);
     expect(totals.get("2026-01-01")).toBe(9);
-    expect(labelForDate(series, "2025-01-01")).toBe("Jan 1");
+    expect(labelForDate(series, "2025-01-01")).toBe(localDayLabel("2025-01-01"));
   });
 });
 

@@ -309,3 +309,15 @@ PR #12 为保汉化把几块结构变动过大的上游界面留在我方版本�
 PR #14 与 PR #15（OSV 修复）合并后按 `WORKFLOW.md` 第六步复跑渲染扫描，38 页 0 渲染错误，撞出 25 条新英文泄漏，全部集中在 PR #13/#14 接回的用量域。逐条溯源修复 `UsageStatStrip`、`UsageBreakdownChart`、`BreakdownChart`、`UsageViewSelect`、`advanced_date_picker`、`overviewData` 与 `ClientUsagePanel` 的硬编码英文与 `en-US` locale 格式化，图表月份轴从 Oct/Sep 变 10月/9月。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，解决 Playwright Chromium 下载超时问题
 
 收口实测：渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线；`check:dead-keys` 0，`check:english-leaks` 286/286，`check:zh-coverage` 215/0；生产 `typecheck` 0 错。目录摊平后各 13502 叶（+20）。详细账记在 `PROGRESS.md` 第 539 簇
+
+## 十五、执行记录（2026-10-30）：接回 auto router 简单模式
+
+承接第十四节的未接入清单，本轮把上游提交 `9a35ed93f9`（simplify auto router setup with deployed model defaults，上游 PR #48451）接回来，覆盖 `add_model/AutoRouterPresetSelect`、`add_model/AutoRouterSimpleSetup`、`add_model/auto_setup.ts` 里新增的 `deployedRouterModels`、`recommendSolverPair`、`solverPairConfig`、`simpleSetupError`、`nextRouterName` 与模型身份解析，`add_model/add_auto_router_tab.tsx` 的简单模式与高级模式切换，以及 `hooks/models/useModels` 的 `model_info.blocked`
+
+行为变化有三点。新增路由默认进入简单模式，按已部署模型推荐一对求解器，可切目标与家族，也能一键进高级配置。名称输入框会按已有 auto router 名字自动建议下一个可用名。简单模式在团队未选、模型清单不可用或不足两个模型时禁用提交，并通过提示说明原因
+
+失败账按三类清。文案与查询名类按上游英文到本仓中文逐条替换。结构类三处是本次移植的缺口，已补齐，分别是 `saveBlockedReason` 少了 `simpleSetupError` 与未选团队门控，表单默认名称改成空串导致自动建议把名称填回、名称必填用例静默走成功分支，`modelCreateCall` 的译员参数让两处断言按下标取错。测试基建类修了 `tests/autoRouterSetup.ts` 的章节映射与三处写死英文月份的日期断言
+
+收口实测：集成测试 109 例、`auto_setup.test.ts` 136 例全绿，`add_model` 与 `lib/autorouter_presets` 合计 46 文件 1368 例全绿，全量 983 文件 13311 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，eslint 0 error，`knip:ci` 干净，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线。目录摊平后各 13531 叶，键树差集 0，中英同值 185
+
+仍未接入：模型中心的 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入

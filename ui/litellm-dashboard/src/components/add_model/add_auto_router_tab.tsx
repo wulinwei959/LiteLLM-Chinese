@@ -3,6 +3,7 @@ import { decisionDeploymentName } from "./jev_classifier_config";
 import DecisionModelSelect from "./DecisionModelSelect";
 import ClassifierPrimarySettings from "./ClassifierPrimarySettings";
 import AutoRouterClassifierTabs from "./AutoRouterClassifierTabs";
+import AutoRouterPresetSelect, { type PresetAvailability } from "./AutoRouterPresetSelect";
 import { getForecastConfigError, isForecastClassifier } from "../add_model/forecast_classifier_config";
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -14,7 +15,6 @@ import { FormField } from "@/components/shared/form/FormField";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useZodForm } from "@/lib/forms/useZodForm";
@@ -80,7 +80,17 @@ import {
 } from "@/lib/autorouter_presets";
 import { useAutoRouterPresets } from "@/app/(dashboard)/hooks/autoRouter/useAutoRouterPresets";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { buildAutomaticRouterConfig, buildPreferredTierModels, prefillEmptyTiers } from "./auto_setup";
+import AutoRouterSimpleSetup from "./AutoRouterSimpleSetup";
+import {
+  deployedRouterModels,
+  nextRouterName,
+  simpleSetupError,
+  recommendSolverPair,
+  solverPairConfig,
+  type RouterGoal,
+  type FamilyPreference,
+  type SimpleSetupIssue,
+} from "./auto_setup";
 
 interface AddAutoRouterTabProps {
   handleOk: () => void;
@@ -96,32 +106,7 @@ interface AddAutoRouterTabProps {
   teams?: Team[] | null;
 }
 
-type PresetAvailability =
-  | { kind: "available"; viaDeployments: boolean }
-  | { kind: "loading" }
-  | { kind: "unverifiable" }
-  | { kind: "missing_models"; models: readonly string[] };
-
 type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
-
-// Every non-"available" state disables the option. Selection derives from this same function
-// (see presetAvailability below), so an option a caller can click is always one that can be applied.
-const presetDisabledHint = (t: AddModelTranslator, availability: PresetAvailability): string | null => {
-  switch (availability.kind) {
-    case "available":
-      return null;
-    case "loading":
-      return t("presetCheckingAvailability");
-    case "unverifiable":
-      return t("presetCannotVerify");
-    case "missing_models":
-      return t("presetMissingModels", { models: availability.models.join(", ") });
-  }
-};
-
-// "loading"/"unverifiable" are transient system states, not a gap specific to this preset; only a
-// caller-specific missing-model reason gets the alarming red treatment.
-const isPresetHintAlarming = (availability: PresetAvailability): boolean => availability.kind === "missing_models";
 
 const NO_PRESETS: AutoRouterPreset[] = [];
 
@@ -174,7 +159,7 @@ const autoRouterSchema = (requiresTeamScope: boolean, t: AddModelTranslator) =>
 type AddAutoRouterFormValues = z.infer<ReturnType<typeof autoRouterSchema>>;
 
 const EMPTY_FORM_VALUES: AddAutoRouterFormValues = {
-  auto_router_name: "",
+  auto_router_name: "auto-router",
   team_id: null,
   model_access_group: undefined,
 };
@@ -217,9 +202,14 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     });
   const [modelAccessGroups, setModelAccessGroups] = useState<string[]>([]);
 
-  const [complexityRouterConfig, setComplexityRouterConfig] = useState<ComplexityRouterConfigValue>({
+  const [advanced, setAdvanced] = useState(false);
+  const [goal, setGoal] = useState<RouterGoal>("balanced");
+  const [family, setFamily] = useState<FamilyPreference>("auto");
+  const [solverOverrides, setSolverOverrides] = useState<{ everyday?: string; hard?: string }>({});
+  const [advancedConfig, setComplexityRouterConfig] = useState<ComplexityRouterConfigValue>({
     tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] },
     classifier_type: "heuristic",
+    classification_mode: "user_turn",
   });
 
   const [customTechnicalKeywords, setCustomTechnicalKeywords] = useState<string[]>([]);
@@ -262,12 +252,24 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       isMemberManaged ? fetchAutoRouterModels(accessToken, watchedTeamId) : fetchAvailableModels(accessToken),
     enabled: Boolean(accessToken && (!isMemberManaged || watchedTeamId)),
   });
-  const { data: deployments, isLoading: deploymentsLoading } = useQuery({
+  const {
+    data: deployments,
+    isLoading: deploymentsLoading,
+    isError: deploymentsError,
+    refetch: refetchDeployments,
+  } = useQuery({
     queryKey: autoRouterListKey(userId ?? "", userRole),
     queryFn: () => fetchAllModelDeployments(accessToken, userId ?? "", userRole),
     enabled: Boolean(accessToken),
   });
   const modelsLoading = groupsLoading || deploymentsLoading;
+  useEffect(() => {
+    if (!deployments || form.getFieldState("auto_router_name").isDirty) return;
+    form.setValue(
+      "auto_router_name",
+      nextRouterName(deployments.flatMap((row) => (row.model_name ? [row.model_name] : []))),
+    );
+  }, [deployments, form]);
   const modelInfo = React.useMemo(() => data ?? [], [data]);
   const {
     data: presetsData,
@@ -276,12 +278,12 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     refetch: refetchPresets,
   } = useAutoRouterPresets();
   const presets = presetsData ?? NO_PRESETS;
-  const automaticSetupLoading = modelsLoading || presetsPending;
   const presetsUnavailable = presetsError && presetsData === undefined;
   // react-query keeps the last successful list around when a later refetch fails, so isError alone
   // can't tell "never loaded" apart from "loaded, then a background refetch errored" - only the
   // former leaves us with nothing trustworthy to verify a preset's models against.
   const modelsUnverifiable = modelsError && data === undefined;
+  const inventoryUnavailable = modelsUnverifiable || (deploymentsError && deployments === undefined);
 
   const isAdmin = all_admin_roles.includes(userRole);
 
@@ -301,14 +303,33 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       ),
     [modelInfo],
   );
-  const preferredTierModels = React.useMemo(
-    () => buildPreferredTierModels(presets, availability),
-    [presets, availability],
+  const solverModels = React.useMemo(
+    () => deployedRouterModels(modelInfo, deployments ?? []),
+    [modelInfo, deployments],
   );
-  const automaticRouterConfig = React.useMemo(
-    () => buildAutomaticRouterConfig(modelInfo, deployments ?? [], preferredTierModels),
-    [modelInfo, deployments, preferredTierModels],
+  const recommended = React.useMemo(
+    () => recommendSolverPair(solverModels, goal, family),
+    [solverModels, goal, family],
   );
+  const everyday = solverOverrides.everyday
+    ? solverModels.find((model) => model.name === solverOverrides.everyday)
+    : recommended?.everyday;
+  const hard = solverOverrides.hard
+    ? solverModels.find((model) => model.name === solverOverrides.hard)
+    : recommended?.hard;
+  const simpleConfig = everyday && hard ? solverPairConfig(everyday.name, hard.name) : null;
+  const complexityRouterConfig = advanced
+    ? advancedConfig
+    : simpleConfig ?? {
+        classifier_type: "heuristic" as const,
+        classification_mode: "user_turn" as const,
+        tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] },
+      };
+  const openAdvanced = () => {
+    setComplexityRouterConfig(complexityRouterConfig);
+    setPrefillAttempted(simpleConfig !== null);
+    setAdvanced(true);
+  };
 
   // A preset's models can only be trusted against a successfully loaded list. Selection and the
   // greyed-out state derive from this one function, so a preset that cannot be selected can never
@@ -329,22 +350,6 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     [modelsLoading, modelsUnverifiable, availability, groupsOnlyAvailability],
   );
 
-  const sortedPresetOptions = React.useMemo(
-    () =>
-      presets
-        .map((preset) => ({ preset, availability: presetAvailability(preset) }))
-        .sort((a, b) => Number(b.availability.kind === "available") - Number(a.availability.kind === "available")),
-    [presets, presetAvailability],
-  );
-
-  const templateItems = React.useMemo(
-    () => [
-      ...sortedPresetOptions.map(({ preset }) => ({ value: preset.key, label: preset.label })),
-      { value: "custom", label: t("presetStartFromScratch") },
-    ],
-    [sortedPresetOptions, t],
-  );
-
   const applyPrefill = (prefill: PresetPrefill) => {
     setEditingTiers(false);
     setComplexityRouterConfig(prefill.complexityRouterConfig);
@@ -357,10 +362,17 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   };
 
   const [prefillAttempted, setPrefillAttempted] = useState(false);
-  const automaticPrefill = automaticSetupLoading || modelsUnverifiable ? null : automaticRouterConfig;
-  if (automaticPrefill && !prefillAttempted) {
+  const prefillDue = advanced && !prefillAttempted && !modelsLoading;
+  const prefillFromSimple = prefillDue && Boolean(simpleConfig);
+  if (prefillFromSimple && simpleConfig) {
     setPrefillAttempted(true);
-    setComplexityRouterConfig((current) => prefillEmptyTiers(current, automaticPrefill));
+    setComplexityRouterConfig((current) =>
+      !current.custom_tier_set &&
+      !isForecastClassifier(current.classifier_type) &&
+      activeTierRows(current).every((row) => row.models.length === 0)
+        ? { ...current, tiers: simpleConfig.tiers }
+        : current,
+    );
   }
 
   const handlePresetChange = (presetKey: string | undefined) => {
@@ -421,7 +433,16 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     },
     !requiresTeamScope || Boolean(watchedTeamId),
   );
-  const saveBlockedReason = submitBlockedReason ?? routerAvailability.saveBlockedReason;
+  const simpleBlockedReason = advanced ? null : simpleSetupError(modelsLoading, inventoryUnavailable, everyday, hard);
+  const simpleIssueText = (issue: SimpleSetupIssue): string => {
+    if (issue === "loading") return t("autoRouterSimpleLoadingModels");
+    if (issue === "unverified") return t("autoRouterSimpleLoadFailed");
+    return t("autoRouterSimpleNeedTwo");
+  };
+  const teamGateReason = !advanced && requiresTeamScope && !watchedTeamId ? t("autoRouterSimpleSelectTeamFirst") : null;
+  const configBlockedReason = simpleBlockedReason === null ? null : simpleIssueText(simpleBlockedReason);
+  const saveBlockedReason =
+    teamGateReason ?? configBlockedReason ?? submitBlockedReason ?? routerAvailability.saveBlockedReason;
   const handleClassifierChange = (config: ComplexityRouterConfigValue) => {
     setSelectedPreset(undefined);
     setComplexityRouterConfig(config);
@@ -493,10 +514,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
           }),
     };
 
-    await handleAddAutoRouterSubmit(submitValues, accessToken, {
-      resetForm: () => form.reset(EMPTY_FORM_VALUES),
-      onSuccess: handleOk,
-    }, t);
+    await handleAddAutoRouterSubmit(
+      submitValues,
+      accessToken,
+      {
+        resetForm: () => form.reset(EMPTY_FORM_VALUES),
+        onSuccess: handleOk,
+      },
+      t,
+    );
   };
 
   const handleAutoRouterSubmit = async () => {
@@ -546,64 +572,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   };
 
   const tierSetup = (
-    <div className="mb-4 w-full space-y-2">
-      <div className="space-y-2">
-        <Select
-          items={templateItems}
-          value={selectedPreset ?? null}
-          onValueChange={(presetKey: string | null) => handlePresetChange(presetKey ?? undefined)}
-        >
-          <SelectTrigger aria-label={t("presetUseTemplate")} data-testid="template-selector" className="w-full">
-            <SelectValue placeholder={t("presetUseTemplate")} />
-          </SelectTrigger>
-          <SelectContent className="[&_[data-slot=select-item]>div]:min-w-0 [&_[data-slot=select-item]>div]:shrink [&_[data-slot=select-item]>div]:whitespace-normal [&_[data-slot=select-item]>div]:break-words">
-            {sortedPresetOptions.map(({ preset, availability: presetState }) => {
-              const disabledHint = presetDisabledHint(t, presetState);
-              const hintClass = isPresetHintAlarming(presetState) ? "text-destructive" : "text-muted-foreground";
-              const matchedHint =
-                presetState.kind === "available" && presetState.viaDeployments
-                  ? t("presetMatchesDeployments")
-                  : null;
-
-              return (
-                <SelectItem
-                  key={preset.key}
-                  value={preset.key}
-                  label={preset.label}
-                  disabled={disabledHint !== null}
-                  title={disabledHint ?? preset.description}
-                >
-                  <div>
-                    <div className="font-medium">{preset.label}</div>
-                    <div className="text-xs text-muted-foreground">{preset.description}</div>
-                    <div className="text-xs text-muted-foreground">{t("presetReplacesChoices")}</div>
-                    {disabledHint && <div className={`text-xs mt-1 ${hintClass}`}>{disabledHint}</div>}
-                    {matchedHint && <div className="text-xs mt-1 text-success">{matchedHint}</div>}
-                  </div>
-                </SelectItem>
-              );
-            })}
-            <SelectSeparator className="mx-0" />
-            <SelectItem value="custom" label={t("presetStartFromScratch")}>
-              <div>
-                <div className="font-medium">{t("presetStartFromScratch")}</div>
-                <div className="text-xs text-muted-foreground">{t("presetStartFromScratchDescription")}</div>
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">{t("presetReplacesChoices")}</p>
-        {presetsPending && <div className="text-xs mt-1 text-muted-foreground">{t("presetLoadingTemplates")}</div>}
-        {presetsUnavailable && (
-          <div className="text-xs mt-1 text-destructive">
-            {t("presetLoadFailed")}{" "}
-            <button type="button" className="underline" onClick={() => void refetchPresets()}>
-              {t("retryLabel")}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+    <AutoRouterPresetSelect
+      selectedPreset={selectedPreset}
+      presets={presets}
+      presetAvailability={presetAvailability}
+      onPresetChange={handlePresetChange}
+      pending={presetsPending}
+      unavailable={presetsUnavailable}
+      onRetry={() => void refetchPresets()}
+    />
   );
 
   const configurationForm = (
@@ -646,13 +623,11 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                   name="auto_router_name"
                   label={labelWithHint(t("autoRouterNameLabel"), t("autoRouterNameHint"))}
                 >
-                  {({ ref, ...field }) => (
-                    <Input {...field} ref={ref} placeholder={t("autoRouterNamePlaceholder")} />
-                  )}
+                  {({ ref, ...field }) => <Input {...field} ref={ref} placeholder={t("autoRouterNamePlaceholder")} />}
                 </FormField>
               </div>
-              <div className="mb-6 border-b pb-6">
-                {isAdmin && (
+              <div className={advanced ? "mb-6 border-b pb-6" : ""}>
+                {isAdmin && advanced && (
                   <div>
                     <FormField
                       control={form.control}
@@ -690,91 +665,134 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                 </FormField>
               )}
 
-              <AutoRouterClassifierTabs
-                value={complexityRouterConfig}
-                onChange={handleClassifierChange}
-                decisionModel={
-                  <DecisionModelSelect
-                    value={complexityRouterConfig}
-                    onChange={setComplexityRouterConfig}
-                    modelInfo={modelInfo}
-                    deployments={deployments}
-                  />
-                }
-                judgeModel={
-                  <ClassifierPrimarySettings
-                    section="judge"
-                    value={complexityRouterConfig}
-                    onChange={setComplexityRouterConfig}
-                    modelOptions={modelInfo
-                      .filter((model) => model.mode !== "embedding")
-                      .map((model) => ({ value: model.model_group, label: model.model_group }))}
-                    showValidationErrors={showValidationErrors}
-                  />
-                }
-              >
-                <FieldGroup>
-                  {modelsUnverifiable && (
-                    <p className="text-sm text-destructive">
-                      {t("autoRouterModelsLoadFailed")}{" "}
-                      <button type="button" className="underline" onClick={() => void refetchModels()}>
-                        {t("retryLabel")}
-                      </button>
-                    </p>
-                  )}
-                  {configurationForm}
-
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <a
-                            href="https://github.com/BerriAI/litellm/issues"
-                            className="text-sm text-primary underline-offset-4 hover:underline"
-                          >
-                            {t("needHelp")}
-                          </a>
-                        }
-                      />
-                      <TooltipContent>{t("getHelpGithub")}</TooltipContent>
-                    </Tooltip>
-                    <div className="flex flex-wrap gap-2">
-                      <BlockedReasonTooltip reason={submitBlockedReason}>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          data-testid="auto-router-test-routing-btn"
-                          disabled={submitBlockedReason !== null || isSubmitting}
-                          onClick={() => setIsRoutingTestVisible(true)}
-                        >
-                          {t("testRouting")}
-                        </Button>
-                      </BlockedReasonTooltip>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        data-testid="auto-router-test-connect-btn"
-                        onClick={handleTestConnection}
-                        disabled={isTestingConnection}
+              {!advanced && (
+                <AutoRouterSimpleSetup
+                  customized={Boolean(solverOverrides.everyday || solverOverrides.hard)}
+                  hasSuggestions={Boolean(recommended || recommendSolverPair(solverModels, goal, "auto"))}
+                  onReset={() => setSolverOverrides({})}
+                  goal={goal}
+                  family={family}
+                  models={solverModels}
+                  everyday={everyday}
+                  hard={hard}
+                  waitingForTeam={requiresTeamScope && !watchedTeamId}
+                  loading={modelsLoading}
+                  error={inventoryUnavailable}
+                  notice={Object.keys(solverOverrides).length > 0 ? "kept" : recommended?.notice ?? null}
+                  onGoalChange={setGoal}
+                  onFamilyChange={(next) => {
+                    setFamily(next);
+                    setSolverOverrides({});
+                  }}
+                  onModelChange={(role, model) =>
+                    setSolverOverrides({ everyday: everyday?.name, hard: hard?.name, [role]: model })
+                  }
+                  onAdvanced={openAdvanced}
+                  onRetry={() => {
+                    void refetchModels();
+                    void refetchDeployments();
+                  }}
+                />
+              )}
+              {advanced && (
+                <AutoRouterClassifierTabs
+                  value={complexityRouterConfig}
+                  onChange={handleClassifierChange}
+                  decisionModel={
+                    <DecisionModelSelect
+                      value={complexityRouterConfig}
+                      onChange={setComplexityRouterConfig}
+                      modelInfo={modelInfo}
+                      deployments={deployments}
+                    />
+                  }
+                  judgeModel={
+                    <ClassifierPrimarySettings
+                      section="judge"
+                      value={complexityRouterConfig}
+                      onChange={setComplexityRouterConfig}
+                      modelOptions={modelInfo
+                        .filter((model) => model.mode !== "embedding")
+                        .map((model) => ({ value: model.model_group, label: model.model_group }))}
+                      showValidationErrors={showValidationErrors}
+                    />
+                  }
+                >
+                  <FieldGroup>
+                    {modelsUnverifiable && (
+                      <p className="text-sm text-destructive">
+                        {t("autoRouterModelsLoadFailed")}{" "}
+                        <button type="button" className="underline" onClick={() => void refetchModels()}>
+                          {t("retryLabel")}
+                        </button>
+                      </p>
+                    )}
+                    {configurationForm}
+                  </FieldGroup>
+                </AutoRouterClassifierTabs>
+              )}
+              {!advanced && routerAvailability.isError && (
+                <p className="mt-3 text-sm text-destructive" role="alert">
+                  {t("couldNotCheckAvailability")}{" "}
+                  <Button type="button" variant="link" onClick={() => void routerAvailability.refetch()}>
+                    {t("retryLabel")}
+                  </Button>
+                </p>
+              )}
+              {!advanced && routerAvailability.data?.error && (
+                <p className="mt-3 text-sm text-destructive" role="alert">
+                  {routerAvailability.data.error}
+                </p>
+              )}
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <a
+                        href="https://github.com/BerriAI/litellm/issues"
+                        className="text-sm text-primary underline-offset-4 hover:underline"
                       >
-                        {isTestingConnection && <UiLoadingSpinner className="size-4" />}
-                        {t("testConnection")}
-                      </Button>
-                      <BlockedReasonTooltip reason={saveBlockedReason}>
-                        <Button
-                          type="button"
-                          disabled={saveBlockedReason !== null || isSubmitting}
-                          onClick={() => {
-                            void handleAutoRouterSubmit();
-                          }}
-                        >
-                          {t("addAutoRouter")}
-                        </Button>
-                      </BlockedReasonTooltip>
-                    </div>
-                  </div>
-                </FieldGroup>
-              </AutoRouterClassifierTabs>
+                        {t("needHelp")}
+                      </a>
+                    }
+                  />
+                  <TooltipContent>{t("getHelpGithub")}</TooltipContent>
+                </Tooltip>
+                <div className="flex flex-wrap gap-2">
+                  <BlockedReasonTooltip reason={submitBlockedReason}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      data-testid="auto-router-test-routing-btn"
+                      disabled={submitBlockedReason !== null || isSubmitting}
+                      onClick={() => setIsRoutingTestVisible(true)}
+                    >
+                      {t("testRouting")}
+                    </Button>
+                  </BlockedReasonTooltip>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    data-testid="auto-router-test-connect-btn"
+                    onClick={handleTestConnection}
+                    disabled={isTestingConnection}
+                  >
+                    {isTestingConnection && <UiLoadingSpinner className="size-4" />}
+                    {t("testConnection")}
+                  </Button>
+                  <BlockedReasonTooltip reason={saveBlockedReason}>
+                    <Button
+                      type="button"
+                      disabled={saveBlockedReason !== null || isSubmitting}
+                      onClick={() => {
+                        void handleAutoRouterSubmit();
+                      }}
+                    >
+                      {t("addAutoRouter")}
+                    </Button>
+                  </BlockedReasonTooltip>
+                </div>
+              </div>
             </form>
           </CardContent>
         </Card>

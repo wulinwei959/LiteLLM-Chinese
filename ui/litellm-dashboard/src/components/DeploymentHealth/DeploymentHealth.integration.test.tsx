@@ -29,6 +29,9 @@ const LICENSE_IN_3_DAYS: DeploymentWarning = { id: "license_expiry:2026-10-17", 
 const NO_REDIS: DeploymentWarning = { id: "no_redis", severity: "warning", ignore: null };
 const DEBUG: DeploymentWarning = { id: "detailed_debug", severity: "warning", ignore: null };
 
+const LOCAL_MINUTE_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
+const localMinute = (iso: string): string => LOCAL_MINUTE_FORMAT.format(new Date(iso));
+
 const snoozedBy = (user: string, until: string): DeploymentWarning["ignore"] => ({
   source: "admin",
   ignored_by: user,
@@ -239,7 +242,7 @@ describe("deployment health panel", () => {
 
     const debug = within(panel).getByRole("article", { name: "已开启详细调试日志" });
     expect(within(debug).getByText("已静音")).toBeVisible();
-    expect(within(debug).getByText(/^直到/)).toHaveTextContent(/^直到 Oct 2[12], 2026/);
+    expect(within(debug).getByText(/^直到/)).toHaveTextContent(`直到 ${localMinute("2026-10-21T17:04:12Z")}`);
     expect(debug).toHaveTextContent("操作人 admin-2");
     const expired = within(panel).getByRole("article", {
       name: /你的 LiteLLM 企业版许可已于 .* 过期/,

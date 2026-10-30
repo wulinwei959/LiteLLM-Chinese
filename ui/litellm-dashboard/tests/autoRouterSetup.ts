@@ -18,20 +18,84 @@ const ADVANCED_SECTIONS: Record<string, readonly string[]> = {
 };
 
 const DEFAULT_ADVANCED_GROUP = ["路由规则与恢复"];
+const ZH_GROUPS: Record<string, readonly string[]> = {
+  分类方法: ["分类器调优", "LLM 调优"],
+  启发式关键词覆盖: ["分类器调优"],
+  忽略自定义标签: ["请求预处理"],
+  内务路由: ["路由规则与恢复"],
+  模态路由: ["路由规则与恢复"],
+  计划模式覆盖: ["路由规则与恢复"],
+  升级关键词: ["路由规则与恢复"],
+  "关键词/语义匹配": ["路由规则与恢复"],
+  亲和性: ["会话与效率"],
+  自适应路由: ["会话与效率"],
+  压缩: ["会话与效率"],
+  响应格式: ["兼容性"],
+  上下文窗口升级: ["路由规则与恢复"],
+  停滞任务升级: ["路由规则与恢复"],
+  缓存感知路由: ["会话与效率"],
+};
+
+const SECTION_GROUPS: Record<string, readonly string[]> = {
+  分类方法: ["启发式调优", "分类器调优", "LLM 调优"],
+  启发式调优: ["启发式调优"],
+  启发式关键词覆盖: ["启发式调优"],
+  忽略自定义标签: ["请求预处理"],
+  内务路由: ["路由规则与恢复"],
+  模态路由: ["路由规则与恢复"],
+  计划模式覆盖: ["路由规则与恢复"],
+  升级关键词: ["路由规则与恢复"],
+  "关键词/语义匹配": ["路由规则与恢复"],
+  上下文窗口升级: ["路由规则与恢复"],
+  停滞任务升级: ["路由规则与恢复"],
+  亲和性: ["会话与效率"],
+  自适应路由: ["会话与效率"],
+  压缩: ["会话与效率"],
+  缓存感知路由: ["会话与效率"],
+  响应格式: ["兼容性"],
+};
+
+const SECTION_LABELS: Record<string, string> = {
+  "Classification Method": "分类方法",
+  "Heuristic tuning": "启发式调优",
+  "Heuristic Keyword Overrides": "启发式关键词覆盖",
+  "Ignore Custom Tags": "忽略自定义标签",
+  "Housekeeping Routing": "内务路由",
+  "Modality Routing": "模态路由",
+  "Plan-Mode Override": "计划模式覆盖",
+  "Escalation Keywords": "升级关键词",
+  "Keyword/Semantic Matching": "关键词/语义匹配",
+  "Context Window Escalation": "上下文窗口升级",
+  "Stalled Task Escalation": "停滞任务升级",
+  Affinity: "亲和性",
+  "Adaptive Routing": "自适应路由",
+  Compression: "压缩",
+  "Cache-aware routing": "缓存感知路由",
+  "Response Format": "响应格式",
+};
 
 export const openAutoRouterAdvanced = (section: string) => {
   const advanced = screen.getByRole("button", { name: /^高级设置/ });
   if (advanced.getAttribute("aria-expanded") !== "true") fireEvent.click(advanced);
-  const groups = ADVANCED_SECTIONS[section] ?? DEFAULT_ADVANCED_GROUP;
+
+  const target = SECTION_LABELS[section] ?? section;
+  const groups = SECTION_GROUPS[target] ?? DEFAULT_ADVANCED_GROUP;
   const opened: string[] = [];
   for (const name of groups) {
-    const group = screen.queryByRole("button", { name });
+    const group = screen.queryByRole("button", { name: new RegExp(`^${name}($|\\s)`) });
     if (group === null) continue;
     if (group.getAttribute("aria-expanded") !== "true") fireEvent.click(group);
     opened.push(name);
   }
+
+  const header = screen.queryByRole("button", { name: new RegExp(`^${target}($|\\s)`) });
+  if (header !== null && header.getAttribute("aria-expanded") !== "true") {
+    fireEvent.click(header);
+    opened.push(target);
+  }
+
   if (opened.length === 0) {
-    throw new Error(`No advanced group button matched for section "${section}": tried ${groups.join(", ")}`);
+    throw new Error(`No advanced group matched for "${section}" (target "${target}"): ${groups.join(", ")}`);
   }
 };
 
