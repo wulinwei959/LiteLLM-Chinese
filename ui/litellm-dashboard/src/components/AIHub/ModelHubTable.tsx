@@ -6,8 +6,6 @@ import MakeMCPPublicForm from "@/components/AIHub/forms/MakeMCPPublicForm";
 import MakeModelPublicForm from "@/components/AIHub/forms/MakeModelPublicForm";
 import { getMCPHubTableColumns, MCPServerData } from "@/components/AIHub/MCPHubTableColumns";
 import { getModelHubTableColumns, ModelHubData } from "@/components/AIHub/ModelHubTableColumns";
-import { ModelCustomMetadata } from "@/components/AIHub/ModelCustomMetadata";
-import { modelUsageExample } from "@/components/AIHub/modelUsageExample";
 import UsefulLinksManagement from "@/components/AIHub/UsefulLinksManagement";
 import { getClaudeCodePluginsList } from "@/components/networking";
 import { Plugin } from "@/components/claude_code_plugins/types";
@@ -17,10 +15,8 @@ import { DataTable } from "@/components/shared/DataTable";
 import ModelFilters from "@/components/model_filters";
 import {
   fetchMCPServers,
-  getGatewayBaseUrl,
   getAgentsList,
   getConfigFieldSetting,
-  getGlobalLitellmHeaderName,
   getProxyBaseUrl,
   getUiPageUrl,
   getUiConfig,
@@ -32,15 +28,12 @@ import { copyToClipboard } from "@/utils/dataUtils";
 import { isAdminRole, isProxyAdminRole } from "@/utils/roles";
 import { filterBySearchTerm } from "@/utils/searchUtils";
 import { SortingState } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Inbox, Search as SearchIcon, X } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
@@ -48,9 +41,9 @@ import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings"
 import { checkTokenValidity } from "@/utils/jwtUtils";
 import { getCookie } from "@/utils/cookieUtils";
 import { getLoginUrl } from "@/utils/returnUrlUtils";
-import { uiHref } from "@/utils/uiHref";
-import { DECISIONS_DOCS_URL, DECISIONS_MODE, SYSTEM_ONE_PLAYGROUND_ROUTE, isDecisionMode } from "@/lib/decisionModels";
+import { DECISIONS_MODE, isDecisionMode } from "@/lib/decisionModels";
 import DecisionModelGarden from "@/components/AIHub/DecisionModelGarden";
+import { ModelHubAgentDialog, ModelHubMcpServerDialog, ModelHubModelDialog } from "./ModelHubDetailDialogs";
 
 interface ModelHubTableProps {
   accessToken: string | null;
@@ -671,503 +664,18 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
       )}
 
       {/* Model Details Modal */}
-      <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-          <DialogHeader>
-            <DialogTitle>{selectedModel?.model_group || t("modelDetailsTitle")}</DialogTitle>
-          </DialogHeader>
-          {selectedModel && (
-            <div className="space-y-6">
-              {/* Model Overview */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secModelOverview")}</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="font-medium">{t("lblModelGroup")}</p>
-                    <p>{selectedModel.model_group}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblMode")}</p>
-                    <p>{selectedModel.mode || t("notSpecified")}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblProviders")}</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedModel.providers.map((provider) => (
-                        <Badge key={provider} variant="secondary">
-                          {provider}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  {selectedModel.description && (
-                    <div className="col-span-2">
-                      <p className="font-medium">{t("lblDescription")}</p>
-                      <p className="mt-1">{selectedModel.description}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Token and Cost Information */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secTokenCost")}</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-medium">{t("lblMaxInputTokens")}</p>
-                    <p>{selectedModel.max_input_tokens?.toLocaleString() || t("notSpecified")}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblMaxOutputTokens")}</p>
-                    <p>{selectedModel.max_output_tokens?.toLocaleString() || t("notSpecified")}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblInputCostPer1M")}</p>
-                    <p>
-                      {selectedModel.input_cost_per_token
-                        ? formatCost(selectedModel.input_cost_per_token)
-                        : t("notSpecified")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblOutputCostPer1M")}</p>
-                    <p>
-                      {selectedModel.output_cost_per_token
-                        ? formatCost(selectedModel.output_cost_per_token)
-                        : t("notSpecified")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Capabilities */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("colCapabilities")}</p>
-                <div className="flex flex-wrap gap-2">
-                  {(() => {
-                    const capabilities = getModelCapabilities(selectedModel);
-                    const colors = ["green", "blue", "purple", "orange", "red", "yellow"];
-
-                    if (capabilities.length === 0) {
-                      return <p className="text-muted-foreground">{t("noCapabilitiesListed")}</p>;
-                    }
-
-                    return capabilities.map((capability, index) => (
-                      <Badge key={capability} variant="secondary">
-                        {formatCapabilityName(capability)}
-                      </Badge>
-                    ));
-                  })()}
-                </div>
-              </div>
-
-              <ModelCustomMetadata
-                customTags={selectedModel.custom_tags}
-                customMetadata={selectedModel.custom_metadata}
-              />
-
-              {/* Rate Limits */}
-              {(selectedModel.tpm || selectedModel.rpm) && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secRateLimits")}</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedModel.tpm && (
-                      <div>
-                        <p className="font-medium">{t("lblTokensPerMinute")}</p>
-                        <p>{selectedModel.tpm.toLocaleString()}</p>
-                      </div>
-                    )}
-                    {selectedModel.rpm && (
-                      <div>
-                        <p className="font-medium">{t("lblRequestsPerMinute")}</p>
-                        <p>{selectedModel.rpm.toLocaleString()}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Supported OpenAI Parameters */}
-              {selectedModel.supported_openai_params && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secSupportedParams")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedModel.supported_openai_params.map((param) => (
-                      <Badge key={param} variant="default">
-                        {param}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
-                {isDecisionMode(selectedModel.mode) && (
-                  <p className="mb-2 text-sm text-muted-foreground">
-                    {t.rich("decisionModelsAnswer", { code: (chunks) => <code>{chunks}</code> })}{" "}
-                    <a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-                      {t("howToCallDecisionModels")}
-                    </a>
-                    {canOpenPlayground && (
-                      <>
-                        {" · "}
-                        <a href={uiHref(SYSTEM_ONE_PLAYGROUND_ROUTE)} className="underline">
-                          {t("tryInPlayground")}
-                        </a>
-                      </>
-                    )}
-                  </p>
-                )}
-                <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
-                  {modelUsageExample(
-                    selectedModel.mode,
-                    getGatewayBaseUrl(),
-                    selectedModel.model_group,
-                    getGlobalLitellmHeaderName(),
-                  )}
-                </SyntaxHighlighter>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ModelHubModelDialog
+        open={isModalVisible}
+        model={selectedModel}
+        onClose={handleCancel}
+        canOpenPlayground={canOpenPlayground}
+      />
 
       {/* Agent Details Modal */}
-      <Dialog open={isAgentModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-          <DialogHeader>
-            <DialogTitle>{selectedAgent?.name || t("agentDetailsTitle")}</DialogTitle>
-          </DialogHeader>
-          {selectedAgent && (
-            <div className="space-y-6">
-              {/* Agent Overview */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secAgentOverview")}</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="font-medium">{t("lblName")}</p>
-                    <p>{selectedAgent.name}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblVersion")}</p>
-                    <Badge variant="secondary">v{selectedAgent.version}</Badge>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblProtocolVersion")}</p>
-                    <p>{selectedAgent.protocolVersion}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblUrl")}</p>
-                    <div className="flex items-center space-x-2">
-                      <p className="truncate min-w-0">{selectedAgent.url}</p>
-                      <Copy
-                        onClick={() => void copyToClipboard(selectedAgent.url, commonT("copiedToClipboard"))}
-                        className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium">{t("lblDescription")}</p>
-                  <p className="mt-1">{selectedAgent.description}</p>
-                </div>
-              </div>
-
-              {/* Capabilities */}
-              {selectedAgent.capabilities && Object.keys(selectedAgent.capabilities).length > 0 && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("colCapabilities")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(selectedAgent.capabilities)
-                      .filter(([_, value]) => value === true)
-                      .map(([key]) => (
-                        <Badge key={key} variant="default">
-                          {key}
-                        </Badge>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Input/Output Modes */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secIOModes")}</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-medium">{t("lblInputModes")}</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedAgent.defaultInputModes?.map((mode) => (
-                        <Badge key={mode} variant="secondary">
-                          {mode}
-                        </Badge>
-                      )) || <p>{t("notSpecified")}</p>}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblOutputModes")}</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedAgent.defaultOutputModes?.map((mode) => (
-                        <Badge key={mode} variant="outline">
-                          {mode}
-                        </Badge>
-                      )) || <p>{t("notSpecified")}</p>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Skills */}
-              {selectedAgent.skills && selectedAgent.skills.length > 0 && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secSkills")}</p>
-                  <div className="space-y-4">
-                    {selectedAgent.skills.map((skill) => (
-                      <div key={skill.id} className="border border-border rounded-sm p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="font-medium text-base">{skill.name}</p>
-                            <p className="text-xs text-muted-foreground">{t("idLabel", { id: skill.id })}</p>
-                          </div>
-                          {skill.tags && skill.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                              {skill.tags.map((tag) => (
-                                <Badge key={tag} variant="outline">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-sm mb-2">{skill.description}</p>
-                        {skill.examples && skill.examples.length > 0 && (
-                          <div>
-                            <p className="text-xs font-medium text-foreground">{t("lblExamples")}</p>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {skill.examples.map((example, idx) => (
-                                <Badge key={idx} variant="outline">
-                                  {example}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Additional Properties */}
-              {selectedAgent.supportsAuthenticatedExtendedCard && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secAdditionalFeatures")}</p>
-                  <Badge variant="default">{t("supportsAuthExtendedCard")}</Badge>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ModelHubAgentDialog open={isAgentModalVisible} agent={selectedAgent} onClose={handleCancel} />
 
       {/* MCP Server Details Modal */}
-      <Dialog open={isMcpModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-          <DialogHeader>
-            <DialogTitle>{selectedMcpServer?.server_name || t("mcpServerDetailsTitle")}</DialogTitle>
-          </DialogHeader>
-          {selectedMcpServer && (
-            <div className="space-y-6">
-              {/* Server Overview */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secServerOverview")}</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="font-medium">{t("lblServerName")}</p>
-                    <p>{selectedMcpServer.server_name}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblServerId")}</p>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-xs truncate min-w-0">{selectedMcpServer.server_id}</p>
-                      <Copy
-                        onClick={() => void copyToClipboard(selectedMcpServer.server_id, commonT("copiedToClipboard"))}
-                        className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
-                      />
-                    </div>
-                  </div>
-                  {selectedMcpServer.alias && (
-                    <div>
-                      <p className="font-medium">{t("lblAlias")}</p>
-                      <p>{selectedMcpServer.alias}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-medium">{t("lblTransport")}</p>
-                    <Badge variant="secondary">{selectedMcpServer.transport}</Badge>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblAuthType")}</p>
-                    <Badge variant={selectedMcpServer.auth_type === "none" ? "outline" : "default"}>
-                      {selectedMcpServer.auth_type}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblStatus")}</p>
-                    <Badge
-                      variant={
-                        selectedMcpServer.status === "active" || selectedMcpServer.status === "healthy"
-                          ? "default"
-                          : selectedMcpServer.status === "inactive" || selectedMcpServer.status === "unhealthy"
-                            ? "destructive"
-                            : "outline"
-                      }
-                    >
-                      {selectedMcpServer.status || t("unknownStatus")}
-                    </Badge>
-                  </div>
-                </div>
-                {selectedMcpServer.description && (
-                  <div className="mt-2">
-                    <p className="font-medium">{t("lblDescription")}</p>
-                    <p className="mt-1">{selectedMcpServer.description}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Connection Details */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secConnectionDetails")}</p>
-                <div className="space-y-2">
-                  {selectedMcpServer.command && (
-                    <div>
-                      <p className="font-medium">{t("lblCommand")}</p>
-                      <p className="text-sm bg-muted p-2 rounded-sm mt-1 font-mono">{selectedMcpServer.command}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Tools */}
-              {selectedMcpServer.allowed_tools && selectedMcpServer.allowed_tools.length > 0 && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secAllowedTools")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMcpServer.allowed_tools.map((tool, idx) => (
-                      <Badge key={idx} variant="outline">
-                        {tool}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Teams */}
-              {selectedMcpServer.teams && selectedMcpServer.teams.length > 0 && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secTeams")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMcpServer.teams.map((team, idx) => (
-                      <Badge key={idx} variant="secondary">
-                        {team}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Access Groups */}
-              {selectedMcpServer.mcp_access_groups && selectedMcpServer.mcp_access_groups.length > 0 && (
-                <div>
-                  <p className="text-lg font-semibold mb-4">{t("secAccessGroups")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMcpServer.mcp_access_groups.map((group, idx) => (
-                      <Badge key={idx} variant="default">
-                        {group}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Metadata */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secMetadata")}</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-medium">{t("lblCreatedBy")}</p>
-                    <p>{selectedMcpServer.created_by}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblUpdatedBy")}</p>
-                    <p>{selectedMcpServer.updated_by}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblCreatedAt")}</p>
-                    <p className="text-sm">{new Date(selectedMcpServer.created_at).toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("lblUpdatedAt")}</p>
-                    <p className="text-sm">{new Date(selectedMcpServer.updated_at).toLocaleString()}</p>
-                  </div>
-                  {selectedMcpServer.last_health_check && (
-                    <div>
-                      <p className="font-medium">{t("lblLastHealthCheck")}</p>
-                      <p className="text-sm">{new Date(selectedMcpServer.last_health_check).toLocaleString()}</p>
-                    </div>
-                  )}
-                </div>
-                {selectedMcpServer.health_check_error && (
-                  <div className="mt-2 p-2 bg-destructive/10 rounded-sm">
-                    <p className="font-medium text-destructive">{t("lblHealthCheckError")}</p>
-                    <p className="text-sm text-destructive mt-1">{selectedMcpServer.health_check_error}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Usage Example */}
-              <div>
-                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
-                <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
-                  {`from fastmcp import Client
-import asyncio
-
-# Standard MCP configuration
-config = {
-    "mcpServers": {
-        "${selectedMcpServer.server_name}": {
-            "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
-            "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
-            }
-        }
-    }
-}
-
-# Create a client that connects to the server
-client = Client(config)
-
-async def main():
-    async with client:
-        # List available tools
-        tools = await client.list_tools()
-        print(f"Available tools: {[tool.name for tool in tools]}")
-
-        # Call a tool
-        response = await client.call_tool(
-            name="tool_name",
-            arguments={"arg": "value"}
-        )
-        print(f"Response: {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main())`}
-                </SyntaxHighlighter>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ModelHubMcpServerDialog open={isMcpModalVisible} server={selectedMcpServer} onClose={handleCancel} />
 
       {/* Make Model Public Form */}
       <MakeModelPublicForm
