@@ -21,7 +21,10 @@ type Props = {
 
 // Every non-"available" state disables the option. Selection derives from this same function
 // (see presetAvailability below), so an option a caller can click is always one that can be applied.
-const presetDisabledHint = (t: ReturnType<typeof useTranslations<"models.addModel">>, availability: PresetAvailability): string | null => {
+const presetDisabledHint = (
+  t: ReturnType<typeof useTranslations<"models.addModel">>,
+  availability: PresetAvailability,
+): string | null => {
   switch (availability.kind) {
     case "available":
       return null;

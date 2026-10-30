@@ -362,7 +362,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   };
 
   const [prefillAttempted, setPrefillAttempted] = useState(false);
-  if (advanced && !prefillAttempted && !modelsLoading && simpleConfig) {
+  const prefillDue = advanced && !prefillAttempted && !modelsLoading;
+  const prefillFromSimple = prefillDue && Boolean(simpleConfig);
+  if (prefillFromSimple && simpleConfig) {
     setPrefillAttempted(true);
     setComplexityRouterConfig((current) =>
       !current.custom_tier_set &&

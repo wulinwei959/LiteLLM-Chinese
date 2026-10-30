@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
-import { ROUTER_FAMILIES, type FamilyPreference, type RouterGoal, type SolverModel, type SolverNotice } from "./auto_setup";
+import {
+  ROUTER_FAMILIES,
+  type FamilyPreference,
+  type RouterGoal,
+  type SolverModel,
+  type SolverNotice,
+} from "./auto_setup";
 
 type Props = {
   customized: boolean;
@@ -65,7 +71,10 @@ export default function AutoRouterSimpleSetup({
   const showPreferences = !inventoryReady || error || hasSuggestions;
   const sameFamily = sharedFamily(everyday, hard);
   const familyItems = [
-    { value: "auto", label: sameFamily ? t("autoRouterSimpleFamilyAutoWith", { family: sameFamily }) : t("autoRouterSimpleFamilyAuto") },
+    {
+      value: "auto",
+      label: sameFamily ? t("autoRouterSimpleFamilyAutoWith", { family: sameFamily }) : t("autoRouterSimpleFamilyAuto"),
+    },
     ...Object.entries(ROUTER_FAMILIES).map(([value, label]) => ({ value, label })),
   ];
   return (
