@@ -160,9 +160,7 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("没有可用的团队设置，或者您没有查看它们的权限。"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("没有可用的团队设置，或者您没有查看它们的权限。")).toBeInTheDocument();
     });
     expect(mockToast.fromError).toHaveBeenCalledWith("获取团队设置失败");
   });
@@ -184,9 +182,7 @@ describe("TeamSSOSettings", () => {
 
     await waitFor(() => {
       expect(screen.getByText("默认团队设置")).toBeInTheDocument();
-      expect(
-        screen.getByText("创建新团队时，将默认应用这些设置。"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("创建新团队时，将默认应用这些设置。")).toBeInTheDocument();
     });
   });
 
@@ -440,9 +436,7 @@ describe("TeamSSOSettings", () => {
     await waitFor(() => {
       expect(screen.getByText("Sales (org-2)")).toBeInTheDocument();
     });
-    expect(
-      screen.getByText("未指定组织而创建的团队将分配到该组织。"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("未指定组织而创建的团队将分配到该组织。")).toBeInTheDocument();
   });
 
   it("should fall back to the raw organization id when it is not in the organization list", async () => {
@@ -580,5 +574,8 @@ describe("TeamSSOSettings", () => {
     await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
+
+    // Let the delayed save settle before teardown, or its setState runs after jsdom is gone.
+    await waitFor(() => expect(mockToast.success).toHaveBeenCalledWith("默认团队设置更新成功"));
   });
 });
