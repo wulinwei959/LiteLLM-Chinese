@@ -5486,6 +5486,6 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 
 生成代码弹窗移到 `chat_ui/GeneratedCodeDialog.tsx`，只收 `open`、`onOpenChange`、`code`、`sdk` 与 `onSdkChange`，`SDK_ITEMS` 与语法主题 hook 随之搬走；工具集说明弹窗移到 `chat_ui/ToolsetsInfoDialog.tsx`，只收开关。宿主删掉 `react-syntax-highlighter` 与 `Dialog` 系列导入，`selectedSdk` 状态与代码生成逻辑仍留在宿主
 
-宿主 2281 行降到 2178 行，两个新组件合计 150 行
+宿主 2281 行降到 2179 行，两个新组件合计 154 行
 
 复测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0

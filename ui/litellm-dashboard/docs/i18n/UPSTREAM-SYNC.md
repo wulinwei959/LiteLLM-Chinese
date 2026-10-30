@@ -454,6 +454,6 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 
 第二十九篇。`playground/components/chat_ui/ChatUI.tsx` 2281 行，页面尾部两个弹窗与主聊天流程无状态耦合。生成代码弹窗抽到 `chat_ui/GeneratedCodeDialog.tsx`（SDK 选择、复制、Python 高亮，`SDK_ITEMS` 与语法主题 hook 随行），工具集说明弹窗抽到 `chat_ui/ToolsetsInfoDialog.tsx`
 
-宿主保留 `selectedSdk` 状态与 `generateCodeSnippet` 调用，删掉随之空置的 `react-syntax-highlighter` 与 `Dialog` 系列导入，行数降到 2178，两个新组件合计 150 行
+宿主保留 `selectedSdk` 状态与 `generateCodeSnippet` 调用，删掉随之空置的 `react-syntax-highlighter` 与 `Dialog` 系列导入，行数降到 2179，两个新组件合计 154 行
 
 收口实测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0
