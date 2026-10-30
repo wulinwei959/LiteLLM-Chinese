@@ -54,6 +54,7 @@ import { getProviderLogoAndName } from "./provider_info_helpers";
 import { displayMode, isDecisionMode } from "@/lib/decisionModels";
 import { modelUsageExample } from "@/components/AIHub/modelUsageExample";
 import { filterBySearchTerm, rankBySearchRelevance } from "@/utils/searchUtils";
+import { PublicMcpServerDialog } from "@/components/public_hub/PublicMcpServerDialog";
 
 interface PublicModelHubProps {
   accessToken?: string | null;
@@ -1178,164 +1179,12 @@ print(response.model_dump(mode='json', exclude_none=True))`;
             </DialogContent>
           </Dialog>
 
-          {/* MCP Server Details Modal */}
-          <Dialog open={isMcpModalVisible} onOpenChange={(open) => !open && handleMcpModalCancel()}>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-              <DialogHeader>
-                <DialogTitle className="flex min-w-0 items-center space-x-2">
-                  <span className="break-words">{selectedMcpServer?.server_name || t("mcpServerDetailsTitle")}</span>
-                  {selectedMcpServer && (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Copy
-                            onClick={() => copyToClipboard(selectedMcpServer.server_name)}
-                            className="cursor-pointer text-muted-foreground hover:text-info w-4 h-4 shrink-0"
-                          />
-                        }
-                      />
-                      <TooltipContent>{t("copyServerName")}</TooltipContent>
-                    </Tooltip>
-                  )}
-                </DialogTitle>
-              </DialogHeader>
-              {selectedMcpServer && (
-                <div className="space-y-6">
-                  {/* Server Overview */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secServerOverview")}</p>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="font-medium">{t("lblServerName")}</p>
-                        <p>{selectedMcpServer.server_name}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblTransport")}</p>
-                        <Badge variant="secondary">{selectedMcpServer.transport}</Badge>
-                      </div>
-                      {selectedMcpServer.alias && (
-                        <div>
-                          <p className="font-medium">{t("lblAlias")}</p>
-                          <p>{selectedMcpServer.alias}</p>
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium">{t("lblAuthType")}</p>
-                        <Badge variant={selectedMcpServer.auth_type === "none" ? "outline" : "secondary"}>
-                          {selectedMcpServer.auth_type}
-                        </Badge>
-                      </div>
-                      <div className="col-span-2">
-                        <p className="font-medium">{t("lblDescription")}</p>
-                        <p>{selectedMcpServer.mcp_info?.description || "-"}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Additional Info */}
-                  {selectedMcpServer.mcp_info && Object.keys(selectedMcpServer.mcp_info).length > 0 && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("additionalInformation")}</p>
-                      <div className="bg-muted p-4 rounded-lg">
-                        <pre className="text-xs overflow-x-auto">
-                          {JSON.stringify(selectedMcpServer.mcp_info, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Usage Example */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
-                    <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                      <pre className="text-sm">
-                        {`# Using MCP Server with Python FastMCP
-
-from fastmcp import Client
-import asyncio
-
-# Standard MCP configuration
-config = {
-    "mcpServers": {
-        "${selectedMcpServer.server_name}": {
-            "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
-            "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
-            }
-        }
-    }
-}
-
-# Create a client that connects to the server
-client = Client(config)
-
-async def main():
-    async with client:
-        # List available tools
-        tools = await client.list_tools()
-        print(f"Available tools: {[tool.name for tool in tools]}")
-
-        # Call a tool
-        response = await client.call_tool(
-            name="tool_name", 
-            arguments={"arg": "value"}
-        )
-        print(f"Response: {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main())`}
-                      </pre>
-                    </div>
-                    <div className="mt-2 text-right">
-                      <button
-                        onClick={() => {
-                          const codeSnippet = `# Using MCP Server with Python FastMCP
-
-from fastmcp import Client
-import asyncio
-
-# Standard MCP configuration
-config = {
-    "mcpServers": {
-        "${selectedMcpServer.server_name}": {
-            "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
-            "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
-            }
-        }
-    }
-}
-
-# Create a client that connects to the server
-client = Client(config)
-
-async def main():
-    async with client:
-        # List available tools
-        tools = await client.list_tools()
-        print(f"Available tools: {[tool.name for tool in tools]}")
-
-        # Call a tool
-        response = await client.call_tool(
-            name="tool_name", 
-            arguments={"arg": "value"}
-        )
-        print(f"Response: {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main())`;
-                          copyToClipboard(codeSnippet);
-                        }}
-                        className="text-sm text-info hover:text-info/80 cursor-pointer"
-                      >
-                        {t("copyToClipboard")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
+          <PublicMcpServerDialog
+            open={isMcpModalVisible}
+            server={selectedMcpServer}
+            onClose={handleMcpModalCancel}
+            onCopy={copyToClipboard}
+          />
         </div>
       </TooltipProvider>
     </ThemeProvider>
