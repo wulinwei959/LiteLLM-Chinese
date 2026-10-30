@@ -15,9 +15,11 @@ import {
   DataTable,
   DataTableFilterDrawer,
   DataTableFilterField,
+  DataTableMultiSortHeader,
   DataTableSortHeader,
   DataTableToolbar,
 } from "@/components/shared/DataTable";
+import { KEY_RATE_LIMIT_SORT_FIELDS } from "../key_team_helpers/key_sorting";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { orgDetailHref, userDetailHref } from "@/utils/entityLinks";
@@ -451,7 +453,8 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       },
       {
         id: "rate_limits",
-        header: t("keysRateLimits"),
+        meta: { title: t("keysRateLimits") },
+        header: ({ table }) => <DataTableMultiSortHeader table={table} fields={KEY_RATE_LIMIT_SORT_FIELDS} />,
         size: 140,
         enableSorting: false,
         cell: ({ row }) => {

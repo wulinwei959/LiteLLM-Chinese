@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import type { CommonTranslator, VirtualKeysTranslator } from "@/lib/i18n/translators";
 
 import { DataTableMultiSortHeader, DataTableSortHeader, type DataTableSortField } from "@/components/shared/DataTable";
+import { KEY_RATE_LIMIT_SORT_FIELDS } from "../key_team_helpers/key_sorting";
 import {
   inheritedBudgetGates,
   keyOwnerBudgetSource,
@@ -43,6 +44,7 @@ const getSpendBudgetSortFields = (t: VirtualKeysTranslator): DataTableSortField[
 ];
 
 const SPEND_BUDGET_SORT_IDS: readonly string[] = ["spend", "max_budget"];
+const RATE_LIMIT_SORT_IDS: readonly string[] = KEY_RATE_LIMIT_SORT_FIELDS.map((field) => field.id);
 
 export const KEY_TABLE_SORT_FIELDS: readonly string[] = [
   "key_alias",
@@ -50,6 +52,7 @@ export const KEY_TABLE_SORT_FIELDS: readonly string[] = [
   "created_at",
   "updated_at",
   ...SPEND_BUDGET_SORT_IDS,
+  ...RATE_LIMIT_SORT_IDS,
 ];
 
 const getKeyStatus = (key: KeyResponse, t: VirtualKeysTranslator): KeyStatus => {
@@ -353,7 +356,7 @@ export const getKeyTableColumns = ({
   {
     id: "rate_limits",
     meta: { title: t("columns.rateLimits") },
-    header: t("columns.rateLimits"),
+    header: ({ table }) => <DataTableMultiSortHeader table={table} fields={KEY_RATE_LIMIT_SORT_FIELDS} />,
     size: 140,
     enableSorting: false,
     cell: ({ row }) => {
