@@ -16,6 +16,9 @@ import type {
 import EntityUsage from "./EntityUsage";
 import { getGlobalTopKeys, getTopAPIKeys } from "./entityUsageAggregations";
 
+const shortDay = (iso: string): string =>
+  new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(`${iso}T00:00:00`));
+
 type EntityUsageProps = ComponentProps<typeof EntityUsage>;
 
 function StatefulEntityUsage(props: Omit<EntityUsageProps, "selectedEntities" | "onSelectedEntitiesChange">) {
@@ -1122,7 +1125,7 @@ describe("EntityUsage", () => {
     });
     expect(container.querySelector("path.recharts-rectangle")).toHaveAttribute("fill", "#94a3b8");
 
-    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(shortDay("2025-01-01")).length).toBeGreaterThan(0);
     expect(screen.getAllByText("Tag 1").length).toBeGreaterThan(0);
 
     const segments = screen.getAllByTestId("provider-share-segment");

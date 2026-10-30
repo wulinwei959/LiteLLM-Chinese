@@ -14,6 +14,9 @@ import {
 import ClientUsagePanel from "./ClientUsagePanel";
 import { UsageClient, type AgentRow } from "./overview/agentCatalog";
 
+const shortDay = (date: Date): string =>
+  new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short" }).format(date);
+
 vi.mock("@/components/networking", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/components/networking")>()),
   uiSpendLogsCall: vi.fn(),
@@ -265,7 +268,7 @@ describe("ClientUsagePanel", () => {
     const onDateChange = vi.fn();
     const onClose = vi.fn();
     renderWithProviders(<ClientUsagePanel {...defaultProps} onDateChange={onDateChange} onClose={onClose} />);
-    await user.click(screen.getByRole("button", { name: /10月22日/ }));
+    await user.click(screen.getByRole("button", { name: new RegExp(shortDay(new Date(2026, 9, 22))) }));
     await user.click(screen.getByRole("button", { name: /Last 7 days/ }));
     await user.click(screen.getByRole("button", { name: "应用" }));
     expect(onDateChange).toHaveBeenCalledWith(

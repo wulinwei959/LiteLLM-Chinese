@@ -19,6 +19,9 @@ import { OTHER_COLOR } from "./overview/overviewData";
 import UsagePage from "./UsagePageView";
 import type ClientUsagePanel from "./ClientUsagePanel";
 
+const shortDay = (iso: string): string =>
+  new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(`${iso}T00:00:00`));
+
 const mockEntityUsageMounted = vi.hoisted(() => vi.fn());
 const mockClientUsagePanel = vi.hoisted(() => vi.fn());
 
@@ -814,7 +817,7 @@ describe("UsagePage", () => {
     const fills = new Set(spendBars().map((rect) => rect.getAttribute("fill")));
     expect(fills).toEqual(new Set([STACKED_USAGE_PALETTE[0], OTHER_COLOR]));
 
-    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(shortDay("2025-01-01")).length).toBeGreaterThan(0);
     expect(screen.getAllByText("gpt-4").length).toBeGreaterThan(0);
   });
 
