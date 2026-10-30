@@ -673,15 +673,15 @@
     {
       "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
       "kind": "jsx",
-      "text": "ms)"
-    },
-    {
-      "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
-      "kind": "jsx",
       "text": "v"
     },
     {
-      "file": "src/app/(dashboard)/policies/_components/pipeline_flow_builder.tsx",
+      "file": "src/app/(dashboard)/policies/_components/PipelineTestPanel.tsx",
+      "kind": "jsx",
+      "text": "ms)"
+    },
+    {
+      "file": "src/app/(dashboard)/policies/_components/PipelineTestPanel.tsx",
       "kind": "jsx",
       "text": "x"
     },
