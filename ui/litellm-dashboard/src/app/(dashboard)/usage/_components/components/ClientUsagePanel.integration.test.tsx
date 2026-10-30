@@ -13,6 +13,7 @@ import {
 } from "../../../../../../tests/test-utils";
 import ClientUsagePanel from "./ClientUsagePanel";
 import { UsageClient, type AgentRow } from "./overview/agentCatalog";
+import zhMessages from "@/messages/zh-CN.json";
 
 const shortDay = (date: Date): string =>
   new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short" }).format(date);
@@ -269,7 +270,7 @@ describe("ClientUsagePanel", () => {
     const onClose = vi.fn();
     renderWithProviders(<ClientUsagePanel {...defaultProps} onDateChange={onDateChange} onClose={onClose} />);
     await user.click(screen.getByRole("button", { name: new RegExp(shortDay(new Date(2026, 9, 22))) }));
-    await user.click(screen.getByRole("button", { name: /Last 7 days/ }));
+    await user.click(screen.getByRole("button", { name: new RegExp(zhMessages.advancedDatePicker.presetLast7Days) }));
     await user.click(screen.getByRole("button", { name: "应用" }));
     expect(onDateChange).toHaveBeenCalledWith(
       expect.objectContaining({ from: expect.any(Date), to: expect.any(Date) }),

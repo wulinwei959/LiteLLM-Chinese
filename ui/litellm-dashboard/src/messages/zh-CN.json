@@ -13613,6 +13613,8 @@
     "editAutoRouter": "编辑自动路由器"
   },
   "liteAdmin": {
+    "assistantUsageDescription": "你的 AI 用量与花费助手。",
+    "assistantGatewayDescription": "询问你的网关，并在对话中审阅改动。",
     "loadingGatewaySettings": "正在加载网关设置",
     "connectToGateway": "连接到已配置的网关",
     "useConfiguredGateway": "使用已配置的网关",
@@ -14008,6 +14010,11 @@
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
     "label": "选择时间范围",
+    "presetToday": "今天",
+    "presetLast7Days": "最近 7 天",
+    "presetLast30Days": "最近 30 天",
+    "presetMonthToDate": "月初至今",
+    "presetYearToDate": "年初至今",
     "selectDateRange": "选择日期范围",
     "apply": "应用",
     "cancel": "取消"

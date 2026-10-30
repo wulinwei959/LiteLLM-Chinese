@@ -1,7 +1,7 @@
 import moment from "moment";
 
 export interface RelativeTimeOption {
-  label: string;
+  labelKey: "presetToday" | "presetLast7Days" | "presetLast30Days" | "presetMonthToDate" | "presetYearToDate";
   shortLabel: string;
   settingValue: string;
   getValue: () => { from: Date; to: Date };
@@ -9,7 +9,7 @@ export interface RelativeTimeOption {
 
 export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
-    label: "Today",
+    labelKey: "presetToday",
     shortLabel: "today",
     settingValue: "today",
     getValue: () => ({
@@ -18,7 +18,7 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
     }),
   },
   {
-    label: "Last 7 days",
+    labelKey: "presetLast7Days",
     shortLabel: "7d",
     settingValue: "last_7_days",
     getValue: () => ({
@@ -27,7 +27,7 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
     }),
   },
   {
-    label: "Last 30 days",
+    labelKey: "presetLast30Days",
     shortLabel: "30d",
     settingValue: "last_30_days",
     getValue: () => ({
@@ -36,7 +36,7 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
     }),
   },
   {
-    label: "Month to date",
+    labelKey: "presetMonthToDate",
     shortLabel: "MTD",
     settingValue: "month_to_date",
     getValue: () => ({
@@ -45,7 +45,7 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
     }),
   },
   {
-    label: "Year to date",
+    labelKey: "presetYearToDate",
     shortLabel: "YTD",
     settingValue: "year_to_date",
     getValue: () => ({

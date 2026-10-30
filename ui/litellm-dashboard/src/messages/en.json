@@ -13617,6 +13617,8 @@
     "editAutoRouter": "Edit Auto Router"
   },
   "liteAdmin": {
+    "assistantUsageDescription": "Your AI assistant for usage and spend.",
+    "assistantGatewayDescription": "Ask about your gateway. Review changes in chat.",
     "loadingGatewaySettings": "Loading gateway settings",
     "connectToGateway": "Connect to the configured gateway",
     "useConfiguredGateway": "Use configured gateway",
@@ -14012,6 +14014,11 @@
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
     "label": "Select Time Range",
+    "presetToday": "Today",
+    "presetLast7Days": "Last 7 days",
+    "presetLast30Days": "Last 30 days",
+    "presetMonthToDate": "Month to date",
+    "presetYearToDate": "Year to date",
     "selectDateRange": "Select date range",
     "apply": "Apply",
     "cancel": "Cancel"

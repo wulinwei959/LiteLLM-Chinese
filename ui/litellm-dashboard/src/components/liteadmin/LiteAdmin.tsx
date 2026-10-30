@@ -582,9 +582,7 @@ function PanelHeader({ children }: { children?: ReactNode }) {
           {ARIA_AGENT_LABEL}
         </DialogTitle>
         <DialogDescription>
-          {state?.access.mode === "usage"
-            ? "Your AI assistant for usage and spend."
-            : "Ask about your gateway. Review changes in chat."}
+          {state?.access.mode === "usage" ? t("assistantUsageDescription") : t("assistantGatewayDescription")}
         </DialogDescription>
       </div>
       <div className="flex shrink-0">
