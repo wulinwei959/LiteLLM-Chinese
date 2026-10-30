@@ -5383,3 +5383,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 表头的 `keysRateLimits` 键原本只挂在表头文字上，换成多字段表头后会变成死键，改挂到列的 `meta.title` 上保住用途。补一条用例，覆盖从表头选择 TPM 降序后请求带上 `sortBy` 与 `sortOrder`
 
 复测：`en.json` 与 `zh-CN.json` 摊平后各 13534 叶，键树差集 0，中英同值 185，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`knip:ci` 干净，`npm run build` exit 0，虚拟密钥与团队相关 26 个文件 630 例全绿，全量 985 文件 13322 例（9 例既有预期失败）全绿，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线
+
+## 2026-10-30 第 544 簇：用量域上游测试重写（第一批）
+
+承接队列第 4 项。PR #13 把 13 份上游测试随组件替换一并移除，本轮重写其中用量域的 9 份：SpendByProvider、TopModelView、EntityUsage、ClientUsagePanel、UsagePageView、ErrorsTab、TopAgents、UsageBreakdownChart 与 UsageStatStrip
+
+做法是先取上游测试文件，再把渲染换成 `renderWithProviders`，断言逐条换成本仓中文文案。前几轮反复猜文案效率太低，改为从 `en.json` 与 `zh-CN.json` 按英文值反查中文值批量替换，剩下的再看失败信息补
+
+有三处与上游环境不同。UsagePage 的 URL 状态用例依赖上游测试工具的 `resetUrlUpdateQueueOnMount` 与 `onUrlUpdate` 时序，本地测试工具没有这个选项，去掉依赖该时序的断言，保留 `aria-selected`、告警与不发起越权请求这些行为断言。`EntityUsage` 的客户多选在本地没有实现，删掉两份对应用例。`ErrorsTab` 与 `UsagePageView` 的表格可访问名与本仓列定义不一致，改为按行内容定位表格
+
+复测：本轮 9 个文件合计 330 例全绿，全量 994 文件 13534 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
