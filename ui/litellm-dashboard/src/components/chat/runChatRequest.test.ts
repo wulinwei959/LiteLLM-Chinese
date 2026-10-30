@@ -42,7 +42,7 @@ const t = enMessagesFor("chat") as unknown as ChatTranslator;
 describe("runChatRequest", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(toResponsesMessages).mockImplementation((messages) => messages);
+    vi.mocked(toResponsesMessages).mockImplementation((messages) => messages as never);
   });
 
   it("should accumulate chat content, reasoning, metrics, and completed tool events", async () => {

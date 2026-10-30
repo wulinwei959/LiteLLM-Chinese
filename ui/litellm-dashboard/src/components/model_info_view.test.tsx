@@ -1978,7 +1978,10 @@ describe("ModelInfoView", () => {
       await user.clear(extraParams);
       await user.paste("{}");
 
-      const payload = await save(user);
+      const payload = (await save(user)) as {
+        litellm_params: Record<string, unknown>;
+        litellm_params_to_remove?: string[];
+      };
 
       expect(payload.litellm_params).not.toHaveProperty("drop_params");
       expect(payload.litellm_params_to_remove).toEqual(["drop_params"]);

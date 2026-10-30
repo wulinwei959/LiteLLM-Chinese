@@ -1579,7 +1579,6 @@ describe("UsagePage", () => {
       const view = renderWithProviders(<UsagePage {...props} />, {
         searchParams,
         onUrlUpdate,
-        resetUrlUpdateQueueOnMount: false,
       });
       return { ...view, onUrlUpdate };
     };
@@ -1738,7 +1737,6 @@ describe("UsagePage", () => {
       const view = renderWithProviders(<UsagePage {...defaultProps} />, {
         searchParams,
         onUrlUpdate,
-        resetUrlUpdateQueueOnMount: false,
       });
       const lastQuery = (): string | undefined => onUrlUpdate.mock.lastCall?.[0].queryString;
       return { ...view, onUrlUpdate, lastQuery };

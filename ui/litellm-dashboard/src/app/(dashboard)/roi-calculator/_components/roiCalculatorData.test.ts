@@ -17,27 +17,28 @@ import type { ROIPull } from "./roiCalculatorData";
 
 const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "roiCalculator" });
 
-const pull = (overrides: Partial<ROIPull>): ROIPull => ({
-  repo: "org/repo",
-  number: 42,
-  title: "Improve request routing",
-  url: "https://github.com/org/repo/pull/42",
-  login: "alice",
-  emails: ["alice@example.com"],
-  profile_email: "alice@example.com",
-  merged_at: "2026-09-12T00:00:00Z",
-  head_sha: "abc",
-  additions: 10,
-  deletions: 2,
-  changed_files: 1,
-  commit_count: 1,
-  incomplete_metadata: false,
-  estimate: { status: "estimated", hours: 4.5, reasoning: "Metadata-based estimate.", cached: false },
-  email: "alice@example.com",
-  match_method: "profile email",
-  matched: true,
-  ...overrides,
-});
+const pull = (overrides: Partial<ROIPull>): ROIPull =>
+  ({
+    repo: "org/repo",
+    number: 42,
+    title: "Improve request routing",
+    url: "https://github.com/org/repo/pull/42",
+    login: "alice",
+    emails: ["alice@example.com"],
+    profile_email: "alice@example.com",
+    merged_at: "2026-09-12T00:00:00Z",
+    head_sha: "abc",
+    additions: 10,
+    deletions: 2,
+    changed_files: 1,
+    commit_count: 1,
+    incomplete_metadata: false,
+    estimate: { status: "estimated", hours: 4.5, reasoning: "Metadata-based estimate.", cached: false },
+    email: "alice@example.com",
+    match_method: "profile email",
+    matched: true,
+    ...overrides,
+  }) as ROIPull;
 
 const summary = {
   metrics: { matched_prs: 1, merged_prs: 2 },

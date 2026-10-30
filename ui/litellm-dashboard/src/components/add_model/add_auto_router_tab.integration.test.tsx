@@ -185,7 +185,7 @@ vi.mock("../common_components/team_dropdown", () => ({
 
 const renderAdvanced: typeof renderWithProviders = (...args) => {
   const result = renderWithProviders(...args);
-  fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "高级配置" }));
   return result;
 };
 
@@ -220,7 +220,7 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     expect(await screen.findByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("small");
     expect(screen.queryByText("定义你的层级")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "最优质量", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "最优质量" }));
     expect(screen.getByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("middle");
     expect(screen.getAllByText("gpt-6.1-sol · Bedrock").some((element) => element.tagName === "P")).toBe(true);
     await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
@@ -334,10 +334,10 @@ describe("AddAutoRouterTab", () => {
     const everyday = await screen.findByRole("combobox", { name: "日常任务模型" });
     await userEvent.click(everyday);
     await userEvent.click(await screen.findByRole("option", { name: /custom-fast/ }));
-    fireEvent.click(screen.getByRole("button", { name: "最便宜", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "最便宜" }));
     expect(screen.getByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("custom-fast");
     expect(screen.getByRole("combobox", { name: "复杂任务模型" })).toHaveTextContent("claude-opus-5-5");
-    fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "高级配置" }));
     expectTierModel("Simple", "custom-fast");
     expectTierModel("Reasoning", "claude-opus-5-5");
   });
@@ -363,7 +363,7 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     expect(await screen.findByRole("alert")).toHaveTextContent("无法加载已部署模型");
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "重试", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
   });
 
@@ -372,7 +372,7 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     expect(await screen.findByText(/需要两个已部署模型/)).toBeVisible();
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "高级配置" }));
     expect(screen.getByText("定义你的层级")).toBeVisible();
   });
 
@@ -711,11 +711,11 @@ describe("AddAutoRouterTab", () => {
             name: capability ? `选择${solverLabel}模型` : solverLabel,
           }),
         );
-        await user.click(await screen.findByRole("option", { name: model, exact: true }));
+        await user.click(await screen.findByRole("option", { name: model }));
         if (capability) await user.keyboard("{Escape}");
       }
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
+      await user.click(await screen.findByRole("option", { name: "judge" }));
       expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
       if (capability) {
         fireEvent.change(screen.getByLabelText("求解成功概率阈值"), { target: { value: "0.7" } });
@@ -796,13 +796,13 @@ describe("AddAutoRouterTab", () => {
       });
       expect(await screen.findByText("无法加载可用模型。")).toBeVisible();
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: "重试", exact: true }));
+      await user.click(screen.getByRole("button", { name: "重试" }));
       await waitFor(() => expect(screen.queryByText("无法加载可用模型。")).not.toBeInTheDocument());
       expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(capability ? "能力" : label);
       expect(screen.getByLabelText("自动路由名称")).toHaveValue("forecast-retry");
       expect(screen.getByLabelText(policyField)).toHaveValue(capability ? 0.7 : "Small solver");
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      expect(await screen.findByRole("option", { name: "judge", exact: true })).toBeVisible();
+      expect(await screen.findByRole("option", { name: "judge" })).toBeVisible();
       expect(mockFetchAvailableModels).toHaveBeenCalledTimes(2);
     },
   );
@@ -1273,9 +1273,10 @@ describe("AddAutoRouterTab", () => {
       heuristic_v2_success_threshold: 0.6,
       heuristic_first_max_tier: "MEDIUM",
     };
-    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[2].litellm_params.complexity_router_config).toMatchObject(
-      expectedConfig,
-    );
+    const created = vi.mocked(modelCreateCall).mock.calls.at(-1)?.[2] as {
+      litellm_params: { complexity_router_config?: unknown };
+    };
+    expect(created.litellm_params.complexity_router_config).toMatchObject(expectedConfig);
   });
 
   it("preserves classifier tuning when choosing models automatically", async () => {

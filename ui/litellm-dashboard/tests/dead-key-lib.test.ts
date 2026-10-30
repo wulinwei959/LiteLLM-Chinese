@@ -32,11 +32,13 @@ describe("parseDeadKeysOutput", () => {
 
 describe("selectPythonInterpreter", () => {
   it("prefers python3 when both names resolve", () => {
-    expect(selectPythonInterpreter((candidate) => candidate === "python3" || candidate === "python")).toBe("python3");
+    expect(selectPythonInterpreter((candidate: string) => candidate === "python3" || candidate === "python")).toBe(
+      "python3",
+    );
   });
 
   it("falls back to python when python3 is unavailable", () => {
-    expect(selectPythonInterpreter((candidate) => candidate === "python")).toBe("python");
+    expect(selectPythonInterpreter((candidate: string) => candidate === "python")).toBe("python");
   });
 
   it("returns null when neither name resolves", () => {
