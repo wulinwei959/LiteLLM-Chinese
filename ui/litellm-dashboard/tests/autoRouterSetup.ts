@@ -82,13 +82,13 @@ export const openAutoRouterAdvanced = (section: string) => {
   const groups = SECTION_GROUPS[target] ?? DEFAULT_ADVANCED_GROUP;
   const opened: string[] = [];
   for (const name of groups) {
-    const group = screen.queryByRole("button", { name: new RegExp(`^${name}($|\s)`) });
+    const group = screen.queryByRole("button", { name: new RegExp(`^${name}($|\\s)`) });
     if (group === null) continue;
     if (group.getAttribute("aria-expanded") !== "true") fireEvent.click(group);
     opened.push(name);
   }
 
-  const header = screen.queryByRole("button", { name: new RegExp(`^${target}($|\s)`) });
+  const header = screen.queryByRole("button", { name: new RegExp(`^${target}($|\\s)`) });
   if (header !== null && header.getAttribute("aria-expanded") !== "true") {
     fireEvent.click(header);
     opened.push(target);
