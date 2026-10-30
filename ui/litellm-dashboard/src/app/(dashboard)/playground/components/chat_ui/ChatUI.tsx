@@ -57,7 +57,8 @@ import { createChatDisplayMessage, createChatMultimodalMessage } from "./ChatIma
 import CodeInterpreterTool from "./CodeInterpreterTool";
 import { generateCodeSnippet } from "@/components/chat_ui/CodeSnippets";
 import EndpointSelector from "./EndpointSelector";
-import GeneratedCodeDialog from "./GeneratedCodeDialog";import { filterModelsForEndpoint, isModelCompatibleWithEndpoint } from "./EndpointUtils";
+import GeneratedCodeDialog from "./GeneratedCodeDialog";
+import { filterModelsForEndpoint, isModelCompatibleWithEndpoint } from "./EndpointUtils";
 import FilePreviewCard from "./FilePreviewCard";
 import ChatMessageBubble from "./ChatMessageBubble";
 import MCPEventsDisplay from "@/components/chat_ui/MCPEventsDisplay";

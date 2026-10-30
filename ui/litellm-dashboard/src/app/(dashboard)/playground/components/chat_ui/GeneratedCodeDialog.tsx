@@ -38,7 +38,11 @@ export default function GeneratedCodeDialog({ open, onOpenChange, code, sdk, onS
         <div className="my-2 flex items-end justify-between gap-3">
           <div>
             <p className="mb-1 text-sm font-medium text-foreground">{t("chat.sdkType")}</p>
-            <ShadcnSelect items={SDK_ITEMS} value={sdk} onValueChange={(value) => onSdkChange(value as GeneratedCodeSdk)}>
+            <ShadcnSelect
+              items={SDK_ITEMS}
+              value={sdk}
+              onValueChange={(value) => onSdkChange(value as GeneratedCodeSdk)}
+            >
               <SelectTrigger className="w-[150px]" size="sm" aria-label={t("chat.sdkType")}>
                 <SelectValue />
               </SelectTrigger>
