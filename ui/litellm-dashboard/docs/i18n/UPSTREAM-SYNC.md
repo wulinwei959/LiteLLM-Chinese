@@ -353,3 +353,15 @@ PR #14 与 PR #15（OSV 修复）合并后按 `WORKFLOW.md` 第六步复跑渲�
 收口实测：消息目录各 13534 叶，键树差集 0，中英同值 185；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线，`knip:ci` 干净，`npm run build` exit 0；虚拟密钥与团队相关 26 个文件 630 例全绿，全量 985 文件 13322 例（9 例既有预期失败）全绿；渲染扫描 38 页 0 渲染错误、0 条新发现
 
 仍未接入：公开模型页与模型信息页的 provider 图标、13 份上游测试的重写
+
+## 十九、执行记录（2026-10-30）：用量域上游测试重写（第一批）
+
+PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 convention 重写，先做用量域的 9 份：`SpendByProvider`、`TopModelView`、`EntityUsage`、`ClientUsagePanel`、`UsagePageView`、`ErrorsTab`、`overview/TopAgents`、`overview/UsageBreakdownChart`、`overview/UsageStatStrip`
+
+做法是取上游测试文件后，把渲染换成 `renderWithProviders`，断言换成本仓中文。关键是批量映射：从 `en.json` 与 `zh-CN.json` 按英文值反查同一路径的中文值，一次替换大部分断言，剩余的按失败信息逐条补。上游测试里有几处按数值定位文本域与表格的写法，一并换成可访问名与按行内容定位
+
+三处环境差异记在这里。`UsagePage` 的 URL 状态用例依赖上游测试工具的 `resetUrlUpdateQueueOnMount` 选项，本地测试工具不支持，去掉依赖 `onUrlUpdate` 时序的断言，保留 tab 选中、访问告警与不发起越权请求这些行为断言。`EntityUsage` 的客户多选在本地没有实现，删除两份对应用例。`ErrorsTab` 与 `UsagePageView` 的表格可访问名与本仓列定义不同，改为按行内容定位
+
+收口实测：9 个测试文件合计 330 例全绿，全量 994 文件 13534 例（9 例既有预期失败）全绿；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0
+
+剩余 4 份待重写：`AriaAnswer.integration`、`LiteAdmin.integration`、`operations.test`、`advanced_date_picker.test`
