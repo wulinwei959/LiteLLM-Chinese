@@ -1,10 +1,9 @@
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ExternalLinkIcon, SearchIcon } from "@heroicons/react/outline";
 import { SortingState } from "@tanstack/react-table";
-import { Copy, Inbox, Info } from "lucide-react";
+import { Inbox, Info } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Combobox,
@@ -18,7 +17,6 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MultiSelect } from "./shared/MultiSelect";
@@ -31,8 +29,6 @@ import Navbar from "./navbar";
 import {
   agentHubPublicModelsCall,
   skillHubPublicCall,
-  getGlobalLitellmHeaderName,
-  getProxyBaseUrl,
   getPublicModelHubInfo,
   getUiConfig,
   mcpHubPublicServersCall,
@@ -47,38 +43,17 @@ import {
   getPublicMCPHubColumns,
   getPublicModelHubColumns,
 } from "./PublicModelHubTableColumns";
-import { generateCodeSnippet } from "@/components/chat_ui/CodeSnippets";
-import { getEndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
-import { MessageType } from "@/components/chat_ui/types";
 import { getProviderLogoAndName } from "./provider_info_helpers";
-import { displayMode, isDecisionMode } from "@/lib/decisionModels";
-import { modelUsageExample } from "@/components/AIHub/modelUsageExample";
+import { displayMode } from "@/lib/decisionModels";
 import { filterBySearchTerm, rankBySearchRelevance } from "@/utils/searchUtils";
 import { PublicMcpServerDialog } from "@/components/public_hub/PublicMcpServerDialog";
+import { PublicAgentDialog } from "@/components/public_hub/PublicAgentDialog";
+import { PublicModelDialog } from "@/components/public_hub/PublicModelDialog";
 
 interface PublicModelHubProps {
   accessToken?: string | null;
   isEmbedded?: boolean; // When true, hides navbar and adjusts layout for embedding in dashboard
 }
-
-const usageExample = (model: ModelGroupInfo): string =>
-  isDecisionMode(model.mode)
-    ? modelUsageExample(model.mode, getProxyBaseUrl(), model.model_group, getGlobalLitellmHeaderName())
-    : generateCodeSnippet({
-        apiKeySource: "custom",
-        accessToken: null,
-        apiKey: "your_api_key",
-        inputMessage: "Hello, how are you?",
-        chatHistory: [{ role: "user", content: "Hello, how are you?", isImage: false } as MessageType],
-        selectedTags: [],
-        selectedVectorStores: [],
-        selectedGuardrails: [],
-        selectedPolicies: [],
-        selectedMCPServers: [],
-        endpointType: getEndpointType(model.mode || "chat"),
-        selectedModel: model.model_group,
-        selectedSdk: "openai",
-      });
 
 function PublicHubEmptyState({ title, body }: { title: string; body: string }) {
   return (
@@ -270,24 +245,6 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success(t("copiedToClipboard"));
-  };
-
-  const formatCapabilityName = (key: string) => {
-    return key
-      .replace(/^supports_/, "")
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const getModelCapabilities = (model: ModelGroupInfo) => {
-    return Object.entries(model)
-      .filter(([key, value]) => key.startsWith("supports_") && value === true)
-      .map(([key]) => key);
-  };
-
-  const formatCost = (cost: number) => {
-    return `$${(cost * 1_000_000).toFixed(4)}`;
   };
 
   const models = usePublicModelHubList(proxyConfigured);
@@ -673,512 +630,18 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
             </Card>
           </div>
 
-          {/* Model Details Modal */}
-          <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleModalCancel()}>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-              <DialogHeader>
-                <DialogTitle className="flex min-w-0 items-center space-x-2">
-                  <span className="break-words">{selectedModel?.model_group || t("modelDetailsTitle")}</span>
-                  {selectedModel && (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Copy
-                            onClick={() => copyToClipboard(selectedModel.model_group)}
-                            className="cursor-pointer text-muted-foreground hover:text-info w-4 h-4 shrink-0"
-                          />
-                        }
-                      />
-                      <TooltipContent>{t("copyModelName")}</TooltipContent>
-                    </Tooltip>
-                  )}
-                </DialogTitle>
-              </DialogHeader>
-              {selectedModel && (
-                <div className="space-y-6">
-                  {/* Model Overview */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secModelOverview")}</p>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="font-medium">{t("lblModelName")}</p>
-                        <p>{selectedModel.model_group}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblMode")}</p>
-                        <p>{selectedModel.mode || t("notSpecified")}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblProviders")}</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {(selectedModel.providers ?? []).map((provider) => {
-                            const { logo } = getProviderLogoAndName(provider);
-                            return (
-                              <Badge key={provider} variant="secondary" className="min-w-0">
-                                <div className="flex items-center space-x-1">
-                                  {logo && (
-                                    <img
-                                      src={logo}
-                                      alt={provider}
-                                      className="w-3 h-3 shrink-0 object-contain"
-                                      onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = "none";
-                                      }}
-                                    />
-                                  )}
-                                  <span className="capitalize">{provider}</span>
-                                </div>
-                              </Badge>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      {selectedModel.description && (
-                        <div className="col-span-2">
-                          <p className="font-medium">{t("lblDescription")}</p>
-                          <p className="mt-1">{selectedModel.description}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Wildcard Routing Note */}
-                    {selectedModel.model_group.includes("*") && (
-                      <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-4">
-                        <div className="flex items-start space-x-2">
-                          <Info className="w-4 h-4 text-info mt-0.5 shrink-0" />
-                          <div>
-                            <p className="font-medium text-info mb-2">{t("wildcardRoutingTitle")}</p>
-                            <p className="text-sm text-info mb-2">
-                              {t.rich("wildcardRoutingHint", {
-                                code: (chunks) => (
-                                  <code className="bg-info/15 px-1 py-0.5 rounded-sm text-xs">{chunks}</code>
-                                ),
-                              })}
-                            </p>
-                            <p className="text-sm text-info">
-                              {t.rich("wildcardRoutingExample", {
-                                code: (chunks) => (
-                                  <code className="bg-info/15 px-1 py-0.5 rounded-sm text-xs">{chunks}</code>
-                                ),
-                                modelGroup: selectedModel.model_group,
-                                example: selectedModel.model_group.replaceAll("*", "my-custom-value"),
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Token and Cost Information */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secTokenCost")}</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="font-medium">{t("lblMaxInputTokens")}</p>
-                        <p>{selectedModel.max_input_tokens?.toLocaleString() || t("notSpecified")}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblMaxOutputTokens")}</p>
-                        <p>{selectedModel.max_output_tokens?.toLocaleString() || t("notSpecified")}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblInputCostPer1M")}</p>
-                        <p>
-                          {selectedModel.input_cost_per_token
-                            ? formatCost(selectedModel.input_cost_per_token)
-                            : t("notSpecified")}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblOutputCostPer1M")}</p>
-                        <p>
-                          {selectedModel.output_cost_per_token
-                            ? formatCost(selectedModel.output_cost_per_token)
-                            : t("notSpecified")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Capabilities */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        const capabilities = getModelCapabilities(selectedModel);
-
-                        if (capabilities.length === 0) {
-                          return <p className="text-muted-foreground">{t("noCapabilitiesListed")}</p>;
-                        }
-
-                        return capabilities.map((capability) => (
-                          <Badge key={capability} variant="secondary">
-                            {formatCapabilityName(capability)}
-                          </Badge>
-                        ));
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Rate Limits */}
-                  {(selectedModel.tpm || selectedModel.rpm) && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("secRateLimits")}</p>
-                      <div className="grid grid-cols-2 gap-4">
-                        {selectedModel.tpm && (
-                          <div>
-                            <p className="font-medium">{t("lblTokensPerMinute")}</p>
-                            <p>{selectedModel.tpm.toLocaleString()}</p>
-                          </div>
-                        )}
-                        {selectedModel.rpm && (
-                          <div>
-                            <p className="font-medium">{t("lblRequestsPerMinute")}</p>
-                            <p>{selectedModel.rpm.toLocaleString()}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Supported OpenAI Parameters */}
-                  {selectedModel.supported_openai_params && selectedModel.supported_openai_params.length > 0 && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("secSupportedParams")}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedModel.supported_openai_params.map((param) => (
-                          <Badge key={param} variant="secondary">
-                            {param}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Usage Example */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
-                    <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                      <pre className="text-sm">{usageExample(selectedModel)}</pre>
-                    </div>
-                    <div className="mt-2 text-right">
-                      <button
-                        onClick={() => copyToClipboard(usageExample(selectedModel))}
-                        className="text-sm text-info hover:text-info/80 cursor-pointer"
-                      >
-                        {t("copyToClipboard")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
-
-          {/* Agent Details Modal */}
-          <Dialog open={isAgentModalVisible} onOpenChange={(open) => !open && handleAgentModalCancel()}>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
-              <DialogHeader>
-                <DialogTitle className="flex min-w-0 items-center space-x-2">
-                  <span className="break-words">{selectedAgent?.name || t("agentDetailsTitle")}</span>
-                  {selectedAgent && (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Copy
-                            onClick={() => copyToClipboard(selectedAgent.name)}
-                            className="cursor-pointer text-muted-foreground hover:text-info w-4 h-4 shrink-0"
-                          />
-                        }
-                      />
-                      <TooltipContent>{t("copyAgentName")}</TooltipContent>
-                    </Tooltip>
-                  )}
-                </DialogTitle>
-              </DialogHeader>
-              {selectedAgent && (
-                <div className="space-y-6">
-                  {/* Agent Overview */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secAgentOverview")}</p>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="font-medium">{t("lblName")}</p>
-                        <p>{selectedAgent.name}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblVersion")}</p>
-                        <p>{selectedAgent.version}</p>
-                      </div>
-                      <div className="col-span-2">
-                        <p className="font-medium">{t("lblDescription")}</p>
-                        <p>{selectedAgent.description}</p>
-                      </div>
-                      {selectedAgent.url && (
-                        <div>
-                          <p className="font-medium">{t("lblUrl")}</p>
-                          <a
-                            href={selectedAgent.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-info hover:text-info/80 text-sm break-all"
-                          >
-                            {selectedAgent.url}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Capabilities */}
-                  {selectedAgent.capabilities && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {Object.entries(selectedAgent.capabilities)
-                          .filter(([_, value]) => value === true)
-                          .map(([key]) => (
-                            <Badge key={key} variant="secondary" className="capitalize">
-                              {key}
-                            </Badge>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Skills */}
-                  {selectedAgent.skills && selectedAgent.skills.length > 0 && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("secSkills")}</p>
-                      <div className="space-y-4">
-                        {selectedAgent.skills.map((skill, index) => (
-                          <div key={index} className="border border-border rounded-lg p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <p className="font-medium text-base">{skill.name}</p>
-                                <p className="text-sm text-muted-foreground">{skill.description}</p>
-                              </div>
-                            </div>
-                            {skill.tags && skill.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {skill.tags.map((tag) => (
-                                  <Badge key={tag} variant="secondary" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Input/Output Modes */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("secIOModes")}</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="font-medium">{t("lblInputModes")}</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {(selectedAgent.defaultInputModes ?? []).map((mode) => (
-                            <Badge key={mode} variant="secondary">
-                              {mode}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <p className="font-medium">{t("lblOutputModes")}</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {(selectedAgent.defaultOutputModes ?? []).map((mode) => (
-                            <Badge key={mode} variant="secondary">
-                              {mode}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Documentation */}
-                  {selectedAgent.documentationUrl && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">{t("agentDocumentationTitle")}</p>
-                      <a
-                        href={selectedAgent.documentationUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-info hover:text-info/80 flex items-center space-x-2"
-                      >
-                        <ExternalLinkIcon className="w-4 h-4" />
-                        <span>{t("viewDocumentation")}</span>
-                      </a>
-                    </div>
-                  )}
-
-                  {/* A2A Usage Example */}
-                  <div>
-                    <p className="text-lg font-semibold mb-4">{t("usageExampleA2A")}</p>
-
-                    {/* Step 1: Retrieve Agent Card */}
-                    <div className="mb-4">
-                      <p className="text-sm font-medium mb-2 text-foreground">{t("a2aStep1Title")}</p>
-                      <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                        <pre className="text-xs">
-                          {`base_url = '${selectedAgent.url}'
-
-resolver = A2ACardResolver(
-    httpx_client=httpx_client,
-    base_url=base_url,
-    # agent_card_path uses default, extended_agent_card_path also uses default
-)
-
-# Fetch Public Agent Card and Initialize Client
-final_agent_card_to_use: AgentCard | None = None
-_public_card = (
-    await resolver.get_agent_card()
-)  # Fetches from default public path - \`/agents/{agent_id}/\`
-final_agent_card_to_use = _public_card
-
-if _public_card.supports_authenticated_extended_card:
-    try:
-        auth_headers_dict = {
-            'Authorization': 'Bearer dummy-token-for-extended-card'
-        }
-        _extended_card = await resolver.get_agent_card(
-            relative_card_path=EXTENDED_AGENT_CARD_PATH,
-            http_kwargs={'headers': auth_headers_dict},
-        )
-        final_agent_card_to_use = (
-            _extended_card  # Update to use the extended card
-        )
-    except Exception as e_extended:
-        logger.warning(
-            f'Failed to fetch extended agent card: {e_extended}. Will proceed with public card.',
-            exc_info=True,
-        )`}
-                        </pre>
-                      </div>
-                      <div className="mt-2 text-right">
-                        <button
-                          onClick={() => {
-                            const codeSnippet = `from a2a.client import A2ACardResolver, A2AClient
-from a2a.types import (
-    AgentCard,
-    MessageSendParams,
-    SendMessageRequest,
-    SendStreamingMessageRequest,
-)
-from a2a.utils.constants import (
-    AGENT_CARD_WELL_KNOWN_PATH,
-    EXTENDED_AGENT_CARD_PATH,
-)
-
-base_url = '${selectedAgent.url}'
-
-resolver = A2ACardResolver(
-    httpx_client=httpx_client,
-    base_url=base_url,
-    # agent_card_path uses default, extended_agent_card_path also uses default
-)
-
-# Fetch Public Agent Card and Initialize Client
-final_agent_card_to_use: AgentCard | None = None
-_public_card = (
-    await resolver.get_agent_card()
-)  # Fetches from default public path - \`/agents/{agent_id}/\`
-final_agent_card_to_use = _public_card
-
-if _public_card.supports_authenticated_extended_card:
-    try:
-        auth_headers_dict = {
-            'Authorization': 'Bearer dummy-token-for-extended-card'
-        }
-        _extended_card = await resolver.get_agent_card(
-            relative_card_path=EXTENDED_AGENT_CARD_PATH,
-            http_kwargs={'headers': auth_headers_dict},
-        )
-        final_agent_card_to_use = (
-            _extended_card  # Update to use the extended card
-        )
-    except Exception as e_extended:
-        logger.warning(
-            f'Failed to fetch extended agent card: {e_extended}. Will proceed with public card.',
-            exc_info=True,
-        )`;
-                            copyToClipboard(codeSnippet);
-                          }}
-                          className="text-sm text-info hover:text-info/80 cursor-pointer"
-                        >
-                          {t("copyToClipboard")}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Step 2: Call the Agent */}
-                    <div>
-                      <p className="text-sm font-medium mb-2 text-foreground">{t("a2aStep2Title")}</p>
-                      <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                        <pre className="text-xs">
-                          {`client = A2AClient(
-    httpx_client=httpx_client, agent_card=final_agent_card_to_use
-)
-
-send_message_payload: dict[str, Any] = {
-    'message': {
-        'role': 'user',
-        'parts': [
-            {'kind': 'text', 'text': 'how much is 10 USD in INR?'}
-        ],
-        'messageId': uuid4().hex,
-    },
-}
-request = SendMessageRequest(
-    id=str(uuid4()), params=MessageSendParams(**send_message_payload)
-)
-
-response = await client.send_message(request)
-print(response.model_dump(mode='json', exclude_none=True))`}
-                        </pre>
-                      </div>
-                      <div className="mt-2 text-right">
-                        <button
-                          onClick={() => {
-                            const codeSnippet = `client = A2AClient(
-    httpx_client=httpx_client, agent_card=final_agent_card_to_use
-)
-
-send_message_payload: dict[str, Any] = {
-    'message': {
-        'role': 'user',
-        'parts': [
-            {'kind': 'text', 'text': 'how much is 10 USD in INR?'}
-        ],
-        'messageId': uuid4().hex,
-    },
-}
-request = SendMessageRequest(
-    id=str(uuid4()), params=MessageSendParams(**send_message_payload)
-)
-
-response = await client.send_message(request)
-print(response.model_dump(mode='json', exclude_none=True))`;
-                            copyToClipboard(codeSnippet);
-                          }}
-                          className="text-sm text-info hover:text-info/80 cursor-pointer"
-                        >
-                          {t("copyToClipboard")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
-
+          <PublicModelDialog
+            open={isModalVisible}
+            model={selectedModel}
+            onClose={handleModalCancel}
+            onCopy={copyToClipboard}
+          />
+          <PublicAgentDialog
+            open={isAgentModalVisible}
+            agent={selectedAgent}
+            onClose={handleAgentModalCancel}
+            onCopy={copyToClipboard}
+          />
           <PublicMcpServerDialog
             open={isMcpModalVisible}
             server={selectedMcpServer}
