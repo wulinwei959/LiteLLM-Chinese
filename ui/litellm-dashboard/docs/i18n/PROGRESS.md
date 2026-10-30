@@ -5467,3 +5467,14 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 宿主降到 1069 行，新组件 238 行。两处收尾：格式化后暴露的加载态嵌套三元拆成三个条件块；文件路径变化让 `v` 前缀的英文基线条目重命中，刷新后仍是 286
 
 复测：全量 997 文件 13640 例（9 例既有预期失败）全绿，策略相关 195 例全绿，生产 `typecheck` 0 错，死键 0，静态英文 286/286，中文取值 215/0，lint 预算无超线，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
+## 2026-10-31 第 554 簇：网络层抽出 API 客户端核心
+
+长期账第三项的另一例，这次不是弹窗。`networking.tsx` 有 8013 行，开头一百多行是代理地址解析、worker 切换、错误处理、全局认证头名，以及两个 `apiClient` 实例和运行时注册。这些是几百个模块的基础设施，却和上千个接口函数挤在同一个文件里
+
+本轮把它们移到 `networking/core.ts`（186 行），宿主只保留 import 与公开重导出。搬动的列表包括 `isLocal`、`resolveDefaultBase`、`defaultProxyBaseUrl`、worker URL 的读写与校验、`proxyBaseUrl`、`discoveredProxyBaseUrl`、`gatewayBaseUrl`、`runtimeBackendBaseUrl`、地址 getter、`normalizeHttpUrl`、`isValidHttpUrl`、`handleError`、`globalLitellmHeaderName` 及读写、两个 `createApiClient` 与四个 `register*` 调用
+
+搬迁中碰到一个结构问题。`gatewayBaseUrl` 与 `runtimeBackendBaseUrl` 是模块级 `export let`，宿主里原来直接赋值。跨模块后赋值对象是导入绑定，ESM 不允许，于是补了 `setGatewayBaseUrl` 与 `setRuntimeBackendBaseUrl`，宿主两处赋值改为调用 setter，读写仍落在同一个模块
+
+宿主 8013 行降到 7868 行。新文件落地后还要补一步验证。死键扫描基于 `git ls-files` 取文件，未跟踪的新文件不在扫描范围，`toastMessage("sessionExpired")` 一度被判成 3 条死键，纳入版本控制后回到 0，英文基线的 286 条同理
+
+复测：生产 `typecheck` 0 错，改动文件 `eslint` 0 error，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
