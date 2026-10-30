@@ -9588,6 +9588,7 @@
     }
   },
   "tagManagement": {
+    "tagNameRequired": "请输入标签名",
     "title": "标签管理",
     "tagCreated": "标签创建成功",
     "tagDeleted": "标签删除成功",
