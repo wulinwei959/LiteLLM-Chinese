@@ -337,8 +337,14 @@ export const recommendSolverPair = (
   if (!chosen) return null;
   const mixed = chosen.everyday.family !== chosen.hard.family;
   const substituted = chosen.everyday.rank !== low || chosen.hard.rank !== high;
-  const notice: SolverNotice = mixed ? "mixed" : substituted ? "substitute" : null;
+  const notice = solverNotice(mixed, substituted);
   return { ...chosen, notice };
+};
+
+const solverNotice = (mixed: boolean, substituted: boolean): SolverNotice => {
+  if (mixed) return "mixed";
+  if (substituted) return "substitute";
+  return null;
 };
 
 export const solverPairConfig = (everyday: string, hard: string): ComplexityRouterConfigValue => ({

@@ -676,7 +676,7 @@ describe("AddAutoRouterTab", () => {
       });
       await waitForAutomaticTiers();
       expect(screen.getByRole("radio", { name: family })).toBeChecked();
-      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("Every new user message");
+      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
       expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     },
   );
@@ -705,9 +705,10 @@ describe("AddAutoRouterTab", () => {
         ["Efficient", "efficient"],
         ["Capable", "capable"],
       ]) {
+        const solverLabel = role === "Efficient" ? "高效求解器" : "能力求解器";
         await user.click(
           screen.getByRole("combobox", {
-            name: capability ? `选择${role === "Efficient" ? "高效求解器" : "能力求解器"}模型` : role === "Efficient" ? "高效求解器" : "能力求解器",
+            name: capability ? `选择${solverLabel}模型` : solverLabel,
           }),
         );
         await user.click(await screen.findByRole("option", { name: model, exact: true }));
@@ -797,7 +798,7 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: "重试", exact: true }));
       await waitFor(() => expect(screen.queryByText("无法加载可用模型。")).not.toBeInTheDocument());
-      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(label);
+      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(capability ? "能力" : label);
       expect(screen.getByLabelText("自动路由名称")).toHaveValue("forecast-retry");
       expect(screen.getByLabelText(policyField)).toHaveValue(capability ? 0.7 : "Small solver");
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
@@ -993,7 +994,7 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
-    expect(modelCreateCall).toHaveBeenLastCalledWith("token", {
+    expect(modelCreateCall).toHaveBeenLastCalledWith(expect.anything(), "token", {
       model_name: "my-router",
       model_info: { team_id: "team-1" },
       litellm_params: {
@@ -1272,7 +1273,7 @@ describe("AddAutoRouterTab", () => {
       heuristic_v2_success_threshold: 0.6,
       heuristic_first_max_tier: "MEDIUM",
     };
-    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[1].litellm_params.complexity_router_config).toMatchObject(
+    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[2].litellm_params.complexity_router_config).toMatchObject(
       expectedConfig,
     );
   });
@@ -1565,7 +1566,7 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "default-timing-router" } });
     expandDetailedConfiguration();
     openAutoRouterAdvanced("分类方法");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("Every new user message");
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
     await selectAutoRouterOption("分类频率", "每个请求");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
@@ -1757,7 +1758,7 @@ describe("AddAutoRouterTab", () => {
 
       const anthropicOption = optionByLabel("Anthropic Family")!;
       expect(isOptionDisabled(anthropicOption)).toBe(true);
-      expect(anthropicOption).toHaveTextContent(/Checking model availability/);
+      expect(anthropicOption).toHaveTextContent(/正在检查模型可用性/);
 
       // The dropdown is already open from above; polling re-reads its options in place rather than
       // reopening (openTemplateDropdown toggles, so a second call here would close it instead).
@@ -1798,7 +1799,7 @@ describe("AddAutoRouterTab", () => {
       openTemplateDropdown();
 
       await waitFor(() => {
-        expect(optionByLabel("Anthropic Family")!).toHaveTextContent(new RegExp(`Missing: ${ANTHROPIC_ONLY_MODEL}`));
+        expect(optionByLabel("Anthropic Family")!).toHaveTextContent(new RegExp(`缺少：${ANTHROPIC_ONLY_MODEL}`));
       });
       expect(isOptionDisabled(optionByLabel("Anthropic Family")!)).toBe(true);
     });

@@ -15,7 +15,6 @@ import { FormField } from "@/components/shared/form/FormField";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useZodForm } from "@/lib/forms/useZodForm";
@@ -85,10 +84,12 @@ import AutoRouterSimpleSetup from "./AutoRouterSimpleSetup";
 import {
   deployedRouterModels,
   nextRouterName,
+  simpleSetupError,
   recommendSolverPair,
   solverPairConfig,
   type RouterGoal,
   type FamilyPreference,
+  type SimpleSetupIssue,
 } from "./auto_setup";
 
 interface AddAutoRouterTabProps {
@@ -158,7 +159,7 @@ const autoRouterSchema = (requiresTeamScope: boolean, t: AddModelTranslator) =>
 type AddAutoRouterFormValues = z.infer<ReturnType<typeof autoRouterSchema>>;
 
 const EMPTY_FORM_VALUES: AddAutoRouterFormValues = {
-  auto_router_name: "",
+  auto_router_name: "auto-router",
   team_id: null,
   model_access_group: undefined,
 };
@@ -208,6 +209,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   const [advancedConfig, setComplexityRouterConfig] = useState<ComplexityRouterConfigValue>({
     tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] },
     classifier_type: "heuristic",
+    classification_mode: "user_turn",
   });
 
   const [customTechnicalKeywords, setCustomTechnicalKeywords] = useState<string[]>([]);
@@ -250,7 +252,12 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       isMemberManaged ? fetchAutoRouterModels(accessToken, watchedTeamId) : fetchAvailableModels(accessToken),
     enabled: Boolean(accessToken && (!isMemberManaged || watchedTeamId)),
   });
-  const { data: deployments, isLoading: deploymentsLoading, isError: deploymentsError, refetch: refetchDeployments } = useQuery({
+  const {
+    data: deployments,
+    isLoading: deploymentsLoading,
+    isError: deploymentsError,
+    refetch: refetchDeployments,
+  } = useQuery({
     queryKey: autoRouterListKey(userId ?? "", userRole),
     queryFn: () => fetchAllModelDeployments(accessToken, userId ?? "", userRole),
     enabled: Boolean(accessToken),
@@ -276,6 +283,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   // can't tell "never loaded" apart from "loaded, then a background refetch errored" - only the
   // former leaves us with nothing trustworthy to verify a preset's models against.
   const modelsUnverifiable = modelsError && data === undefined;
+  const inventoryUnavailable = modelsUnverifiable || (deploymentsError && deployments === undefined);
 
   const isAdmin = all_admin_roles.includes(userRole);
 
@@ -295,8 +303,14 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       ),
     [modelInfo],
   );
-  const solverModels = React.useMemo(() => deployedRouterModels(modelInfo, deployments ?? []), [modelInfo, deployments]);
-  const recommended = React.useMemo(() => recommendSolverPair(solverModels, goal, family), [solverModels, goal, family]);
+  const solverModels = React.useMemo(
+    () => deployedRouterModels(modelInfo, deployments ?? []),
+    [modelInfo, deployments],
+  );
+  const recommended = React.useMemo(
+    () => recommendSolverPair(solverModels, goal, family),
+    [solverModels, goal, family],
+  );
   const everyday = solverOverrides.everyday
     ? solverModels.find((model) => model.name === solverOverrides.everyday)
     : recommended?.everyday;
@@ -417,7 +431,16 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     },
     !requiresTeamScope || Boolean(watchedTeamId),
   );
-  const saveBlockedReason = submitBlockedReason ?? routerAvailability.saveBlockedReason;
+  const simpleBlockedReason = advanced ? null : simpleSetupError(modelsLoading, inventoryUnavailable, everyday, hard);
+  const simpleIssueText = (issue: SimpleSetupIssue): string => {
+    if (issue === "loading") return t("autoRouterSimpleLoadingModels");
+    if (issue === "unverified") return t("autoRouterSimpleLoadFailed");
+    return t("autoRouterSimpleNeedTwo");
+  };
+  const teamGateReason = !advanced && requiresTeamScope && !watchedTeamId ? t("autoRouterSimpleSelectTeamFirst") : null;
+  const configBlockedReason = simpleBlockedReason === null ? null : simpleIssueText(simpleBlockedReason);
+  const saveBlockedReason =
+    teamGateReason ?? configBlockedReason ?? submitBlockedReason ?? routerAvailability.saveBlockedReason;
   const handleClassifierChange = (config: ComplexityRouterConfigValue) => {
     setSelectedPreset(undefined);
     setComplexityRouterConfig(config);
@@ -489,10 +512,15 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
           }),
     };
 
-    await handleAddAutoRouterSubmit(submitValues, accessToken, {
-      resetForm: () => form.reset(EMPTY_FORM_VALUES),
-      onSuccess: handleOk,
-    }, t);
+    await handleAddAutoRouterSubmit(
+      submitValues,
+      accessToken,
+      {
+        resetForm: () => form.reset(EMPTY_FORM_VALUES),
+        onSuccess: handleOk,
+      },
+      t,
+    );
   };
 
   const handleAutoRouterSubmit = async () => {
@@ -593,9 +621,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                   name="auto_router_name"
                   label={labelWithHint(t("autoRouterNameLabel"), t("autoRouterNameHint"))}
                 >
-                  {({ ref, ...field }) => (
-                    <Input {...field} ref={ref} placeholder={t("autoRouterNamePlaceholder")} />
-                  )}
+                  {({ ref, ...field }) => <Input {...field} ref={ref} placeholder={t("autoRouterNamePlaceholder")} />}
                 </FormField>
               </div>
               <div className={advanced ? "mb-6 border-b pb-6" : ""}>
@@ -649,12 +675,8 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                   hard={hard}
                   waitingForTeam={requiresTeamScope && !watchedTeamId}
                   loading={modelsLoading}
-                  error={modelsUnverifiable || (deploymentsError && deployments === undefined)}
-                  notice={
-                    Object.keys(solverOverrides).length > 0
-                      ? "kept"
-                      : recommended?.notice ?? null
-                  }
+                  error={inventoryUnavailable}
+                  notice={Object.keys(solverOverrides).length > 0 ? "kept" : recommended?.notice ?? null}
                   onGoalChange={setGoal}
                   onFamilyChange={(next) => {
                     setFamily(next);
@@ -671,41 +693,41 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                 />
               )}
               {advanced && (
-              <AutoRouterClassifierTabs
-                value={complexityRouterConfig}
-                onChange={handleClassifierChange}
-                decisionModel={
-                  <DecisionModelSelect
-                    value={complexityRouterConfig}
-                    onChange={setComplexityRouterConfig}
-                    modelInfo={modelInfo}
-                    deployments={deployments}
-                  />
-                }
-                judgeModel={
-                  <ClassifierPrimarySettings
-                    section="judge"
-                    value={complexityRouterConfig}
-                    onChange={setComplexityRouterConfig}
-                    modelOptions={modelInfo
-                      .filter((model) => model.mode !== "embedding")
-                      .map((model) => ({ value: model.model_group, label: model.model_group }))}
-                    showValidationErrors={showValidationErrors}
-                  />
-                }
-              >
-                <FieldGroup>
-                  {modelsUnverifiable && (
-                    <p className="text-sm text-destructive">
-                      {t("autoRouterModelsLoadFailed")}{" "}
-                      <button type="button" className="underline" onClick={() => void refetchModels()}>
-                        {t("retryLabel")}
-                      </button>
-                    </p>
-                  )}
-                  {configurationForm}
-                </FieldGroup>
-              </AutoRouterClassifierTabs>
+                <AutoRouterClassifierTabs
+                  value={complexityRouterConfig}
+                  onChange={handleClassifierChange}
+                  decisionModel={
+                    <DecisionModelSelect
+                      value={complexityRouterConfig}
+                      onChange={setComplexityRouterConfig}
+                      modelInfo={modelInfo}
+                      deployments={deployments}
+                    />
+                  }
+                  judgeModel={
+                    <ClassifierPrimarySettings
+                      section="judge"
+                      value={complexityRouterConfig}
+                      onChange={setComplexityRouterConfig}
+                      modelOptions={modelInfo
+                        .filter((model) => model.mode !== "embedding")
+                        .map((model) => ({ value: model.model_group, label: model.model_group }))}
+                      showValidationErrors={showValidationErrors}
+                    />
+                  }
+                >
+                  <FieldGroup>
+                    {modelsUnverifiable && (
+                      <p className="text-sm text-destructive">
+                        {t("autoRouterModelsLoadFailed")}{" "}
+                        <button type="button" className="underline" onClick={() => void refetchModels()}>
+                          {t("retryLabel")}
+                        </button>
+                      </p>
+                    )}
+                    {configurationForm}
+                  </FieldGroup>
+                </AutoRouterClassifierTabs>
               )}
               {!advanced && routerAvailability.isError && (
                 <p className="mt-3 text-sm text-destructive" role="alert">
@@ -721,54 +743,54 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                 </p>
               )}
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <a
-                            href="https://github.com/BerriAI/litellm/issues"
-                            className="text-sm text-primary underline-offset-4 hover:underline"
-                          >
-                            {t("needHelp")}
-                          </a>
-                        }
-                      />
-                      <TooltipContent>{t("getHelpGithub")}</TooltipContent>
-                    </Tooltip>
-                    <div className="flex flex-wrap gap-2">
-                      <BlockedReasonTooltip reason={submitBlockedReason}>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          data-testid="auto-router-test-routing-btn"
-                          disabled={submitBlockedReason !== null || isSubmitting}
-                          onClick={() => setIsRoutingTestVisible(true)}
-                        >
-                          {t("testRouting")}
-                        </Button>
-                      </BlockedReasonTooltip>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        data-testid="auto-router-test-connect-btn"
-                        onClick={handleTestConnection}
-                        disabled={isTestingConnection}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <a
+                        href="https://github.com/BerriAI/litellm/issues"
+                        className="text-sm text-primary underline-offset-4 hover:underline"
                       >
-                        {isTestingConnection && <UiLoadingSpinner className="size-4" />}
-                        {t("testConnection")}
-                      </Button>
-                      <BlockedReasonTooltip reason={saveBlockedReason}>
-                        <Button
-                          type="button"
-                          disabled={saveBlockedReason !== null || isSubmitting}
-                          onClick={() => {
-                            void handleAutoRouterSubmit();
-                          }}
-                        >
-                          {t("addAutoRouter")}
-                        </Button>
-                      </BlockedReasonTooltip>
-                    </div>
-                  </div>
+                        {t("needHelp")}
+                      </a>
+                    }
+                  />
+                  <TooltipContent>{t("getHelpGithub")}</TooltipContent>
+                </Tooltip>
+                <div className="flex flex-wrap gap-2">
+                  <BlockedReasonTooltip reason={submitBlockedReason}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      data-testid="auto-router-test-routing-btn"
+                      disabled={submitBlockedReason !== null || isSubmitting}
+                      onClick={() => setIsRoutingTestVisible(true)}
+                    >
+                      {t("testRouting")}
+                    </Button>
+                  </BlockedReasonTooltip>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    data-testid="auto-router-test-connect-btn"
+                    onClick={handleTestConnection}
+                    disabled={isTestingConnection}
+                  >
+                    {isTestingConnection && <UiLoadingSpinner className="size-4" />}
+                    {t("testConnection")}
+                  </Button>
+                  <BlockedReasonTooltip reason={saveBlockedReason}>
+                    <Button
+                      type="button"
+                      disabled={saveBlockedReason !== null || isSubmitting}
+                      onClick={() => {
+                        void handleAutoRouterSubmit();
+                      }}
+                    >
+                      {t("addAutoRouter")}
+                    </Button>
+                  </BlockedReasonTooltip>
+                </div>
+              </div>
             </form>
           </CardContent>
         </Card>

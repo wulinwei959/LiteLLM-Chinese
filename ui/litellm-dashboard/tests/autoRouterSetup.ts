@@ -39,7 +39,7 @@ const ZH_GROUPS: Record<string, readonly string[]> = {
 const SECTION_GROUPS: Record<string, readonly string[]> = {
   分类方法: ["启发式调优", "分类器调优", "LLM 调优"],
   启发式调优: ["启发式调优"],
-  启发式关键词覆盖: ["分类器调优", "LLM 调优"],
+  启发式关键词覆盖: ["启发式调优"],
   忽略自定义标签: ["请求预处理"],
   内务路由: ["路由规则与恢复"],
   模态路由: ["路由规则与恢复"],
