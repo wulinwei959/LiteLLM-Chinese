@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { Copy } from "lucide-react";
 import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
-import prism from "react-syntax-highlighter/dist/esm/styles/prism";
+import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { modelUsageExample } from "@/components/AIHub/modelUsageExample";
 import { getGatewayBaseUrl, getGlobalLitellmHeaderName, getProxyBaseUrl } from "@/components/networking";
 import { ModelCustomMetadata } from "@/components/AIHub/ModelCustomMetadata";
