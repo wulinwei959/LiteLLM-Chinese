@@ -758,17 +758,8 @@ describe("ModelInfoView", () => {
 
     await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
-    const litellmParamsInput = screen
-      .getAllByRole("textbox")
-      .find(
-        (input) =>
-          input.tagName === "TEXTAREA" && (input as HTMLTextAreaElement).value.includes('"custom_llm_provider"'),
-      );
-    expect(litellmParamsInput).toBeDefined();
-    if (!litellmParamsInput) {
-      return;
-    }
-    expect((litellmParamsInput as HTMLTextAreaElement).value).not.toContain("litellm_credential_name");
+    const litellmParamsInput = screen.getByRole("textbox", { name: /LiteLLM/ }) as HTMLTextAreaElement;
+    expect(litellmParamsInput.value).not.toContain("litellm_credential_name");
     await user.clear(litellmParamsInput);
     await user.paste(`{"litellm_credential_name":"from-json","timeout":42}`);
 
@@ -1104,12 +1095,7 @@ describe("ModelInfoView", () => {
     expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
-    const extraParams = screen
-      .getAllByRole("textbox")
-      .find(
-        (input) =>
-          input.tagName === "TEXTAREA" && (input as HTMLTextAreaElement).value.includes('"custom_llm_provider"'),
-      ) as HTMLTextAreaElement;
+    const extraParams = screen.getByRole("textbox", { name: /LiteLLM/ }) as HTMLTextAreaElement;
     await user.clear(extraParams);
     await user.paste("{not json");
 
@@ -1835,7 +1821,8 @@ describe("ModelInfoView", () => {
         const payload = await save(user);
 
         expect(payload.litellm_params.cache_creation_input_token_cost_above_1hr).toBeNull();
-        expect(payload.litellm_params.cache_creation_input_token_cost).toBe(0.00000375);
+        // The untouched 5 minute rate is left out of the patch, so the backend keeps the stored value.
+        expect(payload.litellm_params).not.toHaveProperty("cache_creation_input_token_cost");
       });
     });
 
@@ -1968,18 +1955,42 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      const extraParams = screen
-        .getAllByRole("textbox")
-        .find(
-          (input) =>
-            input.tagName === "TEXTAREA" && (input as HTMLTextAreaElement).value.includes('"custom_llm_provider"'),
-        ) as HTMLTextAreaElement;
+      const extraParams = screen.getByRole("textbox", { name: /LiteLLM/ }) as HTMLTextAreaElement;
       await user.clear(extraParams);
       await user.paste('{"drop_params":true}');
 
       const payload = await save(user);
 
       expect(payload.litellm_params.drop_params).toBe(true);
+    });
+
+    it("asks the backend to remove an extra param dropped from the JSON box", async () => {
+      const withExtra = {
+        ...defaultModelData,
+        litellm_params: { ...defaultModelData.litellm_params, drop_params: true },
+      };
+      mockUseModelsInfo.mockReturnValue({ data: { data: [withExtra] }, isLoading: false, error: null });
+      mockModelInfoV1Call.mockResolvedValue({ data: [withExtra] });
+      const user = userEvent.setup();
+      await enterEditMode(user);
+
+      const extraParams = screen.getByRole("textbox", { name: /LiteLLM/ });
+      await user.clear(extraParams);
+      await user.paste("{}");
+
+      const payload = await save(user);
+
+      expect(payload.litellm_params).not.toHaveProperty("drop_params");
+      expect(payload.litellm_params_to_remove).toEqual(["drop_params"]);
+    });
+
+    it("keeps form-owned params out of the JSON box so edits cannot duplicate them", async () => {
+      const user = userEvent.setup();
+      await enterEditMode(user);
+
+      const box = screen.getByRole("textbox", { name: /LiteLLM/ }) as HTMLTextAreaElement;
+      expect(box.value).not.toContain("custom_llm_provider");
+      expect(box.value).not.toContain("api_base");
     });
 
     it("sends the credential picked in the selector", async () => {
