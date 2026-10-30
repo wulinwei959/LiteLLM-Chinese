@@ -183,6 +183,23 @@ describe("TeamVirtualKeysTable", () => {
     expect(screen.getByText("bob_key_team1")).toBeInTheDocument();
   });
 
+  it("sends the TPM sort picked in the rate limits header to the keys query", async () => {
+    renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
+    await waitFor(() => expect(mockUseKeys).toHaveBeenCalled());
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "TPM 或 RPM 的排序选项" }));
+    await user.click(await screen.findByRole("menuitem", { name: "TPM 降序" }));
+
+    await waitFor(() =>
+      expect(mockUseKeys).toHaveBeenLastCalledWith(
+        1,
+        50,
+        expect.objectContaining({ sortBy: "tpm_limit", sortOrder: "desc" }),
+      ),
+    );
+  });
+
   it("shows the team member budget for budgetless keys and keeps each key's own budget", async () => {
     const keysResponse: KeysResponse = {
       keys: [
