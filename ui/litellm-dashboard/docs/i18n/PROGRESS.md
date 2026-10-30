@@ -5343,3 +5343,15 @@ CI 已接进 `unit` 的 `ui-unit`，步骤排在 `typecheck` 之后、完整 Vit
 PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 25 条新英文泄漏，集中在 PR #13/#14 接回的用量域：usage 17 条、caching 2 条、cost-optimization 3 条、home 3 条。逐条溯源修复：`UsageStatStrip` 五枚硬编码串接既有 `usage.overview.statStrip` 键；`UsageBreakdownChart` 粒度与标度选项、标题副题改 `t()` 动态构建，`BreakdownChart` 指标与维度选项同法处理；`UsageViewSelect` 九组视图标签与描述接 `usage.viewSelect` 扁平键；`advanced_date_picker` 默认 label 与 moment 英文月份格式改 `Intl.DateTimeFormat` 按 `undefined` locale 渲染；`overviewData.formatDayLabel` 与 `ClientUsagePanel.dateLabel` 从硬编码 `"en-US"` 改 `undefined`（图表轴 Oct/Sep 变 10月/9月），周桶标签去掉 `Wk of ` 前缀（图表标题已标明粒度）。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，不再要求 Playwright 下载的 Chromium
 
 复测：`en.json` 与 `zh-CN.json` 摊平后各 13502 叶（+20），键树差集 0，中英同值 185；`check:dead-keys` 0 / 基线 0，`check:english-leaks` 286 / 基线 286（一条 resolved 撤出），`check:zh-coverage` 215 / 0 与基线同数；渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线；生产 `typecheck` 0 错
+
+## 2026-10-30 第 540 簇：接回 auto router 简单模式
+
+承接第 539 簇的未接入清单，本轮把上游 `9a35ed93f9`（auto router 简单模式，上游 PR #48451）接回来。新增 `AutoRouterPresetSelect` 与 `AutoRouterSimpleSetup`，后者是默认进入的简单模式面板，按已部署模型推荐一对求解器，可切目标与模型家族，也能手动改选，模板预设 UI 从 tab 内联抽出成独立组件。`auto_setup.ts` 追加 `deployedRouterModels`、`recommendSolverPair`、`solverPairConfig`、`simpleSetupError`、`nextRouterName` 与模型身份解析，tab 增加 `advanced` 模式切换、`goal`/`family`/`solverOverrides` 状态与求解器推导，按钮区移出高级容器，`useModels` 的 `AutoRouterDeployment.model_info` 补 `blocked` 字段，两侧目录各加 28 键
+
+本仓约定照旧，`SolverNotice` 与 `SimpleSetupIssue` 用联合值，真实文案在组件里 `t()` 翻译，上游断言英文串的用例改成断言联合值，新增键全部落在既有 `models.addModel` 命名空间，不新建顶层区
+
+失败账分三步清。上游测试换进来时 109 例中 65 败，先补 `createTranslator` 与 `t` 让 `getSubmitBlockedReason` 四例转绿，再按上游英文到本仓中文的映射逐条改查询名与断言，例如分类频率的每条新用户消息、路由方式的能力、以及正在检查模型可用性与缺少模型名这类提示，最后处理三处真差异。一是 `EMPTY_FORM_VALUES` 的名字默认值被我方改成空串，清空名称后字段不再是 dirty，`nextRouterName` 的自动建议随即把名字填回去，仍要提示名称必填的用例静默走了成功分支，二是 `saveBlockedReason` 漏了简单模式的 `simpleSetupError` 与未选团队门控，等待团队的用例断言按钮禁用失败，三是 `modelCreateCall` 在我方签名里多一个译员参数，两处断言按下标取错了参数。三处修回后集成测试 109 例、`auto_setup.test.ts` 136 例全绿
+
+顺带修掉几处测试基建问题。`tests/autoRouterSetup.ts` 把启发式关键词覆盖映射到分类器调优组，实际它挂在启发式调优组下，`ComplexityRouterConfig` 集成测试因此有 1 例报 No advanced group matched。`overviewData` 与 `DeploymentHealth` 三例把 Oct 1、Jan 1、直到 Oct 2x, 2026 这类英文月份写死，本机 zh-CN locale 下必然失败，改成按 `Intl` 与 `dateStyle` 现算期望值，断言只依赖日期本身。lint 的 8 个 error 同时清掉，六个是未用的 `Select` 导入，两处是嵌套三元
+
+复测：`en.json` 与 `zh-CN.json` 摊平后各 13531 叶，键树差集 0，中英同值 185，`check:dead-keys` 0 / 基线 0，`check:english-leaks` 286 / 基线 286，`check:zh-coverage` 215 / 0 与基线同数，生产 `typecheck` 0 错，`npx eslint .` 0 error，`knip:ci` 干净，`npm run build` exit 0，全量 Vitest 983 文件 13311 例（9 例既有预期失败）全绿，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线
