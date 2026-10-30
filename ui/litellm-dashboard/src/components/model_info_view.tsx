@@ -14,6 +14,7 @@ import { ArrowLeft, CheckIcon, CopyIcon, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { copyToClipboard as utilCopyToClipboard } from "../utils/dataUtils";
 import { stripMaskedSecrets } from "../utils/maskedSecretUtils";
+import { editableModelExtraParams, parseModelExtraParams } from "../utils/modelEditParams";
 import { truncateString } from "../utils/textUtils";
 import AutoRouterConnectionTest from "./add_model/auto_router_connection_test";
 import { buildSavedJevConnectionTestRequest } from "./add_model/build_auto_router_routing_test_request";
@@ -276,18 +277,16 @@ export default function ModelInfoView({
       setIsSaving(true);
 
       // Parse LiteLLM extra params from JSON text area
-      let parsedExtraParams: Record<string, any> = {};
-      try {
-        parsedExtraParams = values.litellm_extra_params ? JSON.parse(values.litellm_extra_params) : {};
-        delete parsedExtraParams.litellm_credential_name;
-      } catch (e) {
+      const parsedExtraParams = parseModelExtraParams(values.litellm_extra_params);
+      if (parsedExtraParams === null) {
         toast.fromError(modelsT("invalidLiteLlmParams"));
         setIsSaving(false);
         return;
       }
+      delete parsedExtraParams.litellm_credential_name;
 
       const updatedLitellmParams: Record<string, any> = {
-        ...parsedExtraParams,
+        ...editableModelExtraParams(parsedExtraParams),
         model: values.litellm_model_name,
         api_base: values.api_base,
         custom_llm_provider: values.custom_llm_provider,
@@ -380,11 +379,20 @@ export default function ModelInfoView({
       // without this strip a masked value would be re-encrypted over the real secret.
       // Credential rotation has its own dedicated path (UpdateModelCredentialsModal).
       const safeLitellmParams = stripMaskedSecrets(updatedLitellmParams);
-      const { litellm_credential_name: _sentCredential, ...localLitellmParams } = safeLitellmParams;
+      const { litellm_credential_name: _sentCredential, ...safeExtraParams } = safeLitellmParams;
+      const paramsToRemove = Object.keys(editableModelExtraParams(localModelData?.litellm_params ?? {})).filter(
+        (key) => !Object.prototype.hasOwnProperty.call(parsedExtraParams, key),
+      );
+      const localLitellmParams = Object.fromEntries(
+        Object.entries({ ...localModelData?.litellm_params, ...safeExtraParams }).filter(
+          ([key]) => key !== "litellm_credential_name" && !paramsToRemove.includes(key),
+        ),
+      );
 
       const updateData = {
         model_name: values.model_name,
         litellm_params: safeLitellmParams,
+        ...(paramsToRemove.length > 0 && { litellm_params_to_remove: paramsToRemove }),
         model_info: updatedModelInfo,
       };
 

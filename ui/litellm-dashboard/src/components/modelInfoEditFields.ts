@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { CommonTranslator, ModelsAddModelTranslator } from "@/lib/i18n/translators";
 import type { CacheControlInjectionPoint } from "./add_model/cache_control_settings";
 import { utcIsoToPickerValue } from "../utils/ptuDatetime";
-import { isMaskedSecret } from "../utils/maskedSecretUtils";
+import { editableModelExtraParams } from "../utils/modelEditParams";
 import {
   MAX_COST_PER_PTU_PER_HOUR,
   MAX_PTU_COUNT,
@@ -224,15 +224,7 @@ export const toModelEditFormValues = (localModelData: any, isWildcardModel: bool
   // antd never mounted this field for a non-wildcard model, so the key must be absent, not null.
   ...(isWildcardModel ? { health_check_model: localModelData.model_info?.health_check_model } : {}),
   litellm_credential_name: localModelData.litellm_params?.litellm_credential_name ?? null,
-  litellm_extra_params: JSON.stringify(
-    Object.fromEntries(
-      Object.entries(localModelData.litellm_params || {}).filter(
-        ([key, value]) => key !== "litellm_credential_name" && !isMaskedSecret(value),
-      ),
-    ),
-    null,
-    2,
-  ),
+  litellm_extra_params: JSON.stringify(editableModelExtraParams(localModelData.litellm_params ?? {}), null, 2),
   team_id: localModelData.model_info?.team_id ?? undefined,
 });
 
