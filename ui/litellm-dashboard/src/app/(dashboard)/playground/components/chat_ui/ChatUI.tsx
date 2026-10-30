@@ -22,10 +22,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
 import { v4 as uuidv4 } from "uuid";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import GuardrailSelector from "@/components/guardrails/GuardrailSelector";
@@ -60,7 +57,7 @@ import { createChatDisplayMessage, createChatMultimodalMessage } from "./ChatIma
 import CodeInterpreterTool from "./CodeInterpreterTool";
 import { generateCodeSnippet } from "@/components/chat_ui/CodeSnippets";
 import EndpointSelector from "./EndpointSelector";
-import { filterModelsForEndpoint, isModelCompatibleWithEndpoint } from "./EndpointUtils";
+import GeneratedCodeDialog from "./GeneratedCodeDialog";import { filterModelsForEndpoint, isModelCompatibleWithEndpoint } from "./EndpointUtils";
 import FilePreviewCard from "./FilePreviewCard";
 import ChatMessageBubble from "./ChatMessageBubble";
 import MCPEventsDisplay from "@/components/chat_ui/MCPEventsDisplay";
@@ -68,6 +65,7 @@ import { EndpointType, getEndpointType } from "@/components/chat_ui/mode_endpoin
 import ResponsesImageUpload from "./ResponsesImageUpload";
 import { createDisplayMessage, createMultimodalMessage } from "./ResponsesImageUtils";
 import SessionManagement from "./SessionManagement";
+import ToolsetsInfoDialog from "./ToolsetsInfoDialog";
 import RealtimePlayground from "./RealtimePlayground";
 import { MessageType } from "@/components/chat_ui/types";
 import { useCodeInterpreter } from "../../hooks/useCodeInterpreter";
@@ -76,7 +74,6 @@ import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
 import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSelect";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select as ShadcnSelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -90,11 +87,6 @@ import {
   validateChatAttachment,
   validateImageEditFile,
 } from "./uploadValidation";
-
-const SDK_ITEMS = [
-  { value: "openai", label: "OpenAI SDK" },
-  { value: "azure", label: "Azure SDK" },
-] as const;
 
 interface ChatUIProps {
   accessToken: string | null;
@@ -133,7 +125,6 @@ const ChatUI: React.FC<ChatUIProps> = ({
 }) => {
   const t = useTranslations("playground");
   const commonT = useTranslations("common");
-  const syntaxTheme = useSyntaxTheme(coy);
   const canViewPolicies = useCan("viewPolicies");
   const [mcpServers, setMCPServers] = useState<MCPServer[]>([]);
   const [mcpToolsets, setMCPToolsets] = useState<MCPToolset[]>([]);
@@ -2159,60 +2150,13 @@ const ChatUI: React.FC<ChatUIProps> = ({
         </div>
       </div>
 
-      <Dialog open={isGetCodeModalVisible} onOpenChange={setIsGetCodeModalVisible}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{t("chat.generatedCodeTitle")}</DialogTitle>
-          </DialogHeader>
-          <div className="my-2 flex items-end justify-between gap-3">
-            <div>
-              <p className="mb-1 text-sm font-medium text-foreground">{t("chat.sdkType")}</p>
-              <ShadcnSelect
-                items={SDK_ITEMS}
-                value={selectedSdk}
-                onValueChange={(value) => setSelectedSdk(value as "openai" | "azure")}
-              >
-                <SelectTrigger className="w-[150px]" size="sm" aria-label={t("chat.sdkType")}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SDK_ITEMS.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </ShadcnSelect>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                void navigator.clipboard.writeText(generatedCode).then(
-                  () => toast.success(t("chat.copyingCode")),
-                  () => toast.error(t("chat.copyFailed")),
-                );
-              }}
-            >
-              {t("chat.copyToClipboard")}
-            </Button>
-          </div>
-          <SyntaxHighlighter
-            language="python"
-            style={syntaxTheme}
-            wrapLines={true}
-            wrapLongLines={true}
-            className="rounded-md"
-            customStyle={{
-              maxHeight: "60vh",
-              overflowY: "auto",
-            }}
-          >
-            {generatedCode}
-          </SyntaxHighlighter>
-        </DialogContent>
-      </Dialog>
+      <GeneratedCodeDialog
+        open={isGetCodeModalVisible}
+        onOpenChange={setIsGetCodeModalVisible}
+        code={generatedCode}
+        sdk={selectedSdk}
+        onSdkChange={setSelectedSdk}
+      />
 
       {byokModalServer && (
         <ByokCredentialModal
@@ -2226,54 +2170,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
         />
       )}
 
-      <Dialog open={isToolsetsInfoModalVisible} onOpenChange={setIsToolsetsInfoModalVisible}>
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>{t("toolsets.howItWorks")}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <p className="text-foreground">
-              {t.rich("toolsets.toolsetsAre", {
-                b: (chunks) => <strong>{chunks}</strong>,
-              })}
-            </p>
-            <div>
-              <h4 className="mb-2 font-semibold text-foreground">{t("toolsets.howToUse")}</h4>
-              <ol className="list-inside list-decimal space-y-2 text-foreground">
-                <li>
-                  {t.rich("toolsets.step1", {
-                    strong: (chunks) => <span className="font-semibold text-violet-600">{chunks}</span>,
-                  })}
-                </li>
-                <li>{t("toolsets.step2")}</li>
-                <li>{t("toolsets.step3")}</li>
-                <li>{t("toolsets.step4")}</li>
-              </ol>
-            </div>
-            <div className="rounded-sm border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950">
-              <p className="text-sm text-purple-800 dark:text-purple-300">
-                {t.rich("toolsets.example", {
-                  b: (chunks) => <strong>{chunks}</strong>,
-                  code: (chunks) => <code>{chunks}</code>,
-                })}
-              </p>
-            </div>
-            <div>
-              <h4 className="mb-1 font-semibold text-foreground">{t("toolsets.creatingToolsets")}</h4>
-              <p className="text-sm text-muted-foreground">
-                {t.rich("toolsets.creatingDesc", {
-                  b: (chunks) => <strong>{chunks}</strong>,
-                })}
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsToolsetsInfoModalVisible(false)}>
-              {t("toolsets.close")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ToolsetsInfoDialog open={isToolsetsInfoModalVisible} onOpenChange={setIsToolsetsInfoModalVisible} />
     </div>
   );
 };

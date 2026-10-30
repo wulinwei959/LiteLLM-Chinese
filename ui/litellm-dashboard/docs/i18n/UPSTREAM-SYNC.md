@@ -449,3 +449,11 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 宿主降到 7868 行。新文件未跟踪时死键扫描看不到它（扫描取 `git ls-files`），三处 `sessionExpired` 曾被误判为死键，纳入版本控制后复跑归零，英文基线 286 条同理
 
 收口实测：生产 `typecheck` 0 错，改动文件 eslint 0 error，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
+
+## 二十九、执行记录（2026-10-31）：聊天页抽出代码生成与工具集说明弹窗
+
+第二十九篇。`playground/components/chat_ui/ChatUI.tsx` 2281 行，页面尾部两个弹窗与主聊天流程无状态耦合。生成代码弹窗抽到 `chat_ui/GeneratedCodeDialog.tsx`（SDK 选择、复制、Python 高亮，`SDK_ITEMS` 与语法主题 hook 随行），工具集说明弹窗抽到 `chat_ui/ToolsetsInfoDialog.tsx`
+
+宿主保留 `selectedSdk` 状态与 `generateCodeSnippet` 调用，删掉随之空置的 `react-syntax-highlighter` 与 `Dialog` 系列导入，行数降到 2178，两个新组件合计 150 行
+
+收口实测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0
