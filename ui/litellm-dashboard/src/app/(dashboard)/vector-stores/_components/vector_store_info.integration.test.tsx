@@ -155,7 +155,7 @@ describe("VectorStoreInfoView save payload", () => {
     await screen.findByDisplayValue("support-docs-store");
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    expect(await screen.findByText("请输入向量存储 ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 API 供应商提供的向量存储 ID")).toBeInTheDocument();
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 });

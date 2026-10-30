@@ -139,7 +139,7 @@ describe("TagInfoView save payload", () => {
     await user.clear(nameInput);
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    expect(await screen.findByText("Please input a tag name")).toBeInTheDocument();
+    expect(await screen.findByText("请输入标签名")).toBeInTheDocument();
     expect(mockTagUpdateCall).not.toHaveBeenCalled();
   });
 

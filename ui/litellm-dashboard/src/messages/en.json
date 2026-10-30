@@ -9592,6 +9592,7 @@
     }
   },
   "tagManagement": {
+    "tagNameRequired": "Please input a tag name",
     "title": "Tag Management",
     "tagCreated": "Tag created successfully",
     "tagDeleted": "Tag deleted successfully",

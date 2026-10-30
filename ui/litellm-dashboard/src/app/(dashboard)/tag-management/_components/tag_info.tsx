@@ -24,8 +24,10 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
 import { CheckIcon, ChevronRight, CopyIcon } from "lucide-react";
 
-const tagEditShape = {
-  name: z.string().min(1, "Please input a tag name"),
+type TagTranslator = ReturnType<typeof useTranslations<"tagManagement">>;
+
+const tagEditShape = (t: TagTranslator) => ({
+  name: z.string().min(1, t("tagNameRequired")),
   description: z.string().optional(),
   models: z.array(z.string()).optional(),
   max_budget: z
@@ -36,11 +38,14 @@ const tagEditShape = {
     )
     .optional(),
   budget_duration: z.string().nullish(),
+});
+
+const tagEditSchema = (t: TagTranslator) => {
+  const shape = tagEditShape(t);
+  return z.object(shape);
 };
 
-const tagEditSchema = z.object(tagEditShape);
-
-type TagEditFormValues = z.output<typeof tagEditSchema>;
+type TagEditFormValues = z.output<ReturnType<typeof tagEditSchema>>;
 
 const budgetPayload = (value: TagEditFormValues["max_budget"]): number | null | undefined => {
   if (value === undefined) return undefined;
@@ -59,7 +64,7 @@ interface TagEditFormProps {
 const TagEditForm: React.FC<TagEditFormProps> = ({ tag, seedBudgetFields, userModels, onCancel, onSave }) => {
   const t = useTranslations("tagManagement");
   const [budgetSectionOpen, setBudgetSectionOpen] = useState(false);
-  const form = useZodForm(tagEditSchema, {
+  const form = useZodForm(tagEditSchema(t), {
     defaultValues: {
       name: tag.name,
       description: tag.description,
@@ -85,14 +90,14 @@ const TagEditForm: React.FC<TagEditFormProps> = ({ tag, seedBudgetFields, userMo
           {({ ref, value, ...field }) => <Textarea {...field} ref={ref} value={value ?? ""} rows={4} />}
         </FormField>
 
-        <FormField
-          control={form.control}
-          name="models"
-          label={t("allowedModels")}
-          description={t("allowedModelsDesc")}
-        >
+        <FormField control={form.control} name="models" label={t("allowedModels")} description={t("allowedModelsDesc")}>
           {({ value, onChange }) => (
-            <MultiSelect options={modelOptions} value={value} onValueChange={onChange} placeholder={t("selectModels")} />
+            <MultiSelect
+              options={modelOptions}
+              value={value}
+              onValueChange={onChange}
+              placeholder={t("selectModels")}
+            />
           )}
         </FormField>
       </FieldGroup>

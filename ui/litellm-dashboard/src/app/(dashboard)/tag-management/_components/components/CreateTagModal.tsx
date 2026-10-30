@@ -37,17 +37,20 @@ interface ModelInfo {
   };
 }
 
-const createTagShape = {
-  tag_name: z.string().min(1, "Please input a tag name"),
-  description: z.string().optional(),
-  allowed_llms: z.array(z.string()).optional(),
-  max_budget: z.string().optional(),
-  budget_duration: z.string().optional(),
+type TagTranslator = ReturnType<typeof useTranslations<"tagManagement">>;
+
+const createTagSchema = (t: TagTranslator) => {
+  const shape = {
+    tag_name: z.string().min(1, t("tagNameRequired")),
+    description: z.string().optional(),
+    allowed_llms: z.array(z.string()).optional(),
+    max_budget: z.string().optional(),
+    budget_duration: z.string().optional(),
+  };
+  return z.object(shape);
 };
 
-const createTagSchema = z.object(createTagShape);
-
-export type CreateTagFormValues = z.output<typeof createTagSchema>;
+export type CreateTagFormValues = z.output<ReturnType<typeof createTagSchema>>;
 
 interface CreateTagModalProps {
   visible: boolean;
@@ -59,7 +62,7 @@ interface CreateTagModalProps {
 const CreateTagModal: React.FC<CreateTagModalProps> = ({ visible, onCancel, onSubmit, availableModels }) => {
   const t = useTranslations("tagManagement");
   const [budgetSectionOpen, setBudgetSectionOpen] = React.useState(false);
-  const form = useZodForm(createTagSchema, { defaultValues: { tag_name: "" } });
+  const form = useZodForm(createTagSchema(t), { defaultValues: { tag_name: "" } });
 
   const modelOptions = availableModels.map((model) => ({
     label: model.model_name,

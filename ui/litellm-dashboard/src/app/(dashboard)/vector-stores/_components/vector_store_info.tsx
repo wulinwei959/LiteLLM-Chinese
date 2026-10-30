@@ -38,17 +38,20 @@ interface VectorStoreInfoViewProps {
   editVectorStore: boolean;
 }
 
-const vectorStoreEditShape = {
-  vector_store_id: z.string().min(1, "请输入向量存储 ID"),
-  vector_store_name: z.string().nullish(),
-  vector_store_description: z.string().nullish(),
-  custom_llm_provider: z.string().min(1, "Please select a provider"),
-  litellm_credential_name: z.string().nullable().optional(),
+type VectorStoreTranslator = ReturnType<typeof useTranslations<"vectorStores">>;
+
+const vectorStoreEditSchema = (t: VectorStoreTranslator) => {
+  const shape = {
+    vector_store_id: z.string().min(1, t("idRequired")),
+    vector_store_name: z.string().nullish(),
+    vector_store_description: z.string().nullish(),
+    custom_llm_provider: z.string().min(1, t("providerRequired")),
+    litellm_credential_name: z.string().nullable().optional(),
+  };
+  return z.object(shape);
 };
 
-const vectorStoreEditSchema = z.object(vectorStoreEditShape);
-
-type VectorStoreEditValues = z.output<typeof vectorStoreEditSchema>;
+type VectorStoreEditValues = z.output<ReturnType<typeof vectorStoreEditSchema>>;
 
 const EMPTY_VALUES: VectorStoreEditValues = {
   vector_store_id: "",
@@ -81,7 +84,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   editVectorStore,
 }) => {
   const t = useTranslations("vectorStores");
-  const form = useZodForm(vectorStoreEditSchema, { defaultValues: EMPTY_VALUES });
+  const form = useZodForm(vectorStoreEditSchema(t), { defaultValues: EMPTY_VALUES });
   const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(editVectorStore);
