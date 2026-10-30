@@ -247,16 +247,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               localModelData.litellm_model_name,
             )}
 
-            {pricingField(
-              "input_cost",
-              addModelT("inputCostPerToken"),
-              addModelT("inputCostPlaceholder"),
-            )}
-            {pricingField(
-              "output_cost",
-              addModelT("outputCostPerToken"),
-              addModelT("outputCostPlaceholder"),
-            )}
+            {pricingField("input_cost", addModelT("inputCostPerToken"), addModelT("inputCostPlaceholder"))}
+            {pricingField("output_cost", addModelT("outputCostPerToken"), addModelT("outputCostPlaceholder"))}
 
             {ptuCostAttributionEnabled &&
               PTU_EDIT_FIELDS.map((ptuField) => (
@@ -333,18 +325,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               localModelData.litellm_params?.organization,
             )}
 
-            {numberField(
-              "tpm",
-              addModelT("tpmLabel"),
-              addModelT("tpmPlaceholder"),
-              localModelData.litellm_params?.tpm,
-            )}
-            {numberField(
-              "rpm",
-              addModelT("rpmLabel"),
-              addModelT("rpmPlaceholder"),
-              localModelData.litellm_params?.rpm,
-            )}
+            {numberField("tpm", addModelT("tpmLabel"), addModelT("tpmPlaceholder"), localModelData.litellm_params?.tpm)}
+            {numberField("rpm", addModelT("rpmLabel"), addModelT("rpmPlaceholder"), localModelData.litellm_params?.rpm)}
             {numberField(
               "max_retries",
               addModelT("maxRetriesLabel"),
@@ -558,9 +540,17 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                         {localModelData.litellm_params.cache_control_injection_points.map((point: any, i: number) => (
                           <div key={i} className="mb-1 text-sm text-muted-foreground">
                             {addModelT("cachePointLocation")} {point.location},
-                            {point.role && <span> {addModelT("cachePointRole")} {point.role}</span>}
+                            {point.role && (
+                              <span>
+                                {" "}
+                                {addModelT("cachePointRole")} {point.role}
+                              </span>
+                            )}
                             {point.index !== undefined && (
-                              <span> {addModelT("cachePointIndex")} {point.index}</span>
+                              <span>
+                                {" "}
+                                {addModelT("cachePointIndex")} {point.index}
+                              </span>
                             )}
                           </div>
                         ))}
@@ -608,9 +598,10 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                   {({ value, ...control }) => (
                     <Textarea
                       {...control}
+                      aria-label={addModelT("litellmParams")}
                       value={(value as string) ?? ""}
                       rows={4}
-                      placeholder={'{\n  "rpm": 100,\n  "timeout": 0,\n  "stream_timeout": 0\n}'}
+                      placeholder={'{\n  "drop_params": true\n}'}
                     />
                   )}
                 </FormField>

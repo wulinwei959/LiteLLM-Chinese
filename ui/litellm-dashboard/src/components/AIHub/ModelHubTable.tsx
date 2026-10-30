@@ -6,6 +6,7 @@ import MakeMCPPublicForm from "@/components/AIHub/forms/MakeMCPPublicForm";
 import MakeModelPublicForm from "@/components/AIHub/forms/MakeModelPublicForm";
 import { getMCPHubTableColumns, MCPServerData } from "@/components/AIHub/MCPHubTableColumns";
 import { getModelHubTableColumns, ModelHubData } from "@/components/AIHub/ModelHubTableColumns";
+import { ModelCustomMetadata } from "@/components/AIHub/ModelCustomMetadata";
 import { modelUsageExample } from "@/components/AIHub/modelUsageExample";
 import UsefulLinksManagement from "@/components/AIHub/UsefulLinksManagement";
 import { getClaudeCodePluginsList } from "@/components/networking";
@@ -48,12 +49,7 @@ import { checkTokenValidity } from "@/utils/jwtUtils";
 import { getCookie } from "@/utils/cookieUtils";
 import { getLoginUrl } from "@/utils/returnUrlUtils";
 import { uiHref } from "@/utils/uiHref";
-import {
-  DECISIONS_DOCS_URL,
-  DECISIONS_MODE,
-  SYSTEM_ONE_PLAYGROUND_ROUTE,
-  isDecisionMode,
-} from "@/lib/decisionModels";
+import { DECISIONS_DOCS_URL, DECISIONS_MODE, SYSTEM_ONE_PLAYGROUND_ROUTE, isDecisionMode } from "@/lib/decisionModels";
 import DecisionModelGarden from "@/components/AIHub/DecisionModelGarden";
 
 interface ModelHubTableProps {
@@ -448,13 +444,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
             <div className="flex flex-col items-start">
               <h2 className="text-center text-xl font-semibold">{t("pageTitle")}</h2>
               {isAdminRole(userRole || "") ? (
-                <p className="text-sm text-muted-foreground">
-                  {t("adminSubtitle")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("adminSubtitle")}</p>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t("userSubtitle")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("userSubtitle")}</p>
               )}
             </div>
             <div className="flex items-center space-x-4">
@@ -488,13 +480,17 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
           <Tabs defaultValue="models">
             <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="models" className="flex-none rounded-none px-4 py-2">
-                {t("tabModels")}</TabsTrigger>
+                {t("tabModels")}
+              </TabsTrigger>
               <TabsTrigger value="agents" className="flex-none rounded-none px-4 py-2">
-                {t("tabAgents")}</TabsTrigger>
+                {t("tabAgents")}
+              </TabsTrigger>
               <TabsTrigger value="mcp" className="flex-none rounded-none px-4 py-2">
-                {t("tabMcp")}</TabsTrigger>
+                {t("tabMcp")}
+              </TabsTrigger>
               <TabsTrigger value="skills" className="flex-none rounded-none px-4 py-2">
-                {t("tabSkills")}</TabsTrigger>
+                {t("tabSkills")}
+              </TabsTrigger>
             </TabsList>
 
             <div>
@@ -529,7 +525,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     isLoading={loading}
                     loadingMessage={t("loadingModels")}
                     noDataMessage={
-                      <HubEmptyState {...modelTableEmptyState(t, modelHubData ?? [], showDecisionGarden, selectedMode)} />
+                      <HubEmptyState
+                        {...modelTableEmptyState(t, modelHubData ?? [], showDecisionGarden, selectedMode)}
+                      />
                     }
                     size="compact"
                   />
@@ -633,20 +631,13 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     onSortingChange={setMcpSorting}
                     isLoading={mcpLoading}
                     loadingMessage={t("loadingMcpServers")}
-                    noDataMessage={
-                      <HubEmptyState
-                        title={t("noMcpTitle")}
-                        body={t("noMcpBody")}
-                      />
-                    }
+                    noDataMessage={<HubEmptyState title={t("noMcpTitle")} body={t("noMcpBody")} />}
                     size="compact"
                   />
                 </Card>
 
                 <div className="mt-4 text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    {t("mcpCount", { count: mcpHubData?.length || 0 })}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("mcpCount", { count: mcpHubData?.length || 0 })}</p>
                 </div>
               </TabsContent>
 
@@ -675,9 +666,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
       ) : (
         <Card className="mx-auto max-w-xl mt-10 px-6">
           <p className="text-xl text-center mb-2 text-foreground">{t("hubDisabledTitle")}</p>
-          <p className="text-base text-center text-foreground">
-            {t("hubDisabledHint")}
-          </p>
+          <p className="text-base text-center text-foreground">{t("hubDisabledHint")}</p>
         </Card>
       )}
 
@@ -771,6 +760,11 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                   })()}
                 </div>
               </div>
+
+              <ModelCustomMetadata
+                customTags={selectedModel.custom_tags}
+                customMetadata={selectedModel.custom_metadata}
+              />
 
               {/* Rate Limits */}
               {(selectedModel.tpm || selectedModel.rpm) && (
