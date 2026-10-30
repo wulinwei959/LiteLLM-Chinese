@@ -9,13 +9,13 @@ import { toast } from "@/lib/toast";
 import type { Member } from "@/components/networking";
 import type { EffectiveMcpServer } from "../mcp_server_management/effectiveMcpServers";
 import type { MCPServer } from "../mcp_tools/types";
-import TeamInfoView, {
+import TeamInfoView, { type TeamData } from "./TeamInfo";
+import {
   grantedMcpServerIds,
   type McpGrantInput,
   retainedMcpToolPermissions,
   standingToolPermissionServerIds,
-  type TeamData,
-} from "./TeamInfo";
+} from "./teamMcpGrants";
 
 const authState = vi.hoisted(() => ({ userRole: "Admin", isViewOnly: false }));
 
