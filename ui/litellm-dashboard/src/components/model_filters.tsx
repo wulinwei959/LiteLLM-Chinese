@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import ModelHubProviders from "@/components/AIHub/ModelHubProviders";
 import { Card } from "@/components/ui/card";
 import { displayMode } from "@/lib/decisionModels";
 import { matchesSearchTerm } from "@/utils/searchUtils";
@@ -29,6 +30,9 @@ interface ModelFiltersProps {
   className?: string;
   extraModes?: readonly string[];
   onModeChange?: (mode: string) => void;
+  selectedProvider?: string;
+  onProviderChange?: (provider: string) => void;
+  showProviderFilter?: boolean;
 }
 
 const ModelFilters: React.FC<ModelFiltersProps> = ({
@@ -38,10 +42,14 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
   className = "",
   extraModes = [],
   onModeChange,
+  selectedProvider: controlledProvider,
+  onProviderChange,
+  showProviderFilter = true,
 }) => {
   const t = useTranslations("modelHub");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedProvider, setSelectedProvider] = useState<string>("");
+  const [internalProvider, setInternalProvider] = useState<string>("");
+  const selectedProvider = controlledProvider ?? internalProvider;
   const [selectedMode, setSelectedMode] = useState<string>("");
   const [selectedFeature, setSelectedFeature] = useState<string>("");
   const previousFilteredDataRef = useRef<ModelGroupInfo[]>([]);
@@ -67,6 +75,11 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
   const changeMode = (mode: string) => {
     setSelectedMode(mode);
     onModeChange?.(mode);
+  };
+
+  const changeProvider = (provider: string) => {
+    if (controlledProvider === undefined) setInternalProvider(provider);
+    onProviderChange?.(provider);
   };
 
   const getUniqueFeatures = (data: ModelGroupInfo[]) => {
@@ -129,12 +142,12 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
   // Reset filters function
   const resetFilters = () => {
     setSearchTerm("");
-    setSelectedProvider("");
+    changeProvider("");
     changeMode("");
     setSelectedFeature("");
   };
 
-  // Expose filter values and reset function
+  const hasActiveFilters = Boolean(searchTerm || selectedProvider || selectedMode || selectedFeature);
 
   const filtersContent = (
     <div className="flex flex-wrap gap-4 items-center">
@@ -148,24 +161,16 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
           className="border rounded-sm px-3 py-2 w-64 h-10 text-sm"
         />
       </div>
-      <div>
-        <p className="text-sm font-medium mb-2">{t("lblProvider")}</p>
-        <select
-          value={selectedProvider}
-          onChange={(e) => setSelectedProvider(e.target.value)}
-          className="border rounded-sm px-3 py-2 text-sm text-muted-foreground w-40 h-10"
-        >
-          <option value="" className="text-sm text-muted-foreground">
-            {t("allProviders")}
-          </option>
-          {modelHubData &&
-            getUniqueProviders(modelHubData).map((provider) => (
-              <option key={provider} value={provider} className="text-sm text-foreground">
-                {provider}
-              </option>
-            ))}
-        </select>
-      </div>
+      {showProviderFilter && (
+        <div>
+          <p className="text-sm font-medium mb-2">{t("lblProvider")}</p>
+          <ModelHubProviders
+            providers={getUniqueProviders(modelHubData ?? [])}
+            selectedProviders={selectedProvider ? [selectedProvider] : []}
+            onSelect={(provider) => changeProvider(provider ?? "")}
+          />
+        </div>
+      )}
       <div>
         <p className="text-sm font-medium mb-2">{t("lblMode")}</p>
         <select
@@ -204,7 +209,7 @@ const ModelFilters: React.FC<ModelFiltersProps> = ({
       </div>
 
       {/* Clear filters button */}
-      {(searchTerm || selectedProvider || selectedMode || selectedFeature) && (
+      {hasActiveFilters && (
         <div className="flex items-end">
           <button
             onClick={resetFilters}

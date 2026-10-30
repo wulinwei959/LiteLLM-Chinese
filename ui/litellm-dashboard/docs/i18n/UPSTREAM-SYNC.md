@@ -321,3 +321,13 @@ PR #14 与 PR #15（OSV 修复）合并后按 `WORKFLOW.md` 第六步复跑渲�
 收口实测：集成测试 109 例、`auto_setup.test.ts` 136 例全绿，`add_model` 与 `lib/autorouter_presets` 合计 46 文件 1368 例全绿，全量 983 文件 13311 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，eslint 0 error，`knip:ci` 干净，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线。目录摊平后各 13531 叶，键树差集 0，中英同值 185
 
 仍未接入：模型中心的 provider 标识与自定义元数据、模型编辑参数、团队与密钥列定义里的新排序字段。按同一流程一批批接入
+
+## 十六、执行记录（2026-10-30）：接回模型中心 provider 标识与自定义元数据
+
+承接第十五节的未接入清单，本轮接回模型中心的 provider 标识与自定义元数据。新增 `AIHub/ModelHubProviders`（带图标与全部提供商选项的 provider 过滤器，含 `ProviderLogo` 与其失败回退）与 `AIHub/ModelCustomMetadata`（标签与自定义元数据展示），`AIHub/ModelHubTableColumns` 增加标签列并扩展 `ModelHubData` 的两个字段，`AIHub/ModelHubTable` 在详情弹窗里渲染标签与自定义元数据，`model_filters` 把仪表盘原有的纯文本 provider 下拉换成带图标的组合框。目录键新增 `modelHub.colTags`、`modelHub.customMetadataLabel`、`modelHub.providersLoading`
+
+合并过程有坑。`ModelHubTable` 与 `ModelHubTableColumns` 与我方版本结构差别大（我方把列定义抽成带译员的工厂函数，上游仍是内联数组），三方合并后分别出现缺闭合标签与 provider 列嵌套进 `max_input_tokens` 对象的坏结构，`PublicModelHubTableColumns` 与 `public_model_hub` 还带出了我方不存在的 `isChat`/`showProviderLogos` 变量。处理办法是这几个文件退回我方版本，只手工接入本轮需要的部分，公开模型页与模型信息页的 provider 图标留到后续节点
+
+范围取舍写在 `PROGRESS.md` 第 541 簇：`utils/modelEditParams` 的过滤会改变编辑表单回显与提交的语义，单独成节点处理，避免一次改动同时动展示与保存两条链路
+
+收口实测：消息目录各 13534 叶，键树差集 0，中英同值 185；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线，`knip:ci` 干净，`npm run build` exit 0；模型中心与模型信息相关 14 个文件 290 例（含 4 例既有预期失败）全绿，全量 985 文件 13319 例（9 例既有预期失败）全绿；渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线

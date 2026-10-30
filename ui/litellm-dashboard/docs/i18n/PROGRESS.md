@@ -5355,3 +5355,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 顺带修掉几处测试基建问题。`tests/autoRouterSetup.ts` 把启发式关键词覆盖映射到分类器调优组，实际它挂在启发式调优组下，`ComplexityRouterConfig` 集成测试因此有 1 例报 No advanced group matched。`overviewData` 与 `DeploymentHealth` 三例把 Oct 1、Jan 1、直到 Oct 2x, 2026 这类英文月份写死，本机 zh-CN locale 下必然失败，改成按 `Intl` 与 `dateStyle` 现算期望值，断言只依赖日期本身。lint 的 8 个 error 同时清掉，六个是未用的 `Select` 导入，两处是嵌套三元
 
 复测：`en.json` 与 `zh-CN.json` 摊平后各 13531 叶，键树差集 0，中英同值 185，`check:dead-keys` 0 / 基线 0，`check:english-leaks` 286 / 基线 286，`check:zh-coverage` 215 / 0 与基线同数，生产 `typecheck` 0 错，`npx eslint .` 0 error，`knip:ci` 干净，`npm run build` exit 0，全量 Vitest 983 文件 13311 例（9 例既有预期失败）全绿，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线
+
+## 2026-10-30 第 541 簇：接回模型中心 provider 标识与自定义元数据
+
+承接第 540 簇的未接入清单，本轮接回模型中心的两块能力。新增 `ModelHubProviders`（provider 过滤器，带厂商图标与全部提供商选项）与 `ModelCustomMetadata`（标签与自定义元数据的展示），模型中心表格新增标签列，模型详情弹窗展示标签与自定义元数据，仪表盘过滤器里原来的纯文本 provider 下拉换成带图标的组合框。两侧目录各加 3 键（`colTags`、`customMetadataLabel`、`providersLoading`）
+
+做法仍是三方合并加人工收口。`ModelHubTable` 与 `ModelHubTableColumns` 两个文件与我方结构差异大，机械合并会产出坏 JSX（缺闭合标签、把 provider 列塞进 `max_input_tokens` 对象里），改为取我方版本手工接入：表格只加详情弹窗的元数据区块，列定义只加标签列与数据类型字段
+
+本轮有意留白三处。模型编辑参数的 `modelEditParams` 工具会过滤表单已覆盖的 `litellm_params`，接上后编辑框不再回显 `custom_llm_provider` 这类字段，而本地提交路径仍依赖这些字段回传缓存写入费率，4 个编辑表单用例因此红，这部分连同公共模型页与模型信息页的 provider 图标一并退回队列，按第 2 项单独成节点处理。聊天目录的过滤条上游只在 chat 变体里启用，我方没有这个消费方，直接不接，避免引入一组没有入口的文案
+
+复测：`en.json` 与 `zh-CN.json` 摊平后各 13534 叶，键树差集 0，中英同值 185，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`knip:ci` 干净，`npm run build` exit 0，模型中心与模型信息相关 14 个文件 290 例（含 4 例既有预期失败）全绿，其中新增 8 例，全量 985 文件 13319 例（9 例既有预期失败）全绿，渲染扫描 38 页 0 渲染错误、0 条新发现，60 条全部在基线
