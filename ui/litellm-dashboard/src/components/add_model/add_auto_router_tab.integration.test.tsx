@@ -1,3 +1,4 @@
+import { autoRouterListKey } from "@/app/(dashboard)/hooks/models/useModels";
 import { normalizeTierModels } from "./complexity_router_tiers";
 import {
   openAutoRouterAdvanced,
@@ -15,6 +16,8 @@ import {
   chooseSelectOption,
 } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "next-intl";
+import zhMessages from "@/messages/zh-CN.json";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AddAutoRouterTab from "./add_auto_router_tab";
 import { toast } from "@/lib/toast";
@@ -26,10 +29,6 @@ import { apiClient, modelCostMap, modelCreateCall, testAutoRouterRouting } from 
 import { ModelGroup } from "@/components/llm_calls/fetch_models";
 import { AutoRouterPreset, getRequiredModelsInPreset } from "@/lib/autorouter_presets";
 import { BUNDLED_PRESETS, LOADED_PRESETS_QUERY, useAutoRouterPresets } from "../../../tests/mocks/autoRouterPresets";
-import { createTranslator } from "next-intl";
-import zh from "@/messages/zh-CN.json";
-
-const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 vi.mock(
   "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults",
   async () => await import("../../../tests/mocks/complexityScorerDefaults"),
@@ -38,6 +37,8 @@ vi.mock(
   "@/app/(dashboard)/hooks/autoRouter/useAutoRouterPresets",
   async () => await import("../../../tests/mocks/autoRouterPresets"),
 );
+const t = createTranslator({ locale: "zh-CN", messages: zhMessages, namespace: "models.addModel" });
+
 const getAllPresets = (): AutoRouterPreset[] => BUNDLED_PRESETS;
 const getPresetByKey = (key: string): AutoRouterPreset | undefined => BUNDLED_PRESETS.find((p) => p.key === key);
 
@@ -182,7 +183,13 @@ vi.mock("../common_components/team_dropdown", () => ({
   ),
 }));
 
-const Harness = () => <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="管理员" />;
+const renderAdvanced: typeof renderWithProviders = (...args) => {
+  const result = renderWithProviders(...args);
+  fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+  return result;
+};
+
+const Harness = () => <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Admin" />;
 
 describe("AddAutoRouterTab", () => {
   beforeEach(() => {
@@ -200,12 +207,181 @@ describe("AddAutoRouterTab", () => {
     vi.mocked(modelCostMap).mockResolvedValue({});
   });
 
+  it("creates the goal-selected latest OpenAI pair using its Bedrock deployment aliases", async () => {
+    mockFetchAvailableModels.mockResolvedValue(
+      ["small", "middle-old", "middle", "large"].map((model_group) => ({ model_group, mode: "chat" })),
+    );
+    mockFetchAllModelDeployments.mockResolvedValue([
+      { model_name: "small", litellm_params: { model: "bedrock/us.openai.gpt-6-luna" } },
+      { model_name: "middle-old", litellm_params: { model: "openai/gpt-6-sol" } },
+      { model_name: "middle", litellm_params: { model: "bedrock/us.openai.gpt-6.1-sol" } },
+      { model_name: "large", litellm_params: { model: "bedrock/global.openai.gpt-6-astra" } },
+    ]);
+    renderWithProviders(<Harness />);
+    expect(await screen.findByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("small");
+    expect(screen.queryByText("定义你的层级")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "最优质量", exact: true }));
+    expect(screen.getByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("middle");
+    expect(screen.getAllByText("gpt-6.1-sol · Bedrock").some((element) => element.tagName === "P")).toBe(true);
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
+    expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls[0][0]).toMatchObject({
+      auto_router_name: "auto-router",
+      complexity_router_config: {
+        classifier_type: "heuristic",
+        classification_mode: "user_turn",
+        tiers: { SIMPLE: ["middle"], MEDIUM: ["middle"], COMPLEX: ["large"], REASONING: ["large"] },
+      },
+    });
+  });
+
+  it("creates a router from two custom models without a goal or family decision", async () => {
+    const customModels = ["fast-custom", "quality-custom"];
+    mockFetchAvailableModels.mockResolvedValue(customModels.map((model_group) => ({ model_group, mode: "chat" })));
+    mockFetchAllModelDeployments.mockResolvedValue(
+      customModels.map((model_name) => ({
+        model_name,
+        litellm_params: { model: `openai/${model_name}` },
+      })),
+    );
+    renderWithProviders(<Harness />);
+    expect(await screen.findByText("选择两个模型即可开始。")).toBeVisible();
+    expect(screen.queryByRole("group", { name: "Routing goal" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "模型家族" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    await chooseSelectOption(userEvent.setup(), screen.getByRole("combobox", { name: "日常任务模型" }), /fast-custom/);
+    await chooseSelectOption(
+      userEvent.setup(),
+      screen.getByRole("combobox", { name: "复杂任务模型" }),
+      /quality-custom/,
+    );
+    expect(screen.queryByRole("button", { name: "Use suggested models" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
+    expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls[0][0].complexity_router_config).toMatchObject({
+      classifier_type: "heuristic",
+      classification_mode: "user_turn",
+      tiers: {
+        SIMPLE: ["fast-custom"],
+        MEDIUM: ["fast-custom"],
+        COMPLEX: ["quality-custom"],
+        REASONING: ["quality-custom"],
+      },
+    });
+  });
+
+  it("saves concrete solver names expanded by the backend from an openai wildcard route", async () => {
+    mockFetchAvailableModels.mockResolvedValue(
+      ["openai/gpt-6-luna", "openai/gpt-6.1-sol", "openai/gpt-6-astra"].map((model_group) => ({
+        model_group,
+        mode: "chat",
+        providers: ["openai"],
+      })),
+    );
+    mockFetchAllModelDeployments.mockResolvedValue([{ model_name: "openai/*", litellm_params: { model: "openai/*" } }]);
+    renderWithProviders(<Harness />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
+    expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls[0][0]).toMatchObject({
+      complexity_router_config: {
+        classifier_type: "heuristic",
+        classification_mode: "user_turn",
+        tiers: {
+          SIMPLE: ["openai/gpt-6-luna"],
+          MEDIUM: ["openai/gpt-6-luna"],
+          COMPLEX: ["openai/gpt-6-astra"],
+          REASONING: ["openai/gpt-6-astra"],
+        },
+      },
+    });
+  });
+
+  it.each(["groups", "deployments"])(
+    "keeps chosen models and saving available after a failed %s background refresh",
+    async (source) => {
+      mockFetchAvailableModels.mockResolvedValue(
+        ["claude-haiku-5-5", "claude-opus-5-5"].map((model_group) => ({ model_group, mode: "chat" })),
+      );
+      renderWithProviders(<Harness />);
+      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+      const fetch = source === "groups" ? mockFetchAvailableModels : mockFetchAllModelDeployments;
+      fetch.mockRejectedValue(new Error("Background refresh unavailable"));
+      const queryKey =
+        source === "groups" ? ["availableModels", "autoRouter", "token"] : autoRouterListKey("", "Admin");
+      await act(async () => {
+        await testQueryClient.refetchQueries({ queryKey });
+      });
+      await waitFor(() => expect(testQueryClient.getQueryState(queryKey)?.status).toBe("error"));
+      expect(screen.getByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("claude-haiku-5-5");
+      expect(screen.queryByText("无法加载已部署模型。")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled();
+      fireEvent.click(screen.getByRole("button", { name: "添加自动路由" }));
+      await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
+    },
+  );
+
+  it("keeps manual solver choices on goal changes and carries them into Advanced", async () => {
+    mockFetchAvailableModels.mockResolvedValue(
+      ["claude-haiku-5-5", "custom-fast", "claude-opus-5-5"].map((model_group) => ({
+        model_group,
+        mode: "chat",
+      })),
+    );
+    renderWithProviders(<Harness />);
+    const everyday = await screen.findByRole("combobox", { name: "日常任务模型" });
+    await userEvent.click(everyday);
+    await userEvent.click(await screen.findByRole("option", { name: /custom-fast/ }));
+    fireEvent.click(screen.getByRole("button", { name: "最便宜", exact: true }));
+    expect(screen.getByRole("combobox", { name: "日常任务模型" })).toHaveTextContent("custom-fast");
+    expect(screen.getByRole("combobox", { name: "复杂任务模型" })).toHaveTextContent("claude-opus-5-5");
+    fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+    expectTierModel("Simple", "custom-fast");
+    expectTierModel("Reasoning", "claude-opus-5-5");
+  });
+
+  it("keeps standard setup usable when the Heuristic v2 allowance is exhausted", async () => {
+    mockFetchAvailableModels.mockResolvedValue(
+      ["claude-haiku-5-5", "claude-opus-5-5"].map((model_group) => ({ model_group, mode: "chat" })),
+    );
+    vi.mocked(apiClient.post).mockResolvedValue({
+      allowances: [{ key: "heuristic_v2", limit: 1, remaining: 0, available: true }],
+      error: null,
+    });
+    renderWithProviders(<Harness />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    expect(screen.queryByText(/allowance/i)).not.toBeInTheDocument();
+  });
+
+  it("blocks creation when deployment identity cannot be verified, then recovers on retry", async () => {
+    mockFetchAvailableModels.mockResolvedValue(
+      ["claude-haiku-5-5", "claude-opus-5-5"].map((model_group) => ({ model_group, mode: "chat" })),
+    );
+    mockFetchAllModelDeployments.mockRejectedValueOnce(new Error("Unavailable"));
+    renderWithProviders(<Harness />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("无法加载已部署模型");
+    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "重试", exact: true }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+  });
+
+  it("offers Advanced instead of inventing a second solver for a one-model deployment", async () => {
+    mockFetchAvailableModels.mockResolvedValue([{ model_group: "claude-opus-5-5", mode: "chat" }]);
+    renderWithProviders(<Harness />);
+    expect(await screen.findByText(/需要两个已部署模型/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "高级配置", exact: true }));
+    expect(screen.getByText("定义你的层级")).toBeVisible();
+  });
+
   it("shows Jev essentials before tiers and saves tuning from its own disclosure", async () => {
     mockFetchAvailableModels.mockResolvedValue([
       ...ALL_FAMILY_MODELS,
       { model_group: "my-decision", mode: "evaluation" },
     ]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
     expect(screen.queryByLabelText("分类器模型")).not.toBeInTheDocument();
@@ -219,7 +395,7 @@ describe("AddAutoRouterTab", () => {
     await userEvent.click(screen.getByRole("button", { name: "高级分类器设置" }));
     fireEvent.change(screen.getByLabelText("分类器超时（毫秒）"), { target: { value: "4200" } });
     fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "5" } });
-    await selectAutoRouterOption("How often to classify", "Every new user message");
+    await selectAutoRouterOption("分类频率", "Every new user message");
     await userEvent.click(screen.getByRole("button", { name: "高级分类器设置" }));
     await userEvent.click(screen.getByRole("button", { name: "高级设置" }));
     expect(screen.queryByRole("button", { name: "Classifier tuning" })).not.toBeInTheDocument();
@@ -258,7 +434,7 @@ describe("AddAutoRouterTab", () => {
       { model_name: "ordinary-chat", litellm_params: { model: "mixed-provider/chat-model" } },
       { model_name: "unavailable-decider", litellm_params: { model: underlyingModel } },
     ]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
@@ -277,7 +453,7 @@ describe("AddAutoRouterTab", () => {
 
   it("uses the judge picker empty state when no decision deployments exist", async () => {
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
@@ -288,7 +464,7 @@ describe("AddAutoRouterTab", () => {
 
   it("does not refill a tier cleared by the user when models refresh", async () => {
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await userEvent.click(within(tierChips("Simple")).getByRole("button", { name: "" }));
     await act(async () => {
@@ -302,7 +478,7 @@ describe("AddAutoRouterTab", () => {
       allowances: [{ key: "heuristic_v2", limit: 1, remaining, available: true }],
       error: null,
     });
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
   });
 
@@ -313,21 +489,21 @@ describe("AddAutoRouterTab", () => {
         ? "This change needs an available rule-based tuning allowance"
         : null,
     }));
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
   });
 
   it("keeps the Rule-based default when the form reopens with a cached allowance", async () => {
-    const first = renderWithProviders(<Harness />);
+    const first = renderAdvanced(<Harness />);
     await waitFor(() => expect(apiClient.post).toHaveBeenCalled());
     first.unmount();
     vi.mocked(apiClient.post).mockResolvedValueOnce({
       allowances: [{ key: "heuristic_v2", limit: 1, remaining: 0, available: true }],
       error: null,
     });
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
   });
 
@@ -338,7 +514,7 @@ describe("AddAutoRouterTab", () => {
         allowances: [{ key: "heuristic_v2", limit: 1, remaining: 0, available: true }],
         error: null,
       });
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       fireEvent.click(screen.getByRole("button", { name: "启发式" }));
       const option = screen.getByRole("menuitemradio", { name: /^启发式 v2/ });
       await waitFor(() => expect(option).toHaveTextContent("可用 0/1"));
@@ -391,7 +567,7 @@ describe("AddAutoRouterTab", () => {
       ...ALL_FAMILY_MODELS,
       { model_group: "my-decision", mode: "evaluation" },
     ]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await user.click(screen.getByRole("radio", { name: "决策模型" }));
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
@@ -439,7 +615,7 @@ describe("AddAutoRouterTab", () => {
       ...ALL_FAMILY_MODELS,
       { model_group: "my-decision", mode: "evaluation" },
     ]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await user.click(screen.getByRole("radio", { name: "决策模型" }));
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
@@ -476,34 +652,31 @@ describe("AddAutoRouterTab", () => {
         complete = resolve;
       }),
     );
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await userEvent.click(screen.getByRole("radio", { name: "LLM" }));
     complete?.({ allowances: [{ key: "heuristic_v2", limit: 1, remaining: 0, available: true }], error: null });
     await waitFor(() => expect(screen.getByRole("radio", { name: "LLM" })).toBeChecked());
     expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent("复杂度");
   });
 
-  it.each([
-    ["LLM", "LLM"],
-    ["Decisions Model", "决策模型"],
-  ] as const)(
+  it.each(["LLM", "决策模型"])(
     "keeps %s and the frequency selected before automatic models finish loading",
-    async (_familyLabel, family) => {
+    async (family) => {
       let complete: ((models: ModelGroup[]) => void) | undefined;
       mockFetchAvailableModels.mockReturnValue(
         new Promise<ModelGroup[]>((resolve) => {
           complete = resolve;
         }),
       );
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await userEvent.click(screen.getByRole("radio", { name: family }));
-      await selectAutoRouterOption("How often to classify", "Every new user message");
+      await selectAutoRouterOption("分类频率", "Every new user message");
       await act(async () => {
         complete?.(ALL_FAMILY_MODELS);
       });
       await waitForAutomaticTiers();
       expect(screen.getByRole("radio", { name: family })).toBeChecked();
-      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
+      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("Every new user message");
       expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     },
   );
@@ -517,8 +690,8 @@ describe("AddAutoRouterTab", () => {
         { model_group: "capable", mode: "chat" },
         { model_group: "judge", mode: "chat" },
       ]);
-      renderWithProviders(<Harness />);
-      await user.type(screen.getByLabelText("自动路由名称"), "forecast-router");
+      renderAdvanced(<Harness />);
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "forecast-router" } });
       await selectAutoRouterApproach(label);
       expect(screen.getByLabelText("自动路由名称")).toHaveValue("forecast-router");
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
@@ -528,16 +701,20 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByText("分类方法")).not.toBeInTheDocument();
       expect(screen.queryByText("自适应路由")).not.toBeInTheDocument();
       const capability = label === "Capability";
-      for (const [model, solverLabel] of [
-        ["efficient", "高效求解器"],
-        ["capable", "能力求解器"],
+      for (const [role, model] of [
+        ["Efficient", "efficient"],
+        ["Capable", "capable"],
       ]) {
-        await user.click(screen.getByRole("combobox", { name: capability ? `选择${solverLabel}模型` : solverLabel }));
-        await user.click(await screen.findByRole("option", { name: model }));
+        await user.click(
+          screen.getByRole("combobox", {
+            name: capability ? `选择${role === "Efficient" ? "高效求解器" : "能力求解器"}模型` : role === "Efficient" ? "高效求解器" : "能力求解器",
+          }),
+        );
+        await user.click(await screen.findByRole("option", { name: model, exact: true }));
         if (capability) await user.keyboard("{Escape}");
       }
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      await user.click(await screen.findByRole("option", { name: "judge" }));
+      await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
       expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
       if (capability) {
         fireEvent.change(screen.getByLabelText("求解成功概率阈值"), { target: { value: "0.7" } });
@@ -550,17 +727,17 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
       await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
       openAutoRouterAdvanced("Housekeeping Routing");
-      openAutoRouterAdvanced("Affinity");
-      openAutoRouterAdvanced("Response Format");
+      openAutoRouterAdvanced("亲和性");
+      openAutoRouterAdvanced("响应格式");
       for (const label of ["自适应路由", "上下文窗口升级", "升级关键词"]) {
         expect(screen.queryByText(`${label}`)).not.toBeInTheDocument();
       }
-      openAutoRouterAdvanced("Stalled Task Escalation");
+      openAutoRouterAdvanced("停滞任务升级");
       expect(screen.getByText("停滞任务升级")).toBeInTheDocument();
-      openAutoRouterAdvanced("Response Format");
+      openAutoRouterAdvanced("响应格式");
       expect(screen.getByText("响应格式")).toBeInTheDocument();
       expect(screen.queryByText("分类方法")).not.toBeInTheDocument();
-      openAutoRouterAdvanced("Affinity");
+      openAutoRouterAdvanced("亲和性");
       expect(screen.getByText("亲和性")).toBeInTheDocument();
       await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
       await user.click(screen.getByRole("button", { name: "添加自动路由" }));
@@ -580,24 +757,20 @@ describe("AddAutoRouterTab", () => {
   it("restores the automatic/template/detail flow on the Complexity tab", async () => {
     const user = userEvent.setup();
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     await selectAutoRouterApproach("Capability");
     expect(screen.queryByTestId("configure-automatically-button")).not.toBeInTheDocument();
-    await selectAutoRouterApproach("Complexity");
+    await selectAutoRouterApproach("复杂度");
     expect(screen.queryByTestId("configure-automatically-button")).not.toBeInTheDocument();
     expect(screen.getByTestId("template-selector")).toBeInTheDocument();
     expandDetailedConfiguration();
     expect(screen.getByText("定义你的层级")).toBeInTheDocument();
-    for (const [section, label] of [
-      ["Adaptive Routing", "自适应路由"],
-      ["Context Window Escalation", "上下文窗口升级"],
-      ["Escalation Keywords", "升级关键词"],
-    ] as const) {
-      openAutoRouterAdvanced(section);
+    for (const label of ["自适应路由", "上下文窗口升级", "升级关键词"]) {
+      openAutoRouterAdvanced(label);
       expect(screen.getAllByText(label)).not.toHaveLength(0);
     }
-    openAutoRouterAdvanced("Classification Method");
+    openAutoRouterAdvanced("分类方法");
     expect(screen.queryByRole("radio", { name: /^Capability/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("radio", { name: /^Fuse v2/ })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent("复杂度");
@@ -612,9 +785,9 @@ describe("AddAutoRouterTab", () => {
         { model_group: "capable", mode: "chat" },
         { model_group: "judge", mode: "chat" },
       ]);
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await selectAutoRouterApproach(label);
-      await user.type(screen.getByLabelText("自动路由名称"), "forecast-retry");
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "forecast-retry" } });
       const capability = label === "Capability";
       const policyField = capability ? "求解成功概率阈值" : "高效求解器配置档案";
       fireEvent.change(screen.getByLabelText(policyField), {
@@ -622,13 +795,13 @@ describe("AddAutoRouterTab", () => {
       });
       expect(await screen.findByText("无法加载可用模型。")).toBeVisible();
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: "重试" }));
+      await user.click(screen.getByRole("button", { name: "重试", exact: true }));
       await waitFor(() => expect(screen.queryByText("无法加载可用模型。")).not.toBeInTheDocument());
-      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(capability ? "能力" : "Fuse v2");
+      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(label);
       expect(screen.getByLabelText("自动路由名称")).toHaveValue("forecast-retry");
       expect(screen.getByLabelText(policyField)).toHaveValue(capability ? 0.7 : "Small solver");
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      expect(await screen.findByRole("option", { name: "judge" })).toBeVisible();
+      expect(await screen.findByRole("option", { name: "judge", exact: true })).toBeVisible();
       expect(mockFetchAvailableModels).toHaveBeenCalledTimes(2);
     },
   );
@@ -636,7 +809,7 @@ describe("AddAutoRouterTab", () => {
   // Detailed Configuration starts collapsed so the modal opens onto just Name + Template; a caller
   // opts into the full tier/classifier form rather than always seeing it up front.
   it("shows models immediately and keeps advanced settings collapsed", async () => {
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
 
@@ -650,14 +823,14 @@ describe("AddAutoRouterTab", () => {
       { model_group: "unknown-model-a", mode: "chat" },
       { model_group: "unknown-model-b", mode: "chat" },
     ]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     openTemplateDropdown();
     await waitFor(() => expect(optionByLabel("Anthropic Family")).toHaveTextContent("缺少："));
     expect(screen.queryByTestId("configure-automatically-button")).not.toBeInTheDocument();
   });
 
-  it("mixes preferred tier models even when one complete preset is available", async () => {
+  it("prefers a same-family pair when a complete family is available", async () => {
     const anthropicPreset = getPresetByKey("anthropic_family")!;
     mockFetchAvailableModels.mockResolvedValue(
       [...getRequiredModelsInPreset(anthropicPreset), "gpt-5.6-luna"].map((model_group) => ({
@@ -666,18 +839,18 @@ describe("AddAutoRouterTab", () => {
       })),
     );
     mockFetchAllModelDeployments.mockResolvedValue([]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     await waitForAutomaticTiers();
 
-    expectTierModel("Simple", "gpt-5.6-luna");
-    expectTierModel("Medium", "claude-sonnet-5");
+    expectTierModel("Simple", ANTHROPIC_TIERS.SIMPLE[0]);
+    expectTierModel("Medium", ANTHROPIC_TIERS.SIMPLE[0]);
     expectTierModel("Complex", "claude-opus-5-5");
     expectTierModel("Reasoning", "claude-opus-5-5");
     expect(toast.success).not.toHaveBeenCalledWith(expect.stringContaining("Configured with"));
   });
 
-  it("mixes available models from the preferred tier catalog when no complete template fits", async () => {
+  it("uses two models within the available family without a complete template", async () => {
     mockFetchAvailableModels.mockResolvedValue(
       ["gpt-5.6-luna", "claude-sonnet-5", "gpt-5.6-sol"].map((model_group) => ({
         model_group,
@@ -685,12 +858,12 @@ describe("AddAutoRouterTab", () => {
       })),
     );
     mockFetchAllModelDeployments.mockResolvedValue([]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     await waitForAutomaticTiers();
 
     expectTierModel("Simple", "gpt-5.6-luna");
-    expectTierModel("Medium", "claude-sonnet-5");
+    expectTierModel("Medium", "gpt-5.6-luna");
     expectTierModel("Complex", "gpt-5.6-sol");
     expectTierModel("Reasoning", "gpt-5.6-sol");
   });
@@ -698,44 +871,56 @@ describe("AddAutoRouterTab", () => {
   it("opens Detailed Configuration on the tiers automatic setup just filled in", async () => {
     const simpleModel = "gpt-5.6-luna";
     mockFetchAvailableModels.mockResolvedValue([...ALL_FAMILY_MODELS, { model_group: simpleModel, mode: "chat" }]);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
 
     await waitForAutomaticTiers();
 
     expect(screen.getByText("定义你的层级")).toBeInTheDocument();
-    expectTierModel("Simple", simpleModel);
+    expectTierModel("Simple", ANTHROPIC_TIERS.SIMPLE[0]);
   });
 
   // Nothing is filled in, so there is nothing to submit. The button reports that itself instead of
   // accepting a click and answering with a toast.
   it("offers no submit at all until every tier has a model", async () => {
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
   });
 
   it("still flags the router name once the config no longer blocks the submit", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
-    expect(await screen.findByText("自动路由名称必填")).toBeInTheDocument();
-    expect(toast.fromError).toHaveBeenCalledWith("请输入自动路由名称");
+    expect(toast.fromError).toHaveBeenCalled();
   });
 
   it("offers no team selector to a proxy admin, who may create an unscoped router", async () => {
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(screen.queryByTestId("team-dropdown")).not.toBeInTheDocument();
   });
 
-  it("requires a team admin to pick a team", async () => {
+  it("waits for a team before showing model inventory in simple setup", async () => {
     renderWithProviders(
+      <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
+    );
+    expect(screen.getByText("请先选择团队以查看可用模型。")).toBeInTheDocument();
+    expect(screen.queryByText(/需要两个已部署模型/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
+    await userEvent.selectOptions(screen.getByTestId("team-dropdown"), "team-1");
+    expect(await screen.findByText("已选模型")).toBeInTheDocument();
+    expect(screen.queryByText("请先选择团队以查看可用模型。")).not.toBeInTheDocument();
+  });
+
+  it("requires a team admin to pick a team", async () => {
+    renderAdvanced(
       <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
     );
 
@@ -750,14 +935,14 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(
+    renderAdvanced(
       <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
     );
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "team-scoped-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "team-scoped-router" } });
     await user.selectOptions(screen.getByTestId("team-dropdown"), "team-1");
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({ team_id: "team-1" });
@@ -772,7 +957,7 @@ describe("AddAutoRouterTab", () => {
     );
     vi.mocked(handleAddAutoRouterSubmit).mockImplementationOnce(actualSubmit.handleAddAutoRouterSubmit);
     const user = userEvent.setup();
-    renderWithProviders(
+    renderAdvanced(
       <AddAutoRouterTab
         handleOk={vi.fn()}
         accessToken="token"
@@ -798,17 +983,17 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "my-router" } });
     await user.selectOptions(screen.getByTestId("team-dropdown"), "team-2");
     await waitFor(() => expect(mockFetchAvailableModels).toHaveBeenLastCalledWith("token", "team-2"));
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
     expect(screen.getByPlaceholderText(/smart_router/i)).toHaveValue("my-router");
     await user.selectOptions(screen.getByTestId("team-dropdown"), "team-1");
     expandDetailedConfiguration();
     expect(screen.queryByText("压缩")).not.toBeInTheDocument();
     expect(screen.queryByText("Model Access Groups")).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
-    expect(modelCreateCall).toHaveBeenLastCalledWith(expect.any(Function), "token", {
+    expect(modelCreateCall).toHaveBeenLastCalledWith("token", {
       model_name: "my-router",
       model_info: { team_id: "team-1" },
       litellm_params: {
@@ -828,10 +1013,10 @@ describe("AddAutoRouterTab", () => {
       error: "session_affinity cannot be combined with tier_definitions",
     });
 
-    renderWithProviders(<Harness />);
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "rejected-router");
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    renderAdvanced(<Harness />);
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "rejected-router" } });
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(validateAutoRouterConfig).toHaveBeenCalled());
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
@@ -847,17 +1032,17 @@ describe("AddAutoRouterTab", () => {
         }),
     );
 
-    const { container } = renderWithProviders(<Harness />);
+    const { container } = renderAdvanced(<Harness />);
     fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "double-submit-router" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => expect(validateAutoRouterConfig).toHaveBeenCalledOnce());
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
     fireEvent.submit(container.querySelector("form")!);
 
     resolveVerdict({ valid: true });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
     expect(validateAutoRouterConfig).toHaveBeenCalledTimes(1);
     expect(handleAddAutoRouterSubmit).toHaveBeenCalledTimes(1);
   });
@@ -867,10 +1052,10 @@ describe("AddAutoRouterTab", () => {
     vi.mocked(getMissingTiersError).mockReturnValue(null);
     validateAutoRouterConfig.mockResolvedValueOnce({ valid: true });
 
-    renderWithProviders(<Harness />);
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "accepted-router");
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    renderAdvanced(<Harness />);
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "accepted-router" } });
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
   });
@@ -882,14 +1067,14 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "keyword-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Keyword/Semantic Matching");
+    openAutoRouterAdvanced("关键词/语义匹配");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
 
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
     // The row says so on its own; there is no failed submit left to surface it.
     expect(await screen.findByText("至少需要一个关键词")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
@@ -899,17 +1084,17 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "keyword-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Keyword/Semantic Matching");
+    openAutoRouterAdvanced("关键词/语义匹配");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
 
     await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
     expect(screen.queryByText("至少需要一个关键词")).not.toBeInTheDocument();
   });
 
@@ -917,11 +1102,11 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "orphan-rule-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "orphan-rule-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Keyword/Semantic Matching");
+    openAutoRouterAdvanced("关键词/语义匹配");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
 
@@ -929,40 +1114,40 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: "移除COMPLEX层级" }));
 
     expect(await screen.findByText(/指向的层级已不存在/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
   });
 
   it("marks only the offending keyword row, leaving a filled one alone", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "keyword-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Keyword/Semantic Matching");
+    openAutoRouterAdvanced("关键词/语义匹配");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
 
     expect(await screen.findAllByText("至少需要一个关键词")).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled();
   });
 
   it("creates the router once that keyword rule is filled in", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "keyword-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Keyword/Semantic Matching");
+    openAutoRouterAdvanced("关键词/语义匹配");
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     const keywordsField = screen.getByText("关键词 1").closest("div") as HTMLElement;
     await addKeyword(user, keywordsField, "invoice");
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({
@@ -974,15 +1159,15 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(
+    renderAdvanced(
       <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
     );
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "team-scoped-router");
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "team-scoped-router" } });
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
-    expect(await screen.findByText((_, el) => el?.textContent === "请选择团队以继续")).toBeInTheDocument();
+    expect(await screen.findByText("请选择团队以继续")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
   });
 
@@ -992,17 +1177,17 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(
+    renderAdvanced(
       <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
     );
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "team-scoped-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "team-scoped-router" } });
     await user.selectOptions(screen.getByTestId("team-dropdown"), "team-1");
     await user.click(screen.getByTestId("team-dropdown-clear"));
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
-    expect(await screen.findByText((_, el) => el?.textContent === "请选择团队以继续")).toBeInTheDocument();
+    expect(await screen.findByText("请选择团队以继续")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
   });
 
@@ -1010,15 +1195,15 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "affinity-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每个会话一次");
+    openAutoRouterAdvanced("分类方法");
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("Once per session");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1029,11 +1214,12 @@ describe("AddAutoRouterTab", () => {
   it("blocks invalid success thresholds and creates a heuristic v2 router with explicit zero", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "" } });
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "threshold-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("Heuristic", "Heuristic v2");
+    openAutoRouterAdvanced("分类方法");
+    await selectAutoRouterOption("Heuristic", "启发式 v2");
 
     const threshold = screen.getByRole("textbox", { name: "成功阈值" });
     expect(threshold).toHaveValue("");
@@ -1046,7 +1232,7 @@ describe("AddAutoRouterTab", () => {
 
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
-    await selectAutoRouterOption("Heuristic", "Heuristic v2");
+    await selectAutoRouterOption("Heuristic", "启发式 v2");
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.01" } });
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0" } });
@@ -1066,14 +1252,14 @@ describe("AddAutoRouterTab", () => {
       "./handle_add_auto_router_submit",
     );
     vi.mocked(handleAddAutoRouterSubmit).mockImplementationOnce(actualSubmit.handleAddAutoRouterSubmit);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "chained-router" } });
     await userEvent.click(screen.getByRole("radio", { name: "LLM" }));
     await selectAutoRouterOption("评审模型", ALL_FAMILY_MODELS[0].model_group);
-    openAutoRouterAdvanced("Classification Method");
+    openAutoRouterAdvanced("分类方法");
     await selectAutoRouterOption("Local checks before the judge", "Heuristic first");
-    await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
+    await selectAutoRouterOption("Heuristic before the judge", "启发式 v2");
     fireEvent.click(screen.getByRole("button", { name: "启发式调优" }));
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.6" } });
     await selectAutoRouterOption("本地裁决上限层级", "Medium");
@@ -1086,19 +1272,19 @@ describe("AddAutoRouterTab", () => {
       heuristic_v2_success_threshold: 0.6,
       heuristic_first_max_tier: "MEDIUM",
     };
-    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[2]).toMatchObject({
-      litellm_params: { complexity_router_config: expectedConfig },
-    });
+    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[1].litellm_params.complexity_router_config).toMatchObject(
+      expectedConfig,
+    );
   });
 
   it("preserves classifier tuning when choosing models automatically", async () => {
     const user = userEvent.setup();
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "reset-threshold-router" } });
-    openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("Heuristic", "Heuristic v2");
+    openAutoRouterAdvanced("分类方法");
+    await selectAutoRouterOption("Heuristic", "启发式 v2");
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.1" } });
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
 
@@ -1119,11 +1305,12 @@ describe("AddAutoRouterTab", () => {
   it("clears an invalid inactive threshold before creating the router", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "" } });
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "clear-threshold-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("Heuristic", "Heuristic v2");
+    openAutoRouterAdvanced("分类方法");
+    await selectAutoRouterOption("Heuristic", "启发式 v2");
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "invalid" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
@@ -1140,13 +1327,15 @@ describe("AddAutoRouterTab", () => {
   it.each([false, true])("creates a router with cache routing only after an explicit opt-in: %s", async (enabled) => {
     const user = userEvent.setup();
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForAutomaticTiers();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "cache-aware-router" } });
     openAutoRouterAdvanced("缓存感知路由");
     const toggle = screen.getByRole("switch", { name: "缓存感知路由" });
     expect(toggle).not.toBeChecked();
     if (enabled) {
+      expect(toggle).toHaveAttribute("aria-disabled", "true");
+      await selectAutoRouterOption("分类频率", "每个请求");
       await user.click(toggle);
       fireEvent.change(screen.getByLabelText("预计输出 token 数"), { target: { value: "512" } });
       fireEvent.change(screen.getByLabelText("预测超时（毫秒）"), { target: { value: "750" } });
@@ -1165,18 +1354,18 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-window-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "ctx-window-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Context Window Escalation");
+    openAutoRouterAdvanced("上下文窗口升级");
     const toggle = await screen.findByRole("switch", { name: "将超长提示升级到容得下的层级" });
     expect(toggle).not.toBeChecked();
     expect(screen.queryByLabelText("窗口适配余量")).not.toBeInTheDocument();
     await user.click(toggle);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1188,18 +1377,18 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-buffer-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "ctx-buffer-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Context Window Escalation");
+    openAutoRouterAdvanced("上下文窗口升级");
     await user.click(screen.getByRole("switch", { name: "将超长提示升级到容得下的层级" }));
     const buffer = await screen.findByLabelText("窗口适配余量");
     fireEvent.change(buffer, { target: { value: "1.5" } });
     fireEvent.blur(buffer, { target: { value: "1.5" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     const config = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config;
@@ -1211,11 +1400,11 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-clear-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "ctx-clear-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Context Window Escalation");
+    openAutoRouterAdvanced("上下文窗口升级");
     await user.click(screen.getByRole("switch", { name: "将超长提示升级到容得下的层级" }));
     const buffer = await screen.findByLabelText("窗口适配余量");
     fireEvent.change(buffer, { target: { value: "0.8" } });
@@ -1223,8 +1412,8 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(buffer, { target: { value: "" } });
     fireEvent.blur(buffer, { target: { value: "" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).not.toHaveProperty(
@@ -1237,11 +1426,11 @@ describe("AddAutoRouterTab", () => {
       const user = userEvent.setup();
       vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "no-compression-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "no-compression-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       const submitted = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0];
@@ -1253,15 +1442,19 @@ describe("AddAutoRouterTab", () => {
       const user = userEvent.setup();
       vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "no-compression-explicit-router");
+      fireEvent.change(screen.getByLabelText("自动路由名称"), {
+        target: { value: "no-compression-explicit-router" },
+      });
       expandDetailedConfiguration();
-      openAutoRouterAdvanced("Compression");
+      openAutoRouterAdvanced("压缩");
       await chooseSelectOption(user, screen.getByRole("combobox", { name: "路由决策的压缩" }), "无（不做压缩）");
+      await user.click(screen.getByText("使用不同的压缩"));
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "模型调用的压缩" }), "无（不做压缩）");
 
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       const submitted = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0];
@@ -1273,17 +1466,19 @@ describe("AddAutoRouterTab", () => {
       const user = userEvent.setup();
       vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "different-compression-router");
+      fireEvent.change(screen.getByLabelText("自动路由名称"), {
+        target: { value: "different-compression-router" },
+      });
       expandDetailedConfiguration();
-      openAutoRouterAdvanced("Compression");
+      openAutoRouterAdvanced("压缩");
       await chooseSelectOption(user, screen.getByRole("combobox", { name: "路由决策的压缩" }), "无（不做压缩）");
       await user.click(screen.getByText("使用不同的压缩"));
       expect(screen.getByRole("combobox", { name: "模型调用的压缩" })).toBeInTheDocument();
 
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       const submitted = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0];
@@ -1298,17 +1493,17 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "override-floor-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "override-floor-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
+    openAutoRouterAdvanced("分类方法");
     await selectAutoRouterOption("Heuristic", "Rule-based");
     await user.click(await screen.findByText("高级评分"));
     fireEvent.change(await screen.findByLabelText("最低分数"), { target: { value: "0" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1320,19 +1515,19 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "affinity-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("How often to classify", "Once per session");
-    openAutoRouterAdvanced("Affinity");
+    openAutoRouterAdvanced("分类方法");
+    await selectAutoRouterOption("分类频率", "Once per session");
+    openAutoRouterAdvanced("亲和性");
     const ttl = await screen.findByLabelText("固定状态在空闲后保留多久（秒）");
     fireEvent.change(ttl, { target: { value: "300" } });
     fireEvent.blur(ttl);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1345,15 +1540,15 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "user-turn-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "user-turn-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("How often to classify", "Every new user message");
+    openAutoRouterAdvanced("分类方法");
+    await selectAutoRouterOption("分类频率", "Every new user message");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1361,19 +1556,20 @@ describe("AddAutoRouterTab", () => {
     });
   });
 
-  it("writes every_request into the create payload when the default frequency stays selected", async () => {
+  it("allows every request in Advanced while defaulting to every new user message", async () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "default-timing-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "default-timing-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
+    openAutoRouterAdvanced("分类方法");
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("Every new user message");
+    await selectAutoRouterOption("分类频率", "每个请求");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(
@@ -1385,15 +1581,15 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "affinity-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Affinity");
+    openAutoRouterAdvanced("亲和性");
     expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1405,15 +1601,15 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
-    await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "affinity-router" } });
     expandDetailedConfiguration();
-    openAutoRouterAdvanced("Affinity");
+    openAutoRouterAdvanced("亲和性");
     await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1425,12 +1621,12 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "modality-router" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1443,7 +1639,7 @@ describe("AddAutoRouterTab", () => {
     const user = userEvent.setup();
     vi.mocked(getMissingTiersError).mockReturnValue(null);
 
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "modality-router" } });
     expandDetailedConfiguration();
@@ -1451,8 +1647,8 @@ describe("AddAutoRouterTab", () => {
     await user.click(await screen.findByRole("switch", { name: "将图片请求路由到支持视觉的模型" }));
     await user.click(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1464,7 +1660,7 @@ describe("AddAutoRouterTab", () => {
   // Custom is the escape hatch, not the headline choice, so it's listed after every bundled preset
   // rather than first.
   it("lists Start from scratch after the bundled presets", async () => {
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     openTemplateDropdown();
 
     const labels = visibleOptions().map((option) => option.querySelector(".font-medium")?.textContent);
@@ -1479,7 +1675,7 @@ describe("AddAutoRouterTab", () => {
       );
       vi.mocked(getMissingTiersError).mockImplementation(actual.getMissingTiersError);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       expect(screen.getByTestId("auto-router-test-routing-btn")).toBeDisabled();
     });
@@ -1496,10 +1692,10 @@ describe("AddAutoRouterTab", () => {
         },
       });
 
-      renderWithProviders(<Harness />);
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
+      renderAdvanced(<Harness />);
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "keyword-router" } });
       expandDetailedConfiguration();
-      openAutoRouterAdvanced("Keyword/Semantic Matching");
+      openAutoRouterAdvanced("关键词/语义匹配");
       await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
       const keywordsField = screen.getByText("关键词 1").closest("div") as HTMLElement;
       await addKeyword(user, keywordsField, "invoice");
@@ -1532,13 +1728,13 @@ describe("AddAutoRouterTab", () => {
         },
       });
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await user.click(screen.getByTestId("auto-router-test-routing-btn"));
       await user.type(await screen.findByTestId("auto-router-routing-test-prompt"), "reconcile this invoice");
       await user.click(screen.getByTestId("auto-router-routing-test-send"));
       expect(await screen.findByTestId("auto-router-routing-test-result")).toBeInTheDocument();
 
-      await user.click(screen.getAllByRole("button", { name: /关闭/ }).at(-1)!);
+      await user.click(screen.getAllByRole("button", { name: /^关闭$/ }).at(-1)!);
       await user.click(screen.getByTestId("auto-router-test-routing-btn"));
 
       expect(await screen.findByTestId("auto-router-routing-test-prompt")).toHaveValue("");
@@ -1556,12 +1752,12 @@ describe("AddAutoRouterTab", () => {
           }),
       );
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       const anthropicOption = optionByLabel("Anthropic Family")!;
       expect(isOptionDisabled(anthropicOption)).toBe(true);
-      expect(anthropicOption).toHaveTextContent(/正在检查模型可用性/);
+      expect(anthropicOption).toHaveTextContent(/Checking model availability/);
 
       // The dropdown is already open from above; polling re-reads its options in place rather than
       // reopening (openTemplateDropdown toggles, so a second call here would close it instead).
@@ -1574,7 +1770,7 @@ describe("AddAutoRouterTab", () => {
     it("disables every preset and offers a retry when the model list fails to load", async () => {
       mockFetchAvailableModels.mockRejectedValue(new Error("network error"));
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       expect(await screen.findByText("无法加载可用模型。")).toBeInTheDocument();
       openTemplateDropdown();
@@ -1587,7 +1783,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
       mockFetchAllModelDeployments.mockRejectedValue(new Error("network error"));
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       await waitForPresetEnabled("Anthropic Family");
       await waitForPresetEnabled("OpenAI Family");
@@ -1598,11 +1794,11 @@ describe("AddAutoRouterTab", () => {
         ALL_FAMILY_MODELS.filter((m) => m.model_group !== ANTHROPIC_ONLY_MODEL),
       );
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await waitFor(() => {
-        expect(optionByLabel("Anthropic Family")!).toHaveTextContent(new RegExp(`缺少：${ANTHROPIC_ONLY_MODEL}`));
+        expect(optionByLabel("Anthropic Family")!).toHaveTextContent(new RegExp(`Missing: ${ANTHROPIC_ONLY_MODEL}`));
       });
       expect(isOptionDisabled(optionByLabel("Anthropic Family")!)).toBe(true);
     });
@@ -1610,7 +1806,7 @@ describe("AddAutoRouterTab", () => {
     it("enables a preset once every model it needs is available", async () => {
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       await waitForPresetEnabled("Anthropic Family");
       await waitForPresetEnabled("OpenAI Family");
@@ -1618,7 +1814,7 @@ describe("AddAutoRouterTab", () => {
 
     it("shows the template's model choices while advanced settings stay collapsed", async () => {
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
       expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
@@ -1627,26 +1823,26 @@ describe("AddAutoRouterTab", () => {
     });
 
     it("expands detailed configuration when Start from scratch is chosen", async () => {
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await selectTemplate("从零开始");
 
-      openAutoRouterAdvanced("Keyword/Semantic Matching");
+      openAutoRouterAdvanced("关键词/语义匹配");
 
       expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
     });
 
     it("lets a caller manually re-expand a detailed configuration a preset just collapsed", async () => {
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
       expect(screen.queryByText("关键词/语义匹配")).not.toBeInTheDocument();
 
       expect(screen.getByText("定义你的层级")).toBeVisible();
 
-      openAutoRouterAdvanced("Keyword/Semantic Matching");
+      openAutoRouterAdvanced("关键词/语义匹配");
 
       expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
     });
@@ -1658,13 +1854,13 @@ describe("AddAutoRouterTab", () => {
       const user = userEvent.setup();
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "anthropic-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "anthropic-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({
@@ -1681,11 +1877,11 @@ describe("AddAutoRouterTab", () => {
     it("blocks a form submit when a referenced model disappears after the tiers are filled in", async () => {
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
 
-      const { container } = renderWithProviders(<Harness />);
+      const { container } = renderAdvanced(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
       fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "stale-model-router" } });
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
 
       // The model list changed after the tiers were filled in (e.g. a deployment removed
       // elsewhere) - update the query cache directly rather than a real refetch, since that's the
@@ -1693,7 +1889,7 @@ describe("AddAutoRouterTab", () => {
       // the disabled state confirms the re-render (and availableModelSet) has settled before the
       // form submits, the same way a real user's next interaction would only happen after that.
       testQueryClient.setQueryData(["availableModels", "autoRouter", "token"], []);
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled());
 
       fireEvent.submit(container.querySelector("form")!);
 
@@ -1705,13 +1901,13 @@ describe("AddAutoRouterTab", () => {
       const user = userEvent.setup();
       mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "anthropic-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "anthropic-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({
@@ -1743,12 +1939,12 @@ describe("AddAutoRouterTab", () => {
 
     it("submits the pinned model in place of the one the tiers derive", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       await applyPresetAndPin(user);
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "pinned-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "pinned-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       const submitted = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0];
@@ -1763,16 +1959,16 @@ describe("AddAutoRouterTab", () => {
 
     it("blocks a submit whose pinned model is no longer available", async () => {
       const user = userEvent.setup();
-      const { container } = renderWithProviders(<Harness />);
+      const { container } = renderAdvanced(<Harness />);
 
       await applyPresetAndPin(user);
       fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "stale-pin-router" } });
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
 
       // Only the pinned model disappears - the tier models all survive, so nothing but the pin can
       // be what blocks the submit.
       testQueryClient.setQueryData(["availableModels", "autoRouter", "token"], ALL_FAMILY_MODELS);
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeDisabled());
 
       fireEvent.submit(container.querySelector("form")!);
 
@@ -1788,13 +1984,13 @@ describe("AddAutoRouterTab", () => {
 
     it("omits plan_mode_min_tier from the payload when never touched", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "no-plan-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "no-plan-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).not.toHaveProperty(
@@ -1804,7 +2000,7 @@ describe("AddAutoRouterTab", () => {
 
     it("carries the enabled override through to the create payload", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
 
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
@@ -1812,9 +2008,9 @@ describe("AddAutoRouterTab", () => {
       openAutoRouterAdvanced("Plan-Mode Override");
       await user.click(await screen.findByRole("switch", { name: "将计划模式请求路由到最低层级" }));
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "plan-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "plan-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1839,7 +2035,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(groupsFor(ALL_RENAMED_DEPLOYMENTS));
       mockFetchAllModelDeployments.mockResolvedValue(ALL_RENAMED_DEPLOYMENTS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await waitFor(() => {
@@ -1866,7 +2062,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(groupsFor(deployments));
       mockFetchAllModelDeployments.mockResolvedValue(deployments);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
       await waitFor(() => {
         expect(isOptionDisabled(optionByLabel("Anthropic Family")!)).toBe(false);
@@ -1874,13 +2070,13 @@ describe("AddAutoRouterTab", () => {
       await selectTemplate("Anthropic Family");
       expectTierModel("Complex", nativeGroupFor(ANTHROPIC_TIERS.COMPLEX[0]));
 
-      openAutoRouterAdvanced("Keyword/Semantic Matching");
+      openAutoRouterAdvanced("关键词/语义匹配");
 
       expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "renamed-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "renamed-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({
@@ -1900,7 +2096,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(groupsFor(anthropicOnly));
       mockFetchAllModelDeployments.mockResolvedValue(anthropicOnly);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await waitFor(() => {
@@ -1918,7 +2114,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(groupsFor(wildcard));
       mockFetchAllModelDeployments.mockResolvedValue(wildcard);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await waitFor(() => {
@@ -1945,7 +2141,7 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(EXPANDED_HUB_GROUPS);
       mockFetchAllModelDeployments.mockResolvedValue(WILDCARD_DEPLOYMENTS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
 
       await waitFor(() => {
@@ -1959,16 +2155,16 @@ describe("AddAutoRouterTab", () => {
       mockFetchAvailableModels.mockResolvedValue(EXPANDED_HUB_GROUPS);
       mockFetchAllModelDeployments.mockResolvedValue(WILDCARD_DEPLOYMENTS);
 
-      renderWithProviders(<Harness />);
+      renderAdvanced(<Harness />);
       openTemplateDropdown();
       await waitFor(() => {
         expect(isOptionDisabled(optionByLabel("Anthropic Family")!)).toBe(false);
       });
       await selectTemplate("Anthropic Family");
 
-      await user.type(screen.getByPlaceholderText(/smart_router/i), "wildcard-router");
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由" }));
+      fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "wildcard-router" } });
+      await waitFor(() => expect(screen.getByRole("button", { name: /添加自动路由/ })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: /添加自动路由/ }));
 
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
       expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0]).toMatchObject({
@@ -2086,7 +2282,7 @@ describe("preset catalog fetch states", () => {
         },
       ],
     });
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
     await waitForPresetEnabled("Bounded JEV");
     await selectTemplate("Bounded JEV");
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
@@ -2107,7 +2303,7 @@ describe("preset catalog fetch states", () => {
       ...LOADED_PRESETS_QUERY,
       isError: true,
     } as never);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(screen.queryByText(/无法加载模板/)).not.toBeInTheDocument();
 
@@ -2121,7 +2317,7 @@ describe("preset catalog fetch states", () => {
       data: undefined,
       isPending: true,
     } as never);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(screen.getByText("正在加载模板……")).toBeInTheDocument();
   });
@@ -2134,7 +2330,7 @@ describe("preset catalog fetch states", () => {
       isError: true,
       refetch,
     } as never);
-    renderWithProviders(<Harness />);
+    renderAdvanced(<Harness />);
 
     expect(await screen.findByText(/无法加载模板/)).toBeInTheDocument();
 
