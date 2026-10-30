@@ -302,7 +302,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     const isSelected = selectedOption === option.shortLabel;
                     return (
                       <button
-                        key={option.label}
+                        key={option.shortLabel}
                         type="button"
                         data-slot="advanced-date-picker-preset"
                         aria-pressed={isSelected}
@@ -314,7 +314,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                         onClick={() => handleRelativeTimeSelect(option)}
                       >
                         <span className={`text-sm ${isSelected ? "text-info font-medium" : "text-foreground"}`}>
-                          {option.label}
+                          {t(option.labelKey)}
                         </span>
                         <span
                           className={`text-xs px-2 py-1 rounded capitalize ${

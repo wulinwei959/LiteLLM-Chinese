@@ -583,8 +583,8 @@ function PanelHeader({ children }: { children?: ReactNode }) {
         </DialogTitle>
         <DialogDescription>
           {state?.access.mode === "usage"
-            ? "Your AI assistant for usage and spend."
-            : "Ask about your gateway. Review changes in chat."}
+            ? t("assistantUsageDescription")
+            : t("assistantGatewayDescription")}
         </DialogDescription>
       </div>
       <div className="flex shrink-0">
