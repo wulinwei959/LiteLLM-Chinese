@@ -38,7 +38,7 @@ describe("ConversationList navigation", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Design review", exact: true })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Design review" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("button", { name: "重命名 Design review" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "删除 Design review" })).toBeInTheDocument();
   });
@@ -59,7 +59,7 @@ describe("ConversationList navigation", () => {
     await user.tab();
     expect(screen.getByRole("button", { name: "搜索聊天" })).toHaveFocus();
     await user.tab();
-    expect(screen.getByRole("button", { name: "Design review", exact: true })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Design review" })).toHaveFocus();
     await user.keyboard("{Enter}");
     expect(onSelect).toHaveBeenCalledWith("design");
   });

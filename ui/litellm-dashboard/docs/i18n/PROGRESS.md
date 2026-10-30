@@ -5403,3 +5403,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 测试环境有三处与上游不同。上游用 `TerminologyContext` 切换 AI/SI 称谓，本仓没有这个上下文，测试改成 `NextIntlClientProvider` 加 `LocaleProvider`，并把 AI/SI 两组参数收敛为固定 AI 文案；上游「隐藏 Aria Agent」开关在本仓叫「隐藏 LiteAdmin」，断言同步；上游按英文日期名断言的触发器改成按 `Intl` 现算
 
 复测：三份测试 106 例全绿，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，生产 `typecheck` 0 错，lint 预算无超线，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
+
+## 2026-10-31 第 546 簇：清掉测试文件的类型错误
+
+长期账第一项。含测试的 `npx tsc --noEmit -p tsconfig.json` 从 30 条降到 0。此前记录的 395 条是旧快照，期间重构与测试替换后基数已变，以本轮实测的 30 条为准
+
+30 条集中在十处。最大一簇是 auto router 集成测试里 10 处 `getByRole` 多传了 `exact`，那是文本查询才有的选项；用量页测试还留着上游的 `resetUrlUpdateQueueOnMount`，本地渲染助手不支持。其余是 mock 返回类型、`ConnectFlowStatus` 缺 `servers`、`ResponsesMessage` 的强转、`ROIPull` 构造、死键脚本回调隐式 any、模型补丁 payload 的字段类型，以及 LiteAdmin 测试里三个假响应的返回类型
+
+顺带核实第 541 簇推迟的 provider 图标：模型信息页头部一直渲染 `Logo` 与 provider 名，公开模型页的图标开关只在 chat 变体启用而本仓没有该消费方，这一项无需改动，就此关闭
+
+复测：含测试的全量 `tsc --noEmit -p tsconfig.json` 0 错，`npm run test:types` 绿，受影响用例 177 例全绿，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，lint 预算无超线。本轮只改测试文件，生产构建与渲染扫描不受影响，沿用第 545 簇结论

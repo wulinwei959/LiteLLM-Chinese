@@ -110,7 +110,7 @@ describe("ChatShell", () => {
       ["日志", "/ui/chat/logs"],
     ]) {
       await user.click(screen.getByRole("button", { name: "工作区" }));
-      await user.click(await screen.findByRole("menuitem", { name: label, exact: true }));
+      await user.click(await screen.findByRole("menuitem", { name: label }));
       expect(mockPush).toHaveBeenCalledWith(href);
     }
   });
@@ -125,8 +125,8 @@ describe("ChatShell", () => {
     );
     expect(screen.getByRole("button", { name: "工作区" })).toHaveAttribute("aria-current", "page");
     await user.click(screen.getByRole("button", { name: "工作区" }));
-    expect(await screen.findByRole("menuitem", { name: "用量", exact: true })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("menuitem", { name: "日志", exact: true })).not.toHaveAttribute("aria-current");
+    expect(await screen.findByRole("menuitem", { name: "用量" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("menuitem", { name: "日志" })).not.toHaveAttribute("aria-current");
   });
 
   it("should collapse and reopen the desktop rail", async () => {
@@ -139,7 +139,7 @@ describe("ChatShell", () => {
     await user.click(screen.getByRole("button", { name: "关闭侧栏" }));
     expect(screen.getByRole("button", { name: "打开侧栏" })).toHaveAttribute("aria-expanded", "false");
     await user.click(screen.getByRole("button", { name: "切换工作区，当前：聊天" }));
-    expect(await screen.findByRole("menuitem", { name: "AI 网关", exact: true })).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: "AI 网关" })).toBeInTheDocument();
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "打开侧栏" }));
     expect(screen.getByRole("button", { name: "关闭侧栏" })).toHaveAttribute("aria-expanded", "true");

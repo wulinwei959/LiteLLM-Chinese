@@ -39,7 +39,7 @@ describe("useClientUsage", () => {
     const { result, rerender } = renderHook(
       ({ userId, client }: { userId: string | null; client: UsageClient | null }) =>
         useClientUsage({ ...options, userId, client }),
-      { initialProps: { userId: null, client: UsageClient.ClaudeDesktop } },
+      { initialProps: { userId: null as string | null, client: UsageClient.ClaudeDesktop as UsageClient | null } },
     );
     expect(result.current.error).toBe("Select a user or team to view client usage");
     expect(result.current.loading).toBe(false);
@@ -85,7 +85,7 @@ describe("useClientUsage", () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue({ ...emptyPage, total: 1001, total_pages: 2 });
     const { result, rerender } = renderHook(
       ({ client }: { client: UsageClient | null }) => useClientUsage({ ...options, client }),
-      { initialProps: { client: UsageClient.ClaudeDesktop } },
+      { initialProps: { client: UsageClient.ClaudeDesktop as UsageClient | null } },
     );
     await waitFor(() => expect(result.current.error).toContain("Narrow the date range"));
     rerender({ client: null });

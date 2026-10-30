@@ -377,3 +377,13 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 收口实测：三份测试 106 例全绿；死键 0，静态英文 286/286，中文取值 215/0；生产 `typecheck` 0 错，lint 预算无超线
 
 至此队列第 4 项完成。剩余：公开模型页与模型信息页的 provider 图标，以及长期账（测试文件类型错误、zod 消息工厂化、巨型文件拆分）
+
+## 二十一、执行记录（2026-10-31）：清掉测试文件的类型错误
+
+长期账第一项。含测试的 `tsc --noEmit -p tsconfig.json` 从 30 条降到 0，此前记录的 395 条是旧快照，以本轮实测为准
+
+修正点按簇分：auto router 集成测试去掉 `getByRole` 上多余的 `exact`，用量页测试删掉本地不支持的 `resetUrlUpdateQueueOnMount`；chat 测试补齐 `ConnectFlowStatus.servers`、把夹具强转为 `ResponsesMessage`、去掉对话列角色查询里的 `exact`；用量 hook 测试给 `initialProps` 标注可空类型；ROI 夹具返回 `ROIPull`；死键脚本回调参数标注类型；模型补丁 payload 与 LiteAdmin 假响应的返回类型补全
+
+同时关闭第 541 簇推迟的 provider 图标：模型信息页已渲染 `Logo` 与 provider 名，公开页图标开关仅 chat 变体使用，本仓无需接入
+
+收口实测：含测试的类型检查 0 错，`test:types` 绿，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，lint 预算无超线。本轮只动测试文件，生产构建与渲染扫描沿用第 545 簇结论

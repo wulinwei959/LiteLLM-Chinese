@@ -163,7 +163,7 @@ function uiReply(
   request: Request,
   options: GatewayOptions,
   settings: NonNullable<GatewayOptions["settings"]>,
-): Response | undefined {
+): Response | Promise<Response> | undefined {
   if (path.endsWith("/litellm-ui-config")) {
     const uiConfig = {
       proxy_base_url: MANAGEMENT,
@@ -181,7 +181,7 @@ function uiReply(
   return undefined;
 }
 
-function modelReply(path: string, options: GatewayOptions): Response | undefined {
+function modelReply(path: string, options: GatewayOptions): Response | Promise<Response> | undefined {
   if (path.endsWith("/model_group/info")) {
     return json({
       data: options.models ?? [
@@ -199,7 +199,11 @@ function modelReply(path: string, options: GatewayOptions): Response | undefined
   return undefined;
 }
 
-function operationReply(path: string, options: GatewayOptions, body: Record<string, unknown>): Response | undefined {
+function operationReply(
+  path: string,
+  options: GatewayOptions,
+  body: Record<string, unknown>,
+): Response | Promise<Response> | undefined {
   if (path.endsWith("/team/info"))
     return options.read ? options.read() : json({ team_info: { team_id: "team-1", max_budget: 40 } });
   if (path.endsWith("/user/daily/activity/aggregated"))
@@ -659,7 +663,7 @@ describe("Aria Agent in the gateway", () => {
     await selectModel();
     const input = screen.getByRole("textbox", { name: "Message Aria Agent" });
     for (const label of ["Create a key", "Add a model", "Set a budget"]) {
-      fireEvent.click(screen.getByRole("button", { name: label, exact: true }));
+      fireEvent.click(screen.getByRole("button", { name: label }));
       expect(input).toHaveValue(label);
       expect(input).toHaveFocus();
       expect(screen.queryByRole("dialog", { name: "Aria Agent" })).not.toBeInTheDocument();

@@ -36,6 +36,7 @@ it("carries a challenged scope through the connect button into vendor authorizat
         server_name: "Scoped tools",
         connected: false,
         requested_scopes: ["tools.write"],
+        servers: [],
       }}
       accessToken="caller"
       onConnected={vi.fn()}
@@ -77,6 +78,7 @@ it("starts consent for the next upstream in the same connect flow", async () => 
     server_name: "First",
     connected: false,
     requested_scopes: ["first.write"],
+    servers: [],
   };
   const { rerender } = renderWithProviders(<ConnectFlowBanner {...props} flow={first} />);
   await waitFor(() => expect(window.location.href).toContain("scope=first.write"));
