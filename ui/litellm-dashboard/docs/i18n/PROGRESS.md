@@ -5479,3 +5479,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 宿主 8013 行降到 7868 行。新文件落地后还要补一步验证。死键扫描基于 `git ls-files` 取文件，未跟踪的新文件不在扫描范围，`toastMessage("sessionExpired")` 一度被判成 3 条死键，纳入版本控制后回到 0，英文基线的 286 条同理
 
 复测：生产 `typecheck` 0 错，改动文件 `eslint` 0 error，全量 997 文件 13640 例（9 例既有预期失败）全绿，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0，渲染扫描 38 页 0 渲染错误、0 条新发现
+
+## 2026-10-31 第 555 簇：聊天页抽出代码生成与工具集说明弹窗
+
+`playground/components/chat_ui/ChatUI.tsx` 有 2281 行，页面尾部并排两个弹窗。生成代码弹窗承载 SDK 选择、复制与 Python 高亮，工具集说明弹窗是纯文案。两个都不共享宿主的运行状态，符合此前公开页与模型中心的抽取模式
+
+生成代码弹窗移到 `chat_ui/GeneratedCodeDialog.tsx`，只收 `open`、`onOpenChange`、`code`、`sdk` 与 `onSdkChange`，`SDK_ITEMS` 与语法主题 hook 随之搬走；工具集说明弹窗移到 `chat_ui/ToolsetsInfoDialog.tsx`，只收开关。宿主删掉 `react-syntax-highlighter` 与 `Dialog` 系列导入，`selectedSdk` 状态与代码生成逻辑仍留在宿主
+
+宿主 2281 行降到 2179 行，两个新组件合计 154 行
+
+复测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0
