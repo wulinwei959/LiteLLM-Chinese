@@ -500,4 +500,4 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 
 技术要点：`CategoryIcon` 与类型下沉到共享文件被多子件消费；`getPolicyOptionEntries` 经宿主传入 PolicySelector；嵌套三元改早退 `if`/`switch`；JSX 箭头处理程序超 3 条语句提取命名函数；未新增 any
 
-收口实测：playground 五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 280/280（基线已刷新），中文取值 215/0，lint 预算 complexity 138/140（下降），prune-suppressions 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器），沿用第 539 簇结论
+收口实测：playground 五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286（六条机读面条目随文件搬迁改指新位置），中文取值 215/0，lint 预算 complexity 138/140（下降），prune-suppressions 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器），沿用第 539 簇结论

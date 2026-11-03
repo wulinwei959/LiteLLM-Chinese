@@ -616,6 +616,36 @@
       "text": "MCP"
     },
     {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceBatchResults.tsx",
+      "kind": "jsx",
+      "text": "FN"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/ComplianceBatchResults.tsx",
+      "kind": "jsx",
+      "text": "FP"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/CompliancePromptLibrary.tsx",
+      "kind": "jsx",
+      "text": "category"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/CompliancePromptLibrary.tsx",
+      "kind": "jsx",
+      "text": "expected_result"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/CompliancePromptLibrary.tsx",
+      "kind": "jsx",
+      "text": "framework"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/complianceUI/CompliancePromptLibrary.tsx",
+      "kind": "jsx",
+      "text": "prompt"
+    },
+    {
       "file": "src/app/(dashboard)/playground/components/systemOneUI/ResponseView.tsx",
       "kind": "jsx",
       "text": "ms"

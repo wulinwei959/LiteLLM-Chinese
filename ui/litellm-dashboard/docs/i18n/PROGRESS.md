@@ -5544,4 +5544,6 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 
 宿主 1568 行降至 ~480 行
 
-复测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 280/280（基线已刷新），中文取值 215/0，lint 预算 complexity 138/140（下降），`eslint . --prune-suppressions` 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁无文案改动
+复测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 complexity 138/140（下降），`eslint . --prune-suppressions` 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁无文案改动
+
+静态英文账的两条坑记在这里。`FN`/`FP` 与 CSV 列名 `prompt`、`expected_result`、`framework`、`category` 属机读面，拆文件后六条基线条目要改指新文件而不是删掉，删了会让 CI 报 6 条新漏。首轮本地按 280/280 记账，是因为扫描取 `git ls-files`，新文件还没 `git add` 时不在扫描范围，与第 524、554 簇同一个坑
