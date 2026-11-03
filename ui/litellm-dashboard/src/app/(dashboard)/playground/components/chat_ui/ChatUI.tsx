@@ -1,47 +1,24 @@
 "use client";
 
-import {
-  ArrowDown,
-  Bot,
-  Code2,
-  Database,
-  Eraser,
-  Image as ImageIcon,
-  Info,
-  Key,
-  Link2,
-  ListPlus,
-  Loader2,
-  Settings,
-  Shield,
-  Tags,
-  Trash2,
-  Volume2,
-  Wrench,
-  X,
-} from "lucide-react";
+import { ArrowDown, Bot, Code2, Eraser, Image as ImageIcon, Loader2, Trash2, Volume2, X } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { v4 as uuidv4 } from "uuid";
 import useCan from "@/app/(dashboard)/hooks/useCan";
-import GuardrailSelector from "@/components/guardrails/GuardrailSelector";
-import PolicySelector from "@/components/policies/PolicySelector";
 import MCPToolArgumentsForm, { MCPToolArgumentsFormRef } from "@/components/mcp_tools/MCPToolArgumentsForm";
 import { MCPServer } from "@/components/mcp_tools/types";
 import { ByokCredentialModal } from "@/components/mcp_tools/ByokCredentialModal";
 import { toast } from "@/lib/toast";
 import { callMCPTool, fetchMCPServers, fetchMCPToolsets, listMCPTools } from "@/components/networking";
 import { MCPTool, MCPToolset } from "@/components/mcp_tools/types";
-import TagSelector from "@/components/tag_management/TagSelector";
-import VectorStoreSelector from "@/components/vector_store_management/VectorStoreSelector";
 import { makeA2ASendMessageRequest } from "../../llm_calls/a2a_send_message";
 import { makeAnthropicMessagesRequest } from "../../llm_calls/anthropic_messages";
 import { makeOpenAIAudioSpeechRequest } from "../../llm_calls/audio_speech";
 import { makeOpenAIAudioTranscriptionRequest } from "../../llm_calls/audio_transcriptions";
 import { makeOpenAIChatCompletionRequest } from "@/components/llm_calls/chat_completion";
 import { customHeadersFromPairs, parseStoredHeaderPairs } from "@/components/llm_calls/request_headers";
-import KeyValueInput, { type KeyValuePair } from "@/components/key_value_input";
+import { type KeyValuePair } from "@/components/key_value_input";
 import { makeOpenAIEmbeddingsRequest } from "../../llm_calls/embeddings_api";
 import { Agent, fetchAvailableAgents } from "../../llm_calls/fetch_agents";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
@@ -49,38 +26,28 @@ import { makeOpenAIImageEditsRequest } from "../../llm_calls/image_edits";
 import { makeOpenAIImageGenerationRequest } from "../../llm_calls/image_generation";
 import { makeOpenAIResponsesRequest } from "@/components/llm_calls/responses_api";
 import { makeInteractionsRequest } from "../../llm_calls/interactions_api";
-import AdditionalModelSettings from "./AdditionalModelSettings";
-import { OPEN_AI_VOICE_SELECT_OPTIONS, OpenAIVoice } from "./chatConstants";
+import { ChatConfigPanel } from "./ChatConfigPanel";
+import { OpenAIVoice } from "./chatConstants";
 import ChatComposer, { CodeInterpreterToggle } from "./ChatComposer";
 import ChatImageUpload from "./ChatImageUpload";
 import { createChatDisplayMessage, createChatMultimodalMessage } from "./ChatImageUtils";
-import CodeInterpreterTool from "./CodeInterpreterTool";
 import { generateCodeSnippet } from "@/components/chat_ui/CodeSnippets";
-import EndpointSelector from "./EndpointSelector";
 import GeneratedCodeDialog from "./GeneratedCodeDialog";
-import { filterModelsForEndpoint, isModelCompatibleWithEndpoint } from "./EndpointUtils";
+import { isModelCompatibleWithEndpoint } from "./EndpointUtils";
 import FilePreviewCard from "./FilePreviewCard";
 import ChatMessageBubble from "./ChatMessageBubble";
 import MCPEventsDisplay from "@/components/chat_ui/MCPEventsDisplay";
 import { EndpointType, getEndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
 import ResponsesImageUpload from "./ResponsesImageUpload";
 import { createDisplayMessage, createMultimodalMessage } from "./ResponsesImageUtils";
-import SessionManagement from "./SessionManagement";
 import ToolsetsInfoDialog from "./ToolsetsInfoDialog";
 import RealtimePlayground from "./RealtimePlayground";
 import { MessageType } from "@/components/chat_ui/types";
 import { useCodeInterpreter } from "../../hooks/useCodeInterpreter";
 import { useChatHistory } from "../../hooks/useChatHistory";
 import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
-import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSelect";
-import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select as ShadcnSelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
-import { uiHref } from "@/utils/uiHref";
 import {
   AUDIO_ACCEPT,
   IMAGE_EDIT_ACCEPT,
@@ -105,14 +72,9 @@ interface ChatUIProps {
   fixedModel?: string;
 }
 
-const MCP_SUPPORTED_ENDPOINTS = new Set<EndpointType>([
-  EndpointType.CHAT,
-  EndpointType.RESPONSES,
-  EndpointType.MCP,
-  EndpointType.ANTHROPIC_MESSAGES,
-]);
-
 const CUSTOM_MODEL_DEBOUNCE_WAIT_MS = 500;
+
+export type MCPServerToolsMap = Record<string, any[]>;
 
 const ChatUI: React.FC<ChatUIProps> = ({
   accessToken,
@@ -141,7 +103,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
     }
   });
   const [isLoadingMCPServers, setIsLoadingMCPServers] = useState(false);
-  const [serverToolsMap, setServerToolsMap] = useState<Record<string, any[]>>({});
+  const [serverToolsMap, setServerToolsMap] = useState<MCPServerToolsMap>({});
   const [selectedMCPDirectTool, setSelectedMCPDirectTool] = useState<string | undefined>(undefined);
   const mcpToolArgsFormRef = useRef<MCPToolArgumentsFormRef>(null);
   const [mcpServerToolRestrictions, setMCPServerToolRestrictions] = useState<Record<string, string[]>>(() => {
@@ -658,32 +620,6 @@ const ChatUI: React.FC<ChatUIProps> = ({
     event.target.value = "";
   };
 
-  const mcpServerOptions = useMemo((): MultiSelectOption[] => {
-    const options: MultiSelectOption[] = [];
-    if (endpointType !== EndpointType.MCP) {
-      options.push({
-        value: "__all__",
-        label: t("config.allMcpServers"),
-        description: t("config.allMcpServersDesc"),
-      });
-    }
-    for (const toolset of mcpToolsets) {
-      options.push({
-        value: `toolset:${toolset.toolset_id}`,
-        label: toolset.toolset_name,
-        description: toolset.description || t("config.toolsetToolsCount", { count: toolset.tools.length }),
-      });
-    }
-    for (const server of mcpServers) {
-      options.push({
-        value: server.server_id,
-        label: server.alias || server.server_name || server.server_id,
-        description: server.description ?? undefined,
-      });
-    }
-    return options;
-  }, [endpointType, mcpToolsets, mcpServers, t]);
-
   const handleMcpServersChange = (value: string[]) => {
     if (endpointType === EndpointType.MCP) {
       const serverId = value[0];
@@ -1196,36 +1132,6 @@ const ChatUI: React.FC<ChatUIProps> = ({
     }
   };
 
-  // Check if the selected model is a chat model
-  const isChatModel = () => {
-    if (!selectedModel || selectedModel === "custom") {
-      return false;
-    }
-    const model = modelInfo.find((m) => m.model_group === selectedModel);
-    if (!model) {
-      return false;
-    }
-    // Check if mode is explicitly "chat" or undefined (which defaults to chat per backend)
-    return !model.mode || model.mode === "chat";
-  };
-
-  const supportsStreamingToggle =
-    endpointType === EndpointType.CHAT ||
-    endpointType === EndpointType.RESPONSES ||
-    endpointType === EndpointType.ANTHROPIC_MESSAGES;
-  const modelsForEndpoint = useMemo(
-    () => filterModelsForEndpoint(modelInfo, endpointType as EndpointType),
-    [modelInfo, endpointType],
-  );
-  let modelEmptyText = t("config.noModelsAvailable");
-  if (modelLoadError) {
-    modelEmptyText = t("config.unableToLoadModels");
-  } else if (apiKeySource === "custom" && !apiKey.trim()) {
-    modelEmptyText = t("config.enterVirtualKey");
-  } else if (modelInfo.length > 0 && modelsForEndpoint.length === 0) {
-    modelEmptyText = t("config.noModelsForEndpoint");
-  }
-
   const inputPlaceholder =
     endpointType === EndpointType.CHAT ||
     endpointType === EndpointType.EMBEDDINGS ||
@@ -1257,534 +1163,69 @@ const ChatUI: React.FC<ChatUIProps> = ({
       <div className="flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-xl bg-card shadow-md ring-1 ring-foreground/10">
         <div className="flex h-full min-h-0 min-w-0 w-full flex-col lg:flex-row">
           {!simplified && (
-            <div className="max-h-[42%] w-full shrink-0 overflow-y-auto border-b border-border bg-muted p-4 lg:max-h-none lg:w-72 lg:border-r lg:border-b-0 xl:w-80">
-              <h2 className="mb-6 mt-2 text-xl font-semibold">{t("config.configurations")}</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                    <Key className="mr-2 size-4" aria-hidden="true" /> {t("config.virtualKeySource")}
-                  </label>
-                  <ShadcnSelect
-                    disabled={disabledPersonalKeyCreation}
-                    value={apiKeySource}
-                    onValueChange={(value) => {
-                      setApiKeySource(value as "session" | "custom");
-                    }}
-                  >
-                    <SelectTrigger className="w-full" size="sm" aria-label={t("config.virtualKeySource")}>
-                      <SelectValue>
-                        {apiKeySource === "custom" ? t("config.customKey") : t("config.session")}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="session">{t("config.session")}</SelectItem>
-                      <SelectItem value="custom">{t("config.customKey")}</SelectItem>
-                    </SelectContent>
-                  </ShadcnSelect>
-                  {apiKeySource === "custom" && (
-                    <div className="relative mt-2">
-                      <Key className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        className="h-8 pl-8"
-                        placeholder={t("chat.enterVirtualKeyPh")}
-                        type="password"
-                        onChange={(event) => setApiKey(event.target.value)}
-                        value={apiKey}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="flex items-center text-sm font-medium text-foreground">
-                      <Settings className="mr-2 size-4" aria-hidden="true" /> {t("config.customProxyUrl")}
-                    </label>
-                    {proxySettings?.LITELLM_UI_API_DOC_BASE_URL && !customProxyBaseUrl && (
-                      <Button
-                        type="button"
-                        variant="link"
-                        size="xs"
-                        className="h-auto p-0 text-muted-foreground hover:text-foreground"
-                        onClick={() => {
-                          setCustomProxyBaseUrl(proxySettings.LITELLM_UI_API_DOC_BASE_URL || "");
-                          sessionStorage.setItem("customProxyBaseUrl", proxySettings.LITELLM_UI_API_DOC_BASE_URL || "");
-                        }}
-                      >
-                        <Link2 className="size-3" />
-                        {t("config.fill")}
-                      </Button>
-                    )}
-                    {customProxyBaseUrl && (
-                      <Button
-                        type="button"
-                        variant="link"
-                        size="xs"
-                        className="h-auto p-0 text-muted-foreground hover:text-foreground"
-                        onClick={() => {
-                          setCustomProxyBaseUrl("");
-                          sessionStorage.removeItem("customProxyBaseUrl");
-                        }}
-                      >
-                        <Eraser className="size-3" />
-                        {t("config.clear")}
-                      </Button>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <Wrench className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      className="h-8 pl-8"
-                      placeholder={t("config.proxyUrlPlaceholder")}
-                      value={customProxyBaseUrl}
-                      onChange={(event) => {
-                        setCustomProxyBaseUrl(event.target.value);
-                        sessionStorage.setItem("customProxyBaseUrl", event.target.value);
-                      }}
-                    />
-                  </div>
-                  {customProxyBaseUrl && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {t("config.proxyUrlNote", { url: customProxyBaseUrl })}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                    <Wrench className="mr-2 size-4" aria-hidden="true" /> {t("config.endpointType")}
-                  </label>
-                  <EndpointSelector
-                    endpointType={endpointType}
-                    onEndpointChange={handleEndpointChange}
-                    className="mb-4"
-                  />
-
-                  {endpointType === EndpointType.SPEECH && (
-                    <div className="mb-4">
-                      <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                        <Volume2 className="mr-2 size-4" aria-hidden="true" />
-                        {t("config.voice")}
-                      </label>
-                      <ShadcnSelect
-                        items={OPEN_AI_VOICE_SELECT_OPTIONS.map((v) => ({ value: v.value, label: t(v.labelKey) }))}
-                        value={selectedVoice}
-                        onValueChange={handleVoiceChange}
-                      >
-                        <SelectTrigger className="w-full" size="sm" aria-label={t("config.voice")}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {OPEN_AI_VOICE_SELECT_OPTIONS.map((voice) => (
-                            <SelectItem key={voice.value} value={voice.value}>
-                              {t(voice.labelKey)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </ShadcnSelect>
-                    </div>
-                  )}
-
-                  <SessionManagement
-                    endpointType={endpointType}
-                    responsesSessionId={responsesSessionId}
-                    useApiSessionManagement={useApiSessionManagement}
-                    onToggleSessionManagement={handleToggleSessionManagement}
-                  />
-                </div>
-
-                {endpointType !== EndpointType.A2A_AGENTS && endpointType !== EndpointType.MCP && (
-                  <div>
-                    <div className="mb-2 flex items-center justify-between text-sm font-medium text-foreground">
-                      <span className="flex items-center">
-                        <Bot className="mr-2 size-4" aria-hidden="true" /> {t("config.selectModel")}
-                      </span>
-                      {isChatModel() || supportsStreamingToggle ? (
-                        <Popover>
-                          <PopoverTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                className="text-muted-foreground hover:text-foreground"
-                                aria-label={t("config.modelSettings")}
-                                data-testid="model-settings-button"
-                              />
-                            }
-                          >
-                            <Settings className="size-3.5" />
-                          </PopoverTrigger>
-                          <PopoverContent side="right" className="w-auto p-0">
-                            <div className="border-b border-border px-4 py-2 text-sm font-medium">
-                              {t("config.modelSettings")}
-                            </div>
-                            <AdditionalModelSettings
-                              showAdvancedParams={isChatModel()}
-                              temperature={temperature}
-                              maxTokens={maxTokens}
-                              useAdvancedParams={useAdvancedParams}
-                              onTemperatureChange={setTemperature}
-                              onMaxTokensChange={setMaxTokens}
-                              onUseAdvancedParamsChange={setUseAdvancedParams}
-                              mockTestFallbacks={mockTestFallbacks}
-                              onMockTestFallbacksChange={setMockTestFallbacks}
-                              streamingEnabled={streamingEnabled}
-                              onStreamingChange={supportsStreamingToggle ? setStreamingEnabled : undefined}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      ) : (
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                className="cursor-not-allowed text-muted-foreground"
-                                disabled
-                                aria-label={`${t("config.modelSettings")} ${t("config.unavailable")}`}
-                              />
-                            }
-                          >
-                            <Settings className="size-3.5" />
-                          </TooltipTrigger>
-                          <TooltipContent>{t("config.advancedParamsUnavailable")}</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                    <SearchSelect
-                      value={selectedModel}
-                      placeholder={isLoadingModels ? t("config.loadingModels") : t("config.selectModel")}
-                      emptyText={modelEmptyText}
-                      disabled={isLoadingModels}
-                      onValueChange={onModelChange}
-                      options={[
-                        { value: "custom", label: t("config.customModelOption") },
-                        ...modelsForEndpoint.map((model) => ({
-                          value: model.model_group,
-                          label: model.model_group,
-                          sublabel: model.mode ? t("config.modeSublabel", { mode: model.mode }) : undefined,
-                        })),
-                      ]}
-                    />
-                    {showCustomModelInput && (
-                      <Input
-                        className="mt-2 h-8"
-                        placeholder={t("config.enterCustomModel")}
-                        onChange={(event) => debouncedSetSelectedModel(event.target.value)}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {endpointType === EndpointType.A2A_AGENTS && (
-                  <div>
-                    <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                      <Bot className="mr-2 size-4" aria-hidden="true" /> {t("config.selectAgent")}
-                    </label>
-                    <SearchSelect
-                      value={selectedAgent}
-                      placeholder={t("config.selectAgent")}
-                      onValueChange={(value) => setSelectedAgent(value)}
-                      options={agentInfo.map((agent) => ({
-                        value: agent.agent_name,
-                        label: agent.agent_name || agent.agent_id,
-                        sublabel: agent.agent_card_params?.description,
-                      }))}
-                    />
-                    {agentInfo.length === 0 && (
-                      <p className="mt-2 text-xs text-muted-foreground">{t("config.noAgentsFound")}</p>
-                    )}
-                  </div>
-                )}
-
-                <div>
-                  <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                    <Tags className="mr-2 size-4" aria-hidden="true" /> {t("config.tags")}
-                  </label>
-                  <TagSelector
-                    value={selectedTags}
-                    onChange={setSelectedTags}
-                    className="mb-4"
-                    accessToken={accessToken || ""}
-                  />
-                </div>
-
-                {endpointType !== EndpointType.REALTIME && (
-                  <div>
-                    <label className="mb-2 flex items-center text-sm font-medium text-foreground">
-                      <ListPlus className="mr-2 size-4" aria-hidden="true" /> {t("config.customHeaders")}
-                    </label>
-                    <KeyValueInput value={customHeaderPairs} onChange={setCustomHeaderPairs} />
-                    <p className="mt-2 text-xs text-muted-foreground">{t("config.customHeadersHint")}</p>
-                  </div>
-                )}
-
-                <div>
-                  <div className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground">
-                    <Wrench className="mr-1 size-4" aria-hidden="true" />
-                    {endpointType === EndpointType.MCP ? t("config.mcpServer") : t("config.mcpServers")}
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <button
-                            type="button"
-                            className="inline-flex"
-                            aria-label={t("config.aboutMcpServers")}
-                            onClick={() => setIsToolsetsInfoModalVisible(true)}
-                          />
-                        }
-                      >
-                        <Info className="size-3.5 cursor-pointer text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        {endpointType === EndpointType.MCP
-                          ? t("config.mcpDirectModeDesc")
-                          : t("config.mcpChatModeDesc")}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  {endpointType === EndpointType.MCP ? (
-                    <SearchSelect
-                      value={
-                        selectedMCPServers[0] !== "__all__" && selectedMCPServers.length === 1
-                          ? selectedMCPServers[0]
-                          : undefined
-                      }
-                      placeholder={t("config.selectMcpServer")}
-                      emptyText={isLoadingMCPServers ? t("config.loadingMcpServers") : t("config.noMcpServers")}
-                      disabled={!MCP_SUPPORTED_ENDPOINTS.has(endpointType as EndpointType) || isLoadingMCPServers}
-                      onValueChange={(value) => handleMcpServersChange(value ? [value] : [])}
-                      options={mcpServerOptions}
-                      className="mb-2"
-                    />
-                  ) : (
-                    <MultiSelect
-                      value={selectedMCPServers}
-                      onValueChange={handleMcpServersChange}
-                      placeholder={t("config.mcpServers")}
-                      emptyText={isLoadingMCPServers ? t("config.loadingMcpServers") : t("config.noMcpServers")}
-                      disabled={!MCP_SUPPORTED_ENDPOINTS.has(endpointType as EndpointType)}
-                      loading={isLoadingMCPServers}
-                      options={mcpServerOptions}
-                      className="mb-2"
-                    />
-                  )}
-
-                  {endpointType === EndpointType.MCP &&
-                    selectedMCPServers.length === 1 &&
-                    selectedMCPServers[0] !== "__all__" &&
-                    (() => {
-                      const rawSel = selectedMCPServers[0];
-                      const isToolset = rawSel.startsWith("toolset:");
-                      let toolOptions: { value: string; label: string }[] = [];
-                      if (isToolset) {
-                        const toolsetId = rawSel.slice("toolset:".length);
-                        const toolset = mcpToolsets.find((t) => t.toolset_id === toolsetId);
-                        if (toolset) {
-                          toolOptions = toolset.tools.map((t) => ({
-                            value: t.tool_name,
-                            label: t.tool_name,
-                          }));
-                        }
-                      } else {
-                        toolOptions = (serverToolsMap[rawSel] || []).map((tool: { name: string }) => ({
-                          value: tool.name,
-                          label: tool.name,
-                        }));
-                      }
-                      return (
-                        <div className="mt-3">
-                          <p className="mb-1 block text-xs text-muted-foreground">{t("config.selectTool")}</p>
-                          <SearchSelect
-                            value={selectedMCPDirectTool}
-                            placeholder={t("config.selectToolPlaceholder")}
-                            onValueChange={(value) => setSelectedMCPDirectTool(value || undefined)}
-                            options={toolOptions}
-                            className="rounded-md"
-                          />
-                        </div>
-                      );
-                    })()}
-
-                  {selectedMCPServers.length > 0 &&
-                    !selectedMCPServers.includes("__all__") &&
-                    endpointType !== EndpointType.MCP &&
-                    MCP_SUPPORTED_ENDPOINTS.has(endpointType as EndpointType) && (
-                      <div className="mt-3 space-y-2">
-                        {selectedMCPServers.map((serverId) => {
-                          const server = mcpServers.find((s) => s.server_id === serverId);
-                          const tools = serverToolsMap[serverId] || [];
-                          if (tools.length === 0) return null;
-
-                          return (
-                            <div key={serverId} className="rounded-sm border p-2">
-                              <p className="mb-1 text-xs text-muted-foreground">
-                                {t("config.limitTools", { server: server?.alias || server?.server_name || serverId })}
-                              </p>
-                              <MultiSelect
-                                value={mcpServerToolRestrictions[serverId] || []}
-                                onValueChange={(selectedTools) => {
-                                  setMCPServerToolRestrictions((prev) => ({
-                                    ...prev,
-                                    [serverId]: selectedTools,
-                                  }));
-                                }}
-                                placeholder={t("config.allToolsDefault")}
-                                options={tools.map((tool: { name: string }) => ({
-                                  value: tool.name,
-                                  label: tool.name,
-                                }))}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                  {selectedMCPServers.length > 0 &&
-                    !selectedMCPServers.includes("__all__") &&
-                    selectedMCPServers.some((serverId) => {
-                      const server = mcpServers.find((s) => s.server_id === serverId);
-                      return server?.is_byok;
-                    }) && (
-                      <div className="mt-3 space-y-2">
-                        {selectedMCPServers.map((serverId) => {
-                          const server = mcpServers.find((s) => s.server_id === serverId);
-                          if (!server?.is_byok) return null;
-                          const serverName = server.alias || server.server_name || serverId;
-                          return (
-                            <div
-                              key={serverId}
-                              className="flex items-center justify-between rounded-sm border border-info/15 bg-info/10 p-2"
-                            >
-                              <p className="text-xs text-info">{t("config.byokRequiresKey", { server: serverName })}</p>
-                              {server.has_user_credential ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="flex items-center gap-1 text-xs font-medium text-success">
-                                    <Key className="size-3" /> {t("config.byokConnected")}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="text-xs text-muted-foreground underline hover:text-info"
-                                    onClick={() => setByokModalServer(server)}
-                                  >
-                                    {t("config.byokReconnect")}
-                                  </button>
-                                </div>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  size="xs"
-                                  className="rounded-lg bg-info px-3 py-1 text-xs font-medium text-info-foreground hover:bg-info/80"
-                                  onClick={() => setByokModalServer(server)}
-                                >
-                                  {t("config.byokConnect")}
-                                </Button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground">
-                    <Database className="mr-1 size-4" aria-hidden="true" /> {t("config.vectorStore")}
-                    <Tooltip>
-                      <TooltipTrigger aria-label={t("config.aboutVectorStores")}>
-                        <Info className="size-3.5 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        {t.rich("config.vectorStoreHint", {
-                          link: (chunks) => (
-                            <a href={uiHref("vector-stores")} className="text-info underline">
-                              {chunks}
-                            </a>
-                          ),
-                        })}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <VectorStoreSelector
-                    value={selectedVectorStores}
-                    onChange={setSelectedVectorStores}
-                    className="mb-4"
-                    accessToken={accessToken || ""}
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground">
-                    <Shield className="mr-1 size-4" aria-hidden="true" /> {t("config.guardrails")}
-                    <Tooltip>
-                      <TooltipTrigger aria-label={t("config.aboutGuardrails")}>
-                        <Info className="size-3.5 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        {t.rich("config.guardrailsHint", {
-                          link: (chunks) => (
-                            <a href={uiHref("guardrails")} className="text-info underline">
-                              {chunks}
-                            </a>
-                          ),
-                        })}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <GuardrailSelector
-                    value={selectedGuardrails}
-                    onChange={setSelectedGuardrails}
-                    className="mb-4"
-                    accessToken={accessToken || ""}
-                  />
-                </div>
-
-                {canViewPolicies && (
-                  <div>
-                    <div className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground">
-                      <Shield className="mr-1 size-4" aria-hidden="true" /> {t("config.policies")}
-                      <Tooltip>
-                        <TooltipTrigger aria-label={t("config.aboutPolicies")}>
-                          <Info className="size-3.5 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          {t.rich("config.policiesHint", {
-                            link: (chunks) => (
-                              <a href={uiHref("policies")} className="text-info underline">
-                                {chunks}
-                              </a>
-                            ),
-                          })}
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <PolicySelector
-                      value={selectedPolicies}
-                      onChange={setSelectedPolicies}
-                      className="mb-4"
-                      accessToken={accessToken || ""}
-                    />
-                  </div>
-                )}
-
-                {endpointType === EndpointType.RESPONSES && (
-                  <div>
-                    <CodeInterpreterTool
-                      accessToken={apiKeySource === "session" ? accessToken || "" : apiKey}
-                      enabled={codeInterpreter.enabled}
-                      onEnabledChange={codeInterpreter.setEnabled}
-                      selectedContainerId={null}
-                      onContainerChange={() => {}}
-                      selectedModel={selectedModel || ""}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            <ChatConfigPanel
+              accessToken={accessToken}
+              apiKeySource={apiKeySource}
+              setApiKeySource={setApiKeySource}
+              apiKey={apiKey}
+              setApiKey={setApiKey}
+              disabledPersonalKeyCreation={disabledPersonalKeyCreation}
+              proxySettings={proxySettings}
+              customProxyBaseUrl={customProxyBaseUrl}
+              setCustomProxyBaseUrl={setCustomProxyBaseUrl}
+              endpointType={endpointType}
+              onEndpointChange={handleEndpointChange}
+              selectedVoice={selectedVoice}
+              onVoiceChange={handleVoiceChange}
+              responsesSessionId={responsesSessionId}
+              useApiSessionManagement={useApiSessionManagement}
+              onToggleSessionManagement={handleToggleSessionManagement}
+              selectedModel={selectedModel}
+              onModelChange={onModelChange}
+              modelInfo={modelInfo}
+              isLoadingModels={isLoadingModels}
+              modelLoadError={modelLoadError}
+              showCustomModelInput={showCustomModelInput}
+              onCustomModelInput={debouncedSetSelectedModel}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              maxTokens={maxTokens}
+              setMaxTokens={setMaxTokens}
+              useAdvancedParams={useAdvancedParams}
+              setUseAdvancedParams={setUseAdvancedParams}
+              mockTestFallbacks={mockTestFallbacks}
+              setMockTestFallbacks={setMockTestFallbacks}
+              streamingEnabled={streamingEnabled}
+              setStreamingEnabled={setStreamingEnabled}
+              agentInfo={agentInfo}
+              selectedAgent={selectedAgent}
+              setSelectedAgent={setSelectedAgent}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              customHeaderPairs={customHeaderPairs}
+              setCustomHeaderPairs={setCustomHeaderPairs}
+              mcpServers={mcpServers}
+              mcpToolsets={mcpToolsets}
+              selectedMCPServers={selectedMCPServers}
+              onMcpServersChange={handleMcpServersChange}
+              isLoadingMCPServers={isLoadingMCPServers}
+              selectedMCPDirectTool={selectedMCPDirectTool}
+              setSelectedMCPDirectTool={setSelectedMCPDirectTool}
+              serverToolsMap={serverToolsMap}
+              mcpServerToolRestrictions={mcpServerToolRestrictions}
+              setMCPServerToolRestrictions={setMCPServerToolRestrictions}
+              setByokModalServer={setByokModalServer}
+              onOpenToolsetsInfo={() => setIsToolsetsInfoModalVisible(true)}
+              selectedVectorStores={selectedVectorStores}
+              setSelectedVectorStores={setSelectedVectorStores}
+              selectedGuardrails={selectedGuardrails}
+              setSelectedGuardrails={setSelectedGuardrails}
+              selectedPolicies={selectedPolicies}
+              setSelectedPolicies={setSelectedPolicies}
+              canViewPolicies={canViewPolicies}
+              codeInterpreterEnabled={codeInterpreter.enabled}
+              setCodeInterpreterEnabled={codeInterpreter.setEnabled}
+            />
           )}
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
