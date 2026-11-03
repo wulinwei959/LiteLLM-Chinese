@@ -465,3 +465,13 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 随之空置的四个导入在宿主删除。宿主降到 2643 行。选这组是因为有直接测试覆盖，搬动后 148 例即刻验证解析与保留规则未变
 
 收口实测：TeamInfo 两个测试文件 148 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0
+
+## 三十一、执行记录（2026-11-03）：建密钥表单拆出可选设置三件
+
+第三十一篇。`organisms/create_key_button.tsx` 1931 行，「可选设置」折叠区 810 行装了三类东西：预算与速率限制字段、护栏/策略/提示词等权限选择字段、八个嵌套折叠面板（MCP、agents、skills、日志、路由设置、别名、生命周期、advanced schema）。按域整组移到同目录 `CreateKeyBudgetFields.tsx`（324 行）、`CreateKeyAccessFields.tsx`（300 行）、`CreateKeyAdvancedPanels.tsx`（383 行），宿主保留全部状态与提交逻辑
+
+这一片与前面几篇不同的地方是它跨了 context 边界：`MountedFormField` 从 `MountedFormProvider` 取 control，整棵字段树搬进子组件也不需要透传 form，只有 MCP 的工具权限与高级面板的 `SchemaFormFields` 两处例外，按 control/setValue prop 传入。类型上踩到一处：`useAuthorized` 的 `accessToken` 实际是 `decoded?.key` 的 any 透传，下游子组件全部声明 `string`，新组件 prop 若声明 `string | null` 反而把原来 any 能混过去的错全暴露出来，按子组件契约声明回 `string`
+
+宿主降到 1127 行
+
+收口实测：create_key 相关五个测试文件 210 例全绿（1 例既有预期失败），含测试的 `tsc --noEmit` 0 错（默认堆上限 OOM，6 GB 堆重跑通过），改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 140/140 与 477/477 均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器，脚本自第 539 簇固定 chrome 通道），沿用第 539 簇结论，纯 JSX 搬迁无文案改动，弹窗由 integration 测试整树覆盖

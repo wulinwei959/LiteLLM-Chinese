@@ -5499,3 +5499,15 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 宿主 2741 行降到 2643 行。这是本簇边界最小的一个拆分，选它是因为这组逻辑有直接覆盖的测试，搬动后可立刻验证解析与保留规则没变
 
 复测：TeamInfo 两个测试文件 148 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0
+
+## 2026-11-03 第 557 簇：建密钥表单拆出可选设置三件
+
+长期账第三项。`create_key_button.tsx` 有 1931 行，其中「可选设置」折叠区独占 810 行：预算与速率限制字段、护栏/策略/提示词等权限选择字段，以及 MCP、agents、skills、日志、路由设置、别名、生命周期、advanced schema 八个嵌套折叠面板
+
+按字段域整组移到同目录三个组件：`CreateKeyBudgetFields.tsx`（324 行）、`CreateKeyAccessFields.tsx`（300 行）、`CreateKeyAdvancedPanels.tsx`（383 行）。宿主保留全部状态与提交逻辑，只把状态值和 setter 传下去；`MountedFormField` 从 `MountedFormProvider` 的 context 拿 control，字段因此不需要透传 form，只有 MCP 面板的 `mcp_tool_permissions` 与高级面板的 `SchemaFormFields` 需要 control/setValue，按两个 prop 传入
+
+随字段搬的小件：`ceilingRule` 进预算件（`requiredRule` 与 `isBlank` 宿主还留着给别名与用户字段用），节头两个 class 常量进 AdvancedPanels 导出、宿主 import 回来。prop 类型上把 `accessToken` 声明成 `string | null` 与下游子组件的 `string` 契约相撞，核对 `useAuthorized` 返回的是 `decoded?.key` 的 any 透传后改回 `string`，不再加一层假可空；`loggingSettings` prop 声明 `unknown[]`，宿主状态不动
+
+宿主 1931 行降到 1127 行
+
+复测：create_key 相关五个测试文件 210 例全绿（1 例既有预期失败），含测试的 `tsc --noEmit` 0 错（默认堆上限会 OOM，需 `NODE_OPTIONS=--max-old-space-size=6144`），改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 140/140 与 477/477 均在限内，`npm run build` exit 0。渲染扫描本轮未复跑：本机是无浏览器服务器（脚本第 539 簇起固定 chrome 通道），沿用第 539 簇 38 页 0 渲染错误的结论，本轮属纯 JSX 搬迁、无文案与渲染逻辑改动，CreateKey 弹窗已由 integration 测试整树渲染覆盖
