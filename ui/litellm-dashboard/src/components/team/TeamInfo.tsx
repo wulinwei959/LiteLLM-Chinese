@@ -26,13 +26,14 @@ import { numberOrNull } from "@/lib/forms/numberOrNull";
 import type { ObjectPermission } from "@/components/object_permission_types";
 import { isProxyAdminRole } from "@/utils/roles";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
-import { StatusBadge, type StatusTone } from "@/components/shared/table_cells/status_badge";
 import { BadgeLink } from "@/components/shared/BadgeLink";
+import { type StatusTone } from "@/components/shared/table_cells/status_badge";
 import { Badge } from "@/components/ui/badge";
 import { modelGroupHref, modelOrAccessGroupHref } from "@/utils/entityLinks";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SimpleTooltip } from "@/components/ui/tooltip";
+import { TeamInfoOverview } from "./TeamInfoOverview";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useVisitedTabs } from "@/hooks/useVisitedTabs";
@@ -61,7 +62,6 @@ import { copyToClipboard as utilCopyToClipboard } from "../../utils/dataUtils";
 import { ModelBudgetUsage, ModelMaxBudget, modelMaxBudgetToEntries } from "../key_team_helpers/ModelMaxBudgetEditor";
 import { modelMaxBudgetUpdate, StoredModelMaxBudget } from "../key_team_helpers/modelMaxBudgetPayload";
 import {
-  computeTeamModelBadges,
   normalizeTeamModelSelection,
   TeamAccessGroupModelGrant,
   teamPerModelLimitOptions,
@@ -1233,166 +1233,22 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       key: TEAM_INFO_TAB_KEYS.OVERVIEW,
       label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.OVERVIEW]),
       children: (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="block p-6">
-            <p>{t("infoBudgetStatus")}</p>
-            <div className="mt-2">
-              <h3 className="text-lg font-medium">${formatNumberWithCommas(info.spend, 2)}</h3>
-              <p>
-                {t("infoOfBudget", {
-                  amount:
-                    info.max_budget === null ? t("infoUnlimited") : `$${formatNumberWithCommas(info.max_budget, 2)}`,
-                })}
-              </p>
-              {info.budget_duration && (
-                <p className="text-muted-foreground">{t("infoBudgetReset", { duration: info.budget_duration })}</p>
-              )}
-              <br />
-              {info.team_member_budget_table && (
-                <p className="text-muted-foreground">
-                  {t("infoTeamMemberBudgetValue", {
-                    amount: `$${formatNumberWithCommas(info.team_member_budget_table.max_budget, 2)}`,
-                  })}
-                </p>
-              )}
-            </div>
-          </Card>
-
-          <Card className="block p-6">
-            <p>{t("infoRateLimits")}</p>
-            <div className="mt-2">
-              <p>{t("infoTpmValue", { value: info.tpm_limit ?? t("infoUnlimited") })}</p>
-              <p>{t("infoRpmValue", { value: info.rpm_limit ?? t("infoUnlimited") })}</p>
-              <p>{t("infoTpdBatchValue", { value: info.tpd_limit ?? t("infoUnlimited") })}</p>
-              {info.max_parallel_requests && (
-                <p>{t("infoMaxParallelRequests", { count: info.max_parallel_requests })}</p>
-              )}
-              {(() => {
-                const modelTpm = (info.metadata?.model_tpm_limit ?? {}) as Record<string, number>;
-                const modelRpm = (info.metadata?.model_rpm_limit ?? {}) as Record<string, number>;
-                const models = Array.from(new Set([...Object.keys(modelTpm), ...Object.keys(modelRpm)]));
-                if (models.length === 0) return null;
-                return (
-                  <div className="mt-3">
-                    <p className="text-muted-foreground">{t("infoPerModelLimits")}</p>
-                    {models.map((m) => (
-                      <p key={m} className="text-xs">
-                        {m}: TPM {modelTpm[m] ?? "—"}, RPM {modelRpm[m] ?? "—"}
-                      </p>
-                    ))}
-                  </div>
-                );
-              })()}
-              <p>
-                {t("estimatedOutputTokens.estimatedOutputTokensValue", {
-                  value: info.metadata?.default_estimated_output_tokens ?? t("infoDefault"),
-                })}
-              </p>
-              <p>
-                {t("estimatedOutputTokens.estimatedOutputTokensPerModelValue", {
-                  value: info.metadata?.default_estimated_output_tokens_per_model
-                    ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
-                    : t("infoDefault"),
-                })}
-              </p>
-            </div>
-          </Card>
-
-          <Card className="block p-6">
-            <p>{t("infoRequestSettings")}</p>
-            <div className="mt-2">
-              <p>
-                {t("infoRequireTraceId", {
-                  state: info.metadata?.require_trace_id === true ? t("infoEnabled") : t("infoDisabled"),
-                })}
-              </p>
-            </div>
-          </Card>
-
-          <Card className="block p-6">
-            <p>{t("models")}</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details, t).map(
-                (badge, index) => (
-                  <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={badge.tooltip}>
-                    <span>
-                      <StatusBadge
-                        tone={TEAM_MODEL_BADGE_TONES[badge.kind]}
-                        label={badge.label}
-                        href={teamModelBadgeHref(badge, accessGroupNames)}
-                      />
-                    </span>
-                  </SimpleTooltip>
-                ),
-              )}
-            </div>
-          </Card>
-
-          <Card className="block p-6">
-            <p className="font-semibold text-foreground">{t("infoVirtualKeys")}</p>
-            <div className="mt-2">
-              <p>{t("infoUserKeys", { value: teamData.keys.filter((key) => key.user_id).length })}</p>
-              <p>{t("infoServiceAccountKeys", { value: teamData.keys.filter((key) => !key.user_id).length })}</p>
-              <p className="text-muted-foreground">{t("infoTotal", { value: teamData.keys.length })}</p>
-            </div>
-          </Card>
-
-          <ObjectPermissionsView
-            objectPermission={info.object_permission}
-            inheritedMcpServers={inheritedMcpServers}
-            inheritedAgents={inheritedAgents}
-            inheritedSkills={inheritedSkills}
-            unresolvedAccessGroupIds={info.unresolved_access_group_ids}
-            variant="card"
-            accessToken={accessToken}
-          />
-
-          <Card className="block p-6">
-            <GuardrailSettingsView
-              globalGuardrailNames={globalGuardrailNames}
-              teamGuardrails={Array.isArray(info.metadata?.guardrails) ? info.metadata.guardrails : []}
-              optedOutGlobalGuardrails={
-                Array.isArray(info.metadata?.opted_out_global_guardrails)
-                  ? info.metadata.opted_out_global_guardrails
-                  : []
-              }
-              killSwitchOn={initialKillSwitchOn}
-              variant="inline"
-            />
-          </Card>
-
-          <Card className="block p-6">
-            <p className="font-semibold text-foreground mb-3">{t("listPolicies")}</p>
-            {info.policies && info.policies.length > 0 ? (
-              <div className="space-y-4">
-                {info.policies.map((policy: string, index: number) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{policy}</Badge>
-                      {loadingPolicies && <p className="text-xs text-muted-foreground">{t("infoLoadingGuardrails")}</p>}
-                    </div>
-                    {!loadingPolicies && policyGuardrails[policy] && policyGuardrails[policy].length > 0 && (
-                      <div className="ml-4 pl-3 border-l-2 border-border">
-                        <p className="text-xs text-muted-foreground mb-1">{t("infoResolvedGuardrails")}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {policyGuardrails[policy].map((guardrail: string, gIndex: number) => (
-                            <Badge key={gIndex} variant="secondary">
-                              {guardrail}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">{t("infoNoPoliciesConfigured")}</p>
-            )}
-          </Card>
-
-          <LoggingSettingsView loggingConfigs={info.metadata?.logging || []} disabledCallbacks={[]} variant="card" />
-        </div>
+        <TeamInfoOverview
+          info={info}
+          teamData={teamData}
+          t={t}
+          canViewPolicies={canViewPolicies}
+          globalGuardrailNames={globalGuardrailNames}
+          initialKillSwitchOn={initialKillSwitchOn}
+          inheritedMcpServers={inheritedMcpServers}
+          inheritedAgents={inheritedAgents}
+          inheritedSkills={inheritedSkills}
+          policiesList={policiesList}
+          policyGuardrails={policyGuardrails}
+          loadingPolicies={loadingPolicies}
+          accessGroupNames={accessGroupNames}
+          accessToken={accessToken}
+        />
       ),
     },
     {
