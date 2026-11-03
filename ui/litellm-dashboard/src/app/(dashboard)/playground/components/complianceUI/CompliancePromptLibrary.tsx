@@ -282,14 +282,15 @@ export function CompliancePromptLibrary({
             <div className="mb-2 p-2 bg-card rounded-sm border border-border">
               <p className="text-[10px] text-muted-foreground leading-relaxed">
                 <span className="font-semibold text-muted-foreground">{t("compliance.requiredColumns")}</span>{" "}
-                <code className="bg-muted px-1 rounded-sm text-[10px]">prompt</code>,{" "}
-                <code className="bg-muted px-1 rounded-sm text-[10px]">expected_result</code>{" "}
-                <span className="text-muted-foreground">{t("compliance.failOrPass")}</span>
+                <code className="bg-muted px-1 rounded-sm text-[10px]">{t("compliance.csvColumnPrompt")}</code>
+                {", "}
+                <code className="bg-muted px-1 rounded-sm text-[10px]">{t("compliance.csvColumnExpectedResult")}</code>
               </p>
               <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
                 <span className="font-semibold text-muted-foreground">{t("compliance.optionalColumns")}</span>{" "}
-                <code className="bg-muted px-1 rounded-sm text-[10px]">framework</code>,{" "}
-                <code className="bg-muted px-1 rounded-sm text-[10px]">category</code>
+                <code className="bg-muted px-1 rounded-sm text-[10px]">{t("compliance.csvColumnFramework")}</code>
+                {", "}
+                <code className="bg-muted px-1 rounded-sm text-[10px]">{t("compliance.csvColumnCategory")}</code>
               </p>
             </div>
 

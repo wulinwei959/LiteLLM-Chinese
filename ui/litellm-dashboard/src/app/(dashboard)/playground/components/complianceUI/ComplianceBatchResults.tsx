@@ -67,11 +67,11 @@ export function ComplianceBatchResults({
                 </span>
                 <span className="flex items-center gap-1 text-warning" title={t("compliance.fnTooltip")}>
                   <AlertTriangle className="w-3 h-3" />
-                  {falseNegativeCount} FN
+                  {falseNegativeCount} {t("compliance.fn")}
                 </span>
                 <span className="flex items-center gap-1 text-destructive" title={t("compliance.fpTooltip")}>
                   <X className="w-3 h-3" />
-                  {falsePositiveCount} FP
+                  {falsePositiveCount} {t("compliance.fp")}
                 </span>
                 {pendingCount > 0 && (
                   <span className="flex items-center gap-1 text-muted-foreground">
