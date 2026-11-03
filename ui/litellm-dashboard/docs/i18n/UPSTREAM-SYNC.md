@@ -457,3 +457,11 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 宿主保留 `selectedSdk` 状态与 `generateCodeSnippet` 调用，删掉随之空置的 `react-syntax-highlighter` 与 `Dialog` 系列导入，行数降到 2179，两个新组件合计 154 行
 
 收口实测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0
+
+## 三十、执行记录（2026-10-31）：团队页抽出 MCP 授权解析
+
+第三十篇。`components/team/TeamInfo.tsx` 2741 行里的 MCP 授权组是纯函数：直连与访问组解析、工具权限保留、保存失败文案。整组移到 `team/teamMcpGrants.ts`（105 行），宿主只留导入与调用，测试改为从新模块导入，断言内容不变
+
+随之空置的四个导入在宿主删除。宿主降到 2643 行。选这组是因为有直接测试覆盖，搬动后 148 例即刻验证解析与保留规则未变
+
+收口实测：TeamInfo 两个测试文件 148 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0

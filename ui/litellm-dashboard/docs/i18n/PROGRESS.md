@@ -5489,3 +5489,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 宿主 2281 行降到 2179 行，两个新组件合计 154 行
 
 复测：ChatUI 集成测试 23 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，`npm run build` exit 0
+
+## 2026-10-31 第 556 簇：团队页抽出 MCP 授权解析
+
+`components/team/TeamInfo.tsx` 有 2741 行，其中 MCP 授权这一组是纯函数，含直连与访问组解析、工具权限保留、保存失败文案，与表单和渲染无关，却被放在组件文件里
+
+本轮整组移到 `team/teamMcpGrants.ts`（105 行），导出类型与四个函数。宿主只保留导入与调用，测试改为从新模块导入这四个函数，仍由 `TeamInfo.test.tsx` 直接断言解析结果。宿主里随之空置的 `mcpServersForIdentifier`、`EffectiveMcpServer`、`MCPServer`、`AccessGroupResponse` 导入一并删除
+
+宿主 2741 行降到 2643 行。这是本簇边界最小的一个拆分，选它是因为这组逻辑有直接覆盖的测试，搬动后可立刻验证解析与保留规则没变
+
+复测：TeamInfo 两个测试文件 148 例全绿，含测试的 `tsc --noEmit` 0 错，改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0
