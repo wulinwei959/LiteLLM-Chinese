@@ -50,6 +50,7 @@ import IdJagFormFields from "./IdJagFormFields";
 import OAuthFormFields from "./OAuthFormFields";
 import MCPLogoSelector from "./MCPLogoSelector";
 import EnvVarsSection from "./EnvVarsSection";
+import { AwsSigV4EditFields } from "./AwsSigV4EditFields";
 import { validateMCPServerUrl, validateMCPServerName, normalizeToolOverrideMap } from "./utils";
 import { EditServerFormValues, buildEditServerPayload, editPayloadErrorMessage } from "./editServerPayload";
 import { duplicateIdentifierMessage, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
@@ -407,7 +408,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         // to prevent undefined values from overwriting stored credentials (e.g., client_id).
         const formCredentials = (parsed.formValues.credentials as Record<string, unknown> | undefined) ?? {};
         const filteredFormCredentials = Object.fromEntries(
-          Object.entries(formCredentials).filter(([, value]) => value !== undefined)
+          Object.entries(formCredentials).filter(([, value]) => value !== undefined),
         );
 
         const restoredCredentials = withoutMintedTokenCredentials({
@@ -847,7 +848,11 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 <MountedFormField
                   label={t("edit.serverName")}
                   name="server_name"
-                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
+                  rules={{
+                    validate: validatorRules({
+                      validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")),
+                    }),
+                  }}
                 >
                   {(control) => (
                     <Input
@@ -859,7 +864,11 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 <MountedFormField
                   label={t("create.alias")}
                   name="alias"
-                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
+                  rules={{
+                    validate: validatorRules({
+                      validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")),
+                    }),
+                  }}
                 >
                   {(control) => (
                     <Input
@@ -916,7 +925,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                     rules={{
                       validate: {
                         required: requiredRule(t("edit.urlRequired")),
-                        ...validatorRules({ validator: (_, value) => validateMCPServerUrl(value, t("validation.invalidUrl")) }),
+                        ...validatorRules({
+                          validator: (_, value) => validateMCPServerUrl(value, t("validation.invalidUrl")),
+                        }),
                       },
                     }}
                   >
@@ -1143,154 +1154,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
 
                 {!isStdioTransport && isIdJagAuthType && <IdJagFormFields isEditing />}
 
-                {!isStdioTransport && isAwsSigV4AuthType && (
-                  <>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {t("awsSigv4.intro")}
-                      <a
-                        href="https://docs.litellm.ai/docs/mcp_aws_sigv4"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-info hover:text-info/80"
-                      >
-                        {t("awsSigv4.viewDocs")}
-                      </a>
-                    </p>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.region")}
-                          <SimpleTooltip content={t("awsSigv4.regionTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_region_name"]}
-                    >
-                      {(control) => (
-                        <Input
-                          {...textControl(control)}
-                          placeholder={t("edit.awsRegionPlaceholder")}
-                          className="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.serviceName")}
-                          <SimpleTooltip content={t("awsSigv4.serviceNameTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_service_name"]}
-                    >
-                      {(control) => (
-                        <Input
-                          {...textControl(control)}
-                          placeholder={t("edit.awsServicePlaceholder")}
-                          className="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.accessKeyId")}
-                          <SimpleTooltip content={t("awsSigv4.accessKeyIdTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_access_key_id"]}
-                    >
-                      {(control) => (
-                        <PasswordInput
-                          {...textControl(control)}
-                          placeholder={t("edit.keepExistingOnly")}
-                          groupClassName="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.secretAccessKey")}
-                          <SimpleTooltip content={t("awsSigv4.secretAccessKeyTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_secret_access_key"]}
-                    >
-                      {(control) => (
-                        <PasswordInput
-                          {...textControl(control)}
-                          placeholder={t("edit.keepExistingOnly")}
-                          groupClassName="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.sessionToken")}
-                          <SimpleTooltip content={t("awsSigv4.sessionTokenTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_session_token"]}
-                    >
-                      {(control) => (
-                        <PasswordInput
-                          {...textControl(control)}
-                          placeholder={t("edit.keepExistingOnly")}
-                          groupClassName="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.roleArn")}
-                          <SimpleTooltip content={t("edit.awsRoleArnTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_role_name"]}
-                    >
-                      {(control) => (
-                        <Input
-                          {...textControl(control)}
-                          placeholder={t("edit.keepExistingOnly")}
-                          className="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                    <MountedFormField
-                      label={
-                        <span className="text-sm font-medium text-foreground flex items-center">
-                          {t("awsSigv4.sessionName")}
-                          <SimpleTooltip content={t("awsSigv4.sessionNameTooltip")}>
-                            <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
-                          </SimpleTooltip>
-                        </span>
-                      }
-                      name={["credentials", "aws_session_name"]}
-                    >
-                      {(control) => (
-                        <Input
-                          {...textControl(control)}
-                          placeholder={t("edit.keepExistingOnly")}
-                          className="rounded-lg border-border focus:border-info focus:ring-ring"
-                        />
-                      )}
-                    </MountedFormField>
-                  </>
-                )}
+                {!isStdioTransport && isAwsSigV4AuthType && <AwsSigV4EditFields isEditing />}
 
                 {/* Environment Variables Section */}
                 <div className="mt-6">
