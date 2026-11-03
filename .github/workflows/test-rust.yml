@@ -79,7 +79,7 @@ env:
 
 jobs:
   rust-lint:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 15
     defaults:
       run:
@@ -102,7 +102,7 @@ jobs:
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
 
   rust-test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 30
     # Trim debuginfo to keep the job's target dir within the runner's disk
     env:
@@ -164,7 +164,7 @@ jobs:
           done
 
   rust-wheel:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0

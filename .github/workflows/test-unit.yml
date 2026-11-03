@@ -25,7 +25,7 @@ jobs:
       pull-requests: read
     outputs:
       artifact: ${{ steps.rust-bridge-artifact.outputs.name }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     env:
       UV_PYTHON: "3.12"
     steps:
@@ -111,7 +111,7 @@ jobs:
   assert-shard-coverage:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 2
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -123,7 +123,7 @@ jobs:
     name: ${{ matrix.shard }}
     needs: [rust-bridge, assert-shard-coverage]
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: ${{ matrix.job-timeout-minutes }}
     permissions:
       contents: read
@@ -1097,7 +1097,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 90
     defaults:
       run:
@@ -1189,7 +1189,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
@@ -1271,7 +1271,7 @@ jobs:
     name: helm
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -1314,7 +1314,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -1386,7 +1386,7 @@ jobs:
       contents: read
       id-token: write
       pull-requests: read
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 25
     strategy:
       fail-fast: false
@@ -1490,7 +1490,7 @@ jobs:
     name: coverage
     needs: unit
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
     permissions:
       contents: read
@@ -1546,7 +1546,7 @@ jobs:
     permissions: {}
     needs: [rust-bridge, assert-shard-coverage, unit, ui-unit, docs, helm, openai-sdk-compat, redis-compat]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 2
     steps:
       - name: Require every unit job to succeed

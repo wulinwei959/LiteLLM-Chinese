@@ -47,7 +47,7 @@ concurrency:
 jobs:
   image-scan:
     name: image-scan
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -112,7 +112,7 @@ jobs:
 
   runtime-image:
     name: runtime-image (${{ matrix.dockerfile }})
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -150,7 +150,7 @@ jobs:
 
   migrations-image:
     name: migrations-image
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -181,7 +181,7 @@ jobs:
 
   gateway-image:
     name: gateway-image
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -212,7 +212,7 @@ jobs:
 
   ui-image:
     name: ui-image
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -241,7 +241,7 @@ jobs:
 
   backend-image:
     name: backend-image
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
