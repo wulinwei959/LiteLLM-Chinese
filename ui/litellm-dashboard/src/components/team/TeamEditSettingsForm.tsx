@@ -651,11 +651,7 @@ export const TeamEditSettingsForm: React.FC<TeamEditSettingsFormProps> = ({
             )}
           </FormField>
 
-          <FormField
-            control={form.control}
-            name="allowed_passthrough_routes"
-            label={passThroughRoutesLabel()}
-          >
+          <FormField control={form.control} name="allowed_passthrough_routes" label={passThroughRoutesLabel()}>
             {({ value, onChange }) => (
               <PassThroughRoutesSelector
                 value={value}

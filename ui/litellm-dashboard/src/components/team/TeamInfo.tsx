@@ -58,11 +58,7 @@ import {
   type McpGrantResolution,
 } from "./teamMcpGrants";
 import { copyToClipboard as utilCopyToClipboard } from "../../utils/dataUtils";
-import {
-  ModelBudgetUsage,
-  ModelMaxBudget,
-  modelMaxBudgetToEntries,
-} from "../key_team_helpers/ModelMaxBudgetEditor";
+import { ModelBudgetUsage, ModelMaxBudget, modelMaxBudgetToEntries } from "../key_team_helpers/ModelMaxBudgetEditor";
 import { modelMaxBudgetUpdate, StoredModelMaxBudget } from "../key_team_helpers/modelMaxBudgetPayload";
 import {
   computeTeamModelBadges,
