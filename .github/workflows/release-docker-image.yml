@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build-and-release:
     name: build-and-release
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       IMAGE_NAME: litellm-chinese
