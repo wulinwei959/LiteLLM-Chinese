@@ -485,3 +485,11 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 两条 JSON placeholder 样例随路径重命中英文基线，刷新后总数仍 286；`eslint . --prune-suppressions` 清掉 16 条失效抑制（含 `ModelHubTable.tsx` 的 `max-lines`）
 
 收口实测：TeamInfo 三个测试文件 183 例全绿，含测试的 `tsc --noEmit` 0 错，全仓 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器），沿用第 539 簇结论
+
+## 三十三、执行记录（2026-11-03）：聊天页配置列拆成独立组件
+
+第三十三篇。`playground/components/chat_ui/ChatUI.tsx` 2179 行，左半边配置列 600 余行与发送逻辑、聊天渲染同居一文件。拆到同目录 `ChatConfigPanel.tsx`（组合根 450 行）加两个域子件 `ChatModelConfigSection.tsx`（209 行）、`ChatMcpConfigSection.tsx`（328 行），宿主降到 1620 行，61 个状态值与 setter 平铺传下
+
+这一片的技术要点是复杂度预算的连锁：面板一件装下时主函数圈复杂度 53，全仓 complexity 计数被顶到 141/140 过线，按第 550 簇先例拆域后回 140/140，`no-long-condition-chain` 从 200 降到 197。`serverToolsMap` 的 `Record<string, any[]>` 留宿主 `export type`、子件 `import type`（第 558 簇先例），避免同一个 `any` 随 props 复制四份
+
+收口实测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，prune-suppressions 无变化，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器），沿用第 539 簇结论

@@ -5521,3 +5521,15 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 搬出的 pass-through 路由 label 是三层嵌套三元，原先被宿主的 `no-nested-ternary` 抑制罩着，换文件后冒成 error，按第 552 簇先例拆成 `passThroughRoutesLabel` 早退函数。JSON placeholder 样例两条（`{"gpt-4": 4096}` 与 secret manager 那段）随路径重命中基线，`check:english-leaks:write` 刷新后总数仍是 286。顺手 `eslint . --prune-suppressions` 清掉 16 条失效抑制条目，含 `ModelHubTable.tsx` 拆完已不再触发的 `max-lines` 豁免
 
 复测：TeamInfo 三个测试文件 183 例全绿，含测试的 `tsc --noEmit` 0 错，全仓 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁、无文案改动，设置表单由 TeamInfo integration 测试整树覆盖
+
+## 2026-11-03 第 559 簇：聊天页配置列拆成独立组件
+
+长期账第三项续篇。`playground/components/chat_ui/ChatUI.tsx` 有 2179 行，左半边配置列独占 600 余行：密钥来源、自定义代理地址、端点与语音、模型/agent 选择、标签、自定义请求头、MCP 服务器、向量库、护栏、策略、代码解释器，全和发送逻辑、聊天渲染同居一文件
+
+配置列整块拆到同目录 `ChatConfigPanel.tsx`（组合根，450 行），面板内再按域拆两个子件：`ChatModelConfigSection.tsx`（209 行，模型与 agent 选择，连带 `isChatModel`、`modelsForEndpoint`、空态文案链搬入组件内部）、`ChatMcpConfigSection.tsx`（328 行，服务器选择、直连工具、按服务器工具限制、BYOK 提示）。宿主把 61 个状态值与 setter 平铺传下，自己的发送与渲染逻辑一行不动
+
+拆三件而不是一件：单文件面板只有 761 行，但主函数圈复杂度 53，超开函数上限 20，全仓 complexity 预算被顶到 141/140 过线；按第 550 簇先例拆域后各函数都在限内，预算回 140/140，`local/no-long-condition-chain` 反而从 200 降到 197。MCP 文件内三个提示块做成文件级小组件，JSX 里的四条件 `&&` 守卫改成早退 `if`。`serverToolsMap` 的 `Record<string, any[]>` 按第 558 簇先例留宿主 `export type MCPServerToolsMap`、子件 `import type`，否则同一个 `any` 随 props 复制四份顶 reportAny 上限
+
+宿主 2179 行降到 1620 行
+
+复测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，`eslint . --prune-suppressions` 无变化，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁无文案改动，配置列由 `ChatUI.integration.test.tsx` 整树渲染覆盖
