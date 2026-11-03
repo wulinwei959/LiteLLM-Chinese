@@ -475,3 +475,13 @@ PR #13 期间按本仓结构移除了 13 份上游测试，本轮开始按 conve
 宿主降到 1127 行
 
 收口实测：create_key 相关五个测试文件 210 例全绿（1 例既有预期失败），含测试的 `tsc --noEmit` 0 错（默认堆上限 OOM，6 GB 堆重跑通过），改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 140/140 与 477/477 均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器，脚本自第 539 簇固定 chrome 通道），沿用第 539 簇结论，纯 JSX 搬迁无文案改动，弹窗由 integration 测试整树覆盖
+
+## 三十二、执行记录（2026-11-03）：团队信息编辑表单拆成独立组件
+
+第三十二篇。`team/TeamInfo.tsx` 2643 行，设置 tab 编辑态整个 `<form>` 加 TooltipProvider 罩壳 675 行，与查看态信息列表、成员、密钥表同居一文件。拆到 `team/TeamEditSettingsForm.tsx`（799 行），宿主降到 1965 行
+
+这一片的技术要点是 react-hook-form 的跨文件接线：`form` 与两个 `useFieldArray` 返回值（`UseFieldArrayReturn` 类型）作 prop 传入，组件内解构回原名，搬动的 JSX 一行不改；四个仅供 form 内渲染用的 `form.watch` 值改自挂 `useWatch`；`TeamUpdateFormValues`/`TeamInfoRecord` 留宿主 export、新文件 `import type`，不产生运行时环。嵌套三元在换文件后从抑制里冒出来，按第 552 簇先例拆成早退函数
+
+两条 JSON placeholder 样例随路径重命中英文基线，刷新后总数仍 286；`eslint . --prune-suppressions` 清掉 16 条失效抑制（含 `ModelHubTable.tsx` 的 `max-lines`）
+
+收口实测：TeamInfo 三个测试文件 183 例全绿，含测试的 `tsc --noEmit` 0 错，全仓 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器），沿用第 539 簇结论

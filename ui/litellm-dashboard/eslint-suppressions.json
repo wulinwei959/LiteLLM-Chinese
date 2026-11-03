@@ -901,9 +901,6 @@
     "max-lines": {
       "count": 1
     },
-    "no-nested-ternary": {
-      "count": 1
-    },
     "react-hooks/set-state-in-effect": {
       "count": 2
     }
@@ -1190,14 +1187,6 @@
   },
   "src/components/AIHub/ModelHubTable.test.tsx": {
     "max-params": {
-      "count": 1
-    }
-  },
-  "src/components/AIHub/ModelHubTable.tsx": {
-    "max-lines": {
-      "count": 1
-    },
-    "no-nested-ternary": {
       "count": 1
     }
   },
@@ -1729,7 +1718,7 @@
       "count": 15
     },
     "no-nested-ternary": {
-      "count": 5
+      "count": 4
     },
     "no-restricted-syntax": {
       "count": 140
@@ -1795,9 +1784,6 @@
   },
   "src/components/public_model_hub.tsx": {
     "local/filename-pascal-case": {
-      "count": 1
-    },
-    "max-lines": {
       "count": 1
     }
   },
@@ -1955,7 +1941,7 @@
       "count": 1
     },
     "no-nested-ternary": {
-      "count": 3
+      "count": 2
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
