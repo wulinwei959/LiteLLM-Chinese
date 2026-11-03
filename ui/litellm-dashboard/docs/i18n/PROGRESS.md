@@ -5511,3 +5511,13 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 宿主 1931 行降到 1127 行
 
 复测：create_key 相关五个测试文件 210 例全绿（1 例既有预期失败），含测试的 `tsc --noEmit` 0 错（默认堆上限会 OOM，需 `NODE_OPTIONS=--max-old-space-size=6144`），改动文件 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 140/140 与 477/477 均在限内，`npm run build` exit 0。渲染扫描本轮未复跑：本机是无浏览器服务器（脚本第 539 簇起固定 chrome 通道），沿用第 539 簇 38 页 0 渲染错误的结论，本轮属纯 JSX 搬迁、无文案与渲染逻辑改动，CreateKey 弹窗已由 integration 测试整树渲染覆盖
+
+## 2026-11-03 第 558 簇：团队信息编辑表单拆成独立组件
+
+长期账第三项续篇，这次是 `TeamInfo.tsx`。2643 行里设置 tab 编辑态的 `<TooltipProvider>` 加整个 `<form>` 占 675 行，从建队字段一路排到 secret manager，和查看态的信息列表、成员表格、密钥表挤在一个文件里
+
+整块拆到 `team/TeamEditSettingsForm.tsx`（799 行），宿主 2643 降到 1965。几处接线决定：`TeamUpdateFormValues` 与 `TeamInfoRecord` 留在宿主加 `export`，新文件 `import type` 消费，类型环不构成运行时环；两个 `useFieldArray` 返回值整体作为 prop 传下（`UseFieldArrayReturn<TeamUpdateFormValues, ...>`），组件内解构回 `fields/append/remove` 原名，JSX 逐字不动；form 内四个 `form.watch` 值（models、disable_global_guardrails、mcp_servers_and_groups、mcp_tool_permissions）改新组件自挂 `useWatch`，宿主删掉对应的三行；`applyKillSwitchToGuardrails` 与 `userOrganizations` 只有 form 用，一并搬入
+
+搬出的 pass-through 路由 label 是三层嵌套三元，原先被宿主的 `no-nested-ternary` 抑制罩着，换文件后冒成 error，按第 552 簇先例拆成 `passThroughRoutesLabel` 早退函数。JSON placeholder 样例两条（`{"gpt-4": 4096}` 与 secret manager 那段）随路径重命中基线，`check:english-leaks:write` 刷新后总数仍是 286。顺手 `eslint . --prune-suppressions` 清掉 16 条失效抑制条目，含 `ModelHubTable.tsx` 拆完已不再触发的 `max-lines` 豁免
+
+复测：TeamInfo 三个测试文件 183 例全绿，含测试的 `tsc --noEmit` 0 错，全仓 eslint 0 error，死键 0，静态英文 286/286，中文取值 215/0，lint 预算均在限内，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁、无文案改动，设置表单由 TeamInfo integration 测试整树覆盖

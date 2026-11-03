@@ -1341,6 +1341,16 @@
       "text": "TPM:"
     },
     {
+      "file": "src/components/team/TeamEditSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"gpt-4\": 4096}"
+    },
+    {
+      "file": "src/components/team/TeamEditSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"namespace\": \"admin\", \"mount\": \"secret\", \"path_prefix\": \"litellm\"}"
+    },
+    {
       "file": "src/components/team/TeamInfo.tsx",
       "kind": "jsx",
       "text": ", RPM"
@@ -1349,16 +1359,6 @@
       "file": "src/components/team/TeamInfo.tsx",
       "kind": "jsx",
       "text": ": TPM"
-    },
-    {
-      "file": "src/components/team/TeamInfo.tsx",
-      "kind": "prop:placeholder",
-      "text": "{\"gpt-4\": 4096}"
-    },
-    {
-      "file": "src/components/team/TeamInfo.tsx",
-      "kind": "prop:placeholder",
-      "text": "{\"namespace\": \"admin\", \"mount\": \"secret\", \"path_prefix\": \"litellm\"}"
     },
     {
       "file": "src/components/Teams.tsx",
