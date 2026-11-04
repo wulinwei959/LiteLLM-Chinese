@@ -22,6 +22,14 @@ node scripts/i18n-file-inventory.mjs
 
 216 个里 199 个零命中，按目录的分布：`src/app` 路由文件 88 个（其中 `page.tsx` 40 个，只做重定向或包一层 Panel），shadcn 原语 40 个（`src/components/ui`，只有样式与转接），共享容器 23 个，其余 48 个散在 58 个目录里；另 17 个有可见文案证据。全部清单见下面两节
 
+## 口径盲区：`.ts` 文件不在枚举范围
+
+这份清单只遍历 `.tsx`，`check:english-leaks` 同样只看 `.tsx`。文案放在 `.ts` 的对象字面量里，这道静态口径与本文件都看不见，只有渲染扫描按词组抓得到
+
+2026-11-04 第 561 簇把扫描扩到 playground 时命中一条真漏。`src/app/(dashboard)/playground/components/chat/endpointCapabilities.ts` 由 2026-10-20 的上游合并带入，八条端点能力里的 `placeholder`、三条附件提示和七组示例提示词全是英文字面量。页面渲染出英文，死键、静态英文、中文取值三道门禁当时全绿。修法是把字面量换成键名常量（`placeholderKey`、`ATTACH_LABEL_KEYS`、`SUGGESTION_KEYS`），渲染处 `t()` 取值，沿用 `src/app/chat/page.tsx` 的 `SUGGESTION_KEYS` 先例
+
+渲染扫描也补不上这个洞的一半。它取的是 `innerText()`，`placeholder` 与 tooltip 这类属性文案不在口径里，本轮那十一条属性英文是靠读代码捞的。把枚举口径从 `.tsx` 扩到 `.ts` 是下一个节点的判断题，扩了要连带把上面那套判定（数据、协议标识、程序异常串、测试脚手架）在 `.ts` 侧重新过一遍命中；扫描侧要不要一并读属性，同样是没定的事
+
 ## 有可见文案证据的 17 个
 
 | 文件                                                                                                                                                                              | 证据                                                                                                                                                 | 判定                                                                                                                                                                                                         |

@@ -341,7 +341,8 @@
     "navigation": "导航",
     "gatewayTools": "网关工具",
     "moreOptions": "更多选项",
-    "telemetry": "遥测"
+    "telemetry": "遥测",
+    "changePassword": "修改密码"
   },
   "viewSwitcher": {
     "aiGateway": "AI 网关",
@@ -8630,7 +8631,12 @@
       },
       "suggestions": {
         "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
-        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
+        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
+        "codeInterpreter": [
+          "生成示例销售数据 CSV 并创建图表",
+          "创建对比 AI 网关提供商（含 LiteLLM）的 PNG 柱状图",
+          "生成 LLM 定价数据 CSV 并绘制为折线图"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -9532,6 +9538,21 @@
       "empty": {
         "noVectorStores": "还没有向量库",
         "noGuardrails": "还没有防护栏"
+      },
+      "attach": {
+        "chat": "添加图片或 PDF",
+        "images": "添加要编辑的图片",
+        "audio": "添加音频文件"
+      },
+      "placeholder": {
+        "testRequest": "发送一个测试请求",
+        "image": "描述您想生成的图片",
+        "video": "描述您想生成的视频",
+        "imageEdits": "描述您想如何编辑图片",
+        "embeddings": "要嵌入的文本",
+        "speech": "要转换为语音的文本",
+        "transcription": "可选：为转录添加上下文",
+        "agent": "向智能体发送消息"
       }
     },
     "controls": {

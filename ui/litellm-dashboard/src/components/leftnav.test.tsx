@@ -765,6 +765,7 @@ const mockNavT = ((key: string) => {
     adminSettings: "管理员设置",
     costTracking: "成本追踪",
     uiTheme: "UI Theme",
+    changePassword: "修改密码",
   };
   return translations[key] ?? key;
 }) as unknown as NavTranslator;
@@ -799,5 +800,9 @@ describe("getBreadcrumb", () => {
 
   it("falls back to a prettified title with no section for unknown routes", () => {
     expect(getBreadcrumb("/ui/some-unknown-page", mockNavT)).toEqual({ section: null, title: "Some Unknown Page" });
+  });
+
+  it("titles an unlisted but reachable route from the nav catalog instead of prettifying", () => {
+    expect(getBreadcrumb("/ui/change-password", mockNavT)).toEqual({ section: null, title: "修改密码" });
   });
 });

@@ -11,7 +11,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DraftAttachments } from "./ComposerControls";
 import type { DraftFile } from "./composerFiles";
-import { ACCEPT_FOR, ATTACH_LABEL, type Capabilities } from "./endpointCapabilities";
+import { ACCEPT_FOR, ATTACH_LABEL_KEYS, type Capabilities } from "./endpointCapabilities";
 import { ChecklistMenu, type OptionGroup } from "./Pickers";
 
 export type ChecklistProps = Readonly<{
@@ -39,9 +39,10 @@ function AttachButton({
   capabilities: Capabilities;
   attach: (files: readonly File[]) => void;
 }) {
+  const t = useTranslations("playground.composer");
   const input = useRef<HTMLInputElement>(null);
   if (!capabilities.attach) return null;
-  const label = ATTACH_LABEL[capabilities.attach];
+  const label = t(ATTACH_LABEL_KEYS[capabilities.attach]);
   return (
     <>
       <Tooltip>
@@ -151,7 +152,7 @@ export function Composer({
       value={draft.text}
       onChange={(event) => draft.setText(event.target.value)}
       onKeyDown={handleKeyDown}
-      placeholder={capabilities.placeholder}
+      placeholder={t(capabilities.placeholderKey)}
       rows={2}
       aria-label={t("aria.message")}
       className="max-h-60"

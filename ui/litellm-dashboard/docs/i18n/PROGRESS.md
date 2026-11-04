@@ -5547,3 +5547,19 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 复测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 complexity 138/140（下降），`eslint . --prune-suppressions` 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁无文案改动
 
 静态英文账的两条坑记在这里。`FN`/`FP` 与 CSV 列名 `prompt`、`expected_result`、`framework`、`category` 属机读面，拆文件后六条基线条目要改指新文件而不是删掉，删了会让 CI 报 6 条新漏。首轮本地按 280/280 记账，是因为扫描取 `git ls-files`，新文件还没 `git add` 时不在扫描范围，与第 524、554 簇同一个坑
+
+## 2026-11-04 第 561 簇：渲染扫描扩到 playground，修掉七条新发现
+
+第 539 簇把渲染扫描接进 CI 时 PAGES 停在 38 页，playground、change-password、old-usage 三条在侧栏能点到的路由始终没进扫描面。这三页恰好是本轮全部真漏的出处，静态口径一道都抓不到它们
+
+扩面先把 PAGES 抬到 41 页，首轮拿到 6 处英文加 1 条运行期错误，共 7 条新发现，逐条溯源如下
+
+`/change-password` 面包屑渲染成 `Change Password`。`src/components/leftnav.tsx` 的 `getBreadcrumb` 只对 `UNLISTED_TITLES` 里登记过的路由取 nav 键，其余回落 `prettify(route)`，把路径段当标题拼。补 `nav.changePassword` 中英各一条，`UNLISTED_TITLES` 加映射，测试跟着补一条按键取标题的断言
+
+`/playground` 空会话渲染出三条英文示例提示词按钮。往回追到 `chat/endpointCapabilities.ts`，这张端点能力表是 2026-10-20 上游合并 `797ecb32` 带进来的，从没进过汉化批次。除了扫描抓到的三条，表里还有八条输入框占位符和三条附件按钮提示是英文，这十一条扫描看不见：`.ts` 不在 `check:english-leaks` 的遍历范围是一层，`rendered-ui-scan.mjs` 取 `innerText()`、属性文案不在口径里是另一层，只能读代码捞。改法沿用 `src/app/chat/page.tsx` 的 `SUGGESTION_KEYS` 先例，能力表里存键名（`placeholderKey`、`ATTACH_LABEL_KEYS`、`SUGGESTION_KEYS`、`CODE_INTERPRETER_SUGGESTION_KEYS`），`Composer.tsx` 与 `PlaygroundChat.tsx` 在渲染处 `t()` 取值，目录补 15 叶
+
+`/playground` 另有一条运行期 `FORMATTING_ERROR`：合规测试面板的框架行把「全选/清除」按钮嵌在整行可点的 `<button>` 里，HTML 不允许交互元素嵌套。`CompliancePromptLibrary.tsx` 拆成一行 `div` 容器加两个平级按钮，折叠图标与计数徽标归展开按钮，全选按钮留在右侧
+
+扫描剩下的 `chat`、`completions` 两个词是端点下拉里的 API 名，属机读面，进 `ALLOWED_ENGLISH`。`/v1/mcp/toolset` 无桩导致 `skills` 页轮询报错，补一条空数组桩
+
+复测：41 页 0 渲染错误、0 条新发现、0 条 stub-miss，基线 60 降到 58，剩余分布 api-reference 31、transform-request 18、lens 8、model-insights 1。中英目录各 13575 叶、键差集 0、zh 未译 221/0、en 夹中文 0、死键 0、静态英文 280/280。playground 与 leftnav 四十六个测试文件 583 例全绿且无类型错误，改动文件 `tsc --noEmit`（6 GB 堆）0 错、eslint 0 error，含三条本轮新增的本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红

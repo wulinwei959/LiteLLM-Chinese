@@ -341,7 +341,8 @@
     "navigation": "Navigation",
     "gatewayTools": "Gateway tools",
     "moreOptions": "More options",
-    "telemetry": "Telemetry"
+    "telemetry": "Telemetry",
+    "changePassword": "Change Password"
   },
   "viewSwitcher": {
     "aiGateway": "AI Gateway",
@@ -8630,7 +8631,12 @@
       },
       "suggestions": {
         "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
-        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
+        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
+        "codeInterpreter": [
+          "Generate sample sales data CSV and create a chart",
+          "Create a PNG bar chart comparing AI gateway providers including LiteLLM",
+          "Generate a CSV of LLM pricing data and visualize it as a line chart"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -9536,6 +9542,21 @@
       "empty": {
         "noVectorStores": "No vector stores yet",
         "noGuardrails": "No guardrails yet"
+      },
+      "attach": {
+        "chat": "Attach an image or PDF",
+        "images": "Add images to edit",
+        "audio": "Attach an audio file"
+      },
+      "placeholder": {
+        "testRequest": "Send a test request",
+        "image": "Describe the image you want to generate",
+        "video": "Describe the video you want to generate",
+        "imageEdits": "Describe how to edit the images",
+        "embeddings": "Text to embed",
+        "speech": "Text to turn into speech",
+        "transcription": "Optional context for the transcription",
+        "agent": "Send a message to the agent"
       }
     },
     "controls": {
