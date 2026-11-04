@@ -56,6 +56,8 @@ npm run scan:rendered -- --update-baseline
 
 刷新。
 
+这道门禁目前只在本地手动跑，`.github/workflows/` 里没有接它，接的是死键、静态英文、中文取值三道静态口径。也就是说扫描给的 0 条新发现是每次改动的自证，不是 CI 兜底，改到界面文案却忘了复跑，CI 不会响
+
 ## 数据从哪来
 
 默认自己起一个桩代理，喂给仪表盘的那些响应写在 `scripts/rendered-ui-fixtures.mjs` 里。**形状必须跟代理真返回的一致**，否则页面撞上错误边界，扫到的是错误页而不是界面。踩过的几处：`/team/list` 与 `/organization/list` 返回裸数组，`/v2/team/list` 才分页；`/spend/logs/ui` 是 `{data, total, page, page_size, total_pages}`；`/public/v1/model_hub` 是 `{data, meta}`。
