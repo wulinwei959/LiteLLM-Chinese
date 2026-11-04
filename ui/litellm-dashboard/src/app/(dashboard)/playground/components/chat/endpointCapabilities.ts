@@ -3,6 +3,30 @@ import { AUDIO_ACCEPT, CHAT_ATTACHMENT_ACCEPT, IMAGE_EDIT_ACCEPT } from "../chat
 
 export type AttachKind = "chat" | "images" | "audio";
 
+type ComposerMessageKey =
+  | "attach.audio"
+  | "attach.chat"
+  | "attach.images"
+  | "placeholder.agent"
+  | "placeholder.embeddings"
+  | "placeholder.image"
+  | "placeholder.imageEdits"
+  | "placeholder.speech"
+  | "placeholder.testRequest"
+  | "placeholder.transcription"
+  | "placeholder.video";
+
+type ChatMessageKey =
+  | "suggestions.a2a.0"
+  | "suggestions.a2a.1"
+  | "suggestions.a2a.2"
+  | "suggestions.codeInterpreter.0"
+  | "suggestions.codeInterpreter.1"
+  | "suggestions.codeInterpreter.2"
+  | "suggestions.default.0"
+  | "suggestions.default.1"
+  | "suggestions.default.2";
+
 export type Capabilities = Readonly<{
   target: "model" | "agent" | "mcpTool";
   mcp: boolean;
@@ -18,7 +42,7 @@ export type Capabilities = Readonly<{
   voice: boolean;
   customHeaders: boolean;
   textRequired: boolean;
-  placeholderKey: string;
+  placeholderKey: ComposerMessageKey;
 }>;
 
 const BASE: Capabilities = {
@@ -76,28 +100,32 @@ export const ACCEPT_FOR: Readonly<Record<AttachKind, string>> = {
   audio: AUDIO_ACCEPT,
 };
 
-export const ATTACH_LABEL_KEYS: Readonly<Record<AttachKind, string>> = {
+export const ATTACH_LABEL_KEYS: Readonly<Record<AttachKind, ComposerMessageKey>> = {
   chat: "attach.chat",
   images: "attach.images",
   audio: "attach.audio",
 };
 
-const DEFAULT_SUGGESTION_KEYS: readonly string[] = [
+const DEFAULT_SUGGESTION_KEYS: readonly ChatMessageKey[] = [
   "suggestions.default.0",
   "suggestions.default.1",
   "suggestions.default.2",
 ];
 
-const A2A_SUGGESTION_KEYS: readonly string[] = ["suggestions.a2a.0", "suggestions.a2a.1", "suggestions.a2a.2"];
+const A2A_SUGGESTION_KEYS: readonly ChatMessageKey[] = [
+  "suggestions.a2a.0",
+  "suggestions.a2a.1",
+  "suggestions.a2a.2",
+];
 
-export const SUGGESTION_KEYS: Readonly<Partial<Record<EndpointType, readonly string[]>>> = {
+export const SUGGESTION_KEYS: Readonly<Partial<Record<EndpointType, readonly ChatMessageKey[]>>> = {
   [EndpointType.CHAT]: DEFAULT_SUGGESTION_KEYS,
   [EndpointType.RESPONSES]: DEFAULT_SUGGESTION_KEYS,
   [EndpointType.ANTHROPIC_MESSAGES]: DEFAULT_SUGGESTION_KEYS,
   [EndpointType.A2A_AGENTS]: A2A_SUGGESTION_KEYS,
 };
 
-export const CODE_INTERPRETER_SUGGESTION_KEYS: readonly string[] = [
+export const CODE_INTERPRETER_SUGGESTION_KEYS: readonly ChatMessageKey[] = [
   "suggestions.codeInterpreter.0",
   "suggestions.codeInterpreter.1",
   "suggestions.codeInterpreter.2",

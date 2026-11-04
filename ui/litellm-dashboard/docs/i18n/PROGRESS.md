@@ -5562,4 +5562,8 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 
 扫描剩下的 `chat`、`completions` 两个词是端点下拉里的 API 名，属机读面，进 `ALLOWED_ENGLISH`。`/v1/mcp/toolset` 无桩导致 `skills` 页轮询报错，补一条空数组桩
 
-复测：41 页 0 渲染错误、0 条新发现、0 条 stub-miss，基线 60 降到 58，剩余分布 api-reference 31、transform-request 18、lens 8、model-insights 1。中英目录各 13575 叶、键差集 0、zh 未译 221/0、en 夹中文 0、死键 0、静态英文 280/280。playground 与 leftnav 四十六个测试文件 583 例全绿且无类型错误，改动文件 `tsc --noEmit`（6 GB 堆）0 错、eslint 0 error，含三条本轮新增的本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红
+复测：41 页 0 渲染错误、0 条新发现、0 条 stub-miss，基线 60 降到 58，剩余分布 api-reference 31、transform-request 18、lens 8、model-insights 1。中英目录各 13575 叶、键差集 0、zh 未译 221/0、en 夹中文 0、死键 0、静态英文 280/280。i18n 目录加 chat 目录加 leftnav 25 个测试文件 283 例全绿，playground 全目录加 leftnav 46 个文件 583 例全绿，`npm run build` exit 0，全仓 `npm run lint` 0 error（3250 条既有 warning）
+
+键的类型这一条值得单记。`src/lib/i18n/next-intl.d.ts` 把 `AppConfig.Messages` 声明成 `typeof en.json`，`t()` 收的是 `NamespacedMessageKeys`，首轮把存键名常量写成 `string`，`check:english-leaks` 看不见（`.ts` 不在遍历范围），jsdom 测试全绿（zh-CN 渲染照常命中），只有 CI 的 `npm run typecheck` 与 `next build` 报三处 TS2345。改回 `src/app/chat/page.tsx` 的 `SuggestionKey` 先例，用字面量联合列全 11 条键，`suggestions.default.0` 这类下标键也在带类型的目录里逐个可查，拼错键名从此是编译期错
+
+新增三条本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红

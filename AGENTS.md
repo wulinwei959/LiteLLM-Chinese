@@ -154,6 +154,8 @@ Before requesting maintainer review, verify the current PR tip passes required C
 - 测试失败先对照 HEAD 与 origin/main 的同名文件，确认是本次改动引入还是合并遗留缺陷，再决定修法
 - 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
 - 写入所谓"新"测试文件前先 `git ls-files` 或 `git status` 确认该路径未被跟踪，`ls | head` 截断过的目录清单不能当作不存在，否则 Write 会静默覆盖已有测试并删除用例
+- 2026-11-04 补两条。长命令成败要紧跟一条语句取 `$?`，不要在后面接管道再取，那拿到的是管道末端的 0。本轮因此把 `npm run typecheck` 的三处 TS2345 当成"0 错"写进 PR 正文，CI 才撞回来
+- 双引号里的反引号会真的执行命令：`grep -n "模式 `pgrep -f`" file` 会先跑一次无参 pgrep 再把结果拼进模式。模式里有反引号一律用单引号
 
 ## 合并策略
 
