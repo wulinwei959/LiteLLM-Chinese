@@ -18,7 +18,7 @@ concurrency:
 jobs:
   osv-scan:
     name: osv-scan
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
