@@ -2,6 +2,28 @@ import { describe, expect, it } from "vitest";
 import type { AgentRow } from "../components/overview/agentCatalog";
 import { clientAgentDetail } from "../components/overview/clientAgentDetail";
 import { clientAgentModelsFromExport } from "./clientAgentModelsData";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
+import en from "@/messages/en.json";
+
+type Catalog = { [key: string]: string | Catalog };
+const enMessagesFor =
+  (namespace: string) =>
+  (key: string, values?: Record<string, string | number>): string => {
+    const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
+    const resolved = segments.reduce<Catalog | string | undefined>(
+      (node, segment) => (typeof node === "object" ? node[segment] : undefined),
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
+    );
+    if (typeof resolved !== "string") throw new Error(`No en.json message for "${namespace}.${key}"`);
+    return values
+      ? resolved.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole))
+      : resolved;
+  };
+const tClientUsage = enMessagesFor("clientUsage") as unknown as ClientUsageTranslator;
 
 const desktop = "User-Agent: claude-cli/2.1.1 (external, claude-desktop-3p)";
 const code = "User-Agent: claude-cli/2.1.1 (external, cli)";
@@ -40,7 +62,7 @@ const records = [
 
 describe("clientAgentModelsFromExport", () => {
   it("should return exact Desktop models without Code or bare-tag totals", () => {
-    const result = clientAgentModelsFromExport(records, agent);
+    const result = clientAgentModelsFromExport(tClientUsage, records, agent);
 
     expect(result.error).toBeNull();
     expect(result.results).toHaveLength(1);
@@ -52,7 +74,7 @@ describe("clientAgentModelsFromExport", () => {
   });
 
   it("should preserve recorded input and cache counts for the panel explanation", () => {
-    const { results } = clientAgentModelsFromExport(records, agent);
+    const { results } = clientAgentModelsFromExport(tClientUsage, records, agent);
     const expected = { inputTokens: 240, outputTokens: 60, cacheReadTokens: 60, cacheWriteTokens: 20 };
     expect(clientAgentDetail(agent, results).tokenBreakdown).toEqual(expected);
   });
@@ -61,7 +83,7 @@ describe("clientAgentModelsFromExport", () => {
     const secondTag = "User-Agent: claude-desktop/3.0";
     const multiTagAgent = { ...agent, tags: [desktop, secondTag] };
     const rows = [record, { ...record, entity_id: secondTag }, { ...record, date: "2026-10-21" }];
-    const { results } = clientAgentModelsFromExport(rows, multiTagAgent);
+    const { results } = clientAgentModelsFromExport(tClientUsage, rows, multiTagAgent);
 
     expect(results.map((day) => day.date)).toEqual(["2026-10-21", "2026-10-22"]);
     expect(results[1].breakdown.models["model-a"].metrics.total_tokens).toBe(200);
@@ -71,7 +93,7 @@ describe("clientAgentModelsFromExport", () => {
   it("should label missing model names without losing their recorded usage", () => {
     const oneRow = { ...record, model: null };
     const singleAgent = { ...agent, spend: 1, tokens: 100, requests: 2 };
-    const result = clientAgentModelsFromExport([oneRow], singleAgent);
+    const result = clientAgentModelsFromExport(tClientUsage, [oneRow], singleAgent);
 
     expect(result.error).toBeNull();
     expect(result.results[0].breakdown.models["Unknown model"].metrics.spend).toBe(1);
@@ -81,14 +103,14 @@ describe("clientAgentModelsFromExport", () => {
     "should reject missing %s without inventing zero telemetry",
     (key) => {
       const incomplete = { ...record, [key]: undefined };
-      const result = clientAgentModelsFromExport([incomplete], agent);
+      const result = clientAgentModelsFromExport(tClientUsage, [incomplete], agent);
       expect(result.error).toContain("incomplete");
       expect(result.results).toEqual([]);
     },
   );
 
   it("should reject duplicate tag, model and date rows rather than double-count them", () => {
-    const result = clientAgentModelsFromExport([...records, record], agent);
+    const result = clientAgentModelsFromExport(tClientUsage, [...records, record], agent);
     expect(result.error).toContain("duplicate");
     expect(result.results).toEqual([]);
   });
@@ -96,7 +118,7 @@ describe("clientAgentModelsFromExport", () => {
   it.each([{ spend: 4 }, { tokens: 400 }, { requests: 8 }])(
     "should withhold models when the client summary changed (%o)",
     (changed) => {
-      const result = clientAgentModelsFromExport(records, { ...agent, ...changed });
+      const result = clientAgentModelsFromExport(tClientUsage, records, { ...agent, ...changed });
       expect(result.error).toContain("does not match");
       expect(result.results).toEqual([]);
     },
@@ -104,7 +126,7 @@ describe("clientAgentModelsFromExport", () => {
 
   it("should never fall back to unrelated models when no exact tags match", () => {
     const otherAgent = { ...agent, tags: ["User-Agent: absent"] };
-    const result = clientAgentModelsFromExport(records, otherAgent);
+    const result = clientAgentModelsFromExport(tClientUsage, records, otherAgent);
     expect(result.error).not.toBeNull();
     expect(result.results).toEqual([]);
   });

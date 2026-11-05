@@ -1,5 +1,33 @@
 import { describe, expect, it } from "vitest";
 import { resolveClientUsageScope, type ClientUsageScopeInput, type ClientUsageTeam } from "./clientUsageScope";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
+import en from "@/messages/en.json";
+
+type Catalog = { [key: string]: string | Catalog };
+
+const enMessagesFor =
+  (namespace: string) =>
+  (key: string, values?: Record<string, string | number>): string => {
+    const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
+    const resolved = segments.reduce<Catalog | string | undefined>(
+      (node, segment) => (typeof node === "object" ? node[segment] : undefined),
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
+    );
+
+    if (typeof resolved !== "string") {
+      throw new Error(`No en.json message for "${namespace}.${key}"`);
+    }
+
+    return values
+      ? resolved.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole))
+      : resolved;
+  };
+
+const tClientUsage = enMessagesFor("clientUsage") as unknown as ClientUsageTranslator;
 
 const teams: readonly ClientUsageTeam[] = [
   {
@@ -39,7 +67,7 @@ const defaults: ClientUsageScopeInput = {
 };
 
 const scopeFor = (overrides: Partial<ClientUsageScopeInput> = {}) =>
-  resolveClientUsageScope({ ...defaults, ...overrides });
+  resolveClientUsageScope(tClientUsage, { ...defaults, ...overrides });
 
 describe("resolveClientUsageScope", () => {
   it("should default a signed-in user to personal usage", () => {
@@ -69,7 +97,7 @@ describe("resolveClientUsageScope", () => {
       const result = scopeFor({ userRole, teams: [], requestedUserId: "outside-user" });
       expect(result.canChooseGlobalUser).toBe(false);
       expect(result.scope).toBeNull();
-      expect(result.error).toBe("Choose an administered team before viewing another member's usage");
+      expect(result.error).toBe(tClientUsage("chooseTeamBeforeOtherMember"));
     },
   );
 
@@ -104,7 +132,7 @@ describe("resolveClientUsageScope", () => {
   it("should reject a member from another administered team instead of querying that person's global usage", () => {
     const result = scopeFor({ requestedTeamId: "engineering", requestedUserId: "bob" });
     expect(result.scope).toBeNull();
-    expect(result.error).toBe("Choose a member of the selected team");
+    expect(result.error).toBe(tClientUsage("chooseTeamMember"));
     expect(result.members.map((member) => member.value)).not.toContain("bob");
   });
 
@@ -112,7 +140,7 @@ describe("resolveClientUsageScope", () => {
     const result = scopeFor({ requestedTeamId });
     expect(result.scope).toBeNull();
     expect(result.members).toEqual([]);
-    expect(result.error).toBe("Choose a team you administer");
+    expect(result.error).toBe(tClientUsage("chooseAdminTeam"));
   });
 
   it("should reject a formerly valid selection as soon as team membership is removed", () => {
@@ -125,7 +153,7 @@ describe("resolveClientUsageScope", () => {
   it("should not use a missing team list to authorize a saved team or member selection", () => {
     const result = scopeFor({ teams: undefined, requestedTeamId: "engineering", requestedUserId: "alice" });
     expect(result.scope).toBeNull();
-    expect(result.error).toBe("Choose a team you administer");
+    expect(result.error).toBe(tClientUsage("chooseAdminTeam"));
   });
 
   it("should restrict proxy-admin member options to the selected team too", () => {
@@ -154,7 +182,7 @@ describe("resolveClientUsageScope", () => {
     expect(result.administeredTeams).toEqual([]);
     expect(result.members).toEqual([]);
     expect(result.canChooseGlobalUser).toBe(false);
-    expect(result.error).toBe("Sign in to view client usage");
+    expect(result.error).toBe(tClientUsage("signInRequired"));
   });
 
   it("should not mutate the supplied team membership data", () => {

@@ -207,9 +207,9 @@ describe("ClientUsagePanel", () => {
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
     await waitFor(() => expect(panel).toHaveTextContent(/花费\s*\$3\.00/));
     expect(panel).toHaveTextContent("选定用户");
-    expect(panel).toHaveTextContent(/缓存读取\s*Unavailable/);
-    expect(panel).toHaveTextContent(/缓存写入\s*Unavailable/);
-    expect(panel).toHaveTextContent(/未缓存输入\s*Unavailable/);
+    expect(panel).toHaveTextContent(/缓存读取\s*不可用/);
+    expect(panel).toHaveTextContent(/缓存写入\s*不可用/);
+    expect(panel).toHaveTextContent(/未缓存输入\s*不可用/);
     expect(panel).toHaveTextContent(/输出\s*200/);
 
     await user.click(screen.getByRole("button", { name: "全部用户" }));
@@ -233,8 +233,8 @@ describe("ClientUsagePanel", () => {
 
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
     expect(panel).toHaveTextContent(/花费\s*\$25\.00/);
-    expect(within(panel).getAllByText("Unavailable")).toHaveLength(4);
-    expect(await screen.findByText(/Model usage does not match these client totals yet/)).toBeInTheDocument();
+    expect(within(panel).getAllByText("不可用")).toHaveLength(4);
+    expect(await screen.findByText(/模型用量尚未与这些客户端汇总匹配/)).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "按日用量" })).not.toBeInTheDocument();
     expect(screen.queryByText("5,000")).not.toBeInTheDocument();
   });
@@ -408,7 +408,7 @@ describe("ClientUsagePanel", () => {
       return <ClientUsagePanel {...defaultProps} agent={summary} onRetry={() => setSummary(agent)} />;
     }
     renderWithProviders(<StaleSummaryPanel />);
-    expect(await screen.findByText(/Model usage does not match these client totals/)).toBeInTheDocument();
+    expect(await screen.findByText(/模型用量尚未与这些客户端汇总匹配/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "重试模型明细" }));
     expect(await screen.findByText("test-model")).toBeInTheDocument();
   });

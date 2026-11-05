@@ -1,10 +1,38 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import React from "react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { dailyActivityExportCall } from "@/components/networking";
 import type { AgentRow } from "../components/overview/agentCatalog";
 import { MAX_CLIENT_MODEL_EXPORT_BYTES, useClientAgentModels } from "./useClientAgentModels";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
+import en from "@/messages/en.json";
 
 vi.mock("@/components/networking", () => ({ dailyActivityExportCall: vi.fn() }));
+
+type Catalog = { [key: string]: string | Catalog };
+const enMessagesFor =
+  (namespace: string) =>
+  (key: string, values?: Record<string, string | number>): string => {
+    const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
+    const resolved = segments.reduce<Catalog | string | undefined>(
+      (node, segment) => (typeof node === "object" ? node[segment] : undefined),
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
+    );
+    if (typeof resolved !== "string") throw new Error(`No en.json message for "${namespace}.${key}"`);
+    return values
+      ? resolved.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole))
+      : resolved;
+  };
+const tClientUsage = enMessagesFor("clientUsage") as unknown as ClientUsageTranslator;
+
+const LocaleWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <LocaleProvider locale="en">{children}</LocaleProvider>
+);
 
 const tag = "User-Agent: claude-cli/2.1.1 (external, claude-desktop-3p)";
 const agent: AgentRow = {
@@ -52,7 +80,7 @@ describe("useClientAgentModels", () => {
 
   it("should request the complete authenticated model export for exact local filtering", async () => {
     vi.mocked(dailyActivityExportCall).mockResolvedValue(jsonBlob(records));
-    const { result } = renderHook(() => useClientAgentModels(options));
+    const { result } = renderHook(() => useClientAgentModels(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
     const expectedRequest = {
       accessToken: options.accessToken,
@@ -74,7 +102,7 @@ describe("useClientAgentModels", () => {
   it("should require the caller's enabled gate and authentication", () => {
     const { result, rerender } = renderHook(
       ({ enabled, accessToken }) => useClientAgentModels({ ...options, enabled, accessToken }),
-      { initialProps: { enabled: false, accessToken: "test-token" as string | null } },
+      { initialProps: { enabled: false, accessToken: "test-token" as string | null }, wrapper: LocaleWrapper },
     );
     expect(result.current.results).toEqual([]);
     rerender({ enabled: true, accessToken: null });
@@ -85,15 +113,15 @@ describe("useClientAgentModels", () => {
   it("should reject an oversized export without parsing or displaying partial totals", async () => {
     const oversized = new Blob([new Uint8Array(MAX_CLIENT_MODEL_EXPORT_BYTES + 1)]);
     vi.mocked(dailyActivityExportCall).mockResolvedValue(oversized);
-    const { result } = renderHook(() => useClientAgentModels(options));
-    await waitFor(() => expect(result.current.error).toContain("shorter date range"));
+    const { result } = renderHook(() => useClientAgentModels(options), { wrapper: LocaleWrapper });
+    await waitFor(() => expect(result.current.error).toBe(tClientUsage("chooseShorterDateRange")));
     expect(result.current.results).toEqual([]);
   });
 
   it("should reject incomplete JSON rather than consume part of an export", async () => {
     vi.mocked(dailyActivityExportCall).mockResolvedValue(blob('[{"date":"2026-10-22"'));
-    const { result } = renderHook(() => useClientAgentModels(options));
-    await waitFor(() => expect(result.current.error).toBe("Could not load complete model usage. Try again."));
+    const { result } = renderHook(() => useClientAgentModels(options), { wrapper: LocaleWrapper });
+    await waitFor(() => expect(result.current.error).toBe(tClientUsage("couldNotLoadCompleteModelUsage")));
     expect(result.current.results).toEqual([]);
   });
 
@@ -103,6 +131,7 @@ describe("useClientAgentModels", () => {
       .mockReturnValueOnce(new Promise(() => {}));
     const { result, rerender } = renderHook(({ startTime }) => useClientAgentModels({ ...options, startTime }), {
       initialProps: { startTime: options.startTime },
+      wrapper: LocaleWrapper,
     });
     await waitFor(() => expect(result.current.results).toHaveLength(1));
     rerender({ startTime: new Date("2026-10-21T07:00:00Z") });
@@ -120,6 +149,7 @@ describe("useClientAgentModels", () => {
     vi.mocked(dailyActivityExportCall).mockReturnValueOnce(first).mockResolvedValueOnce(jsonBlob(changedRows));
     const { result, rerender } = renderHook(({ agent }) => useClientAgentModels({ ...options, agent }), {
       initialProps: { agent },
+      wrapper: LocaleWrapper,
     });
     rerender({ agent: changedAgent });
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -131,6 +161,7 @@ describe("useClientAgentModels", () => {
     vi.mocked(dailyActivityExportCall).mockResolvedValue(jsonBlob(records));
     const { result, rerender } = renderHook(({ enabled }) => useClientAgentModels({ ...options, enabled }), {
       initialProps: { enabled: true },
+      wrapper: LocaleWrapper,
     });
     await waitFor(() => expect(result.current.results).toHaveLength(1));
     rerender({ enabled: false });
@@ -143,7 +174,7 @@ describe("useClientAgentModels", () => {
     vi.mocked(dailyActivityExportCall)
       .mockRejectedValueOnce(new Error("Export unavailable"))
       .mockResolvedValueOnce(jsonBlob(records));
-    const { result } = renderHook(() => useClientAgentModels(options));
+    const { result } = renderHook(() => useClientAgentModels(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.error).toBe("Export unavailable"));
 
     act(() => result.current.reload());
@@ -158,7 +189,7 @@ describe("useClientAgentModels", () => {
     vi.mocked(dailyActivityExportCall)
       .mockResolvedValueOnce(jsonBlob(records))
       .mockReturnValueOnce(new Promise(() => {}));
-    const { result } = renderHook(() => useClientAgentModels(options));
+    const { result } = renderHook(() => useClientAgentModels(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.results).toHaveLength(1));
 
     act(() => result.current.reload());

@@ -1,11 +1,27 @@
 import { describe, expect, it } from "vitest";
-import {
-  clientUsageFromLogs,
-  identifyUsageClient,
-  INCOMPLETE_CLIENT_USAGE,
-  UsageClient,
-  type ClientUsageScope,
-} from "./clientUsageData";
+import { clientUsageFromLogs, identifyUsageClient, UsageClient, type ClientUsageScope } from "./clientUsageData";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
+import en from "@/messages/en.json";
+
+type Catalog = { [key: string]: string | Catalog };
+const enMessagesFor =
+  (namespace: string) =>
+  (key: string, values?: Record<string, string | number>): string => {
+    const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
+    const resolved = segments.reduce<Catalog | string | undefined>(
+      (node, segment) => (typeof node === "object" ? node[segment] : undefined),
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
+    );
+    if (typeof resolved !== "string") throw new Error(`No en.json message for "${namespace}.${key}"`);
+    return values
+      ? resolved.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole))
+      : resolved;
+  };
+const tClientUsage = enMessagesFor("clientUsage") as unknown as ClientUsageTranslator;
 
 const desktopAgent = "claude-cli/2.1.299 (external, claude-desktop-3p, agent-sdk/0.3.299)";
 const log = (overrides: Record<string, unknown> = {}) => ({
@@ -60,7 +76,11 @@ describe("client usage from request logs", () => {
   });
 
   it("should preserve recorded totals, local days, model groups, providers and measured latency", () => {
-    const result = clientUsageFromLogs(page([log(), log({ request_id: "request-2", status: "failure" })]), scope);
+    const result = clientUsageFromLogs(
+      tClientUsage,
+      page([log(), log({ request_id: "request-2", status: "failure" })]),
+      scope,
+    );
     expect(result.error).toBeNull();
     const expectedTotals = {
       total_spend: 0.026,
@@ -88,7 +108,7 @@ describe("client usage from request logs", () => {
   });
 
   it("should deduplicate request ids without double counting bare and full user-agent tags", () => {
-    const result = clientUsageFromLogs(page([log(), log({ spend: 0.02 })]), scope);
+    const result = clientUsageFromLogs(tClientUsage, page([log(), log({ spend: 0.02 })]), scope);
     expect(result.data.metadata?.total_api_requests).toBe(1);
     expect(result.data.metadata?.total_spend).toBe(0.02);
     expect(result.data.metadata?.total_tokens).toBe(1200);
@@ -100,8 +120,8 @@ describe("client usage from request logs", () => {
       log({ request_id: "code", request_tags: [], metadata: { user_agent: "claude-cli/2.1.299 (external, cli)" } }),
       log({ request_id: "unknown", request_tags: ["User-Agent: claude-cli"], metadata: null }),
     ];
-    const desktop = clientUsageFromLogs(page(rows), scope);
-    const code = clientUsageFromLogs(page(rows), { ...scope, client: UsageClient.ClaudeCode });
+    const desktop = clientUsageFromLogs(tClientUsage, page(rows), scope);
+    const code = clientUsageFromLogs(tClientUsage, page(rows), { ...scope, client: UsageClient.ClaudeCode });
     expect(desktop.data.metadata?.total_api_requests).toBe(1);
     expect(code.data.metadata?.total_api_requests).toBe(1);
     expect(identifyUsageClient("claude-code/3.0", [])).toBe("claude-code");
@@ -114,31 +134,36 @@ describe("client usage from request logs", () => {
   it.each([{ total: 1001, total_pages: 2 }, { total: 10000, total_is_capped: true }, { total_pages: 2 }])(
     "should refuse totals for a partial page %j",
     (overrides) => {
-      const result = clientUsageFromLogs(page([log()], overrides), scope);
-      expect(result.error).toBe(INCOMPLETE_CLIENT_USAGE);
+      const result = clientUsageFromLogs(tClientUsage, page([log()], overrides), scope);
+      expect(result.error).toBe(tClientUsage("incompleteClientUsage"));
       expect(result.data.results).toEqual([]);
       expect(result.data.metadata?.total_spend).toBe(0);
     },
   );
 
   it("should refuse malformed or unexpectedly truncated data instead of displaying inaccurate totals", () => {
-    expect(clientUsageFromLogs(page([log()], { total: 2 }), scope).error).toBeTruthy();
-    expect(clientUsageFromLogs(page([log({ spend: "0.013" })]), scope).error).toBeTruthy();
-    expect(clientUsageFromLogs(page([log({ startTime: "invalid" })]), scope).error).toBeTruthy();
+    expect(clientUsageFromLogs(tClientUsage, page([log()], { total: 2 }), scope).error).toBeTruthy();
+    expect(clientUsageFromLogs(tClientUsage, page([log({ spend: "0.013" })]), scope).error).toBeTruthy();
+    expect(clientUsageFromLogs(tClientUsage, page([log({ startTime: "invalid" })]), scope).error).toBeTruthy();
   });
 
   it("should reject rows attributed to another request user regardless of key metadata", () => {
-    const result = clientUsageFromLogs(page([log({ user: "someone-else" })]), scope);
-    expect(result.error).toBe("The proxy returned usage outside the selected user");
+    const result = clientUsageFromLogs(tClientUsage, page([log({ user: "someone-else" })]), scope);
+    expect(result.error).toBe(tClientUsage("proxyUsageOutsideUser"));
     expect(result.data.results).toEqual([]);
   });
 
   it("should keep unknown cache separate from recorded zero values", () => {
-    const unknown = clientUsageFromLogs(page([log({ status: null, metadata: { user_agent: desktopAgent } })]), scope);
+    const unknown = clientUsageFromLogs(
+      tClientUsage,
+      page([log({ status: null, metadata: { user_agent: desktopAgent } })]),
+      scope,
+    );
     expect(unknown.cacheAvailable).toBe(false);
     expect(unknown.data.metadata?.total_tokens).toBe(1200);
     expect(unknown.data.metadata?.total_spend).toBe(0.013);
     const zero = clientUsageFromLogs(
+      tClientUsage,
       page([
         log({
           metadata: {
@@ -155,6 +180,7 @@ describe("client usage from request logs", () => {
 
   it("should use recorded nested cache counts and metadata status when direct fields are absent", () => {
     const result = clientUsageFromLogs(
+      tClientUsage,
       page([
         log({
           status: null,
@@ -179,7 +205,7 @@ describe("client usage from request logs", () => {
       log({ request_id: "inside", startTime: "2026-10-22T10:00:00.500" }),
       log({ request_id: "after", startTime: "2026-10-22T10:00:01Z" }),
     ];
-    const result = clientUsageFromLogs(page(rows), {
+    const result = clientUsageFromLogs(tClientUsage, page(rows), {
       ...scope,
       startTime: new Date("2026-10-22T10:00:00.400Z"),
       endTime: new Date("2026-10-22T10:00:00.800Z"),
@@ -189,6 +215,7 @@ describe("client usage from request logs", () => {
 
   it.each([0, 100])("should retain legacy recorded cache_write_tokens of %s", (cacheWrite) => {
     const result = clientUsageFromLogs(
+      tClientUsage,
       page([
         log({
           metadata: {
@@ -204,10 +231,11 @@ describe("client usage from request logs", () => {
   });
 
   it("should allow a complete empty page or exactly 1,000 records", () => {
-    const empty = clientUsageFromLogs(page([]), scope);
+    const empty = clientUsageFromLogs(tClientUsage, page([]), scope);
     expect(empty.error).toBeNull();
     expect(empty.data.results).toEqual([]);
     const full = clientUsageFromLogs(
+      tClientUsage,
       page(Array.from({ length: 1000 }, (_, index) => log({ request_id: `${index}` }))),
       scope,
     );
@@ -217,31 +245,40 @@ describe("client usage from request logs", () => {
   it("should aggregate all selected-team requests including unassigned team keys", () => {
     const teamScope = { ...scope, userId: null, teamId: "engineering" };
     const rows = [log({ team_id: "engineering" }), log({ request_id: "team-key", user: null, team_id: "engineering" })];
-    const result = clientUsageFromLogs(page(rows), teamScope);
+    const result = clientUsageFromLogs(tClientUsage, page(rows), teamScope);
     expect(result.error).toBeNull();
     expect(result.data.metadata?.total_api_requests).toBe(2);
     expect(result.data.metadata?.total_spend).toBe(0.026);
   });
 
   it.each([null, undefined, "different-team"])("should reject team results with mismatched team %s", (teamId) => {
-    const result = clientUsageFromLogs(page([log({ team_id: teamId })]), { ...scope, teamId: "engineering" });
-    expect(result.error).toBe("The proxy returned usage outside the selected team");
+    const result = clientUsageFromLogs(tClientUsage, page([log({ team_id: teamId })]), {
+      ...scope,
+      teamId: "engineering",
+    });
+    expect(result.error).toBe(tClientUsage("proxyUsageOutsideTeam"));
     expect(result.data.results).toEqual([]);
   });
 
   it("should require both selected member and selected team to match", () => {
     const memberScope = { ...scope, teamId: "engineering" };
-    const ownOtherTeam = clientUsageFromLogs(page([log({ team_id: "design" })]), memberScope);
-    const otherTeamMember = clientUsageFromLogs(page([log({ team_id: "engineering", user: "user-2" })]), memberScope);
-    const member = clientUsageFromLogs(page([log({ team_id: "engineering" })]), memberScope);
-    expect(ownOtherTeam.error).toContain("outside the selected team");
-    expect(otherTeamMember.error).toContain("outside the selected user");
+    const ownOtherTeam = clientUsageFromLogs(tClientUsage, page([log({ team_id: "design" })]), memberScope);
+    const otherTeamMember = clientUsageFromLogs(
+      tClientUsage,
+      page([log({ team_id: "engineering", user: "user-2" })]),
+      memberScope,
+    );
+    const member = clientUsageFromLogs(tClientUsage, page([log({ team_id: "engineering" })]), memberScope);
+    expect(ownOtherTeam.error).toBe(tClientUsage("proxyUsageOutsideTeam"));
+    expect(otherTeamMember.error).toBe(tClientUsage("proxyUsageOutsideUser"));
     expect(member.error).toBeNull();
     expect(member.data.metadata?.total_api_requests).toBe(1);
   });
 
   it("should refuse unscoped request-log aggregation", () => {
-    expect(clientUsageFromLogs(page([log()]), { ...scope, userId: null }).error).toContain("Select a user or team");
+    expect(clientUsageFromLogs(tClientUsage, page([log()]), { ...scope, userId: null }).error).toBe(
+      tClientUsage("selectUserOrTeam"),
+    );
   });
 
   it("should exclude unrelated clients containing a Desktop marker from Desktop totals", () => {
@@ -258,7 +295,7 @@ describe("client usage from request logs", () => {
         metadata: null,
       }),
     ];
-    const result = clientUsageFromLogs(page(rows), scope);
+    const result = clientUsageFromLogs(tClientUsage, page(rows), scope);
     expect(result.error).toBeNull();
     expect(result.data.metadata?.total_api_requests).toBe(1);
     expect(result.data.metadata?.total_spend).toBe(0.013);
@@ -269,13 +306,13 @@ describe("client usage from request logs", () => {
     { requestTags: { " User Agent ": "claude-desktop/1.0" } },
     { requestTags: { " User-Agent: claude-desktop/1.0 ": true } },
   ])("should recognize the catalog's normalized tag formats %j", ({ requestTags }) => {
-    const result = clientUsageFromLogs(page([log({ request_tags: requestTags, metadata: null })]), scope);
+    const result = clientUsageFromLogs(tClientUsage, page([log({ request_tags: requestTags, metadata: null })]), scope);
     expect(result.data.metadata?.total_api_requests).toBe(1);
   });
 
   it("should retain recorded zero and positive cache counts from the Responses API usage shape", () => {
     const responseUsage = { input_tokens_details: { cached_tokens: 0, cache_write_tokens: 100 } };
-    const result = clientUsageFromLogs(page([log({ metadata: { usage_object: responseUsage } })]), scope);
+    const result = clientUsageFromLogs(tClientUsage, page([log({ metadata: { usage_object: responseUsage } })]), scope);
     expect(result.cacheAvailable).toBe(true);
     expect(result.data.metadata?.total_cache_read_input_tokens).toBe(0);
     expect(result.data.metadata?.total_cache_creation_input_tokens).toBe(100);

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { dailyActivityExportCall } from "@/components/networking";
 import type { DailyActivityRequest } from "@/components/UsagePage/dailyActivityApi";
 import type { AgentRow } from "../components/overview/agentCatalog";
 import { clientAgentModelsFromExport, type ClientAgentModelsResult } from "./clientAgentModelsData";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
 
 interface ClientAgentModelsOptions {
   accessToken: string | null;
@@ -14,19 +16,23 @@ interface ClientAgentModelsOptions {
 
 export const MAX_CLIENT_MODEL_EXPORT_BYTES = 20 * 1024 * 1024;
 
-const loadModels = async (request: DailyActivityRequest, agent: AgentRow): Promise<ClientAgentModelsResult> => {
+const loadModels = async (
+  t: ClientUsageTranslator,
+  request: DailyActivityRequest,
+  agent: AgentRow,
+): Promise<ClientAgentModelsResult> => {
   try {
     const blob = await dailyActivityExportCall("tag", request, "daily_with_models", "json");
     if (blob.size > MAX_CLIENT_MODEL_EXPORT_BYTES) {
-      return { results: [], error: "Choose a shorter date range to load the model breakdown" };
+      return { results: [], error: t("chooseShorterDateRange") };
     }
     const payload: unknown = JSON.parse(await blob.text());
-    return clientAgentModelsFromExport(payload, agent);
+    return clientAgentModelsFromExport(t, payload, agent);
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
-      return { results: [], error: "Could not load complete model usage. Try again." };
+      return { results: [], error: t("couldNotLoadCompleteModelUsage") };
     }
-    return { results: [], error: error instanceof Error ? error.message : "Could not load the model breakdown" };
+    return { results: [], error: error instanceof Error ? error.message : t("couldNotLoadModelBreakdown") };
   }
 };
 
@@ -35,6 +41,7 @@ const agentKey = (agent: AgentRow | null) =>
 const timestamp = (date: Date | null) => date?.getTime() ?? Number.NaN;
 
 export function useClientAgentModels({ accessToken, startTime, endTime, agent, enabled }: ClientAgentModelsOptions) {
+  const t = useTranslations("clientUsage");
   const start = timestamp(startTime);
   const end = timestamp(endTime);
   const validRange = Number.isFinite(start) && Number.isFinite(end) && start <= end;
@@ -49,7 +56,7 @@ export function useClientAgentModels({ accessToken, startTime, endTime, agent, e
     if (!accessToken || !agent) return;
     let cancelled = false;
     const request = { accessToken, startTime: new Date(start), endTime: new Date(end), entityIds: null };
-    loadModels(request, agent).then((result) => {
+    loadModels(t, request, agent).then((result) => {
       if (!cancelled) setSettled({ key, result });
     });
     return () => {
@@ -61,7 +68,7 @@ export function useClientAgentModels({ accessToken, startTime, endTime, agent, e
   return {
     results: current?.results ?? [],
     loading: active && validRange && current === null,
-    error: active && !validRange ? "Select a valid date range" : current?.error ?? null,
+    error: active && !validRange ? t("selectValidDateRange") : current?.error ?? null,
     reload,
   };
 }

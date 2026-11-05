@@ -7,6 +7,7 @@ import {
 import type { components } from "@/lib/http/schema";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 import { isUserAgentTag, usageClientFromUserAgent, UsageClient } from "../components/overview/agentCatalog";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
 
 type DailyData = components["schemas"]["DailySpendData"];
 type MetricWithMetadata = components["schemas"]["MetricWithMetadata"];
@@ -14,8 +15,6 @@ type SpendMetrics = components["schemas"]["SpendMetrics"];
 
 export { UsageClient } from "../components/overview/agentCatalog";
 export const CLIENT_REQUEST_LIMIT = 1000;
-export const INCOMPLETE_CLIENT_USAGE =
-  "Narrow the date range to fewer than 1,000 requests to see complete client usage";
 
 const count = z.number().int().nonnegative();
 const cacheDetailsSchema = z.object({
@@ -184,20 +183,24 @@ const dailyData = (rows: readonly ClientLog[]): DailyData[] =>
     };
   });
 
-export function clientUsageFromLogs(response: unknown, scope: ClientUsageScope): ClientUsageResult {
-  if (!scope.userId && !scope.teamId) return emptyClientUsage("Select a user or team to view client usage");
+export function clientUsageFromLogs(
+  t: ClientUsageTranslator,
+  response: unknown,
+  scope: ClientUsageScope,
+): ClientUsageResult {
+  if (!scope.userId && !scope.teamId) return emptyClientUsage(t("selectUserOrTeam"));
   const parsed = pageSchema.safeParse(response);
-  if (!parsed.success) return emptyClientUsage("The proxy returned incomplete client usage data");
+  if (!parsed.success) return emptyClientUsage(t("proxyIncompleteData"));
   const page = parsed.data;
   if (page.total_is_capped || page.total_pages > 1 || page.total > CLIENT_REQUEST_LIMIT) {
-    return emptyClientUsage(INCOMPLETE_CLIENT_USAGE);
+    return emptyClientUsage(t("incompleteClientUsage"));
   }
-  if (page.data.length !== page.total) return emptyClientUsage("The proxy returned incomplete client usage data");
+  if (page.data.length !== page.total) return emptyClientUsage(t("proxyIncompleteData"));
   if (scope.userId && page.data.some((row) => row.user !== scope.userId)) {
-    return emptyClientUsage("The proxy returned usage outside the selected user");
+    return emptyClientUsage(t("proxyUsageOutsideUser"));
   }
   if (scope.teamId && page.data.some((row) => row.team_id !== scope.teamId)) {
-    return emptyClientUsage("The proxy returned usage outside the selected team");
+    return emptyClientUsage(t("proxyUsageOutsideTeam"));
   }
   const uniqueRows = [...new Map(page.data.map((row) => [row.request_id, row])).values()];
   const rows = uniqueRows.filter(

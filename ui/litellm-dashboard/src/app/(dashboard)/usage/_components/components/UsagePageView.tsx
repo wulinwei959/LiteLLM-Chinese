@@ -116,6 +116,7 @@ interface UsagePageProps {
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoading = false, defaultTimeRange }) => {
   const t = useTranslations("usage");
   const tCommon = useTranslations("common");
+  const tClientUsage = useTranslations("clientUsage");
 
   const { accessToken, userRole, userId: userID, premiumUser, isLoading: authorizationLoading } = useAuthorized();
   const [gatewayActivityData, setGatewayActivityData] = useState<FetchedGatewayActivity | null>(null);
@@ -181,7 +182,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
     requestedUserId: urlParams.client_user ?? (urlParams.client_team ? null : effectiveUserId),
     ownUsage: usageView === "my-usage",
   };
-  const clientScope = resolveClientUsageScope(clientScopeInput);
+  const clientScope = resolveClientUsageScope(tClientUsage, clientScopeInput);
   const clientTeamId = usageView === "my-usage" ? null : urlParams.client_team || null;
   const clientUserId = clientScope.scope?.userId ?? (clientTeamId ? urlParams.client_user || null : null);
   const canViewTeamClients = clientScope.administeredTeams.length > 0;

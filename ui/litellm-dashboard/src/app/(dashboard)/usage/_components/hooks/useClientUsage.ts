@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { uiSpendLogsCall } from "@/components/networking";
 import {
   CLIENT_REQUEST_LIMIT,
@@ -20,13 +21,14 @@ interface ClientUsageOptions {
 const utcSecond = (time: number) => new Date(time).toISOString().slice(0, 19).replace("T", " ");
 
 export function useClientUsage({ accessToken, startTime, endTime, userId, teamId = null, client }: ClientUsageOptions) {
+  const t = useTranslations("clientUsage");
   const start = startTime?.getTime() ?? Number.NaN;
   const end = endTime?.getTime() ?? Number.NaN;
   const scopeError = (() => {
     if (client === null) return null;
-    if (!userId && !teamId) return "Select a user or team to view client usage";
-    if (!Number.isFinite(start) || !Number.isFinite(end) || start > end) return "Select a valid date range";
-    if (!accessToken) return "Sign in to view client usage";
+    if (!userId && !teamId) return t("selectUserOrTeam");
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start > end) return t("selectValidDateRange");
+    if (!accessToken) return t("signInRequired");
     return null;
   })();
   const enabled = client !== null && scopeError === null;
@@ -57,13 +59,13 @@ export function useClientUsage({ accessToken, startTime, endTime, userId, teamId
     };
     uiSpendLogsCall(request)
       .then((response: unknown) => {
-        if (!cancelled) setSettled({ key, result: clientUsageFromLogs(response, scope) });
+        if (!cancelled) setSettled({ key, result: clientUsageFromLogs(t, response, scope) });
       })
       .catch((error: unknown) => {
         if (!cancelled) {
           setSettled({
             key,
-            result: emptyClientUsage(error instanceof Error ? error.message : "Could not load client usage"),
+            result: emptyClientUsage(error instanceof Error ? error.message : t("couldNotLoad")),
           });
         }
       });

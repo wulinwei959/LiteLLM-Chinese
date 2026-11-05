@@ -50,6 +50,11 @@ function useChatTranslator() {
 }
 export type ChatTranslator = ReturnType<typeof useChatTranslator>;
 
+function useClientUsageTranslator() {
+  return useTranslations("clientUsage");
+}
+export type ClientUsageTranslator = ReturnType<typeof useClientUsageTranslator>;
+
 function useMcpServersTranslator() {
   return useTranslations("mcpServers");
 }
