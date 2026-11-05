@@ -5568,4 +5568,25 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 
 新增三条本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红
 
-顺着这个盲区把 `.ts` 侧的账量了出来，写进 `FILE-INVENTORY.md` 的「`.ts` 侧的待接队列」：478 个非测试 `.ts` 里 11 个文件 122 条十二个可见属性键上的英文字面量，去掉 27 条差分测试用例与 3 条待判的工具返回串，剩 92 条确认渲染在界面上，最大四块是 guardrail 花园 32、anthropic 联合认证字段 19、usage 的 agent 目录 16、agent 配置表单 12。这批还有第二层盲区叠着：扫描的 stub 对 `/guardrails`、`/agents`、`/usage` 返回空数组，卡片与表格行不进 DOM，接完文案要连带给这几个端点补非空形状，扫描才接得住
+顺着这个盲区把 `.ts` 侧的账量了出来，写进 `FILE-INVENTORY.md` 的「`.ts` 侧的待接队列」，当时记的数是 11 个文件 122 条、去掉 27 条差分测试用例与 3 条待判的工具返回串后剩 92 条"确认渲染在界面上"。**这个判定不成立**，次日重做，见下面第 562 簇。错因是按"文件里有英文"记真漏，没按消费点记，`.ts` 是数据层，同一字符串可能是渲染值、回退数据、比较键、协议字段或没人调的死代码
+
+## 2026-11-05 第 562 簇：`.ts` 队列的判定重做，枚举口径扩到 `.ts`
+
+上一簇记下的「92 条确认渲染在界面上」是错的。判据用成了"文件里有英文就算真漏"，而 `.ts` 是数据层，同一条字符串得先问它到底进不进 DOM、进之前有没有过键间接层。把 A 桶那批的消费点逐个读出来重判，真漏从 10 个文件缩到 8 个文件。按消费点重数的条数是 97，比上一版的 92 还多，因为上一版漏数了 federation 两份的 `tooltip`（跨行字面量，单行 grep 抓不到）与 `entityUsageSummary` 整块，四个文件根本不是漏
+
+产出脚本 `scripts/i18n-file-inventory.mjs` 加 `--include-ts`，把枚举口径从 `.tsx` 扩到 `.ts`。三处必须留意：`.ts` 要用 `ScriptKind.TS` 解析，按 TSX 解析会把泛型 `<T>(...)` 读成 JSX 而静默失配；排除规则从"文件名含 `.test.`"改成匹配 `.(test|spec)[-]`，`searchToolTypes.test-d.ts` 这类类型测试原名不含 `.test.`，会混进队列；`vendor/` 与 `src/lib/i18n/` 要跳过，后者是 i18n 基础设施本身。不带 `--include-ts` 时的输出与扩面之前只差一行，`DataTable.test-d.tsx` 被新排除规则挡掉，那是类型测试不是源文件（拿 HEAD 的副本跑一遍 diff 对出来的）
+
+复跑数：`.tsx` 与 `.ts` 未接入翻译器共 688 个，83 个有可见文案证据（`.tsx` 18、`.ts` 65，`.ts` 侧 289 条命中），605 个零命中。只跑 `.tsx` 是 220 个未接入、18 个有证据、202 个零命中。
+`.ts` 的 289 条按消费点分三桶：A 真漏 8 个文件 97 条、B 已有键间接层 4 个文件 82 条、C 不渲染或机读值 53 个文件 110 条
+
+上一版判错的四块，逐条给结论。`guardrail_garden_data.ts` 47 条走 `:592` 的 `localizeGuardrailCard` 查 `guardrails.garden.cards.<id>`，英文是回退数据，真缺口是目录少 3 条（`llm_shield_proxy`、`wingback`、`airia`，数据侧 58 个 id 对中英各 55 条）；`agent_config.ts` 30 条全部经 `:467` 的 `configText` 配 `FIELD_TEXT_KEYS`（46 项、中英两侧齐全），`agent_form_fields.tsx:247-363` 无一条直出，真漏为零，只有 `:196`/`:200`/`:203` 的 tracing 段无人消费；`systemOneUI/lib/example.ts` 的 `label` 渲染处 `SystemOneUI.tsx:68` 按 `preset.id` 查 `t("preset.<id>")`，`label` 只有自身测试读；`budgetUtils.ts:96` 的 `Never resets` 所在 `describeBudgetResetSchedule` 全仓无生产调用点
+
+读消费点读出来的新增面，上一版没数到。`entityUsageSummary.ts` 七条标题与四条 tooltip 直出在 `EntityUsage.tsx:425`/`:431`，且标题同时是 `TILE_TRENDS` 的对比键，接入要先把键与显示名拆开，`agentCatalog.ts` 的 `label` 同样被 `:358` 拿来建每日序列、`:240` 取色，是一样的纠缠。`anthropic_federation.ts` 与 `openai_federation.ts` 的 `tooltip` 是跨行字面量，上一版按单行 grep 数的 19/3 直接漏掉一批。`errorsData.ts` 表里那条 `label: "By status code"` 反而没人 import（`ErrorsTab.tsx:96` 已用 `t()` 自建），真正进 DOM 的是 `series.codes` 的 `Other`/`No status`（`:238` 图例）和 `row.topStatus`（`:313`），这两个字段名不在枚举的十二个可见键里
+
+顺带查出一批挂空词条：`usage.entity.totalSpend`、`usage.entity.totalCost`、`usage.metrics.successfulRequests`、`usage.metrics.failedRequests`、`usage.totalRequests`、`usage.totalTokens` 六条中英齐全、全仓无 `t()` 引用，正好对上 `entityUsageSummary.ts` 的标题；errors 侧 `usage.errors.status.noStatus`、`usage.errors.other` 同理。接入时复用这些键，不要新建
+
+`.tsx` 侧同一次复跑漂出一条真漏，上一版记的「有证据且判为真漏 0」不再成立。`ModelViewToggle.tsx:24` 直出 `{option.label}`，`"Public Model Name"` 与 `"Litellm Model Name"` 无翻译器，由 `d20a9cb6` 带入，`usage.modelViewToggle` 在两份目录里都是空对象、键位留着没人填。它归进 A 桶一起做，要连带翻面 `EntityUsage.test.tsx:877`/`:883` 与 `UsagePageView.test.tsx:1364-1387` 按英文字面量取元素的断言。`.tsx` 的账也从 10-26 的 955/739/216 漂到 990/770/220，零命中一节整节按脚本重生成，目录分布跟着变成 `src/app` 89、shadcn 原语 40、共享容器 22、其余 51 个散在 31 个目录
+
+C 桶里 38 个 hook 文件各一条 `throw new Error("Access token is required")` 记为低优先而非零优先：串本身不进 DOM，但调用方普遍写 `toast.fromError(error.message)`（如 `AccessGroupCreateDialog.tsx:80`），守卫一触发就原文上 toast。真要接得先把 hook 改成抛带键的类型化错误再由调用方映射，逐条翻字符串是错的接法
+
+PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpointCapabilities.ts` 的字面量联合与 `FILE-INVENTORY.md` 的表未格式化。本地 `npx prettier --write` 后复跑 `format:check`。这条门禁不在 `check:dead-keys` 那套 i18n 门禁里，`make check` 也不覆盖 `ui/`，只有 CI 的 `ui` 作业跑，本地改 `.ts`/`.md` 后要么顺手 prettier，要么等 CI
