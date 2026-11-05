@@ -1,7 +1,9 @@
 import type { SearchSelectOption } from "@/components/shared/SearchSelect";
 import type { CredentialItem } from "@/components/networking";
 
-export const NO_CREDENTIAL_OPTION: SearchSelectOption = { label: "None", value: "" };
+export type NoneLabelTranslator = (key: "none") => string;
+
+export const noCredentialOption = (t: NoneLabelTranslator): SearchSelectOption => ({ label: t("none"), value: "" });
 
 export const credentialLabel = (credential: CredentialItem): string =>
   credential.display_name || credential.credential_name;
@@ -15,7 +17,7 @@ export const toCredentialOption = (credential: CredentialItem): SearchSelectOpti
   sublabel: credential.display_name ? credential.credential_name : undefined,
 });
 
-export const credentialOptions = (credentials: CredentialItem[]): SearchSelectOption[] => [
-  NO_CREDENTIAL_OPTION,
+export const credentialOptions = (t: NoneLabelTranslator, credentials: CredentialItem[]): SearchSelectOption[] => [
+  noCredentialOption(t),
   ...credentials.map(toCredentialOption),
 ];

@@ -206,6 +206,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
   credentials,
 }) => {
   const t = useTranslations("vectorStores");
+  const commonT = useTranslations("common");
   const form = useZodForm(buildVectorStoreSchema(t), { defaultValues: EMPTY_VALUES });
   const [metadataJson, setMetadataJson] = useState("{}");
   const [selectedProvider, setSelectedProvider] = useState("bedrock");
@@ -459,7 +460,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                   <SearchSelect
                     inputId={id}
                     placeholder={t("form.credentialsPlaceholder")}
-                    options={credentialOptions(credentials)}
+                    options={credentialOptions(commonT, credentials)}
                     value={value ?? ""}
                     onValueChange={(selected) => onChange(selected === "" || selected === null ? undefined : selected)}
                   />

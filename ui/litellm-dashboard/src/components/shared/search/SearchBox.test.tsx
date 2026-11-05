@@ -98,7 +98,7 @@ const undelivered = () => screen.getByRole("status", { name: "undelivered" });
 const listbox = () => screen.getByRole("listbox", { name: "搜索建议" });
 const operatorLabels = () =>
   within(listbox())
-    .queryAllByText(/^(equals|not equals|wildcard match|does not contain)$/)
+    .queryAllByText(/^(等于|不等于|通配符匹配|不包含)$/)
     .map((label) => label.textContent);
 
 /**
@@ -152,7 +152,7 @@ describe("SearchBox", () => {
     await user.keyboard("{Enter}");
     expect(box()).toHaveTextContent(/^-tag:$/, { normalizeWhitespace: false });
     expect(within(listbox()).getByRole("group", { name: "tag" })).toBeVisible();
-    expect(within(listbox()).getByText("does not contain")).toBeVisible();
+    expect(within(listbox()).getByText("不包含")).toBeVisible();
 
     await user.keyboard("{ArrowDown}");
     const cron = within(listbox()).getByRole("option", { name: "cron" });
@@ -167,9 +167,9 @@ describe("SearchBox", () => {
   });
 
   it.each([
-    ["negation and wildcards", NOTE_QUERY, ["equals", "not equals", "wildcard match", "does not contain"]],
-    ["negation only", NEGATION_NOTE_QUERY, ["equals", "not equals"]],
-    ["wildcards only", WILDCARD_NOTE_QUERY, ["equals", "wildcard match"]],
+    ["negation and wildcards", NOTE_QUERY, ["等于", "不等于", "通配符匹配", "不包含"]],
+    ["negation only", NEGATION_NOTE_QUERY, ["等于", "不等于"]],
+    ["wildcards only", WILDCARD_NOTE_QUERY, ["等于", "通配符匹配"]],
   ])("explains exactly the operators a language with %s honors", async (_, language, expected) => {
     const user = userEvent.setup();
     renderWithProviders(<NoteSearch value="" onChange={vi.fn()} language={language} />);

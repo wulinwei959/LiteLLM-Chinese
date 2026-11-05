@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest";
 
 import type { CredentialItem } from "@/components/networking";
 
+import { enMessagesFor } from "../../../tests/i18nStub";
 import {
   credentialLabel,
   credentialLabelsByName,
   credentialOptions,
-  NO_CREDENTIAL_OPTION,
+  noCredentialOption,
   toCredentialOption,
 } from "./credentialOptions";
+
+const commonT = enMessagesFor("common");
 
 const credential = (credential_name: string, display_name?: string | null): CredentialItem => ({
   credential_name,
@@ -19,9 +22,9 @@ const credential = (credential_name: string, display_name?: string | null): Cred
 
 describe("credentialOptions", () => {
   it("leads with the None option whose value is the empty string", () => {
-    const options = credentialOptions([]);
+    const options = credentialOptions(commonT, []);
     expect(options[0]).toEqual({ label: "None", value: "" });
-    expect(NO_CREDENTIAL_OPTION.value).toBe("");
+    expect(noCredentialOption(commonT)).toEqual({ label: "None", value: "" });
   });
 
   it("shows the display name as the label and keeps the credential name as value and sublabel", () => {
@@ -42,7 +45,7 @@ describe("credentialOptions", () => {
   });
 
   it("maps every credential after the None option", () => {
-    const options = credentialOptions([credential("a"), credential("b", "Bee")]);
+    const options = credentialOptions(commonT, [credential("a"), credential("b", "Bee")]);
     expect(options.map((option) => option.value)).toEqual(["", "a", "b"]);
     expect(options.map((option) => option.label)).toEqual(["None", "a", "Bee"]);
   });

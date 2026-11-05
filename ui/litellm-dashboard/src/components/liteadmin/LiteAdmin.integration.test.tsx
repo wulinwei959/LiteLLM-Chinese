@@ -662,7 +662,7 @@ describe("Aria Agent in the gateway", () => {
     renderWidget(undefined, true);
     await selectModel();
     const input = screen.getByRole("textbox", { name: "Message Aria Agent" });
-    for (const label of ["Create a key", "Add a model", "Set a budget"]) {
+    for (const label of ["创建密钥", "添加模型", "设置预算"]) {
       fireEvent.click(screen.getByRole("button", { name: label }));
       expect(input).toHaveValue(label);
       expect(input).toHaveFocus();

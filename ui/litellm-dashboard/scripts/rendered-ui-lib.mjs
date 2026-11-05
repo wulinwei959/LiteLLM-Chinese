@@ -26,6 +26,12 @@ export const englishPhrases = (text, allowed) => {
 };
 
 /**
+ * The DOM attributes that hold copy a user reads without the text being on the
+ * page body: a tooltip, an icon's name, an empty input's hint, an image's alt.
+ */
+export const COPY_ATTRIBUTES = ["alt", "aria-label", "placeholder", "title"];
+
+/**
  * The response a request path gets from the stub table.
  *
  * The table is matched on a path fragment, longest fragment first, so that

@@ -24,11 +24,15 @@ const schema = new Schema({ nodes: { doc: { content: "text*" }, text: {} } });
 const EMIT_WAIT_MS = 150;
 const KEEP_MENU_CLOSED = "searchBoxKeepMenuClosed";
 
-const OPERATORS: readonly { readonly op: FilterOp; readonly label: string; readonly example: string }[] = [
-  { op: "eq", label: "equals", example: "foo:bar" },
-  { op: "neq", label: "not equals", example: "-foo:bar" },
-  { op: "glob", label: "wildcard match", example: "foo:*bar*" },
-  { op: "nglob", label: "does not contain", example: "-foo:*bar*" },
+const OPERATORS: readonly {
+  readonly op: FilterOp;
+  readonly labelKey: "operators.equals" | "operators.notEquals" | "operators.wildcard" | "operators.notContains";
+  readonly example: string;
+}[] = [
+  { op: "eq", labelKey: "operators.equals", example: "foo:bar" },
+  { op: "neq", labelKey: "operators.notEquals", example: "-foo:bar" },
+  { op: "glob", labelKey: "operators.wildcard", example: "foo:*bar*" },
+  { op: "nglob", labelKey: "operators.notContains", example: "-foo:*bar*" },
 ];
 
 /** Colours each `key:` so the filters stand out from free text. */
@@ -390,8 +394,8 @@ function OperatorHints({ ops }: { ops: readonly FilterOp[] }) {
     <div className="pb-1">
       <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">{t("hint.comparisonOperators")}</div>
       {OPERATORS.filter((op) => ops.includes(op.op)).map((op) => (
-        <div key={op.label} className="flex items-center justify-between px-2 py-1 font-mono text-xs">
-          <span className="text-warning">{op.label}</span>
+        <div key={op.op} className="flex items-center justify-between px-2 py-1 font-mono text-xs">
+          <span className="text-warning">{t(op.labelKey)}</span>
           <code className="rounded bg-muted px-1.5 text-muted-foreground">{op.example}</code>
         </div>
       ))}

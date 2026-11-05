@@ -155,7 +155,7 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     expect(onSubmit.mock.calls[0][0].litellm_credential_name).toBe("openai-main");
 
     await user.click(picker);
-    await user.click(await screen.findByRole("option", { name: "None" }));
+    await user.click(await screen.findByRole("option", { name: "无" }));
     await user.click(screen.getByRole("button", { name: /保存更改/ }));
     await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
     expect(onSubmit.mock.calls[1][0].litellm_credential_name).toBeNull();
@@ -177,7 +177,7 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     expect(screen.getByText("openai-main")).toBeInTheDocument();
 
     await user.click(picker);
-    await user.click(await screen.findByRole("option", { name: "None" }));
+    await user.click(await screen.findByRole("option", { name: "无" }));
     expect(screen.queryByText("openai-main")).not.toBeInTheDocument();
   });
 

@@ -1,6 +1,11 @@
 {
   "hits": [
     {
+      "file": "src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx",
+      "kind": "prop:title",
+      "text": "ID"
+    },
+    {
       "file": "src/app/(dashboard)/agents/_components/agent_card_discovery.tsx",
       "kind": "jsx",
       "text": "v"
@@ -9,6 +14,11 @@
       "file": "src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx",
       "kind": "prop:placeholder",
       "text": "Agent.Invoke"
+    },
+    {
+      "file": "src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx",
+      "kind": "prop:description",
+      "text": "General chat capability"
     },
     {
       "file": "src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx",
@@ -86,6 +96,26 @@
       "text": "&#x2715;"
     },
     {
+      "file": "src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx",
+      "kind": "prop:label",
+      "text": "/v1/realtime"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx",
+      "kind": "prop:hint",
+      "text": "e.g. 0.3"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx",
+      "kind": "prop:hint",
+      "text": "e.g. 0.45"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx",
+      "kind": "prop:hint",
+      "text": "e.g. 0.7"
+    },
+    {
       "file": "src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx",
       "kind": "prop:placeholder",
       "text": "e.g., ID-[0-9]{6}"
@@ -147,6 +177,26 @@
     },
     {
       "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "prop:description",
+      "text": "City name"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "prop:description",
+      "text": "Get the current weather in a location"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "prop:description",
+      "text": "Read the structure of a GitHub repository (MCP tool passed as OpenAI tool)"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
+      "kind": "prop:description",
+      "text": "Repository name, e.g. BerriAI/litellm"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx",
       "kind": "prop:placeholder",
       "text": "{\"texts\": [\"test message\"], ...}"
     },
@@ -154,6 +204,296 @@
       "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_card.tsx",
       "kind": "jsx",
       "text": "% &middot;"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI gateway with built-in guardrails for secure and compliant AI operations."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI safety platform for monitoring, testing, and securing AI systems."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI security and governance platform for enterprise AI safety and compliance."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI security gateway with prompt injection detection, PII redaction, topic filtering, entity blocklists, and hallucination detection. Self-hostable with drop-in proxy integration."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI security platform for detecting and preventing AI-specific threats and vulnerabilities."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI security platform from Akto.io with automatic monitoring and guardrails for AI/ML applications."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AI security platform protecting against prompt injections, data leakage, and harmful content."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AIM Security guardrails for comprehensive AI threat detection and mitigation."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Airia AI security and governance platform. Runtime guardrails for prompt injection, data leakage prevention, and responsible AI, enforced on every prompt and response."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "AWS Bedrock Guardrails for content filtering, topic avoidance, and sensitive information detection."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Block or mask content containing specific keywords or phrases. Upload custom word lists or add individual terms."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Block or reframe competitor comparison and ranking intent. Detect when users ask to compare or recommend competitors (airline or generic competitor lists)."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Cato Networks guardrails for comprehensive AI threat detection and mitigation."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Cisco AI Defense Inspection API for runtime protection: prompt injection, PII/PCI/PHI, harassment, hate speech, profanity, violence, and code detection."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Conduct Guard evaluates prompts against workspace rules before the model call: prompt injection, PII, and custom policies, with block, warning, and approval verdicts."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Content moderation and safety guardrails for responsible AI deployments."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "CyCraft XecGuard AI security gateway. Multi-policy scanning (prompt injection, harmful content, PII, system-prompt enforcement) plus RAG context grounding."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Decision models served on Databricks, such as OpenJev, answer your yes/no questions about each request or response."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "DeepKeep AI Firewall for comprehensive LLM security — prompt injection detection, PII protection, content moderation, and policy enforcement with configurable guardrail pipelines."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Defend AI Agentic Guardrails: Indirect/Direct Prompt Injection, Tool Misuse, Malicious MCP and Skills"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detect and block sensitive data patterns like SSNs, credit card numbers, API keys, and custom regex patterns."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects attempts to extract or override system prompts."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects attempts to extract sensitive data through prompt manipulation."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects attempts to inject malicious code through prompts."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects content related to illegal weapons manufacturing, distribution, or acquisition."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects content related to self-harm, suicide, and dangerous self-destructive behavior."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects content related to violence, criminal planning, attacks, and violent threats."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects content that could endanger child safety or exploit minors."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects discrimination based on sexual orientation and related biased content."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects gender-based discrimination, stereotypes, and biased language."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects insults, name-calling, and personal attacks directed at the chatbot, staff, or other people."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects jailbreak attempts designed to bypass AI safety guidelines and restrictions."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects markdown fenced code blocks in requests and responses. Block or mask executable code (e.g. Python, JavaScript, Bash) by language with configurable confidence."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects racial discrimination, stereotypes, and racially biased content."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects religious discrimination, intolerance, and religiously biased content."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects requests for medical diagnosis, treatment recommendations, or health advice."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects requests for personalized financial advice, investment recommendations, or financial planning."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects requests for unauthorized legal advice, case analysis, or legal recommendations."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects SQL injection attempts embedded in prompts."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Detects toxic, abusive, and hateful language across multiple languages (EN, AU, DE, ES, FR)."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Enterprise AI security from Zscaler for monitoring and protecting AI/ML workloads."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Google Cloud's model protection service for safe and responsible AI deployments."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Microsoft Agent 365 tool-call governance: Defender threat evaluation and observability for MCP tool calls, acting on behalf of the signed-in user"
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Microsoft Foundry decision models, such as Microsoft-Decision-1, answer your yes/no questions about each request or response."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Microsoft Presidio for PII detection and anonymization. Supports 30+ entity types with configurable actions."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Open-source framework for adding structural, type, and quality guarantees to LLM outputs."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "OpenAI decision models, such as gpt-6-luna, answer your yes/no questions about each request or response."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "OpenAI's content moderation API for detecting harmful content across multiple categories."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Palo Alto Networks Prisma AI Runtime Security for securing AI applications in production."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Pangea's AI guardrails for secure, compliant, and trustworthy AI applications."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Perplexity's pplx-decider model answers your yes/no questions about each request or response."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Policy-based guardrails for prompts and model responses, evaluated per application so one proxy can enforce a different policy set per team or product."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Protect against prompt injection attacks, data leakage, and other LLM security threats."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Real-time AI guardrails for hallucination detection, topic control, and policy enforcement."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "RepelloAI Argus scans prompts and responses against policies configured per asset in the Repello dashboard."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Self-hosted PII redaction that puts the original values back into the model's response, so the provider never receives personal data while the end user still sees it."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "TypeSafe's Jev decision model answers your yes/no questions about each request, such as prompt injection or policy checks."
+    },
+    {
+      "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts",
+      "kind": "prop:description",
+      "text": "Wingback runtime security for LiteLLM — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service."
     },
     {
       "file": "src/app/(dashboard)/guardrails/_components/guardrail_garden_detail.tsx",
@@ -426,6 +766,256 @@
       "text": "https://your-mcp-server.com"
     },
     {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:description",
+      "text": "a server"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "a set upstream_token_header rides the credentials blob"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "access groups given as objects"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "allowlist interaction with an empty list still enforces"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "blank non-admin credential is dropped, not nulled"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "blank upstream_resource becomes an explicit null"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "blank upstream_token_header becomes an explicit null"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "coalesced booleans unbound, server has them all false"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "coalesced booleans unbound, server has them all true"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "cost config present"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "credentials absent entirely"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "dcr_bridge bound true but auth switched away, forced false"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "dcr_bridge bound true on a client-forwarded mode"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "env vars normalize"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR invalid tool display name"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR stdio config invalid JSON"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR stdio config missing a command"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR stdio dedicated path with a blank command"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR stdio env invalid JSON"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "ERR token validation invalid JSON"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "everything collapsed, only the always-mounted root"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "everything expanded, all optional keys present as undefined"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "existing allowlist enforces and emits allowed_tools"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "expand then collapse: the key is absent again even though a value was typed"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "extra_headers absent falls back to an empty array"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "logo url present"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "mcp_info server name falls back to the form alias"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "mcp_info server name falls back to the form url"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "mcp_info server name falls back to the stored server_name"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "mcp_info server name falls back to the stored url"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "mcp_info server name falls back to unknown"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "oauth_passthrough with an Authorization extra header"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "oauth_passthrough without the Authorization header, forced false"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "oauth2 interactive flow"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "oauth2 m2m flow"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "oauth2 with delegate_auth_to_upstream on"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "openapi swaps url for spec_path"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "removeStoredApp ignored outside a client-forwarded mode"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "scopes array filters empties and drops when nothing survives"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "scopes entirely empty drops the key"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "static headers trim and drop blank names"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "stdio via a wrapped mcpServers config"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "stdio via the dedicated command/args/env fields"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "stdio via the JSON config path"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "token validation blank clears an existing value"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "token validation blank with no existing value omits the key"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "token validation JSON parses"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "tool display name and description maps present"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "was oauth2, now api_key: nulls the four oauth endpoints"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts",
+      "kind": "prop:label",
+      "text": "was token_exchange, now none: nulls the four exchange fields"
+    },
+    {
       "file": "src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx",
       "kind": "prop:placeholder",
       "text": "https://upstream.example.com"
@@ -468,6 +1058,11 @@
     {
       "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
       "kind": "prop:placeholder",
+      "text": "{ \"KEY\": \"value\" }"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
+      "kind": "prop:placeholder",
       "text": "https://petstore3.swagger.io/api/v3/openapi.json"
     },
     {
@@ -486,14 +1081,9 @@
       "text": "v"
     },
     {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
-      "kind": "prop:title",
-      "text": "gatewaySessions.byAiClient"
-    },
-    {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
-      "kind": "prop:title",
-      "text": "gatewaySessions.byUser"
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"organization\": \"my-org\", \"team.id\": \"123\" }"
     },
     {
       "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
@@ -576,6 +1166,16 @@
       "text": "{\"tags\": [\"example\"]}"
     },
     {
+      "file": "src/app/(dashboard)/models-and-endpoints/components/AutoRouters/autoRouterRows.ts",
+      "kind": "prop:typeLabel",
+      "text": "Semantic"
+    },
+    {
+      "file": "src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx",
+      "kind": "prop:label",
+      "text": "ID"
+    },
+    {
       "file": "src/app/(dashboard)/organizations/_components/OrganizationsTableColumns.tsx",
       "kind": "jsx",
       "text": "RPM:"
@@ -601,9 +1201,79 @@
       "text": "litellm_agent"
     },
     {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/mcp-rest/tools/call"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/a2a/message/send"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/audio/speech"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/audio/transcriptions"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/chat/completions"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/embeddings"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/images/edits"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/images/generations"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/messages"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/realtime"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1/responses"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts",
+      "kind": "prop:label",
+      "text": "/v1beta/interactions"
+    },
+    {
       "file": "src/app/(dashboard)/playground/components/chat_ui/ChatUI.tsx",
       "kind": "jsx",
       "text": "MB)"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx",
+      "kind": "prop:label",
+      "text": "Azure SDK"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx",
+      "kind": "prop:label",
+      "text": "OpenAI SDK"
     },
     {
       "file": "src/app/(dashboard)/playground/components/chat_ui/SearchResultsDisplay.tsx",
@@ -614,6 +1284,26 @@
       "file": "src/app/(dashboard)/playground/components/chat/McpDialog.tsx",
       "kind": "jsx",
       "text": "MCP"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts",
+      "kind": "prop:label",
+      "text": "Moderate a forum comment"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts",
+      "kind": "prop:label",
+      "text": "Route a support ticket"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts",
+      "kind": "prop:label",
+      "text": "Score a sales lead"
+    },
+    {
+      "file": "src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts",
+      "kind": "prop:label",
+      "text": "Triage a bug report"
     },
     {
       "file": "src/app/(dashboard)/playground/components/systemOneUI/ResponseView.tsx",
@@ -661,6 +1351,11 @@
       "text": "ID:"
     },
     {
+      "file": "src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx",
+      "kind": "prop:title",
+      "text": "ID"
+    },
+    {
       "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/index.tsx",
       "kind": "jsx",
       "text": "DOTPROMPT"
@@ -669,6 +1364,16 @@
       "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/index.tsx",
       "kind": "jsx",
       "text": "PRETTY"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx",
+      "kind": "prop:label",
+      "text": "JavaScript (OpenAI SDK)"
+    },
+    {
+      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx",
+      "kind": "prop:label",
+      "text": "Python (OpenAI SDK)"
     },
     {
       "file": "src/app/(dashboard)/prompts/_components/prompt_info.tsx",
@@ -766,9 +1471,29 @@
       "text": "https://example.com/logo.png"
     },
     {
+      "file": "src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx",
+      "kind": "prop:label",
+      "text": "Claude Code"
+    },
+    {
+      "file": "src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx",
+      "kind": "prop:label",
+      "text": "Claude Desktop"
+    },
+    {
       "file": "src/app/(dashboard)/usage/_components/components/overview/BreakdownChart.tsx",
       "kind": "jsx",
       "text": "by"
+    },
+    {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/TopAgents.tsx",
+      "kind": "prop:text",
+      "text": "JS"
+    },
+    {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/TopAgents.tsx",
+      "kind": "prop:text",
+      "text": "Py"
     },
     {
       "file": "src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx",
@@ -819,6 +1544,21 @@
       "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
       "kind": "jsx",
       "text": "type:"
+    },
+    {
+      "file": "src/app/(dashboard)/workflows/WorkflowRuns.tsx",
+      "kind": "prop:label",
+      "text": "grill session"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "kind": "prop:description",
+      "text": "LiteLLM Proxy Admin UI"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "kind": "prop:title",
+      "text": "LiteLLM Dashboard"
     },
     {
       "file": "src/app/login/LoginPage.tsx",
@@ -896,6 +1636,91 @@
       "text": "KB •"
     },
     {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Arize Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Braintrust Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Custom Callback API Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Databricks Zerobus Ingest Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Datadog Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Galileo AI Observability Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Lago Billing Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Langfuse v2 Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Langfuse v3 OTEL Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "Langsmith Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "New Relic Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "OpenMeter Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "OpenTelemetry Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "PointFive Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "S3 Bucket (AWS) Logging Integration"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "SigNoz Logging Integration. Setup: https://signoz.io/docs/litellm-observability/"
+    },
+    {
+      "file": "src/components/callback_info_helpers.tsx",
+      "kind": "prop:description",
+      "text": "SQS Queue (AWS) Logging Integration"
+    },
+    {
       "file": "src/components/claude_code_plugins/skill_detail.tsx",
       "kind": "jsx",
       "text": "/plugin marketplace update litellm"
@@ -919,6 +1744,21 @@
       "file": "src/components/CommandPalette/CommandPalette.tsx",
       "kind": "jsx",
       "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Action"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Key"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Page"
     },
     {
       "file": "src/components/CommandPalette/CommandPaletteProvider.tsx",
@@ -1036,6 +1876,16 @@
       "text": "UI_USERNAME"
     },
     {
+      "file": "src/components/key_team_helpers/key_sorting.ts",
+      "kind": "prop:label",
+      "text": "RPM"
+    },
+    {
+      "file": "src/components/key_team_helpers/key_sorting.ts",
+      "kind": "prop:label",
+      "text": "TPM"
+    },
+    {
       "file": "src/components/leftnav.tsx",
       "kind": "jsx",
       "text": "v"
@@ -1044,6 +1894,31 @@
       "file": "src/components/leftnav.tsx",
       "kind": "prop:alt",
       "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "ACCESS CONTROL"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "AI GATEWAY"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "DEVELOPER TOOLS"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "OBSERVABILITY"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "SETTINGS"
     },
     {
       "file": "src/components/liteadmin/agent.ts",
@@ -1059,6 +1934,21 @@
       "file": "src/components/liteadmin/LiteAdmin.tsx",
       "kind": "jsx",
       "text": "⌘J"
+    },
+    {
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "prop:description",
+      "text": "Show one chart with the answer using the source_id of a successful usage lookup in this turn. Choose daily_spend for spend over time, model_spend or provider_spend for cost comparisons, daily_requests or daily_tokens for trends, or token_breakdown for input/output/cache analysis. Values come directly from that lookup. Follow with a short explanation, not a duplicate table. A later chart replaces the earlier chart for this answer. Read-only."
+    },
+    {
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "prop:message",
+      "text": "Fetch usage first and use the source_id from that result."
+    },
+    {
+      "file": "src/components/liteadmin/operations.ts",
+      "kind": "prop:message",
+      "text": "No recorded data is available for this chart. Explain that in text."
     },
     {
       "file": "src/components/logs/detail/DrawerHeader.tsx",
@@ -1101,6 +1991,71 @@
       "text": "L"
     },
     {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "/var/run/secrets/anthropic/token"
+    },
+    {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "https://keycloak.example.com/realms/<realm>/protocol/openid-connect/token"
+    },
+    {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "https://litellm.example.com"
+    },
+    {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "oidc/env/ANTHROPIC_IDENTITY_TOKEN"
+    },
+    {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "os.environ/ANTHROPIC_ISSUER_SIGNING_KEY"
+    },
+    {
+      "file": "src/components/model_add/anthropic_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "os.environ/KEYCLOAK_CLIENT_SECRET"
+    },
+    {
+      "file": "src/components/model_add/openai_federation.ts",
+      "kind": "prop:placeholder",
+      "text": "/var/run/secrets/kubernetes.io/serviceaccount/token"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "AuthenticationError: 401"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "ForbiddenError: 403"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "InternalServerError: 500"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "NotFoundError: 404"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "RateLimitError: 429"
+    },
+    {
+      "file": "src/components/model_dashboard/HealthCheckComponent.tsx",
+      "kind": "prop:label",
+      "text": "TimeoutError: 408"
+    },
+    {
       "file": "src/components/model_group_alias_settings.tsx",
       "kind": "jsx",
       "text": "&nbsp;&nbsp;&nbsp;&nbsp;&quot;"
@@ -1129,6 +2084,16 @@
       "file": "src/components/model_group_alias_settings.tsx",
       "kind": "jsx",
       "text": "router_settings:"
+    },
+    {
+      "file": "src/components/ModelInfoEditForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"drop_params\": true }"
+    },
+    {
+      "file": "src/components/ModelInfoEditForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"gpt-4\": 100, \"claude-v1\": 200}"
     },
     {
       "file": "src/components/molecules/DecisionModelsBanner.tsx",
@@ -1171,9 +2136,19 @@
       "text": "Moyai"
     },
     {
+      "file": "src/components/Navbar/ViewSwitcher.tsx",
+      "kind": "prop:label",
+      "text": "Moyai"
+    },
+    {
       "file": "src/components/networking.tsx",
       "kind": "error",
       "text": "Must provide either userIds or set allUsers=true"
+    },
+    {
+      "file": "src/components/networking.tsx",
+      "kind": "prop:message",
+      "text": "Failed to parse MCP tools response"
     },
     {
       "file": "src/components/pass_through_info.tsx",
@@ -1196,6 +2171,11 @@
       "text": "LITELLM_LOCAL_MODEL_COST_MAP=True"
     },
     {
+      "file": "src/components/public_hub/modelDialogHelpers.ts",
+      "kind": "prop:inputMessage",
+      "text": "Hello, how are you?"
+    },
+    {
       "file": "src/components/route_preview.tsx",
       "kind": "jsx",
       "text": "/v1/text-to-image/base/model"
@@ -1211,14 +2191,49 @@
       "text": "{ \"ttl\": 3600 }"
     },
     {
+      "file": "src/components/routing_groups/RoutingGroupUsagePanel.tsx",
+      "kind": "prop:label",
+      "text": "JavaScript (OpenAI SDK)"
+    },
+    {
+      "file": "src/components/routing_groups/RoutingGroupUsagePanel.tsx",
+      "kind": "prop:label",
+      "text": "Python (OpenAI SDK)"
+    },
+    {
       "file": "src/components/Settings/AdminSettings/HashicorpVault/HashicorpVault.tsx",
       "kind": "jsx",
       "text": "vault kv put secret/SECRET_NAME key=secret_value"
     },
     {
+      "file": "src/components/Settings/AdminSettings/MCPToolSearchSettings/MCPToolSearchSettings.tsx",
+      "kind": "prop:placeholder",
+      "text": "my_server-get_rates my_server-list_accounts"
+    },
+    {
       "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
       "kind": "prop:placeholder",
       "text": "https://example.com"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-domain/authorize"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-domain/token"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "https://your-domain/userinfo"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "openid email profile"
     },
     {
       "file": "src/components/Settings/AdminSettings/UISettings/UISettings.tsx",
@@ -1246,6 +2261,16 @@
       "text": "Codex"
     },
     {
+      "file": "src/components/shared/date_range_presets.ts",
+      "kind": "prop:shortLabel",
+      "text": "MTD"
+    },
+    {
+      "file": "src/components/shared/date_range_presets.ts",
+      "kind": "prop:shortLabel",
+      "text": "YTD"
+    },
+    {
       "file": "src/components/shared/dotField/DotField.tsx",
       "kind": "error",
       "text": "DotField parts must be rendered inside DotFieldRoot"
@@ -1264,6 +2289,31 @@
       "file": "src/components/shared/search/SearchBox.tsx",
       "kind": "error",
       "text": "SearchBox parts must be rendered inside SearchBox.Root"
+    },
+    {
+      "file": "src/components/shared/timeRange/timeRange.ts",
+      "kind": "prop:label",
+      "text": "Last 24 hours"
+    },
+    {
+      "file": "src/components/shared/timeRange/timeRange.ts",
+      "kind": "prop:label",
+      "text": "Last 30 days"
+    },
+    {
+      "file": "src/components/shared/timeRange/timeRange.ts",
+      "kind": "prop:label",
+      "text": "Last 6 hours"
+    },
+    {
+      "file": "src/components/shared/timeRange/timeRange.ts",
+      "kind": "prop:label",
+      "text": "Last 7 days"
+    },
+    {
+      "file": "src/components/shared/timeRange/timeRange.ts",
+      "kind": "prop:label",
+      "text": "Last hour"
     },
     {
       "file": "src/components/SidebarAccountMenu/SidebarAccountMenu.tsx",
@@ -1346,6 +2396,26 @@
       "text": "useChart must be used within a <ChartContainer />"
     },
     {
+      "file": "src/components/UsagePage/keyActivityData.ts",
+      "kind": "prop:label",
+      "text": "Overall Usage"
+    },
+    {
+      "file": "src/components/user_agent_activity.tsx",
+      "kind": "prop:label",
+      "text": "DAU"
+    },
+    {
+      "file": "src/components/user_agent_activity.tsx",
+      "kind": "prop:label",
+      "text": "MAU"
+    },
+    {
+      "file": "src/components/user_agent_activity.tsx",
+      "kind": "prop:label",
+      "text": "WAU"
+    },
+    {
       "file": "src/contexts/AuthContext.tsx",
       "kind": "error",
       "text": "useAuth must be used within an AuthProvider"
@@ -1366,9 +2436,259 @@
       "text": "useTheme must be used within a ThemeProvider"
     },
     {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian bank account routing information (transit-institution-account format) — protected under the Bank Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian immigration document numbers (UCI, work/study permits, IMM forms) — protected under IRPA and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian passport numbers — protected under the Canadian Passport Order and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian postal codes (A1A 1A1 format) — considered PII when combined with other identifiers under PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian Social Insurance Numbers — 9-digit federal identifiers protected under the Privacy Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Ontario driver's licence numbers — protected under the Highway Traffic Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Ontario Health Insurance Plan numbers — protected under PHIPA (Personal Health Information Protection Act)."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto student and employee numbers (10-digit, prefix '10') — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto TCard campus ID card numbers (16-digit) — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto UTORid login identifiers — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airline ranking request."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airport code information."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airport facilities question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous airline vs destination reference."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous lounge reference."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous operational query."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous refund context."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Comparison request for premium cabins."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Could refer to airline or country."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Country weather question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Customer review comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Decision-making between competitors."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Direct comparison between airlines."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Flight planning for a country destination."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "General airline comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "General travel planning question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Global airline ranking request."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Indirect competitor reference via location."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Location-based travel planning."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Service quality comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Switching intent to competitor."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Transit and visa questions for a country."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Transit timing question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Travel logistics to a location."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "User is asking about a travel destination, not a competitor airline."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Article 5 prohibited AI practices under the European Union AI Act."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Canadian PII detection under PIPEDA and provincial privacy legislation — masks SIN, OHIP, driver's licence, passport, immigration docs, bank accounts, and postal codes."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Content filter guardrails that block messages matching specific prohibited topics while allowing legitimate use of related words in context."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Destination vs competitor intent — avoid answering competitor comparison questions."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "General Data Protection Regulation — data privacy and protection requirements."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Ontario FIPPA institutional identifier detection — masks University of Toronto student/employee numbers, UTORid logins, and TCard campus IDs."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Requests that ask the assistant to execute code, run commands, access the filesystem/network, or otherwise perform runtime actions should be blocked; static explanation/analysis is allowed."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Security + UX validation prompts for an AI claims assistant supporting out-of-network claim submissions."
+    },
+    {
+      "file": "src/data/financialCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Blocks requests for personalized financial advice, investment recommendations, or financial planning that should be provided by licensed financial advisors"
+    },
+    {
+      "file": "src/data/financialCompliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Content filter guardrails that block messages matching specific prohibited topics while allowing legitimate use of related words in context."
+    },
+    {
+      "file": "src/data/insultsCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects insults, name-calling, and personal attacks directed at the chatbot, staff, or other people"
+    },
+    {
+      "file": "src/data/insultsCompliancePrompts.ts",
+      "kind": "prop:description",
+      "text": "Content filter guardrails that block messages matching specific prohibited topics while allowing legitimate use of related words in context."
+    },
+    {
       "file": "src/hooks/policies/useDeletePolicyAttachment.ts",
       "kind": "error",
       "text": "Access token is required"
+    },
+    {
+      "file": "src/utils/budgetUtils.ts",
+      "kind": "prop:label",
+      "text": "Never resets"
+    },
+    {
+      "file": "src/utils/budgetUtils.ts",
+      "kind": "prop:label",
+      "text": "Unknown"
+    },
+    {
+      "file": "src/utils/budgetUtils.ts",
+      "kind": "prop:tooltip",
+      "text": "This budget has no reset window, so this is lifetime spend for as long as the membership exists."
     },
     {
       "file": "src/utils/dataUtils.ts",

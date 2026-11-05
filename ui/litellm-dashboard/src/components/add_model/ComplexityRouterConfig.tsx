@@ -220,12 +220,8 @@ const TierSetToolbar: React.FC<{
           )
         )}
       </div>
-      {editing && (
-        <AutoRouterAllowanceNote feature="tier_or_classifier_prompt" label={t("tierAllowanceLabel")} />
-      )}
-      {editing && (
-        <span className="block mt-1 text-xs text-muted-foreground">{t("tierEditingHint")}</span>
-      )}
+      {editing && <AutoRouterAllowanceNote feature="tier_or_classifier_prompt" label={t("tierAllowanceLabel")} />}
+      {editing && <span className="block mt-1 text-xs text-muted-foreground">{t("tierEditingHint")}</span>}
       {editing && keywordRulesError && (
         <span className="block mt-1 text-xs text-destructive">
           {t("tierKeywordRuleError", { error: keywordRulesError })}
@@ -251,7 +247,9 @@ const FallbackTierField: React.FC<{
       </div>
       <TierRowSelect
         label={t("tierFallbackLabel")}
-        options={rows.filter((row) => activeTierName(row)).map((row) => ({ value: row.id, label: activeTierName(row) }))}
+        options={rows
+          .filter((row) => activeTierName(row))
+          .map((row) => ({ value: row.id, label: activeTierName(row) }))}
         value={fallbackTierId || null}
         onValueChange={onValueChange}
         placeholder={t("tierFallbackPlaceholder")}
@@ -318,18 +316,14 @@ const TierRowEditFields: React.FC<{
         value={row.definition}
         onChange={(event) => onPatch({ definition: event.target.value.replace(/[\r\n]+/g, " ") })}
         placeholder={
-          isBuiltInTierName(row.name)
-            ? t("tierBuiltInDefinitionPlaceholder")
-            : t("tierCustomDefinitionPlaceholder")
+          isBuiltInTierName(row.name) ? t("tierBuiltInDefinitionPlaceholder") : t("tierCustomDefinitionPlaceholder")
         }
         aria-label={t("tierDefinitionAria", { index: index + 1 })}
         maxLength={MAX_TIER_DEFINITION_CHARS}
         rows={2}
         className={definitionMissing ? "mb-2 border-destructive" : "mb-2"}
       />
-      {definitionMissing && (
-        <span className="mb-2 block text-xs text-destructive">{t("tierDefinitionRequired")}</span>
-      )}
+      {definitionMissing && <span className="mb-2 block text-xs text-destructive">{t("tierDefinitionRequired")}</span>}
     </>
   );
 };
@@ -481,38 +475,38 @@ interface ComplexityRouterConfigProps {
 
 export const TIER_DESCRIPTIONS = {
   NON_REASONING: {
-    label: "Non-reasoning",
+    builtInName: "Non-reasoning",
     labelKey: "tierLabelNonReasoning",
     descriptionKey: "tierDescriptionNonReasoning",
     examplesKey: "tierExamplesNonReasoning",
   },
   SIMPLE: {
-    label: "Simple",
+    builtInName: "Simple",
     labelKey: "tierLabelSimple",
     descriptionKey: "tierDescriptionSimple",
     examplesKey: "tierExamplesSimple",
   },
   MEDIUM: {
-    label: "Medium",
+    builtInName: "Medium",
     labelKey: "tierLabelMedium",
     descriptionKey: "tierDescriptionMedium",
     examplesKey: "tierExamplesMedium",
   },
   COMPLEX: {
-    label: "Complex",
+    builtInName: "Complex",
     labelKey: "tierLabelComplex",
     descriptionKey: "tierDescriptionComplex",
     examplesKey: "tierExamplesComplex",
   },
   REASONING: {
-    label: "Reasoning",
+    builtInName: "Reasoning",
     labelKey: "tierLabelReasoning",
     descriptionKey: "tierDescriptionReasoning",
     examplesKey: "tierExamplesReasoning",
   },
 } as const satisfies Record<
   keyof ComplexityTiers,
-  { label: string; labelKey: string; descriptionKey: string; examplesKey: string }
+  { builtInName: string; labelKey: string; descriptionKey: string; examplesKey: string }
 >;
 
 export const TIER_KEYS = Object.keys(TIER_DESCRIPTIONS) as Array<keyof ComplexityTiers>;
@@ -802,9 +796,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
                       {row.models.length > 1 && (
                         <span className="text-xs text-muted-foreground">{t("tierMultipleModelsHint")}</span>
                       )}
-                      {tierMissing && (
-                        <span className="text-xs text-destructive">{t("tierRequired", { label })}</span>
-                      )}
+                      {tierMissing && <span className="text-xs text-destructive">{t("tierRequired", { label })}</span>}
                     </div>
                   </div>
                 );
@@ -842,10 +834,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
       )}
       <DefaultModelField value={value} onChange={onChange} modelOptions={modelOptions} />
 
-      <RoutingOptions
-        showValidationErrors={showValidationErrors}
-        summary={routingSummary(t, value.classifier_type)}
-      >
+      <RoutingOptions showValidationErrors={showValidationErrors} summary={routingSummary(t, value.classifier_type)}>
         {forecast && (
           <>
             <ForecastSolverModels

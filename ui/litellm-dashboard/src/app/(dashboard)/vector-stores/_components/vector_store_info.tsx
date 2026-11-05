@@ -84,6 +84,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   editVectorStore,
 }) => {
   const t = useTranslations("vectorStores");
+  const commonT = useTranslations("common");
   const form = useZodForm(vectorStoreEditSchema(t), { defaultValues: EMPTY_VALUES });
   const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
@@ -314,7 +315,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                             <SearchSelect
                               inputId={id}
                               placeholder={t("info.credentialsPlaceholder")}
-                              options={credentialOptions(credentials)}
+                              options={credentialOptions(commonT, credentials)}
                               value={value ?? ""}
                               onValueChange={(selected) =>
                                 onChange(selected === "" || selected === null ? undefined : selected)

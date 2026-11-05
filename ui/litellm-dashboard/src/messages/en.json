@@ -2850,6 +2850,7 @@
     "memberTable": {
       "editTooltip": "Edit member",
       "deleteTooltip": "Delete member",
+      "resetSpendTooltip": "Reset spend",
       "allRoles": "All Roles",
       "membersCount": "{count, plural, =1 {# Member} other {# Members}}",
       "noMatch": "No members match your search or filters",
@@ -7690,7 +7691,9 @@
     "phRpmExample": "e.g. 60",
     "phEnvNameExample": "e.g. DB_PROTOCOL",
     "phEnvDescriptionExample": "e.g. Your DB username",
-    "phEnvValueExample": "e.g. postgresql"
+    "phEnvValueExample": "e.g. postgresql",
+    "capabilityPrompts": "Prompts",
+    "capabilityResources": "Resources"
   },
   "guardrailsMonitor": {
     "overview": {
@@ -8761,7 +8764,8 @@
       },
       "group": {
         "agents": "Agents"
-      }
+      },
+      "mcpServers": "MCP servers"
     },
     "compare": {
       "clearAllChats": "Clear All Chats",
@@ -9544,7 +9548,8 @@
         "requestFailed": "The request failed"
       },
       "copy": {
-        "reply": "reply"
+        "reply": "reply",
+        "modelName": "model name"
       },
       "action": {
         "inspect": "Inspect"
@@ -9854,6 +9859,7 @@
     "value": "Value",
     "metadata": "Metadata",
     "editPlaceholder": "What the agent should remember…",
+    "searchPlaceholder": "Search by key prefix or memory ID…",
     "actions": "Actions",
     "idCol": "ID",
     "nameCol": "Name",
@@ -13789,7 +13795,13 @@
       "placeholder": "What would you like to do?",
       "ariaLabel": "Message LiteAdmin",
       "stopAriaLabel": "Stop request",
-      "sendAriaLabel": "Send message"
+      "sendAriaLabel": "Send message",
+      "suggestKey": "Create a key",
+      "suggestModel": "Add a model",
+      "suggestBudget": "Set a budget",
+      "suggestUsage": "Summarize my usage",
+      "suggestCompare": "Compare models",
+      "suggestCosts": "Explain my costs"
     },
     "tagline": "Your gateway, a little easier.",
     "askAriaAria": "Ask Aria about usage",
@@ -15327,6 +15339,12 @@
       "navigate": "Navigate",
       "select": "Select",
       "comparisonOperators": "Comparison operators"
+    },
+    "operators": {
+      "equals": "equals",
+      "notEquals": "not equals",
+      "wildcard": "wildcard match",
+      "notContains": "does not contain"
     }
   },
   "moyai": {

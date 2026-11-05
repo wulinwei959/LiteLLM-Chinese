@@ -2850,6 +2850,7 @@
     "memberTable": {
       "editTooltip": "编辑成员",
       "deleteTooltip": "删除成员",
+      "resetSpendTooltip": "重置花费",
       "allRoles": "全部角色",
       "membersCount": "{count, plural, other {# 名成员}}",
       "noMatch": "没有符合搜索或筛选条件的成员",
@@ -7690,7 +7691,9 @@
     "phRpmExample": "例如 60",
     "phEnvNameExample": "例如 DB_PROTOCOL",
     "phEnvDescriptionExample": "例如 你的数据库用户名",
-    "phEnvValueExample": "例如 postgresql"
+    "phEnvValueExample": "例如 postgresql",
+    "capabilityPrompts": "提示词",
+    "capabilityResources": "资源"
   },
   "guardrailsMonitor": {
     "overview": {
@@ -8761,7 +8764,8 @@
       },
       "group": {
         "agents": "智能体"
-      }
+      },
+      "mcpServers": "MCP 服务器"
     },
     "compare": {
       "clearAllChats": "清空所有对话",
@@ -9540,7 +9544,8 @@
         "requestFailed": "请求失败"
       },
       "copy": {
-        "reply": "回复"
+        "reply": "回复",
+        "modelName": "模型名称"
       },
       "action": {
         "inspect": "查看"
@@ -9850,6 +9855,7 @@
     "value": "内容",
     "metadata": "元数据",
     "editPlaceholder": "智能体应记住的内容……",
+    "searchPlaceholder": "按密钥前缀或记忆 ID 搜索……",
     "actions": "操作",
     "idCol": "ID",
     "nameCol": "名称",
@@ -13785,7 +13791,13 @@
       "placeholder": "你想做点什么？",
       "ariaLabel": "给 LiteAdmin 发消息",
       "stopAriaLabel": "停止请求",
-      "sendAriaLabel": "发送消息"
+      "sendAriaLabel": "发送消息",
+      "suggestKey": "创建密钥",
+      "suggestModel": "添加模型",
+      "suggestBudget": "设置预算",
+      "suggestUsage": "汇总我的用量",
+      "suggestCompare": "对比模型",
+      "suggestCosts": "解释我的花费"
     },
     "tagline": "让你的网关更好用一点。",
     "askAriaAria": "向 Aria 询问用量",
@@ -15323,6 +15335,12 @@
       "navigate": "选择",
       "select": "确认",
       "comparisonOperators": "比较运算符"
+    },
+    "operators": {
+      "equals": "等于",
+      "notEquals": "不等于",
+      "wildcard": "通配符匹配",
+      "notContains": "不包含"
     }
   },
   "moyai": {

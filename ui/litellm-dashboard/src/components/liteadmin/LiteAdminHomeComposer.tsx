@@ -6,15 +6,15 @@ import { ARIA_AGENT_LABEL } from "./aria-brand";
 import { useTranslations } from "next-intl";
 
 const suggestions = [
-  { label: "Create a key", icon: KeyRound },
-  { label: "Add a model", icon: Box },
-  { label: "Set a budget", icon: CreditCard },
-];
+  { labelKey: "composer.suggestKey", icon: KeyRound },
+  { labelKey: "composer.suggestModel", icon: Box },
+  { labelKey: "composer.suggestBudget", icon: CreditCard },
+] as const;
 const usageSuggestions = [
-  { label: "Summarize my usage", icon: BarChart3 },
-  { label: "Compare models", icon: Box },
-  { label: "Explain my costs", icon: CreditCard },
-];
+  { labelKey: "composer.suggestUsage", icon: BarChart3 },
+  { labelKey: "composer.suggestCompare", icon: Box },
+  { labelKey: "composer.suggestCosts", icon: CreditCard },
+] as const;
 
 export function LiteAdminHomeComposer({
   value,
@@ -60,23 +60,26 @@ export function LiteAdminHomeComposer({
       />
       <div className="flex w-full flex-wrap items-center justify-between gap-3 px-4 pb-4">
         <div className="flex flex-wrap gap-2">
-          {(usage ? usageSuggestions : suggestions).map(({ label, icon: Icon }) => (
-            <Button
-              key={label}
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={disabled}
-              className="gap-2 bg-muted/30 font-normal text-muted-foreground shadow-none"
-              onClick={() => {
-                onChange(label);
-                inputRef.current?.focus();
-              }}
-            >
-              <Icon className="size-3.5" />
-              {label}
-            </Button>
-          ))}
+          {(usage ? usageSuggestions : suggestions).map(({ labelKey, icon: Icon }) => {
+            const label = t(labelKey);
+            return (
+              <Button
+                key={labelKey}
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                className="gap-2 bg-muted/30 font-normal text-muted-foreground shadow-none"
+                onClick={() => {
+                  onChange(label);
+                  inputRef.current?.focus();
+                }}
+              >
+                <Icon className="size-3.5" />
+                {label}
+              </Button>
+            );
+          })}
         </div>
         <div className="ml-auto flex min-w-0 max-w-full items-center gap-2">
           <div className="w-64 min-w-0 text-muted-foreground">{modelPicker}</div>

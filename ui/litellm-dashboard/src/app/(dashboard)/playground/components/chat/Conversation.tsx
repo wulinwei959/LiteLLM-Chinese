@@ -205,7 +205,7 @@ function AssistantReply({
             <LongValue
               value={model.value}
               detail={model.detail}
-              copyLabel="model name"
+              copyLabel={t("copy.modelName")}
               className="max-w-96 text-xs text-muted-foreground"
             />
             {fellBack(message) && <FallbackBadge />}

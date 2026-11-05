@@ -190,7 +190,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
     (providerInfo) => providerInfo.provider === pickedProvider,
   )?.litellm_provider;
 
-  const credentialSelectOptions: SearchSelectOption[] = useMemo(() => credentialOptions(credentials), [credentials]);
+  const credentialSelectOptions: SearchSelectOption[] = useMemo(
+    () => credentialOptions(t, credentials),
+    [credentials, t],
+  );
 
   const applyProviderSelection = (provider: string | null) => {
     setSelectedProvider(provider);
