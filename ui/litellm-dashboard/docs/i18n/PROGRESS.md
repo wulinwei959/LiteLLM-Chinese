@@ -5664,3 +5664,13 @@ A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫�
 测试面：`agentCatalog.test.ts` 22 处调用注入 `enMessagesFor("agents")` 英语译员，断言逐字不动（钉 en 值即断言目录本身）；`TopAgents.integration.test.tsx` 三条断言翻面（`Claude (unspecified)` → `Claude (未指定)`、`View Claude Desktop usage` → `查看 Claude Desktop 用量`、`Client not identified` → `未识别的客户端`）。usage 目录 33 文件 537 例全绿、Type Errors 0；死键 0/0、静态英文 280/280、`tsc` 0 错、eslint 0 error、prettier 触及文件合规、`agentCatalog.ts` 与 `TopAgents.tsx` 逐文件 `scan-english` 零命中
 
 清单复跑：未接入 687 → 685、有证据 87 → 85、零命中 600 → 602（`agentCatalog.ts` 接完退桶；A 桶剩 6 个文件，`anthropic_federation.ts` 30 条为下一片）
+
+## 2026-11-05 第 568 簇：A 桶第二片，Anthropic/OpenAI 工作负载身份联合字段接入
+
+`anthropic_federation.ts`(30) 与 `openai_federation.ts`(6) 两片同簇接完。`FederationField` 表是第四道盲区同款数据模块：文件不挂翻译器，但 label/tooltip 全部经 `FederationFields.tsx` 的 `labelWithHint` 直出表单。形态沿用 `labelKey` 先例并更进一步：`federation_field.ts` 把 `label`/`tooltip` 字段改成 `labelKey: \`federation.${id}Label\`` / `tooltipKey` 模板联合类型，数据表落全字面量键（第 567 簇的教训：模板拼接键会被死键门禁误报，字面量是硬要求）；校验器改收译员（`requiredFederationValue(t)`、`validateMaskedValueUntouched(t, stored)`、`validateFederationValueStored(t, source)`、`validateIdentityTokenReference(t)`、`validateIssuerTtlSeconds(t)`、`validateOpenAIFederationApiBase(t)`、`identitySourceOptions(t, values)`、`providerFieldValidators(t, selection)`），`ttlRange`/`openaiApiBaseHost`/`storedOption` 走 ICU 插值，`CredentialModal.tsx` 两处调用点补 `modelAddT`
+
+`tokenLifetimeTooltip` 的 3600 上限写进消息文本而不是插值（tooltip 渲染点拿不到常量），`anthropic_federation.test.ts` 已有 `String(MAX_ISSUER_TTL_SECONDS)` 用例与 `ttlRange` 的 `{max}` 插值共同守住常量与消息的一致性。`Stored: {value}` 收进 `storedOption`，`UNRECOGNIZED_IDENTITY_SOURCE.labelKey` 借用 `sourceEnvironment` 保持形状（它的 label 从不渲染，选择器里未识别项走 `storedOption`）
+
+新增 `modelAdd.federation.*` 52 键，两侧叶子 13659 → 13711。测试：`anthropic_federation`/`openai_federation`/`federation_field`/`credential_federation` 四个纯测试注入 `enMessagesFor("modelAdd")` 英语译员，英文断言逐字保留（含 "Stored: spiffe"、"whole number"、"only reaches the OpenAI API"）；`CredentialModal.integration.test.tsx` 18 组界面取值翻中文（`Federation Rule ID` → `联合身份规则 ID` 等，Microsoft365 fixture 的 API 回传 label 不翻）。model_add 整目录 13 文件 218 例全绿
+
+门禁：死键 0/0、静态英文 280/280、zh 未译 245/245、`tsc` 0 错、eslint 触及文件 0 error、prettier 合规、三个 `.ts` `scan-english` 零命中。清单复跑：未接入 685 不变（translator-first 数据模块按判据仍算未挂线，接入判据第五道盲区入账 FILE-INVENTORY）、有证据 85 → 83、零命中 602 → 604

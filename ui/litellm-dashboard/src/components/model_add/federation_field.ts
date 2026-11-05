@@ -1,9 +1,34 @@
 import { isMaskedSecret } from "@/utils/maskedSecretUtils";
+import type { ModelAddTranslator } from "@/lib/i18n/translators";
+
+type FederationFieldId =
+  | "ruleId"
+  | "orgId"
+  | "serviceAccountId"
+  | "workspaceId"
+  | "identityTokenFile"
+  | "identityTokenRef"
+  | "issuerUrl"
+  | "subject"
+  | "audience"
+  | "tokenLifetime"
+  | "signingKeyRef"
+  | "keycloakTokenUrl"
+  | "keycloakClientId"
+  | "clientSecretRef"
+  | "clientAuthMethod"
+  | "scope"
+  | "openaiProviderId"
+  | "openaiServiceAccountId"
+  | "openaiIdentityTokenFile";
+
+export type FederationLabelKey = `federation.${FederationFieldId}Label`;
+export type FederationTooltipKey = `federation.${FederationFieldId}Tooltip`;
 
 export interface FederationField {
   readonly key: string;
-  readonly label: string;
-  readonly tooltip: string;
+  readonly labelKey: FederationLabelKey;
+  readonly tooltipKey: FederationTooltipKey;
   readonly placeholder?: string;
   readonly required: boolean;
   readonly control: "text" | "integer" | "select";
@@ -17,11 +42,12 @@ export const isBlank = (value: unknown): boolean => {
   return value === undefined || value === null;
 };
 
-export const requiredFederationValue = (value: unknown): string | true => (isBlank(value) ? "Required" : true);
+export const requiredFederationValue =
+  (t: ModelAddTranslator) =>
+  (value: unknown): string | true =>
+    isBlank(value) ? t("federation.requiredField") : true;
 
 export const validateMaskedValueUntouched =
-  (storedValue: unknown) =>
+  (t: ModelAddTranslator, storedValue: unknown) =>
   (value: unknown): string | true =>
-    isMaskedSecret(value) && value !== storedValue
-      ? "This stored value is hidden. Replace the whole value to change it"
-      : true;
+    isMaskedSecret(value) && value !== storedValue ? t("federation.maskedHidden") : true;

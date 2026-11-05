@@ -10,6 +10,7 @@ import {
   type IdentitySourceId,
 } from "./anthropic_federation";
 import { isBlank, type FederationField } from "./federation_field";
+import type { ModelAddTranslator } from "@/lib/i18n/translators";
 import { isOpenAIProvider, OPENAI_FEDERATION_FIELDS, validateOpenAIFederationApiBase } from "./openai_federation";
 
 export type AuthMethod = "api_key" | "federation";
@@ -40,9 +41,9 @@ const federationFieldsByKey: ReadonlyMap<string, FederationField> = new Map(
   [...ANTHROPIC_FEDERATION_FIELDS, ...OPENAI_FEDERATION_FIELDS].map((field) => [field.key, field]),
 );
 
-const OPENAI_FEDERATION_PROVIDER_FIELD_VALIDATORS: ProviderFieldValidators = {
-  api_base: validateOpenAIFederationApiBase,
-};
+const openaiProviderFieldValidators = (t: ModelAddTranslator): ProviderFieldValidators => ({
+  api_base: validateOpenAIFederationApiBase(t),
+});
 
 const NO_PROVIDER_FIELD_VALIDATORS: ProviderFieldValidators = {};
 
@@ -72,9 +73,12 @@ export const isFederatedCredential = (credentialValues: Record<string, unknown> 
 export const inferAuthMethod = (credentialValues: Record<string, unknown> | null | undefined): AuthMethod =>
   isBlank(credentialValues?.[API_KEY]) && isFederatedCredential(credentialValues) ? "federation" : "api_key";
 
-export const providerFieldValidators = (selection: CredentialSelection): ProviderFieldValidators =>
+export const providerFieldValidators = (
+  t: ModelAddTranslator,
+  selection: CredentialSelection,
+): ProviderFieldValidators =>
   selection.authMethod === "federation" && selection.provider === "openai"
-    ? OPENAI_FEDERATION_PROVIDER_FIELD_VALIDATORS
+    ? openaiProviderFieldValidators(t)
     : NO_PROVIDER_FIELD_VALIDATORS;
 
 const identitySourceOf = (selection: CredentialSelection): IdentitySourceId | null =>

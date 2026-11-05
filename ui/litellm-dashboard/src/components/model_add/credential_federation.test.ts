@@ -10,6 +10,10 @@ import {
   providerFieldValidators,
   selectionFor,
 } from "./credential_federation";
+import type { ModelAddTranslator } from "@/lib/i18n/translators";
+import { enMessagesFor } from "@/../tests/i18nStub";
+
+const t = enMessagesFor("modelAdd") as unknown as ModelAddTranslator;
 
 const apiKeySelection = { authMethod: "api_key" } as const;
 const tokenFileSelection = { authMethod: "federation", provider: "anthropic", identitySource: "token_file" } as const;
@@ -84,11 +88,11 @@ describe("selectionFor", () => {
 
 describe("providerFieldValidators", () => {
   it("checks the base URL of an OpenAI federated credential only", () => {
-    expect(providerFieldValidators(openAISelection).api_base?.("https://gateway.example.com/v1")).toEqual(
+    expect(providerFieldValidators(t, openAISelection).api_base?.("https://gateway.example.com/v1")).toEqual(
       expect.stringContaining("OpenAI API"),
     );
-    expect(providerFieldValidators(tokenFileSelection)).toEqual({});
-    expect(providerFieldValidators(apiKeySelection)).toEqual({});
+    expect(providerFieldValidators(t, tokenFileSelection)).toEqual({});
+    expect(providerFieldValidators(t, apiKeySelection)).toEqual({});
   });
 });
 

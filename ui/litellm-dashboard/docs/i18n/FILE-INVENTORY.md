@@ -723,3 +723,7 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 ## 第 567 簇：A 桶首片 `agentCatalog.ts`（2026-11-05）
 
 A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌的 `label`/`description` 直出 Top Agents 面板与图表，文件此前不挂翻译器、逐文件扫描也判它无 JSX 文本可报。接线形态：locale 无关常量保留 `match`/`kind`/`logo`/`id`，显示文本换成 `labelKey`/`descriptionKey` 字面量键，只有建 `AgentRow` 的 `agentFor(t, ...)` 起需要译员；`familyFor`/`usageClientFromUserAgent` 免译员，识别链路（`clientUsageData.ts`）零改动。踩到一条门禁事实：Desc 键若用 `` `${labelKey}Desc` `` 模板拼接，`dead-keys.py` 的 `referenced_verbatim` 找不到字面量、22 条全误报成死键，故 `descriptionKey` 按字面量落表。`TopAgents.tsx` 的 `` `View ${label} usage` `` aria-label 一并接 `catalogViewUsageAria`。新增 46 键，21 条品牌名 zh 值保留英文加 2 条 SDK 描述入 zh 基线（222 → 245）。清单：未接入 687 → 685、有证据 87 → 85、零命中 600 → 602。A 桶剩 `anthropic_federation.ts`(30)、`provider_auth_types.ts`(8)、`openai_federation.ts`(6)、`operations.ts`(6)、`usageChart.ts`(5)、`prompt_editor_view/utils.ts`(3)
+
+## 第 568 簇与接入判据的第五道盲区（2026-11-05）
+
+`anthropic_federation.ts`、`openai_federation.ts` 接完后清单只动了两格：有证据 85 → 83、零命中 602 → 604，未接入总数 685 不变。原因是接入判据按 `useTranslations(`/`getTranslations(` 认线，而 translator-first 数据模块收的是译员参数、文件内不出现这两个调用，接完仍留在未接入桶里（`federation_field.ts` 与 `credential_federation.ts` 同）。第 567 簇的 `agentCatalog.ts` 因 import 了 `useTranslations` 字样在 `TopAgents.tsx` 侧才被记成已接入？不是——它本身也仍未挂线，两簇合起来说明：未接入桶从 567 簇起混入了已接净的 translator-first 模块，读这份清单要交叉核对逐文件 `scan-english` 零命中，不能按桶判断一个 `.ts` 是否有活。后续把判据改成「含 `useTranslations(`/`getTranslations(`/或导出收 `*Translator` 入参的 builder」再说，本簇先在数里记明口径变化

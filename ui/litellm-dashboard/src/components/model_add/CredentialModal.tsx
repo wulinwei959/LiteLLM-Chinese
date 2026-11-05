@@ -82,6 +82,7 @@ export default function CredentialModal({
 }: CredentialModalProps) {
   const t = useTranslations("credentials");
   const commonT = useTranslations("common");
+  const modelAddT = useTranslations("modelAdd");
   const authMethodItems: { value: AuthMethod; label: string }[] = [
     { value: "api_key", label: t("apiKeyMethod") },
     { value: "federation", label: t("federationLabel") },
@@ -122,7 +123,7 @@ export default function CredentialModal({
   };
 
   const changeAuthMethod = (method: AuthMethod) => {
-    form.clearErrors(Object.keys(providerFieldValidators(selection)));
+    form.clearErrors(Object.keys(providerFieldValidators(modelAddT, selection)));
     setAuthMethod(method);
   };
 
@@ -256,7 +257,7 @@ export default function CredentialModal({
                 selectedProvider={selectedProvider}
                 hiddenFieldKeys={selection.authMethod === "federation" ? API_KEY_FIELDS : NO_HIDDEN_FIELDS}
                 initialAuthTypeId={initialAuthTypeId}
-                fieldValidators={providerFieldValidators(selection)}
+                fieldValidators={providerFieldValidators(modelAddT, selection)}
               />
 
               {selection.authMethod === "federation" && (
