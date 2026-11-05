@@ -31,6 +31,8 @@ node scripts/i18n-file-inventory.mjs
 
 渲染扫描也补不上这个洞的一半。它取的是 `innerText()`，`placeholder` 与 tooltip 这类属性文案不在口径里，本轮那十一条属性英文是靠读代码捞的。扫描侧要不要一并读属性，仍是没定的事
 
+还有第三道盲区，判据本身挡不住：接入判据只看文件里有没有 `useTranslations(`/`getTranslations(`，所以已挂翻译器的文件内部的硬编码英文一律不进这份清单。第 564 簇接的那批全在这里，`EntityUsage.tsx` 早就握着 `t = useTranslations("usage")`，JSX 里却仍写死 `Daily`/`Weekly`/`Linear`/`Log`/`Flat cost` 与两处图表标题。它也不是 `check:english-leaks` 的命中（接完复跑 280/280、无 resolved 条目，那批串本就不在它的口径里），是靠读第 563 簇那两个 builder 的消费点读出来的。同一文件的同类活账散在 PROGRESS 的各簇里，没有机读的清单，这是缺口
+
 ## `.ts` 侧的枚举与判定
 
 2026-11-05 把枚举口径从 `.tsx` 扩到 `.ts`，产出脚本加了 `--include-ts`（`.ts` 按 `ScriptKind.TS` 解析，避免把泛型读成 JSX；跳过 `.test.`、`.spec.`、`.d.ts`、`vendor/`、`src/lib/i18n/`）。同日又补了 `const` 口径，`.ts` 侧因此多浮出 7 个文件各 1 条：`src/utils/promptCacheUsage.ts` 的两条提示（真漏，第 563 簇已接，`common.promptCacheReadTooltip` 与 `common.promptCacheCreationTooltip` 一条一个键，由 `chat_ui/ResponseMetrics.tsx` 和 `logs/detail/LogDetailContent.tsx` 各自经 `useTranslations('common')` 取值，英文串不再住在 `.ts` 里）、`src/utils/budgetUtils.ts` 的预算说明串（`describeBudgetResetSchedule` 无生产消费点）、`src/utils/activityTimestamp.ts` 的日期格式串（机读值）、`src/components/liteadmin/aria-brand.ts` 的专名、`src/app/(dashboard)/agents/_components/kill_switch_config.ts` 与 `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts` 和 `src/components/add_model/build_auto_router_routing_test_request.ts` 各 1 条待判不带 `--include-ts` 时输出与扩面之前只差一行：`src/components/shared/DataTable/DataTable.test-d.tsx` 被新的排除规则挡掉，它是类型测试不是源文件
@@ -39,7 +41,7 @@ node scripts/i18n-file-inventory.mjs
 node scripts/i18n-file-inventory.mjs --include-ts
 ```
 
-复跑：`.tsx` 与 `.ts` 未接入翻译器共 687 个，88 个有可见文案证据（`.tsx` 18 个 40 条、`.ts` 70 个 287 条），599 个零命中
+复跑：`.tsx` 与 `.ts` 未接入翻译器共 687 个，87 个有可见文案证据（`.tsx` 18 个 40 条、`.ts` 69 个 286 条），600 个零命中。上一版记的 88 个与 287 条是第 563 簇落地之前取的数，`entityUsageSummary.ts` 接完之后退出证据桶（少 1 个文件 1 条）
 
 `.ts` 的判据跟 `.tsx` 不一样。`.tsx` 里一条命中基本就是待接文案，`.ts` 是数据层，同一个字符串可能是渲染值、回退数据、比较键、协议字段或没人调的死代码，这五种只能靠消费点区分。2026-11-04 那一版按"文件里有英文"就记真漏，判错了，把渲染处读出来重判之后真漏从 10 个文件缩到 8 个文件，其中 4 个文件根本不是漏。按消费点重数的条数是 97，比上一版的 92 还多，因为上一版漏数了 federation 两份的 `tooltip`（跨行字面量，单行 grep 抓不到）与 `entityUsageSummary` 整块。`entityUsageSummary` 那 9 条已接，形状是 `SummaryTile` 加稳定 `id`，标题与 tooltip 由 `buildSummaryTiles(t, metadata, …)` 在构建处经 `UsageTranslator` 取值，`EntityUsage.tsx` 的 `TILE_TRENDS` 与 React key 改按 `id` 比对，六条挂空词条（`usage.entity.totalSpend`、`usage.entity.totalCost`、`usage.totalRequests`、`usage.totalTokens`、`usage.metrics.successfulRequests`、`usage.metrics.failedRequests`）全部复用，新增 `usage.entity.requestCost`/`flatCost`/`ptuHours` 三条标题与四条 `…Hint`。下面按消费点分三桶，命中条数取脚本输出，判定列的 file:line 是渲染处或"无消费点"的证据
 

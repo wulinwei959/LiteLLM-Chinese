@@ -5295,7 +5295,10 @@
       "totalCostHint": "请求成本加上预留容量的固定成本，选中这张卡片可查看明细",
       "requestCostHint": "所选周期内该实体发出请求的按量成本，按 token 计价",
       "flatCostHint": "预留的置备吞吐量，无论是否发出请求都按小时计费。只在这里展示，不计入团队、密钥、用户或组织的预算",
-      "ptuHoursHint": "已消耗的置备吞吐量，单位为 PTU 小时。发给 PTU 部署的 token 按每个模型的 Azure 规格表换算，用它除以预留 PTU 数与周期小时数的乘积就是预留容量的使用率"
+      "ptuHoursHint": "已消耗的置备吞吐量，单位为 PTU 小时。发给 PTU 部署的 token 按每个模型的 Azure 规格表换算，用它除以预留 PTU 数与周期小时数的乘积就是预留容量的使用率",
+      "metricByModel": "按{model}统计的{metric}",
+      "stackCaption": "{granularity}{metric}{suffix}",
+      "flatCostOnTop": "，固定成本叠加在上"
     },
     "provider": {
       "title": "按供应商统计消费",

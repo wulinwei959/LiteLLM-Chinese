@@ -5606,3 +5606,17 @@ PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpo
 一个命令坑值得单独记。`npm run format` 是 `prettier --write .`，追加文件参数没用，它会按 `ui/litellm-dashboard/.prettierrc` 的 `printWidth: 120` 重写全仓 162 个与本次无关的文件（CI 只 `--check` PR 改动的文件，这些历史文件从来没被门禁管过）。跑一次就把别人家的格式全改了，本次靠事先备份 9 个自改文件、`git checkout --` 批量回滚，再用 `npx prettier --write <显式路径>` 只格式化自己改的。改 `ui/` 下的格式只能用后一种写法
 
 `errorsData.ts` 的 `Other`/`No status` 本簇没动。`seriesKey()` 同时是图表的数据键与图例显示名（`codes` 直接渲染进 `ErrorsTab.tsx:238`），接入要先把键与显示名拆开再动渲染处，跟 `agentCatalog.ts` 的 `label` 是同一类纠缠，归到 A 桶剩下 7 个文件 88 条一起做
+
+## 2026-11-05 第 564 簇：接掉 `EntityUsage.tsx` 图表头区的硬编码英文
+
+第 563 簇把 `entityUsageSummary.ts` 交给消费点，读 `EntityUsage.tsx:505-537` 时发现同一块界面上的图表头区还是硬编码。这个文件早就挂着 `t = useTranslations("usage")`，接入判据把它算作已接入，本文件的清单口径看不见它，`check:english-leaks` 也没数到过那批串。收口的六处：`FLAT_COST_SERIES`、`METRIC_TITLE` 两个模块级常量，`GRANULARITY_OPTIONS` 与 `SCALE_OPTIONS` 的四个 `label`，标题 `h3` 与副标题 `p`
+
+两个选项数组改 `labelKey` 加 `as const satisfies`，联合类型直接写键名字面量，`t(\`entity.${labelKey}\`)` 因此是类型可查的模板字面量。`withFlatCost`的系列名从常量改成第三个入参，调用处传`t("entity.flatCost")`，`flatCostLabel`跟着进`chartSeries`的`useMemo` 依赖，漏掉它就会在换语言时留一条英文图例。`Flat cost`、`Daily`/`Weekly`、`Linear`/`Log`、`Spend`/`Tokens`/`Requests` 全部复用已有键，一条没新建：`entity.flatCost` 是第 563 簇刚开的，其余七条（`entity.granularityDaily`/`granularityWeekly`/`scaleLinear`/`scaleLog`与`overview.metric.spend`/`tokens`/`requests`）在两份目录里躺了很久没人引用（model-insights 用的 `granularityDaily`与`scaleLinear`在`modelInsights`命名空间，跟`usage.entity` 这四条只是同名）
+
+标题与副标题这两句改成 ICU 整句，新增 `entity.metricByModel`、`entity.stackCaption`、`entity.flatCostOnTop` 三键，叶子 13586 → 13589，两侧同数、键差集 0。顺带修掉两处老缺陷：原 `h3` 是 `${METRIC_TITLE[metric]} ${t("by")} ${modelLabel}` 三段拼出来的，中文会念成「花费 按 模型」；原副标题直接把 `breakdown.metric` 的键名打进界面，渲染出来是 `Daily spend，前 8 项堆叠` 这种中英夹生的串。整句进目录之后两处都按目标语言自己的语序走
+
+`check:zh-coverage` 报了一条新的未译：`entity.stackCaption` 的中文值「{granularity}{metric}{suffix}」整串都是参数，没有汉字可判。按门禁给的出口把它入基线，理由与先例是 `logs.routing.bandWithTier`（同样是全参数拼句）。`--write` 顺带把 `playground.compliance.csvTemplateRow{1,2,3}Framework` 三行的排序改成 ASCII 序，那是生成文件自己的事。死键 0（`usage.by` 还有 `access-groups` 与 `projects` 四个消费点，没被这次改动变成孤儿）、静态英文 280/280 且无 resolved 条目、`npm run typecheck` 0 错
+
+测试加一条按中文取元素的断言，`EntityUsage.test.tsx` 钉住四个 `radio`（每日/每周/线性/对数）、`h3`「按模型统计的花费」与副标题「每日花费，前 8 项堆叠」，接线前这些串在界面上一条都不存在。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0，`src/lib/i18n` 的 parity 守卫 5 个文件 23 例全绿。`METRIC_TITLE` 删掉后 `UsageMetric` 这个类型导入也没了消费点，一并删除，否则 eslint 报 unused-imports 一条 error。eslint 触及两文件 0 error，`EntityUsage.tsx` 4 条 warning、测试文件 8 条，行号全在改动区之外，是 HEAD 既有。触及的七个文件 `npx prettier --check` 合规，`EntityUsage.tsx` 里第 563 簇留下的那处 `Segmented` 缩进欠账一并修直，`PROGRESS.md` 本次新增段被 prettier 按中文正文规则收紧了行内代码两侧的空格
+
+清单复跑（`node scripts/i18n-file-inventory.mjs --include-ts`）：未接入 687 个不变，有可见文案证据 88 → 87（`.ts` 少 `entityUsageSummary.ts` 一个文件一条命中，第 563 簇接完退桶），零命中 599 → 600。本簇改动全在已接入文件内部，对这份清单是零影响，FILE-INVENTORY 的「口径盲区」两节因此补了第三道：判据只看有没有挂翻译器，接了线的文件内部的硬编码英文一律不进清单，只能靠读消费点捞

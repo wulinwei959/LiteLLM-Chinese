@@ -5295,7 +5295,10 @@
       "totalCostHint": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
       "requestCostHint": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
       "flatCostHint": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
-      "ptuHoursHint": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used."
+      "ptuHoursHint": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
+      "metricByModel": "{metric} by {model}",
+      "stackCaption": "{granularity} {metric}{suffix}",
+      "flatCostOnTop": ", flat cost on top"
     },
     "provider": {
       "title": "Spend by Provider",

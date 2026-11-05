@@ -860,6 +860,21 @@ describe("EntityUsage", () => {
     expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
   });
 
+  it("labels the chart controls and caption in the active locale", async () => {
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+
+    await waitFor(() => {
+      expect(mockTagDailyActivityCall).toHaveBeenCalled();
+    });
+
+    expect(await screen.findByRole("radio", { name: "每日" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "每周" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "线性" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "对数" })).toBeInTheDocument();
+    expect(screen.getByText("按模型统计的花费")).toBeInTheDocument();
+    expect(screen.getByText("每日花费，前 8 项堆叠")).toBeInTheDocument();
+  });
+
   it("defaults Model Activity to public model names and toggles to litellm models", async () => {
     render(<StatefulEntityUsage {...defaultProps} />);
 

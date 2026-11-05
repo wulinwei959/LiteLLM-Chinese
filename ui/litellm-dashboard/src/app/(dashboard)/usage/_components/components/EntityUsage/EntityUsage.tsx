@@ -49,7 +49,6 @@ import {
   formatMetricValue,
   type Granularity,
   type Series,
-  type UsageMetric,
 } from "../overview/overviewData";
 import { Panel, Segmented, Sparkline, Stat } from "../overview/Primitives";
 import TopModelView from "./TopModelView";
@@ -58,9 +57,7 @@ import { ProviderSpendBreakdown } from "./SpendByProvider";
 import { useTranslations } from "next-intl";
 
 const BRAND = "#2b3fd6";
-const FLAT_COST_SERIES = "Flat cost";
 const FLAT_COST_COLOR = "#8b5cf6";
-const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
 /** Summary tiles that carry a sparkline, keyed by tile id, valued by the dailyTotals field. */
 const TILE_TRENDS: Readonly<Partial<Record<SummaryTileId, string>>> = {
   totalSpend: "spend",
@@ -69,23 +66,23 @@ const TILE_TRENDS: Readonly<Partial<Record<SummaryTileId, string>>> = {
   totalTokens: "tokens",
 };
 const GRANULARITY_OPTIONS = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-] as const satisfies readonly { value: Granularity; label: string }[];
+  { value: "day", labelKey: "granularityDaily" },
+  { value: "week", labelKey: "granularityWeekly" },
+] as const satisfies readonly { value: Granularity; labelKey: "granularityDaily" | "granularityWeekly" }[];
 const SCALE_OPTIONS = [
-  { value: "linear", label: "Linear" },
-  { value: "log", label: "Log" },
-] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+  { value: "linear", labelKey: "scaleLinear" },
+  { value: "log", labelKey: "scaleLog" },
+] as const satisfies readonly { value: StackedUsageScale; labelKey: "scaleLinear" | "scaleLog" }[];
 const QUIET_HEADER = { headerClassName: "font-normal" };
 const FLAT_COST_KEY = "flat_cost";
 
 /** Stacks reserved-capacity flat cost on top of the per-model spend, so each bar is the day's full cost. */
-const withFlatCost = (series: Series, results: readonly DailyData[]): Series => {
+const withFlatCost = (series: Series, results: readonly DailyData[], flatCostLabel: string): Series => {
   const flatByDate = new Map(results.map((day) => [day.date, day.metrics.flat_cost ?? 0]));
   return {
     data: series.data.map((day) => ({ ...day, [FLAT_COST_KEY]: flatByDate.get(day.date) ?? 0 })),
     keys: [...series.keys, FLAT_COST_KEY],
-    labels: [...series.labels, FLAT_COST_SERIES],
+    labels: [...series.labels, flatCostLabel],
     colors: [...series.colors, FLAT_COST_COLOR],
   };
 };
@@ -372,10 +369,11 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const providerSpend = useMemo(() => getProviderSpend(spendData.results), [spendData.results]);
   const dailyTrend = useMemo(() => dailyTotals(spendData.results), [spendData.results]);
   const stackFlatCost = showFlatCost && breakdown.metric === "spend";
+  const flatCostLabel = t("entity.flatCost");
   const chartSeries = useMemo(() => {
-    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results) : dailySeries;
+    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results, flatCostLabel) : dailySeries;
     return bucketSeries(series, granularity);
-  }, [stackFlatCost, dailySeries, spendData.results, granularity]);
+  }, [stackFlatCost, dailySeries, spendData.results, granularity, flatCostLabel]);
   const chartTotals = useMemo(() => bucketTotals(chartSeries), [chartSeries]);
 
   const entityBreakdownColumns = useMemo<ColumnDef<EntityMetricWithMetadata>[]>(
@@ -507,13 +505,18 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
           <div>
             <h3 className="text-sm font-medium text-foreground">
-              {METRIC_TITLE[breakdown.metric]} {t("by")}{" "}
-              {modelViewType === "groups" ? t("modelLabel") : t("deploymentLabel")}
+              {t("entity.metricByModel", {
+                metric: t(`overview.metric.${breakdown.metric}`),
+                model: modelViewType === "groups" ? t("modelLabel") : t("deploymentLabel"),
+              })}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {granularity === "day" ? "Daily" : "Weekly"} {breakdown.metric}
-              {t("topStackedSuffix")}
-              {stackFlatCost ? ", flat cost on top" : ""}
+              {t("entity.stackCaption", {
+                granularity: t(granularity === "day" ? "entity.granularityDaily" : "entity.granularityWeekly"),
+                metric: t(`overview.metric.${breakdown.metric}`),
+                suffix: t("topStackedSuffix"),
+              })}
+              {stackFlatCost ? t("entity.flatCostOnTop") : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -521,10 +524,15 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
             <Segmented
               label={t("entity.bucketSize")}
               value={granularity}
-              options={GRANULARITY_OPTIONS}
+              options={GRANULARITY_OPTIONS.map(({ value, labelKey }) => ({ value, label: t(`entity.${labelKey}`) }))}
               onChange={setGranularity}
             />
-            <Segmented label={t("entity.scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+            <Segmented
+              label={t("entity.scale")}
+              value={scale}
+              options={SCALE_OPTIONS.map(({ value, labelKey }) => ({ value, label: t(`entity.${labelKey}`) }))}
+              onChange={setScale}
+            />
           </div>
         </header>
         <div className="px-3 pt-4 pb-2">
