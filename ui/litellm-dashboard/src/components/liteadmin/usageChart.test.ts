@@ -6,6 +6,10 @@ import {
   usageChartSource,
   type UsageChartSource,
 } from "./usageChart";
+import type { LiteAdminTranslator } from "@/lib/i18n/translators";
+import { enMessagesFor } from "@/../tests/i18nStub";
+
+const t = enMessagesFor("liteAdmin") as unknown as LiteAdminTranslator;
 
 const query = { start_date: "2031-05-01", end_date: "2031-05-02" };
 const admin = { mode: "admin" } as const;
@@ -18,35 +22,43 @@ const source = (data: UsageChartSource["report"]): UsageChartSource => ({
 
 describe("usage chart sources", () => {
   it("should retain validated usage data with its date range and account scope", () => {
-    expect(usageChartSource(report, query, admin)).toEqual(source(report));
+    expect(usageChartSource(t, { value: report, query, access: admin })).toEqual(source(report));
     expect(
-      usageChartSource(
-        report,
-        { ...query, user_id: "viewer" },
-        { mode: "usage", scope: { type: "user", userId: "viewer" } },
-      ),
+      usageChartSource(t, {
+        value: report,
+        query: { ...query, user_id: "viewer" },
+        access: { mode: "usage", scope: { type: "user", userId: "viewer" } },
+      }),
     ).toMatchObject({ scope: "Your usage" });
   });
 
-  it.each(["All teams", "All tags"] as const)(
+  it.each(["chart.allTeams", "chart.allTags"] as const)(
     "should label an unfiltered %s report and retain combined filters",
     (scope) => {
-      expect(usageChartSource(report, query, admin, scope)?.scope).toBe(scope);
+      expect(usageChartSource(t, { value: report, query, access: admin, defaultScopeKey: scope })?.scope).toBe(
+        t(scope),
+      );
       const filters = { ...query, user_id: "member", team_ids: "team-a", tags: "production" };
-      expect(usageChartSource(report, filters, admin, scope)?.scope).toBe(
+      expect(usageChartSource(t, { value: report, query: filters, access: admin, defaultScopeKey: scope })?.scope).toBe(
         "User member · Teams team-a · Tags production",
       );
     },
   );
 
   it.each([-1, Number.NaN, Number.POSITIVE_INFINITY, "12"])("should reject invalid metric %s", (spend) => {
-    expect(usageChartSource({ ...report, daily: [{ date: query.start_date, spend }] }, query, admin)).toBeUndefined();
+    expect(
+      usageChartSource(t, { value: { ...report, daily: [{ date: query.start_date, spend }] }, query, access: admin }),
+    ).toBeUndefined();
   });
 
   it("should reject malformed reports or date ranges before creating a chart source", () => {
-    expect(usageChartSource({ daily: report.daily }, query, admin)).toBeUndefined();
-    expect(usageChartSource({ ...report, daily: [{ date: "yesterday", spend: 2 }] }, query, admin)).toBeUndefined();
-    expect(usageChartSource(report, { ...query, start_date: "2031-02-30" }, admin)).toBeUndefined();
+    expect(usageChartSource(t, { value: { daily: report.daily }, query, access: admin })).toBeUndefined();
+    expect(
+      usageChartSource(t, { value: { ...report, daily: [{ date: "yesterday", spend: 2 }] }, query, access: admin }),
+    ).toBeUndefined();
+    expect(
+      usageChartSource(t, { value: report, query: { ...query, start_date: "2031-02-30" }, access: admin }),
+    ).toBeUndefined();
   });
 
   it("should accept only a source reference and a supported view in chart requests", () => {
@@ -74,7 +86,7 @@ describe("usage chart values", () => {
           { date: "2031-05-02", [metric]: null },
         ],
       };
-      const chart = buildUsageChart(source(data), view);
+      const chart = buildUsageChart(t, source(data), view);
       const expectedChart = {
         kind: "line",
         unit,
@@ -92,6 +104,7 @@ describe("usage chart values", () => {
 
   it("should preserve independent prompt, completion and cache totals without adding cache to total tokens", () => {
     const chart = buildUsageChart(
+      t,
       source({
         ...report,
         daily: [
@@ -131,6 +144,7 @@ describe("usage chart values", () => {
 
   it("should leave an incomplete token counter unavailable while retaining known zeros", () => {
     const chart = buildUsageChart(
+      t,
       source({
         ...report,
         daily: [
@@ -155,6 +169,7 @@ describe("usage chart values", () => {
   ] as const)("should show the six leading entries and all remaining recorded spend for %s", (view, dimension) => {
     const ranked = [5, 20, 1, 10, 15, 25, 2, 4].map((spend) => ({ name: `entry-${spend}`, spend }));
     const chart = buildUsageChart(
+      t,
       source({ ...report, daily: [{ date: query.start_date, spend: 100 }], [dimension]: ranked }),
       view,
     );
@@ -173,6 +188,7 @@ describe("usage chart values", () => {
 
   it("should not invent remaining spend when the daily total is incomplete", () => {
     const chart = buildUsageChart(
+      t,
       source({
         ...report,
         daily: [{ date: query.start_date, spend: null }],
@@ -186,13 +202,14 @@ describe("usage chart values", () => {
 
   it.each(["daily_spend", "model_spend", "provider_spend", "token_breakdown"] as const)(
     "should omit %s when its source has no recorded rows",
-    (view) => expect(buildUsageChart(source({ daily: [], top_models: [], top_providers: [] }), view)).toBeUndefined(),
+    (view) =>
+      expect(buildUsageChart(t, source({ daily: [], top_models: [], top_providers: [] }), view)).toBeUndefined(),
   );
 
   it("should display tiny dollar amounts without rounding them to zero and label unavailable values", () => {
-    expect(formatUsageChartValue(0.000123, "usd")).toBe("$0.000123");
-    expect(formatUsageChartValue(0, "usd")).toBe("$0.00");
-    expect(formatUsageChartValue(null, "tokens")).toBe("Unavailable");
-    expect(formatUsageChartValue(12345, "requests")).toBe("12,345");
+    expect(formatUsageChartValue(t, 0.000123, "usd")).toBe("$0.000123");
+    expect(formatUsageChartValue(t, 0, "usd")).toBe("$0.00");
+    expect(formatUsageChartValue(t, null, "tokens")).toBe("Unavailable");
+    expect(formatUsageChartValue(t, 12345, "requests")).toBe("12,345");
   });
 });

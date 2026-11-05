@@ -218,13 +218,13 @@ export const parseExistingPrompt = (t: PromptsTranslator, apiResponse: any): Pro
   const dotpromptContent = apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
 
   if (!dotpromptContent) {
-    throw new Error("No dotprompt_content found in API response");
+    throw new Error(t("editor.noDotpromptContent"));
   }
 
   // Split into frontmatter and content
   const parts = dotpromptContent.split("---");
   if (parts.length < 3) {
-    throw new Error("Invalid dotprompt format");
+    throw new Error(t("editor.invalidDotpromptFormat"));
   }
 
   const frontmatter = parts[1];
@@ -246,7 +246,7 @@ export const parseExistingPrompt = (t: PromptsTranslator, apiResponse: any): Pro
     messages:
       parsedBody.messages.length > 0
         ? parsedBody.messages
-        : [{ role: "user", content: "Enter task specifics. Use {{template_variables}} for dynamic inputs" }],
+        : [{ role: "user", content: t("editor.defaultTaskPrompt", { templateVar: "{{template_variables}}" }) }],
     environment:
       apiResponse?.prompt_spec?.environment || apiResponse?.prompt_spec?.prompt_info?.environment || "development",
   };

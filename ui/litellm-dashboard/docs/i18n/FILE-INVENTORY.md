@@ -727,3 +727,7 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 ## 第 568 簇与接入判据的第五道盲区（2026-11-05）
 
 `anthropic_federation.ts`、`openai_federation.ts` 接完后清单只动了两格：有证据 85 → 83、零命中 602 → 604，未接入总数 685 不变。原因是接入判据按 `useTranslations(`/`getTranslations(` 认线，而 translator-first 数据模块收的是译员参数、文件内不出现这两个调用，接完仍留在未接入桶里（`federation_field.ts` 与 `credential_federation.ts` 同）。第 567 簇的 `agentCatalog.ts` 因 import 了 `useTranslations` 字样在 `TopAgents.tsx` 侧才被记成已接入？不是——它本身也仍未挂线，两簇合起来说明：未接入桶从 567 簇起混入了已接净的 translator-first 模块，读这份清单要交叉核对逐文件 `scan-english` 零命中，不能按桶判断一个 `.ts` 是否有活。后续把判据改成「含 `useTranslations(`/`getTranslations(`/或导出收 `*Translator` 入参的 builder」再说，本簇先在数里记明口径变化
+
+## A 桶清零（2026-11-05 第 569 簇）
+
+`provider_auth_types.ts`(8)、`operations.ts`(6)、`usageChart.ts`(5)、`prompt_editor_view/utils.ts`(3) 接完，A 桶 7 个文件 88 条全部有归属：567 簇 `agentCatalog`、568 簇两份 federation、569 簇这四片，另 `errorsData.ts` 的 `Other`/`No status` 仍按 seriesKey 数据键与图例名纠缠留在判定账。三条口径记录：LiteAdmin 工具 description 与 renderChart 反馈串是发给模型的语料，固定英文（`createTranslator({locale:"en"})` 取值，UI title 另走译员）；`{{template_variables}}` 字面量在 ICU 消息里冲突，收 `{templateVar}` 参数由调用点传字面量；`usageChartSource` 加译员后 5 位置参触 eslint `max-params`，改单对象参。有证据桶 83 → 80，剩余命中集中在 `errorsData.ts` 与 B/C 判定面

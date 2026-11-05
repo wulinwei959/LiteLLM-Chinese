@@ -497,7 +497,7 @@ describe("ProviderSpecificFields", () => {
     );
 
     expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "OAuth token exchange (on-behalf-of)",
+      "OAuth 令牌换取（on-behalf-of）",
     );
     expect(screen.getByLabelText("Token Endpoint URL")).toBeInTheDocument();
     expect(screen.getByLabelText("Client ID")).toBeInTheDocument();
@@ -540,10 +540,10 @@ describe("ProviderSpecificFields", () => {
     );
 
     const authTypeSelect = await screen.findByRole("combobox", { name: "认证类型：" });
-    expect(authTypeSelect).toHaveTextContent("Static delegated access token");
+    expect(authTypeSelect).toHaveTextContent("静态委托访问令牌");
     await user.click(authTypeSelect);
     expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
-      "Static delegated access token",
+      "静态委托访问令牌",
     ]);
 
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
@@ -567,7 +567,7 @@ describe("ProviderSpecificFields", () => {
     await chooseSelectOption(
       user,
       screen.getByRole("combobox", { name: "认证类型：" }),
-      "Static delegated access token",
+      "静态委托访问令牌",
     );
 
     expect(await screen.findByLabelText("Delegated Access Token")).toBeInTheDocument();
@@ -589,7 +589,7 @@ describe("ProviderSpecificFields", () => {
     );
 
     expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "Static delegated access token",
+      "静态委托访问令牌",
     );
     expect(screen.getByLabelText("Delegated Access Token")).toHaveValue("delegated-token");
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
@@ -609,7 +609,7 @@ describe("ProviderSpecificFields", () => {
     await chooseSelectOption(
       user,
       await screen.findByRole("combobox", { name: "认证类型：" }),
-      "OAuth token exchange (on-behalf-of)",
+      "OAuth 令牌换取（on-behalf-of）",
     );
 
     rerender(
@@ -630,7 +630,7 @@ describe("ProviderSpecificFields", () => {
     );
 
     expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "Static delegated access token",
+      "静态委托访问令牌",
     );
   });
 

@@ -115,7 +115,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   const [isFederatedCredentialModalOpen, setIsFederatedCredentialModalOpen] = useState(false);
   const canCreateFederatedCredential =
     isProxyAdminRole(userRole ?? "") && federatedProviderOf(selectedProvider) !== null;
-  const selectedAuthType = authTypesFor(selectedProvider).find(({ id }) => id === selectedAuthTypeId);
+  const selectedAuthType = authTypesFor(addModelT, selectedProvider).find(({ id }) => id === selectedAuthTypeId);
 
   const handleCreateCredential = async (submission: CredentialSubmission) => {
     const credential = buildCredential(submission, submission.credential_values);

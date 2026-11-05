@@ -122,6 +122,7 @@
     "lens.traces.value0Output",
     "lens.traces.value0SpansValue1",
     "lens.traces.value0Tokens",
+    "liteAdmin.chart.unitTokens",
     "liteAdmin.trigger",
     "login.brand",
     "logs.audit.token",

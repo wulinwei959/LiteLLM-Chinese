@@ -545,9 +545,9 @@ describe("AddModelForm", () => {
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
       fill("凭据名称：", "anthropic-federated");
-      fill(/Federation Rule ID/, "fdrl_new");
-      fill(/Organization ID/, "org-new");
-      fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
+      fill(/联合身份规则 ID/, "fdrl_new");
+      fill(/组织 ID/, "org-new");
+      fill(/身份令牌文件/, "/var/run/secrets/anthropic/token");
       await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() => {
@@ -585,7 +585,7 @@ describe("AddModelForm", () => {
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
       fill("凭据名称：", "openai-federated");
-      fill(/Service Account ID/, "svc_new");
+      fill(/服务账号 ID/, "svc_new");
       await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() => {
@@ -651,7 +651,7 @@ describe("AddModelForm", () => {
       const dialog = await screen.findByRole("dialog");
       expect(within(dialog).getByPlaceholderText("选择提供商")).toHaveValue(Providers.MICROSOFT_365_COPILOT);
       expect(within(dialog).getByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-        "OAuth token exchange (on-behalf-of)",
+        "OAuth 令牌换取（on-behalf-of）",
       );
       await chooseSelectOption(
         user,
@@ -715,10 +715,10 @@ describe("AddModelForm", () => {
       await chooseSelectOption(
         user,
         screen.getByRole("combobox", { name: "认证类型：" }),
-        "Static delegated access token",
+        "静态委托访问令牌",
       );
       await waitFor(() =>
-        expect(screen.getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Static delegated access token"),
+        expect(screen.getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("静态委托访问令牌"),
       );
       fireEvent.change(screen.getByLabelText("Delegated Access Token"), { target: { value: "delegated-token" } });
       props.handleOk.mockImplementation(async () => {
@@ -740,13 +740,13 @@ describe("AddModelForm", () => {
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
-      await chooseSelectOption(user, screen.getByRole("combobox", { name: "认证类型：" }), "Per-user GitHub OAuth");
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "认证类型：" }), "按用户 GitHub OAuth");
       await user.click(screen.getByRole("button", { name: "创建凭据" }));
       const dialog = await screen.findByRole("dialog");
       const providerSelect = within(dialog).getByPlaceholderText("选择提供商");
       expect(providerSelect).toHaveValue(Providers.GITHUB_COPILOT);
       expect(providerSelect).toBeDisabled();
-      expect(within(dialog).getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Per-user GitHub OAuth");
+      expect(within(dialog).getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("按用户 GitHub OAuth");
       fireEvent.change(within(dialog).getByLabelText("凭据名称："), {
         target: { value: "github-per-user" },
       });
@@ -793,7 +793,7 @@ describe("AddModelForm", () => {
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
-      expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Shared device login");
+      expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("共享设备登录");
       expect(screen.queryByRole("button", { name: "创建凭据" })).not.toBeInTheDocument();
       fireEvent.change(screen.getByLabelText("API Key"), { target: { value: "shared-device-token" } });
       props.handleOk.mockImplementation(async () => {
@@ -960,7 +960,7 @@ describe("AddModelForm", () => {
       await pickModel(user, "gpt-4");
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       fireEvent.change(screen.getByLabelText("凭据名称："), { target: { value: "openai-federated" } });
-      fireEvent.change(screen.getByLabelText(/Service Account ID/), { target: { value: "svc_new" } });
+      fireEvent.change(screen.getByLabelText(/服务账号 ID/), { target: { value: "svc_new" } });
       await user.click(screen.getByRole("button", { name: "添加凭据" }));
       await waitFor(() => expect(screen.queryByLabelText(/OpenAI API Key/)).not.toBeInTheDocument());
 

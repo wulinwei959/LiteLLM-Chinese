@@ -5674,3 +5674,17 @@ A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫�
 新增 `modelAdd.federation.*` 52 键，两侧叶子 13659 → 13711。测试：`anthropic_federation`/`openai_federation`/`federation_field`/`credential_federation` 四个纯测试注入 `enMessagesFor("modelAdd")` 英语译员，英文断言逐字保留（含 "Stored: spiffe"、"whole number"、"only reaches the OpenAI API"）；`CredentialModal.integration.test.tsx` 18 组界面取值翻中文（`Federation Rule ID` → `联合身份规则 ID` 等，Microsoft365 fixture 的 API 回传 label 不翻）。model_add 整目录 13 文件 218 例全绿
 
 门禁：死键 0/0、静态英文 280/280、zh 未译 245/245、`tsc` 0 错、eslint 触及文件 0 error、prettier 合规、三个 `.ts` `scan-english` 零命中。清单复跑：未接入 685 不变（translator-first 数据模块按判据仍算未挂线，接入判据第五道盲区入账 FILE-INVENTORY）、有证据 85 → 83、零命中 602 → 604
+
+## 2026-11-05 第 569 簇：A 桶收尾，provider 认证类型、LiteAdmin 与 prompts utils
+
+A 桶剩四片一次接完，88 条命中清零。
+
+`provider_auth_types.ts`(8)：`PROVIDER_AUTH_TYPES` 表改 `labelKey`/`descriptionKey`（模板联合 `` `authTypes.${id}Label` ``），`authTypesFor(t, provider)` 返回 `ResolvedAuthType` 附解析后的 `label`/`description`，`authTypeFieldKeys` 走内部 `rawAuthTypesFor` 保持免译员；消费点 `provider_specific_fields.tsx` 与 `AddModelForm.tsx` 传 `models.addModel` 译员，新增 8 键。
+
+`operations.ts` 与 `usageChart.ts`(6+5 与图表全部显示面)：`OperationContext` 加 `t: LiteAdminTranslator`，35 个动作的 title 参数改 `ActionTitleKey`（34 键字面量联合），确认卡与状态卡渲染的 `action.title` 走 UI 译员；工具 description 发给模型，固定走模块级 `modelLocaleT = createTranslator({ locale: "en" ... })` 取英文，locale 切换不影响模型语料。四条错误串（`signedInRequired`/`actionCancelled`/`changeUnverified`/`lookupFailed`）接 `liteAdmin.errors.*`。`usageChartSource` 收 `UsageChartSourceInput` 对象参（5 位置参触 `max-params`），scope/period/标题/note/行标签全走 `liteAdmin.chart.*`（28 键，`periodRange`/`userScope`/`valuesAria`/`valuesUnavailableFor` 为 ICU 插值）；`buildUsageChart(t, source, view)` 与 `formatUsageChartValue(t, ...)` 同步；`UsageAnswerChart` 的 unit 列与表 aria 走查表避免嵌套三元。renderChart 工具反馈两条判模型语料保留
+
+`prompt_editor_view/utils.ts`(3)：两条 thrown 串经调用方 `toast.fromError` 的 description 露出，接 `prompts.editor.*`；默认用户消息 "Enter task specifics..." 含 `{{template_variables}}` 字面量，ICU 会与插值语法冲突，消息收 `{templateVar}` 参数、调用点传字面量
+
+新增 77 键（authTypes 8、liteAdmin 66、prompts.editor 3），两侧叶子 13711 → 13788。基线两次刷新：静态英文 280 → 276（接掉的 thrown/title 串从基线消失），zh 未译 245 → 246（`chart.unitRequests` 等品牌/单位串入基线）。测试：`provider_auth_types.test`/`usageChart.test`/`agent.test` 注入英语译员零翻面，`AddModelForm.integration`/`provider_specific_fields.test` 等翻中文 20 处，LiteAdmin 两 integration 断言翻面（region 名、figure/table 的 `X 数值`、`你的用量`、`更改无法核实`），fixture 手填的 token 标签行保持英文。全量 `src/components`+`src/app` 复跑无新红
+
+清单：有证据 83 → 80（`provider_auth_types.ts`、`usageChart.ts`、`prompt_editor_view/utils.ts` 退桶），A 桶清零

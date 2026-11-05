@@ -671,16 +671,6 @@
       "text": "PRETTY"
     },
     {
-      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/utils.ts",
-      "kind": "error",
-      "text": "Invalid dotprompt format"
-    },
-    {
-      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/utils.ts",
-      "kind": "error",
-      "text": "No dotprompt_content found in API response"
-    },
-    {
       "file": "src/app/(dashboard)/prompts/_components/prompt_info.tsx",
       "kind": "jsx",
       "text": "(v"
@@ -1069,16 +1059,6 @@
       "file": "src/components/liteadmin/LiteAdmin.tsx",
       "kind": "jsx",
       "text": "⌘J"
-    },
-    {
-      "file": "src/components/liteadmin/operations.ts",
-      "kind": "error",
-      "text": "A signed-in user is required to query usage."
-    },
-    {
-      "file": "src/components/liteadmin/operations.ts",
-      "kind": "error",
-      "text": "Action cancelled. No change was sent."
     },
     {
       "file": "src/components/logs/detail/DrawerHeader.tsx",

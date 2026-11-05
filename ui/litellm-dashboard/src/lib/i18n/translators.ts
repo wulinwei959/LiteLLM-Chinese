@@ -160,6 +160,11 @@ function usePromptsTranslator() {
 }
 export type PromptsTranslator = ReturnType<typeof usePromptsTranslator>;
 
+function useLiteAdminTranslator() {
+  return useTranslations("liteAdmin");
+}
+export type LiteAdminTranslator = ReturnType<typeof useLiteAdminTranslator>;
+
 function useUsageKeyActivityTranslator() {
   return useTranslations("usageKeyActivity");
 }

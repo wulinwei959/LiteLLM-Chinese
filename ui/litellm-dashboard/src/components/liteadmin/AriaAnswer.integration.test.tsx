@@ -20,7 +20,7 @@ const message: ChatMessage = {
 };
 const chart: UsageChart = {
   kind: "bar",
-  title: "Spend by model",
+  title: "按模型的花费",
   period: "2026-10-19 to 2026-10-23 (UTC)",
   scope: "Your usage",
   unit: "usd",
@@ -51,8 +51,8 @@ describe("AriaAnswer", () => {
   it("should present the chart's exact accessible values alongside the formatted explanation", () => {
     render(<AriaAnswer message={message} question="Which model costs the most?" chart={chart} />);
 
-    const figure = screen.getByRole("figure", { name: "Spend by model" });
-    const values = within(figure).getByRole("table", { name: "Spend by model values" });
+    const figure = screen.getByRole("figure", { name: "按模型的花费" });
+    const values = within(figure).getByRole("table", { name: "按模型的花费 数值" });
     expect(within(values).getByRole("row", { name: "Primary $3.25" })).toBeInTheDocument();
     expect(within(values).getByRole("row", { name: "Secondary $0.75" })).toBeInTheDocument();
     expect(within(figure).getByText("$4.00")).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("AriaAnswer", () => {
     expect(exportAriaAnswer).toHaveBeenCalledOnce();
     const [exportedQuestion, exportedAnswer] = vi.mocked(exportAriaAnswer).mock.calls[0];
     expect(exportedQuestion).toBe(question);
-    expect(within(exportedAnswer).getByRole("figure", { name: "Spend by model" })).toBeInTheDocument();
+    expect(within(exportedAnswer).getByRole("figure", { name: "按模型的花费" })).toBeInTheDocument();
     expect(within(exportedAnswer).getByRole("heading", { name: "Spend overview" })).toBeInTheDocument();
     expect(within(exportedAnswer).queryByText("Private action receipt")).not.toBeInTheDocument();
     expect(toast.error).not.toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe("AriaAnswer", () => {
     const table = within(preview.body).getByRole("table");
     expect(within(table).getByRole("row", { name: "provider/long-deployment-primary $0.000123" })).toBeInTheDocument();
     expect(
-      within(table).getByRole("row", { name: "provider/long-deployment-secondary Unavailable" }),
+      within(table).getByRole("row", { name: "provider/long-deployment-secondary 不可用" }),
     ).toBeInTheDocument();
     expect(within(table).getByRole("row", { name: "Unused deployment $0.00" })).toBeInTheDocument();
     expect(preview.body).toHaveTextContent(question);
@@ -125,7 +125,7 @@ describe("AriaAnswer", () => {
         message={message}
         chart={{
           ...chart,
-          title: "Token breakdown",
+          title: "token 明细",
           unit: "tokens",
           total: 22,
           data: [
@@ -139,9 +139,9 @@ describe("AriaAnswer", () => {
       />,
     );
 
-    const values = screen.getByRole("table", { name: "Token breakdown values" });
-    expect(within(values).getByRole("row", { name: "Cache read Unavailable" })).toBeInTheDocument();
+    const values = screen.getByRole("table", { name: "token 明细 数值" });
+    expect(within(values).getByRole("row", { name: "Cache read 不可用" })).toBeInTheDocument();
     expect(within(values).getByRole("row", { name: "Cache creation 0" })).toBeInTheDocument();
-    expect(screen.getByText(/Values unavailable for: Cache read\./)).toBeInTheDocument();
+    expect(screen.getByText(/以下条目无可用值：Cache read。/)).toBeInTheDocument();
   });
 });

@@ -745,12 +745,12 @@ describe("Aria Agent in the gateway", () => {
     renderWidget();
     await openWidget();
     act(() => send("Prepare a key for approval"));
-    const review = await screen.findByRole("region", { name: "Create a virtual key" });
+    const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
     expect(review).toHaveFocus();
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Close Aria Agent" }));
     await user.click(screen.getByRole("button", { name: "Aria Agent" }));
-    await waitFor(() => expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveFocus());
+    await waitFor(() => expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveFocus());
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
   });
 
@@ -1025,7 +1025,7 @@ describe("Aria Agent in the gateway", () => {
     await reopen();
     await waitFor(() => expect(screen.getByPlaceholderText("问 Aria…")).toHaveFocus());
     send("Create a key for the team");
-    const review = await screen.findByRole("region", { name: "Create a virtual key" });
+    const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
     await reopen();
     await waitFor(() => expect(review).toHaveFocus());
   });
@@ -1155,11 +1155,11 @@ describe("Aria Agent in the gateway", () => {
 
     const reply = await screen.findByRole("article", { name: "Aria Agent answer" });
     expect(reply).toHaveTextContent("The primary model accounts for most of your spend.");
-    const figure = within(reply).getByRole("figure", { name: "Spend by model" });
-    const values = within(figure).getByRole("table", { name: "Spend by model values" });
+    const figure = within(reply).getByRole("figure", { name: "按模型的花费" });
+    const values = within(figure).getByRole("table", { name: "按模型的花费 数值" });
     expect(within(values).getByRole("row", { name: "primary-model $3.25" })).toBeInTheDocument();
     expect(within(values).getByRole("row", { name: "fallback-model $0.75" })).toBeInTheDocument();
-    expect(figure).toHaveTextContent("Your usage");
+    expect(figure).toHaveTextContent("你的用量");
     expect(within(reply).getByRole("button", { name: "导出回答" })).toBeEnabled();
     expect(within(reply).queryByRole("button", { name: /copy/i })).not.toBeInTheDocument();
     const reads = requests.filter((request) => request.url.includes("/user/daily/activity/aggregated"));
@@ -1168,7 +1168,7 @@ describe("Aria Agent in the gateway", () => {
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(3);
 
     await userEvent.setup().click(screen.getByRole("button", { name: "重新开始" }));
-    expect(screen.queryByRole("figure", { name: "Spend by model" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("figure", { name: "按模型的花费" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "导出回答" })).not.toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
     act(() => send("Start fresh"));
@@ -1339,7 +1339,7 @@ describe("Aria Agent in the gateway", () => {
     await openWidget();
     send("Remove the key from its team");
     const review = await screen.findByRole("region", {
-      name: "Remove a virtual key from its team without deleting the key",
+      name: "将虚拟密钥从其团队移除但不删除密钥",
     });
     expect(review).toHaveTextContent("team id");
     expect(review).toHaveTextContent("null");
@@ -1364,7 +1364,7 @@ describe("Aria Agent in the gateway", () => {
     renderWidget();
     await openWidget();
     send("Create a key for the team");
-    const review = await screen.findByRole("region", { name: "Create a virtual key" });
+    const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
     expect(screen.getAllByRole("dialog", { name: "Aria Agent" })).toHaveLength(1);
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
     expect(within(review).getByText("Widget key")).toBeInTheDocument();
@@ -1375,7 +1375,7 @@ describe("Aria Agent in the gateway", () => {
     fireEvent.click(confirm);
     expect(screen.getByRole("button", { name: "重新开始" })).toBeDisabled();
     act(() => fireEvent.click(screen.getByRole("button", { name: "重新开始" })));
-    expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveTextContent("Applying");
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent("Applying");
     expect(screen.queryByRole("button", { name: "Stop request" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Close Aria Agent" }));
     await act(async () => response.resolve(json({ key: NEW_KEY })));
@@ -1383,7 +1383,7 @@ describe("Aria Agent in the gateway", () => {
     expect(await screen.findByText("Created the key.")).toBeInTheDocument();
     expect(screen.getByText(NEW_KEY)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "复制生成的密钥" })).toBeInTheDocument();
-    expect(screen.getAllByRole("region", { name: "Create a virtual key" })).toHaveLength(1);
+    expect(screen.getAllByRole("region", { name: "创建虚拟密钥" })).toHaveLength(1);
     expect(screen.getByLabelText("Aria Agent conversation")).toHaveTextContent(
       /Here is the requested change\.[\s\S]*Completed[\s\S]*Created the key\./,
     );
@@ -1679,8 +1679,8 @@ describe("Aria Agent in the gateway", () => {
     send("Create a key");
     fireEvent.click(await screen.findByRole("button", { name: "确认改动" }));
     expect(await screen.findByText("Check result")).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveTextContent(
-      /Check.*before trying again/,
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent(
+      /更改无法核实/,
     );
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(1);
     send("What happened?");

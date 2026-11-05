@@ -10,6 +10,10 @@ import {
   type LiteAdminOptions,
 } from "./agent";
 import type { ActionResult, LiteAdminAction } from "./operations";
+import { enMessagesFor } from "@/../tests/i18nStub";
+import type { LiteAdminTranslator } from "@/lib/i18n/translators";
+
+const t = enMessagesFor("liteAdmin") as unknown as LiteAdminTranslator;
 
 const { managementFetch } = vi.hoisted(() => ({ managementFetch: vi.fn<typeof fetch>() }));
 vi.mock("@/components/networking", async () => {
@@ -101,6 +105,7 @@ function chartSourceId(request: ChatCompletionCreateParamsNonStreaming): string 
 
 const options = () =>
   ({
+    t,
     access: { mode: "admin" as const },
     model: "selected-model",
     accessToken: "test-session",
