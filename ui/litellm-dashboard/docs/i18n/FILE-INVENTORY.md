@@ -737,7 +737,7 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 
 ## 门禁口径第五条：对象属性字面量（2026-11-05 第 571 簇）
 
-`check:english-leaks` 的 `scanSource` 此前只认 JSX 文本、JSX 属性、toast 首参与 `new Error` 四类，`.ts` 数据表里 `label:` / `tooltip:` / `title:` 这类对象属性字面量一律不可见，A 桶那批表就是靠 FILE-INVENTORY 人肉逐簇清的。本簇给库加 `scanObjectProperty`（COPY_PROPS 同名属性、纯小写点分键引用豁免：`nav.virtualKeys` 这类值是键不是文案），口径一次扩出 361 条 `prop:` 存量命中，全部冻结进 `english-leaks-baseline.json`（276 到 560）。存量按下列队列分簇接清，接一簇从基线删一簇（resolved 触红即门禁生效）；新增英文串不再能静默进表
+`check:english-leaks` 的 `scanSource` 此前只认 JSX 文本、JSX 属性、toast 首参与 `new Error` 四类，`.ts` 数据表里 `label:` / `tooltip:` / `title:` 这类对象属性字面量一律不可见，A 桶那批表就是靠 FILE-INVENTORY 人肉逐簇清的。本簇给库加 `scanObjectProperty`（COPY_PROPS 同名属性、纯小写点分键引用豁免：`nav.virtualKeys` 这类值是键不是文案），口径一次扩出 361 条 `prop:` 存量命中，全部冻结进 `english-leaks-baseline.json`（276 到 560）。存量按下列队列分簇接清：一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除（resolved 触红即门禁生效）；新增英文串不再能静默进表
 
 | 条数 | 文件                                                                                          |
 | ---- | --------------------------------------------------------------------------------------------- |
@@ -824,4 +824,4 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 | 1    | `src/data/financialCompliancePrompts.ts`                                                      |
 | 1    | `src/data/insultsCompliancePrompts.ts`                                                        |
 
-首片排第 572 簇：`agent_config.ts` 45 条（表内 label/tooltip 已是 `configText` 键表机制的消费面，补齐 `FIELD_TEXT_KEYS` 映射并把 `add_agent_form.tsx`/`dynamic_agent_form_fields.tsx` 两处裸显的 `field.label` 改走 `configText`）
+第 572 簇首片已接：`add_agent_form.tsx` 与 `dynamic_agent_form_fields.tsx` 共 8 处绕过 `configText` 的裸显（label/tooltip/placeholder 与两处校验消息插值）统一走键表，表值 45 条全部有 `FIELD_TEXT_KEYS` 映射，UI 不再直出英文；表源字符串仍冻结在基线，待后续把表改成正向键引用（`labelKey` 形态）才从基线退场。剩余队列里 agent_config 计数按此更新为 0

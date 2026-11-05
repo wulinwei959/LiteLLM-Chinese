@@ -41,7 +41,7 @@ import AgentCardDiscovery, { DiscoveredAgentCardSelection } from "./agent_card_d
 import { buildDiscoveryRequest, overlayDiscoveredCardParams } from "./agent_discovery_utils";
 import DynamicAgentFormFields, { buildDynamicAgentData } from "./dynamic_agent_form_fields";
 import { PasswordInput } from "@/components/shared/PasswordInput";
-import { AGENT_FORM_CONFIG, getDefaultFormValues, buildAgentDataFromForm } from "./agent_config";
+import { AGENT_FORM_CONFIG, configText, getDefaultFormValues, buildAgentDataFromForm } from "./agent_config";
 import {
   AgentFormField,
   AgentFormValues,
@@ -61,7 +61,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const CUSTOM_AGENT_TYPE = "custom";
 
-const STEP_TITLE_KEYS = ["stepConfigure", "stepEntitlements", "stepGovernance", "stepAgentManagement", "stepReady"] as const;
+const STEP_TITLE_KEYS = [
+  "stepConfigure",
+  "stepEntitlements",
+  "stepGovernance",
+  "stepAgentManagement",
+  "stepReady",
+] as const;
 
 const stepMarkerClass = (index: number, current: number): string => {
   if (index < current) return "border-primary text-primary";
@@ -75,7 +81,11 @@ const stepTitleClass = (index: number, current: number): string => {
   return "text-muted-foreground";
 };
 
-const AgentTypeLabel: React.FC<{ agentType: string; info: AgentCreateInfo | undefined; t: AgentsTranslator }> = ({ agentType, info, t }) => {
+const AgentTypeLabel: React.FC<{ agentType: string; info: AgentCreateInfo | undefined; t: AgentsTranslator }> = ({
+  agentType,
+  info,
+  t,
+}) => {
   if (agentType === CUSTOM_AGENT_TYPE) {
     return (
       <span className="flex items-center gap-2">
@@ -472,10 +482,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
       <p className="text-sm text-muted-foreground">{t("entitlementsIntro")}</p>
 
       <FieldGroup>
-        <AgentFormField
-          name="entitlement_models"
-          label={labelWithHint(t("allowedModels"), t("allowedModelsHint"))}
-        >
+        <AgentFormField name="entitlement_models" label={labelWithHint(t("allowedModels"), t("allowedModelsHint"))}>
           {({ id, value, onChange }) => (
             <AgentTagsInput
               id={id}
@@ -487,10 +494,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           )}
         </AgentFormField>
 
-        <AgentFormField
-          name="entitlement_agents"
-          label={labelWithHint(t("allowedAgents"), t("allowedAgentsHint"))}
-        >
+        <AgentFormField name="entitlement_agents" label={labelWithHint(t("allowedAgents"), t("allowedAgentsHint"))}>
           {({ id, value, onChange }) => (
             <AgentMultiSelect
               id={id}
@@ -502,10 +506,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           )}
         </AgentFormField>
 
-        <AgentFormField
-          name="access_group_ids"
-          label={labelWithHint(t("accessGroups"), t("accessGroupsFormHint"))}
-        >
+        <AgentFormField name="access_group_ids" label={labelWithHint(t("accessGroups"), t("accessGroupsFormHint"))}>
           {({ value, onChange }) => (
             <AccessGroupSelector
               value={Array.isArray(value) ? (value as string[]) : []}
@@ -742,12 +743,12 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
   const renderConfigureStep = () => (
     <>
       <Field className="gap-1">
-        <FieldLabel htmlFor="agent-type">
-          {labelWithHint(t("agentTypeLabel"), t("agentTypeHint"))}
-        </FieldLabel>
+        <FieldLabel htmlFor="agent-type">{labelWithHint(t("agentTypeLabel"), t("agentTypeHint"))}</FieldLabel>
         <Select value={agentType} onValueChange={(value) => value !== null && handleAgentTypeChange(value)}>
           <SelectTrigger id="agent-type" className="h-10 w-full">
-            <SelectValue>{() => <AgentTypeLabel agentType={agentType} info={selectedAgentTypeInfo} t={t} />}</SelectValue>
+            <SelectValue>
+              {() => <AgentTypeLabel agentType={agentType} info={selectedAgentTypeInfo} t={t} />}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="p-1">
             {agentTypeMetadata.map((info) => (
@@ -827,9 +828,17 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                     <AgentFormField
                       key={field.key}
                       name={field.key}
-                      label={field.tooltip ? labelWithHint(field.label, field.tooltip) : field.label}
+                      label={
+                        field.tooltip
+                          ? labelWithHint(configText(t, field.label), configText(t, field.tooltip))
+                          : configText(t, field.label)
+                      }
                       defaultValue={field.default_value ?? undefined}
-                      rules={field.required ? { required: t("pleaseEnter", { field: field.label }) } : undefined}
+                      rules={
+                        field.required
+                          ? { required: t("pleaseEnter", { field: configText(t, field.label) }) }
+                          : undefined
+                      }
                     >
                       {({ value, onChange, ref, ...control }) =>
                         field.field_type === "password" ? (
@@ -838,13 +847,13 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                             value={typeof value === "string" ? value : ""}
                             onChange={onChange}
                             ref={ref}
-                            placeholder={field.placeholder || ""}
+                            placeholder={configText(t, field.placeholder)}
                           />
                         ) : (
                           <Input
                             {...control}
                             ref={ref}
-                            placeholder={field.placeholder || ""}
+                            placeholder={configText(t, field.placeholder)}
                             value={typeof value === "string" ? value : ""}
                             onChange={onChange}
                           />
@@ -890,10 +899,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           </Badge>
         </div>
 
-        <AgentFormField
-          name="team_id"
-          label={labelWithHint(t("assignToTeam"), t("assignToTeamHint"))}
-        >
+        <AgentFormField name="team_id" label={labelWithHint(t("assignToTeam"), t("assignToTeamHint"))}>
           {({ value, onChange }) => (
             <TeamDropdown value={typeof value === "string" ? value : undefined} onChange={onChange} />
           )}
@@ -988,9 +994,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             className="text-sm text-muted-foreground underline hover:text-foreground"
             onClick={() => setKeyAssignOption("skip")}
           >
-            {form.getValues("identity_provider") === "microsoft_entra"
-              ? t("useEntraJwt")
-              : t("skipAssignLater")}
+            {form.getValues("identity_provider") === "microsoft_entra" ? t("useEntraJwt") : t("skipAssignLater")}
           </button>
         </div>
       </div>

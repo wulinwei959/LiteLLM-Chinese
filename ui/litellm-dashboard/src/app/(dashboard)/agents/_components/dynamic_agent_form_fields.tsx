@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FieldGroup } from "@/components/ui/field";
 import { AgentCreateInfo, AgentCredentialFieldMetadata } from "@/components/networking";
 import { PasswordInput } from "@/components/shared/PasswordInput";
-import { AGENT_FORM_CONFIG, applyKillSwitchToPayload } from "./agent_config";
+import { AGENT_FORM_CONFIG, configText, applyKillSwitchToPayload } from "./agent_config";
 import CostConfigFields, { COST_FIELD_NAMES } from "./cost_config_fields";
 import KillSwitchFormFields from "./KillSwitchFormFields";
 import { KILL_SWITCH_PANEL_KEY, type KillSwitchConfig } from "./kill_switch_config";
@@ -50,14 +50,18 @@ const buildValidationPatternRule = (
 
 const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => {
   const t = useTranslations("agents");
-  const patternRule = buildValidationPatternRule(field, t("fieldMalformed", { field: field.label }));
+  const patternRule = buildValidationPatternRule(field, t("fieldMalformed", { field: configText(t, field.label) }));
   return (
     <AgentFormField
       name={field.key}
-      label={field.tooltip ? labelWithHint(field.label, field.tooltip) : field.label}
+      label={
+        field.tooltip
+          ? labelWithHint(configText(t, field.label), configText(t, field.tooltip))
+          : configText(t, field.label)
+      }
       defaultValue={field.default_value ?? undefined}
       rules={{
-        ...(field.required ? { required: t("pleaseEnter", { field: field.label }) } : {}),
+        ...(field.required ? { required: t("pleaseEnter", { field: configText(t, field.label) }) } : {}),
         ...(patternRule ? { pattern: patternRule } : {}),
       }}
     >
@@ -70,7 +74,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
               value={typeof value === "string" ? value : ""}
               onChange={onChange}
               ref={ref}
-              placeholder={field.placeholder || ""}
+              placeholder={configText(t, field.placeholder)}
             />
           );
         }
@@ -80,7 +84,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
               {...control}
               ref={ref}
               rows={3}
-              placeholder={field.placeholder || ""}
+              placeholder={configText(t, field.placeholder)}
               value={text}
               onChange={onChange}
             />
@@ -90,7 +94,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
           return (
             <Select value={text || null} onValueChange={onChange}>
               <SelectTrigger {...control} className="w-full">
-                <SelectValue placeholder={field.placeholder || ""} />
+                <SelectValue placeholder={configText(t, field.placeholder)} />
               </SelectTrigger>
               <SelectContent>
                 {field.options.map((option) => (
@@ -102,7 +106,15 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
             </Select>
           );
         }
-        return <Input {...control} ref={ref} placeholder={field.placeholder || ""} value={text} onChange={onChange} />;
+        return (
+          <Input
+            {...control}
+            ref={ref}
+            placeholder={configText(t, field.placeholder)}
+            value={text}
+            onChange={onChange}
+          />
+        );
       }}
     </AgentFormField>
   );
@@ -111,54 +123,51 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
 const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTypeInfo, panels }) => {
   const t = useTranslations("agents");
   return (
-  <>
-    <FieldGroup className="mb-4">
-      <AgentFormField
-        name="agent_name"
-        label={labelWithHint(t("agentName"), t("nameFieldHint"))}
-        rules={{ required: t("nameRequired") }}
-      >
-        {({ value, onChange, ref, ...control }) => (
-          <Input
-            {...control}
-            ref={ref}
+    <>
+      <FieldGroup className="mb-4">
+        <AgentFormField
+          name="agent_name"
+          label={labelWithHint(t("agentName"), t("nameFieldHint"))}
+          rules={{ required: t("nameRequired") }}
+        >
+          {({ value, onChange, ref, ...control }) => (
+            <Input
+              {...control}
+              ref={ref}
               placeholder={t("phAgentSlugExample")}
-            value={typeof value === "string" ? value : ""}
-            onChange={onChange}
-          />
-        )}
-      </AgentFormField>
+              value={typeof value === "string" ? value : ""}
+              onChange={onChange}
+            />
+          )}
+        </AgentFormField>
 
-      <AgentFormField
-        name="description"
-        label={labelWithHint(t("description"), t("descFieldHint"))}
-      >
-        {({ value, onChange, ref, ...control }) => (
-          <Textarea
-            {...control}
-            ref={ref}
-            rows={2}
-            placeholder={t("descriptionPlaceholder")}
-            value={typeof value === "string" ? value : ""}
-            onChange={onChange}
-          />
-        )}
-      </AgentFormField>
+        <AgentFormField name="description" label={labelWithHint(t("description"), t("descFieldHint"))}>
+          {({ value, onChange, ref, ...control }) => (
+            <Textarea
+              {...control}
+              ref={ref}
+              rows={2}
+              placeholder={t("descriptionPlaceholder")}
+              value={typeof value === "string" ? value : ""}
+              onChange={onChange}
+            />
+          )}
+        </AgentFormField>
 
-      {agentTypeInfo.credential_fields.map((field) => (
-        <CredentialField key={field.key} field={field} />
-      ))}
-    </FieldGroup>
+        {agentTypeInfo.credential_fields.map((field) => (
+          <CredentialField key={field.key} field={field} />
+        ))}
+      </FieldGroup>
 
-    <div className="mb-4 rounded-md border border-border px-4">
-      <AgentFormPanel panelKey={AGENT_FORM_CONFIG.cost.key} title={t("costConfigTitle")} panels={panels}>
-        <CostConfigFields />
-      </AgentFormPanel>
-      <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title={t("killSwitch")} panels={panels}>
-        <KillSwitchFormFields />
-      </AgentFormPanel>
-    </div>
-  </>
+      <div className="mb-4 rounded-md border border-border px-4">
+        <AgentFormPanel panelKey={AGENT_FORM_CONFIG.cost.key} title={t("costConfigTitle")} panels={panels}>
+          <CostConfigFields />
+        </AgentFormPanel>
+        <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title={t("killSwitch")} panels={panels}>
+          <KillSwitchFormFields />
+        </AgentFormPanel>
+      </div>
+    </>
   );
 };
 
