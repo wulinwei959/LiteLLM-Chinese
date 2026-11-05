@@ -112,11 +112,7 @@ const DEFAULT_SUGGESTION_KEYS: readonly ChatMessageKey[] = [
   "suggestions.default.2",
 ];
 
-const A2A_SUGGESTION_KEYS: readonly ChatMessageKey[] = [
-  "suggestions.a2a.0",
-  "suggestions.a2a.1",
-  "suggestions.a2a.2",
-];
+const A2A_SUGGESTION_KEYS: readonly ChatMessageKey[] = ["suggestions.a2a.0", "suggestions.a2a.1", "suggestions.a2a.2"];
 
 export const SUGGESTION_KEYS: Readonly<Partial<Record<EndpointType, readonly ChatMessageKey[]>>> = {
   [EndpointType.CHAT]: DEFAULT_SUGGESTION_KEYS,
