@@ -5634,3 +5634,23 @@ PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpo
 断言翻面 10 条，`TopModelView.test.tsx` 八条（五个列头、两个视图按钮、一处 `queryByText` 反查）与 `EntityUsage.test.tsx` 两处面板表，按 `TopKeyView.test.tsx:235` 已落的中文取值对齐。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0
 
 门禁：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222、`npm run typecheck` 0 错。触及六个文件 eslint 0 error、28 条 warning（`TopModelView.tsx` 的 5 条 `any` 与测试文件的 `container`/`node-access` 全在改动区之外，是 HEAD 既有）。四个源文件接完结尾 `node scripts/scan-english.mjs <file>` 均零命中，`npx prettier --check` 只报 `EndpointUsageTable.tsx` 一处超长 `span`，按 `--write` 展开成三行，改动没溢出到别人家。清单复跑 687 个未接入、87 个有证据、600 个零命中，三个数与第 564 簇记的完全一致，本簇四个文件都在线内，对这份清单零影响
+
+## 2026-11-05 第 566 簇：接入 client usage 错误通道与区间说明的界面英文
+
+`clientUsageScope.ts` 的 `resolveClientUsageScope`、`useClientUsage.ts`、`clientUsageData.ts` 的 `clientUsageFromLogs`、`useClientAgentModels.ts` 的 `loadModels`/hook、`clientAgentModelsData.ts` 的 `clientAgentModelsFromExport`、`ClientUsagePanel.tsx` 的 `countLabel` 与两处区间提示——共六个文件、约 16 处硬编码英文。这批文件早已挂翻译器或处于 hook 内，本清单与 `check:english-leaks` 都看不见内部英文，属 FILE-INVENTORY 第四道盲区（接入判据只看有无 `useTranslations`/`getTranslations`）。六处集中改为 translator-first：
+
+- `clientUsageScope.ts`：`resolveClientUsageScope(t: ClientUsageTranslator, input)`，四处错误文案走 `t("chooseAdminTeam")`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`signInRequired`
+- `useClientUsage.ts`：hook 内 `useTranslations("clientUsage")`，`scopeError` 四分支与 `emptyClientUsage` 兜底全部走 `t("selectUserOrTeam")`/`selectValidDateRange`/`signInRequired`/`couldNotLoad`
+- `clientUsageData.ts`：删 `INCOMPLETE_CLIENT_USAGE` 常量，`clientUsageFromLogs(t, response, scope)` 六处错误文案走 `t("selectUserOrTeam")`/`proxyIncompleteData`/`incompleteClientUsage`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`
+- `useClientAgentModels.ts`：`loadModels(t, request, agent)` 与 hook 改为 translator-first，三处走 `t("chooseShorterDateRange")`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`，范围校验走 `t("selectValidDateRange")`
+- `clientAgentModelsData.ts`：`clientAgentModelsFromExport(t, payload, agent)` 三处走 `t("proxyIncompleteModelData")`/`proxyDuplicateModelData`/`modelUsageMismatch`
+- `ClientUsagePanel.tsx`：`countLabel` 收 `t` 走 `t("unavailable")`，两处区间提示 `scopedRequestHint`/`allUsersHint`、`chooseAnotherPerson` 走 `t()`
+
+新增 `clientUsage` 命名空间 17 条：`chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`incompleteClientUsage`/`proxyIncompleteData`/`proxyIncompleteModelData`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`/`chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`modelUsageMismatch`/`scopedRequestHint`/`allUsersHint`/`selectedUser`/`unavailable`/`loadingAria`。其余复用既有 `signInRequired`/`couldNotLoad`/`selectUserOrTeam`/`selectValidDateRange`/`chooseAnotherPerson`。叶子 13594 → 13611，两侧同数、键差集 0。
+
+同步更新 8 个测试文件：`clientUsageScope.test.ts`/`useClientUsage.test.tsx`/`clientUsageData.test.ts`/`useClientAgentModels.test.tsx`/`clientAgentModelsData.test.ts` 注入英语 translator（`createTranslator({locale:"en", messages: en, namespace:"clientUsage"}) as unknown as ClientUsageTranslator`，先例 `kill_switch_config.test.ts`），`useClientUsage.test.tsx`/`useClientAgentModels.test.tsx` 用 `LocaleProvider locale="en"` 包装，`ClientUsagePanel.integration.test.tsx`/`UsagePageView.test.tsx` 断言改为中文键值（默认 `zh-CN` suite）。用例数 95 + 14 = 109 例全绿。
+
+i18n 三闸：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222。TypeScript 0 错、eslint 0 error（新增）。用法可迁移：同模式已在 `SpendByProvider.tsx:33`、`EntityUsage.tsx:563`、`models.addModel`、`models.addModel.overrideCount` 验证。
+
+清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇记录一致，本簇六文件均在清单内部，对清单零影响。FILE-INVENTORY 第四道盲区一节已补记第 566 批 14 个命名空间孤儿键与救活它们的同名兄弟。
+
