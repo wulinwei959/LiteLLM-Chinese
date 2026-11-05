@@ -149,7 +149,7 @@ describe("MemoryTable", () => {
     const onRefresh = vi.fn();
     render(<MemoryTable {...baseProps} onSearchChange={onSearchChange} onRefresh={onRefresh} />);
 
-    expect(screen.getByPlaceholderText("Search by key prefix or memory ID…")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按密钥前缀或记忆 ID 搜索……")).toBeInTheDocument();
     fireEvent.change(screen.getByTestId("datatable-search"), { target: { value: "u" } });
     expect(onSearchChange).toHaveBeenCalledWith("u");
 

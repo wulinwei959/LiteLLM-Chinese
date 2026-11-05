@@ -830,6 +830,8 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 
 剩在待接列的 9 条分三型：`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
 
-：`agent_config.ts` 45 条是表值仍存英文，UI 已在第 572 簇首片改走 `configText` 键表，只剩把 `FIELD_TEXT_KEYS` 反转的表改成正向 `labelKey` 形态才从基线退场；`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
+第六条口径已开（2026-11-05 第 575 簇）。`COPY_PROPS` 原先按属性名精确匹配，`alertMessage`、`resourceInformationTitle`、`searchPlaceholder`、`tooltipText`、`copyLabel` 这类以文案词结尾的复合属性名看不见，`title={`...`}` 这类无插值模板字面量也看不见。库改成按 camel 末词判定（`COPY_TAILS`：label、title、description、placeholder、tooltip、hint、message、text、alt、sublabel、subtitle、error、empty、helper），`copyValue` 同时收字符串字面量与无插值模板字面量，CSS 自定义属性名（`--normal-text`）排除
 
-第六条口径待办：`COPY_PROPS` 按属性名精确匹配，`alertMessage`、`resourceInformationTitle`、`confirmText` 这类以文案词结尾的复合属性名，以及 `title={`...`}` 这类模板字面量属性值仍不可见（`Teams.tsx` 的删除警告正是靠模板漏检躲过 JSX 口径）。下一簇按 camel 末词扩列属性名，模板值要不要扫得先估增量
+一次扩出 61 条，5 条真漏同簇接掉：`MemberTable.tsx` 的三个 `tooltipText`（"Edit member"/"Delete member" 用已有键 `teams.memberTable.editTooltip`/`deleteTooltip`，"Reset spend" 新开 `.resetSpendTooltip`，`ResetSpendAction` 加 `tooltipText` 形参、由列构建处传入）、`MemoryTable.tsx` 的 `searchPlaceholder` 新键 `memory.searchPlaceholder`、`Conversation.tsx` 回复头模型名的 `copyLabel` 新键 `playground.conversation.copy.modelName`（同页 `Inspector.tsx` 早就在传 `t("copy.modelName")`，这条是漏接的第二处）。基线 484 到 540，零条既有条目消失
+
+新增 56 条按型记判定账：合规提示库 `categoryDescription` 37 条（`compliancePrompts.ts`、`canadianPiiCompliancePrompts.ts`、`insultsCompliancePrompts.ts`、`financialCompliancePrompts.ts`，与提示词语料同批显示，翻描述不翻语料没意义）、侧栏分组段名 `groupLabel` 5 条（`LeftnavMenuGroups.tsx` 的 "AI GATEWAY" 等是 `SECTION_DISPLAY` 的索引键，显示走 `nav.*`）、类型判别 `typeLabel` 4 条（`autoRouterTypeLabelKey`/`TYPE_LABEL_KEYS` 映射后渲染）、输入格式示例 `placeholder` 5 条（JSON 与工具名样例）、缩写 `text` 2 条（TopAgents 的 JS/Py）与 `shortLabel` 2 条（MTD/YTD）、代码示例入参 `inputMessage` 1 条（`modelDialogHelpers.ts` 生成示例用的 "Hello, how are you?"）

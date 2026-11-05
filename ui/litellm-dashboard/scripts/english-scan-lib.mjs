@@ -1,5 +1,20 @@
 import ts from "typescript";
 
+// Compound names count too: alertMessage, resourceInformationTitle, confirmText.
+const COPY_TAILS = new Set([
+  "alt",
+  "description",
+  "hint",
+  "label",
+  "message",
+  "placeholder",
+  "sublabel",
+  "subtitle",
+  "text",
+  "title",
+  "tooltip",
+]);
+
 const COPY_PROPS = new Set([
   "aria-label",
   "alt",
@@ -30,21 +45,37 @@ const KEY_REFERENCE = /^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9-]+)*$/;
 
 const isKeyReference = (value) => KEY_REFERENCE.test(value);
 
+const tailWord = (name) => {
+  const words = name.replace(/-/g, " ").match(/[A-Za-z][a-z0-9]*/g) ?? [];
+  return words.length === 0 ? "" : words[words.length - 1].toLowerCase();
+};
+
+const isCopyName = (name) => !name.startsWith("--") && (COPY_PROPS.has(name) || COPY_TAILS.has(tailWord(name)));
+
+const copyValue = (initializer) => {
+  if (ts.isStringLiteral(initializer)) return initializer.text;
+  if (ts.isNoSubstitutionTemplateLiteral(initializer)) return initializer.text;
+  return undefined;
+};
+
 const scanJsxAttribute = (node, add) => {
-  if (!ts.isJsxAttribute(node) || !node.initializer || !ts.isStringLiteral(node.initializer)) return;
+  if (!ts.isJsxAttribute(node) || !node.initializer) return;
   const name = node.name.getText();
-  if (!COPY_PROPS.has(name)) return;
-  const value = node.initializer.text;
-  if (isKeyReference(value)) return;
+  if (!isCopyName(name)) return;
+  const value =
+    node.initializer.expression && ts.isJsxExpression(node.initializer)
+      ? copyValue(node.initializer.expression)
+      : copyValue(node.initializer);
+  if (value === undefined || isKeyReference(value)) return;
   add(value, `prop:${name}`);
 };
 
 const scanObjectProperty = (node, add) => {
-  if (!ts.isPropertyAssignment(node) || !ts.isStringLiteral(node.initializer)) return;
+  if (!ts.isPropertyAssignment(node)) return;
   const name = node.name.getText().replace(/^['"]|['"]$/g, "");
-  if (!COPY_PROPS.has(name)) return;
-  const value = node.initializer.text;
-  if (isKeyReference(value)) return;
+  if (!isCopyName(name)) return;
+  const value = copyValue(node.initializer);
+  if (value === undefined || isKeyReference(value)) return;
   add(value, `prop:${name}`);
 };
 

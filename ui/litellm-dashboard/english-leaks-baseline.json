@@ -1058,6 +1058,11 @@
     {
       "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
       "kind": "prop:placeholder",
+      "text": "{ \"KEY\": \"value\" }"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx",
+      "kind": "prop:placeholder",
       "text": "https://petstore3.swagger.io/api/v3/openapi.json"
     },
     {
@@ -1074,6 +1079,11 @@
       "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
       "kind": "jsx",
       "text": "v"
+    },
+    {
+      "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"organization\": \"my-org\", \"team.id\": \"123\" }"
     },
     {
       "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
@@ -1154,6 +1164,11 @@
       "file": "src/app/(dashboard)/memory/_components/MemoryEditModal.tsx",
       "kind": "prop:placeholder",
       "text": "{\"tags\": [\"example\"]}"
+    },
+    {
+      "file": "src/app/(dashboard)/models-and-endpoints/components/AutoRouters/autoRouterRows.ts",
+      "kind": "prop:typeLabel",
+      "text": "Semantic"
     },
     {
       "file": "src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx",
@@ -1471,6 +1486,16 @@
       "text": "by"
     },
     {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/TopAgents.tsx",
+      "kind": "prop:text",
+      "text": "JS"
+    },
+    {
+      "file": "src/app/(dashboard)/usage/_components/components/overview/TopAgents.tsx",
+      "kind": "prop:text",
+      "text": "Py"
+    },
+    {
       "file": "src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx",
       "kind": "error",
       "text": "Failed to load default user settings"
@@ -1721,6 +1746,21 @@
       "text": "LiteLLM"
     },
     {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Action"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Key"
+    },
+    {
+      "file": "src/components/CommandPalette/CommandPalette.tsx",
+      "kind": "prop:typeLabel",
+      "text": "Page"
+    },
+    {
       "file": "src/components/CommandPalette/CommandPaletteProvider.tsx",
       "kind": "error",
       "text": "useCommandPalette must be used within CommandPaletteProvider"
@@ -1854,6 +1894,31 @@
       "file": "src/components/leftnav.tsx",
       "kind": "prop:alt",
       "text": "LiteLLM"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "ACCESS CONTROL"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "AI GATEWAY"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "DEVELOPER TOOLS"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "OBSERVABILITY"
+    },
+    {
+      "file": "src/components/LeftnavMenuGroups.tsx",
+      "kind": "prop:groupLabel",
+      "text": "SETTINGS"
     },
     {
       "file": "src/components/liteadmin/agent.ts",
@@ -2021,6 +2086,16 @@
       "text": "router_settings:"
     },
     {
+      "file": "src/components/ModelInfoEditForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{ \"drop_params\": true }"
+    },
+    {
+      "file": "src/components/ModelInfoEditForm.tsx",
+      "kind": "prop:placeholder",
+      "text": "{\"gpt-4\": 100, \"claude-v1\": 200}"
+    },
+    {
       "file": "src/components/molecules/DecisionModelsBanner.tsx",
       "kind": "jsx",
       "text": "/v1/decisions"
@@ -2096,6 +2171,11 @@
       "text": "LITELLM_LOCAL_MODEL_COST_MAP=True"
     },
     {
+      "file": "src/components/public_hub/modelDialogHelpers.ts",
+      "kind": "prop:inputMessage",
+      "text": "Hello, how are you?"
+    },
+    {
       "file": "src/components/route_preview.tsx",
       "kind": "jsx",
       "text": "/v1/text-to-image/base/model"
@@ -2124,6 +2204,11 @@
       "file": "src/components/Settings/AdminSettings/HashicorpVault/HashicorpVault.tsx",
       "kind": "jsx",
       "text": "vault kv put secret/SECRET_NAME key=secret_value"
+    },
+    {
+      "file": "src/components/Settings/AdminSettings/MCPToolSearchSettings/MCPToolSearchSettings.tsx",
+      "kind": "prop:placeholder",
+      "text": "my_server-get_rates my_server-list_accounts"
     },
     {
       "file": "src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx",
@@ -2174,6 +2259,16 @@
       "file": "src/components/shared/CreatedKeyDisplay.tsx",
       "kind": "prop:title",
       "text": "Codex"
+    },
+    {
+      "file": "src/components/shared/date_range_presets.ts",
+      "kind": "prop:shortLabel",
+      "text": "MTD"
+    },
+    {
+      "file": "src/components/shared/date_range_presets.ts",
+      "kind": "prop:shortLabel",
+      "text": "YTD"
     },
     {
       "file": "src/components/shared/dotField/DotField.tsx",
@@ -2341,6 +2436,181 @@
       "text": "useTheme must be used within a ThemeProvider"
     },
     {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian bank account routing information (transit-institution-account format) — protected under the Bank Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian immigration document numbers (UCI, work/study permits, IMM forms) — protected under IRPA and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian passport numbers — protected under the Canadian Passport Order and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian postal codes (A1A 1A1 format) — considered PII when combined with other identifiers under PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Canadian Social Insurance Numbers — 9-digit federal identifiers protected under the Privacy Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Ontario driver's licence numbers — protected under the Highway Traffic Act and PIPEDA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects Ontario Health Insurance Plan numbers — protected under PHIPA (Personal Health Information Protection Act)."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto student and employee numbers (10-digit, prefix '10') — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto TCard campus ID card numbers (16-digit) — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/canadianPiiCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects University of Toronto UTORid login identifiers — protected under Ontario FIPPA."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airline ranking request."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airport code information."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Airport facilities question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous airline vs destination reference."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous lounge reference."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous operational query."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Ambiguous refund context."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Comparison request for premium cabins."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Could refer to airline or country."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Country weather question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Customer review comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Decision-making between competitors."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Direct comparison between airlines."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Flight planning for a country destination."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "General airline comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "General travel planning question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Global airline ranking request."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Indirect competitor reference via location."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Location-based travel planning."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Service quality comparison."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Switching intent to competitor."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Transit and visa questions for a country."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Transit timing question."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Travel logistics to a location."
+    },
+    {
+      "file": "src/data/compliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "User is asking about a travel destination, not a competitor airline."
+    },
+    {
       "file": "src/data/compliancePrompts.ts",
       "kind": "prop:description",
       "text": "Article 5 prohibited AI practices under the European Union AI Act."
@@ -2382,8 +2652,18 @@
     },
     {
       "file": "src/data/financialCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Blocks requests for personalized financial advice, investment recommendations, or financial planning that should be provided by licensed financial advisors"
+    },
+    {
+      "file": "src/data/financialCompliancePrompts.ts",
       "kind": "prop:description",
       "text": "Content filter guardrails that block messages matching specific prohibited topics while allowing legitimate use of related words in context."
+    },
+    {
+      "file": "src/data/insultsCompliancePrompts.ts",
+      "kind": "prop:categoryDescription",
+      "text": "Detects insults, name-calling, and personal attacks directed at the chatbot, staff, or other people"
     },
     {
       "file": "src/data/insultsCompliancePrompts.ts",

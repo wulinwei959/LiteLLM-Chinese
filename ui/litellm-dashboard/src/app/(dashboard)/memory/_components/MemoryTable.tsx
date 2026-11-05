@@ -79,7 +79,7 @@ export function MemoryTable({
           table={table}
           searchValue={searchValue}
           onSearchChange={onSearchChange}
-          searchPlaceholder="Search by key prefix or memory ID…"
+          searchPlaceholder={t("searchPlaceholder")}
           onRefresh={onRefresh}
           isRefreshing={isRefreshing}
           showViewOptions={false}

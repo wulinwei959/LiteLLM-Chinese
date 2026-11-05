@@ -71,11 +71,19 @@ function RoleHeaderTitle({ title, tooltip }: { title: string; tooltip?: string }
   );
 }
 
-function ResetSpendAction({ disabledReason, onClick }: { disabledReason: string | null; onClick: () => void }) {
+function ResetSpendAction({
+  disabledReason,
+  tooltipText,
+  onClick,
+}: {
+  disabledReason: string | null;
+  tooltipText: string;
+  onClick: () => void;
+}) {
   return (
     <TableIconActionButton
       variant="Reset"
-      tooltipText="Reset spend"
+      tooltipText={tooltipText}
       disabled={disabledReason !== null}
       disabledTooltipText={disabledReason ?? undefined}
       dataTestId="reset-member-spend"
@@ -200,12 +208,13 @@ const buildColumns = ({
         <span className="inline-flex items-center gap-2">
           <TableIconActionButton
             variant="Edit"
-            tooltipText="Edit member"
+            tooltipText={t("memberTable.editTooltip")}
             dataTestId="edit-member"
             onClick={() => onEdit(row.original)}
           />
           {onResetSpend && (
             <ResetSpendAction
+              tooltipText={t("memberTable.resetSpendTooltip")}
               disabledReason={resetSpendDisabledReason?.(row.original) ?? null}
               onClick={() => onResetSpend(row.original)}
             />
@@ -213,7 +222,7 @@ const buildColumns = ({
           {(!showDeleteForMember || showDeleteForMember(row.original)) && (
             <TableIconActionButton
               variant="Delete"
-              tooltipText="Delete member"
+              tooltipText={t("memberTable.deleteTooltip")}
               dataTestId="delete-member"
               onClick={() => onDelete(row.original)}
             />

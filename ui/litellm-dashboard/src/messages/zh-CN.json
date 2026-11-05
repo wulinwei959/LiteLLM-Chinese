@@ -2850,6 +2850,7 @@
     "memberTable": {
       "editTooltip": "编辑成员",
       "deleteTooltip": "删除成员",
+      "resetSpendTooltip": "重置花费",
       "allRoles": "全部角色",
       "membersCount": "{count, plural, other {# 名成员}}",
       "noMatch": "没有符合搜索或筛选条件的成员",
@@ -9543,7 +9544,8 @@
         "requestFailed": "请求失败"
       },
       "copy": {
-        "reply": "回复"
+        "reply": "回复",
+        "modelName": "模型名称"
       },
       "action": {
         "inspect": "查看"
@@ -9853,6 +9855,7 @@
     "value": "内容",
     "metadata": "元数据",
     "editPlaceholder": "智能体应记住的内容……",
+    "searchPlaceholder": "按密钥前缀或记忆 ID 搜索……",
     "actions": "操作",
     "idCol": "ID",
     "nameCol": "名称",

@@ -5723,3 +5723,11 @@ A 桶与 `errorsData` 纠缠至此全部清零
 渲染扫描只读 `innerText()`，`alt`/`aria-label`/`placeholder`/`title` 里的英文不可见（第 561 簇就记过这条盲区）。`rendered-ui-lib.mjs` 导出 `COPY_ATTRIBUTES`，扫描每页多读这四类属性值，按 `attr:<属性名>` 记发现。41 页复跑 0 渲染错误、正文英文 0 新增，属性口径新增 228 条，去重后 31 个串：`beta`/`Slack`/`Notifications alt`/`unknown` 四条是外壳与数据值在每页重复计入（占 202 条），其余是工具与步骤名（`config.yaml`、`agent`/`research`/`plan`/`docs`/`search`/`benchmark`/`run`/`answer`）和输入示例（`Valkey`/`redis`/`host`/`password`/`Cmd`/`Ctrl`/`Shift`/`logo.png`）。本轮没有撞出新的产品文案漏翻，基线 58 到 286 条，`Notifications alt` 在 `src` 里找不到字面量、记待查
 
 按 2026-11-05 的口径决定，这道门禁进 CI 兜底：`.github/workflows/test-litellm-ui-lint.yml` 新增 `rendered-scan` job，装 Chromium、`npm run build` 后起 `npm run start`，跑 `npm run scan:rendered -- --channel chromium --settle-ms 8000`。脚本相应加 `--channel`（默认 `chrome` 走本机 Chrome，CI 用 Playwright 自带内核）与 `--nav-timeout-ms`（默认 60 秒，本地 dev 模式冷页首编译不再撞 30 秒默认值）
+
+## 2026-11-05 第 575 簇：静态门禁第六条口径，复合属性名与模板字面量
+
+`COPY_PROPS` 按属性名精确匹配，以文案词结尾的复合名（`alertMessage`、`resourceInformationTitle`、`searchPlaceholder`、`tooltipText`、`copyLabel`）与无插值模板字面量属性值一直不在口径里。库改成按 camel 末词判定（`COPY_TAILS`）并由 `copyValue` 同时收字符串与无插值模板，CSS 自定义属性名（`--normal-text`）排除，JSX 属性与对象字面量两条通道共用这套判定
+
+一次扩出 61 条，5 条真漏同簇接掉：`MemberTable.tsx` 三个 `tooltipText`（"Edit member"/"Delete member" 复用已有键 `teams.memberTable.editTooltip`/`deleteTooltip`，"Reset spend" 新开 `.resetSpendTooltip`，`ResetSpendAction` 加 `tooltipText` 形参由列构建处传入）、`MemoryTable.tsx` 的 `searchPlaceholder` 新键 `memory.searchPlaceholder`、`Conversation.tsx` 回复头模型名的 `copyLabel` 新键 `playground.conversation.copy.modelName`（同页 `Inspector.tsx` 早就在传 `t("copy.modelName")`，这条是漏接的第二处）。新键 3 条，两侧叶子 13801 到 13804
+
+其余 56 条记判定账：合规提示库 `categoryDescription` 37（与提示词语料同批显示）、侧栏段名 `groupLabel` 5（`SECTION_DISPLAY` 的索引键，显示走 `nav.*`）、类型判别 `typeLabel` 4（`autoRouterTypeLabelKey`/`TYPE_LABEL_KEYS` 映射后渲染）、格式示例 `placeholder` 5、缩写 `text` 2 与 `shortLabel` 2、示例代码入参 `inputMessage` 1。基线 484 到 540，零条既有条目消失，死键 0/0、zh 246/246、`tsc` 0 错、memory 与 playground 与 MemberTable 共 21 文件全绿（`MemoryTable.test` 的 `getByPlaceholderText` 断言翻面）

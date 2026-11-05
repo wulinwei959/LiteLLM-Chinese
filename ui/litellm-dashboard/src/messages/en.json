@@ -2850,6 +2850,7 @@
     "memberTable": {
       "editTooltip": "Edit member",
       "deleteTooltip": "Delete member",
+      "resetSpendTooltip": "Reset spend",
       "allRoles": "All Roles",
       "membersCount": "{count, plural, =1 {# Member} other {# Members}}",
       "noMatch": "No members match your search or filters",
@@ -9547,7 +9548,8 @@
         "requestFailed": "The request failed"
       },
       "copy": {
-        "reply": "reply"
+        "reply": "reply",
+        "modelName": "model name"
       },
       "action": {
         "inspect": "Inspect"
@@ -9857,6 +9859,7 @@
     "value": "Value",
     "metadata": "Metadata",
     "editPlaceholder": "What the agent should remember…",
+    "searchPlaceholder": "Search by key prefix or memory ID…",
     "actions": "Actions",
     "idCol": "ID",
     "nameCol": "Name",
