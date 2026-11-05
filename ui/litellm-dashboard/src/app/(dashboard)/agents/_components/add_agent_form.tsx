@@ -41,7 +41,7 @@ import AgentCardDiscovery, { DiscoveredAgentCardSelection } from "./agent_card_d
 import { buildDiscoveryRequest, overlayDiscoveredCardParams } from "./agent_discovery_utils";
 import DynamicAgentFormFields, { buildDynamicAgentData } from "./dynamic_agent_form_fields";
 import { PasswordInput } from "@/components/shared/PasswordInput";
-import { AGENT_FORM_CONFIG, configText, getDefaultFormValues, buildAgentDataFromForm } from "./agent_config";
+import { AGENT_FORM_CONFIG, serverFieldText, getDefaultFormValues, buildAgentDataFromForm } from "./agent_config";
 import {
   AgentFormField,
   AgentFormValues,
@@ -830,13 +830,13 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                       name={field.key}
                       label={
                         field.tooltip
-                          ? labelWithHint(configText(t, field.label), configText(t, field.tooltip))
-                          : configText(t, field.label)
+                          ? labelWithHint(serverFieldText(t, field.label), serverFieldText(t, field.tooltip))
+                          : serverFieldText(t, field.label)
                       }
                       defaultValue={field.default_value ?? undefined}
                       rules={
                         field.required
-                          ? { required: t("pleaseEnter", { field: configText(t, field.label) }) }
+                          ? { required: t("pleaseEnter", { field: serverFieldText(t, field.label) }) }
                           : undefined
                       }
                     >
@@ -847,13 +847,13 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                             value={typeof value === "string" ? value : ""}
                             onChange={onChange}
                             ref={ref}
-                            placeholder={configText(t, field.placeholder)}
+                            placeholder={serverFieldText(t, field.placeholder)}
                           />
                         ) : (
                           <Input
                             {...control}
                             ref={ref}
-                            placeholder={configText(t, field.placeholder)}
+                            placeholder={serverFieldText(t, field.placeholder)}
                             value={typeof value === "string" ? value : ""}
                             onChange={onChange}
                           />

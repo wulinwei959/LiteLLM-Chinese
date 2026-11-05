@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FieldGroup } from "@/components/ui/field";
 import { AgentCreateInfo, AgentCredentialFieldMetadata } from "@/components/networking";
 import { PasswordInput } from "@/components/shared/PasswordInput";
-import { AGENT_FORM_CONFIG, configText, applyKillSwitchToPayload } from "./agent_config";
+import { AGENT_FORM_CONFIG, serverFieldText, applyKillSwitchToPayload } from "./agent_config";
 import CostConfigFields, { COST_FIELD_NAMES } from "./cost_config_fields";
 import KillSwitchFormFields from "./KillSwitchFormFields";
 import { KILL_SWITCH_PANEL_KEY, type KillSwitchConfig } from "./kill_switch_config";
@@ -50,18 +50,21 @@ const buildValidationPatternRule = (
 
 const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => {
   const t = useTranslations("agents");
-  const patternRule = buildValidationPatternRule(field, t("fieldMalformed", { field: configText(t, field.label) }));
+  const patternRule = buildValidationPatternRule(
+    field,
+    t("fieldMalformed", { field: serverFieldText(t, field.label) }),
+  );
   return (
     <AgentFormField
       name={field.key}
       label={
         field.tooltip
-          ? labelWithHint(configText(t, field.label), configText(t, field.tooltip))
-          : configText(t, field.label)
+          ? labelWithHint(serverFieldText(t, field.label), serverFieldText(t, field.tooltip))
+          : serverFieldText(t, field.label)
       }
       defaultValue={field.default_value ?? undefined}
       rules={{
-        ...(field.required ? { required: t("pleaseEnter", { field: configText(t, field.label) }) } : {}),
+        ...(field.required ? { required: t("pleaseEnter", { field: serverFieldText(t, field.label) }) } : {}),
         ...(patternRule ? { pattern: patternRule } : {}),
       }}
     >
@@ -74,7 +77,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
               value={typeof value === "string" ? value : ""}
               onChange={onChange}
               ref={ref}
-              placeholder={configText(t, field.placeholder)}
+              placeholder={serverFieldText(t, field.placeholder)}
             />
           );
         }
@@ -84,7 +87,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
               {...control}
               ref={ref}
               rows={3}
-              placeholder={configText(t, field.placeholder)}
+              placeholder={serverFieldText(t, field.placeholder)}
               value={text}
               onChange={onChange}
             />
@@ -94,7 +97,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
           return (
             <Select value={text || null} onValueChange={onChange}>
               <SelectTrigger {...control} className="w-full">
-                <SelectValue placeholder={configText(t, field.placeholder)} />
+                <SelectValue placeholder={serverFieldText(t, field.placeholder)} />
               </SelectTrigger>
               <SelectContent>
                 {field.options.map((option) => (
@@ -110,7 +113,7 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
           <Input
             {...control}
             ref={ref}
-            placeholder={configText(t, field.placeholder)}
+            placeholder={serverFieldText(t, field.placeholder)}
             value={text}
             onChange={onChange}
           />

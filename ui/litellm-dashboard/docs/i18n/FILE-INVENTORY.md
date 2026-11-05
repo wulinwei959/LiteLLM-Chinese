@@ -750,13 +750,14 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 - `credentialOptions.ts` 的 `None` 改 `noCredentialOption(t)` 与 `credentialOptions(t, credentials)`，形参类型取 `(key: "none") => string`，4 处消费者传 common 译者
 - `ComplexityRouterConfig.tsx` 的 `TIER_DESCRIPTIONS.label` 改名 `builtInName`，5 条随之退场（该字段只用于和用户自填层名的相等比对，显示走 `labelKey`，属误挂文案槽位）
 
-下表按当前 529 条基线里的 330 条 `prop:` 命中重排，判定列区分两类：判定保留是长期留在基线的账（语料、品牌与缩写、格式示例），不是待办；待接才是下一簇的活。一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除，resolved 触红即门禁生效，新增英文串不再能静默进表
+第 574 簇把 `agent_config.ts` 的 45 条表值改成正向键引用：`FieldConfig.label`/`tooltip`/`helpText` 与 `SectionConfig.title` 换成 `labelKey`/`tooltipKey`/`helpTextKey`/`titleKey`，`SKILL_FIELD_CONFIG` 同形，消费点直接 `t(field.labelKey)`，placeholder 走新的 `fieldPlaceholderText(t, field)`。反向查找表 `FIELD_TEXT_KEYS` 与 `configText` 只剩后端下发的凭据字段还在用（`credential_fields` 的 label/tooltip/placeholder 来自网关，不是本地表），因此改名 `serverFieldText` 说明它翻译的是服务端英文。纯数字与版本号占位符（`0.0`、`1.0.0`）保持字面量，本就不含字母、不进口径。基线 529 到 484，`prop:` 命中 330 到 285，待接 54 到 9
+
+下表按当前 484 条基线里的 285 条 `prop:` 命中重排，判定列区分两类：判定保留是长期留在基线的账（语料、品牌与缩写、格式示例），不是待办；待接才是下一簇的活。一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除，resolved 触红即门禁生效，新增英文串不再能静默进表
 
 | 条数 | 文件                                                                                          | 判定                             |
 | ---- | --------------------------------------------------------------------------------------------- | -------------------------------- |
 | 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         | 判定保留：第三方网关语料         |
 | 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         | 判定保留：差分用例语料           |
-| 45   | `src/app/(dashboard)/agents/_components/agent_config.ts`                                      | 待接：表值改正向键引用           |
 | 17   | `src/components/callback_info_helpers.tsx`                                                    | 判定保留：集成商产品名           |
 | 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          | 判定保留：API 路径               |
 | 8    | `src/data/compliancePrompts.ts`                                                               | 判定保留：合规提示语料           |
@@ -827,6 +828,8 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 | 1    | `src/data/financialCompliancePrompts.ts`                                                      | 判定保留：合规提示语料           |
 | 1    | `src/data/insultsCompliancePrompts.ts`                                                        | 判定保留：合规提示语料           |
 
-待接 54 条分三型：`agent_config.ts` 45 条是表值仍存英文，UI 已在第 572 簇首片改走 `configText` 键表，只剩把 `FIELD_TEXT_KEYS` 反转的表改成正向 `labelKey` 形态才从基线退场；`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
+剩在待接列的 9 条分三型：`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
+
+：`agent_config.ts` 45 条是表值仍存英文，UI 已在第 572 簇首片改走 `configText` 键表，只剩把 `FIELD_TEXT_KEYS` 反转的表改成正向 `labelKey` 形态才从基线退场；`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
 
 第六条口径待办：`COPY_PROPS` 按属性名精确匹配，`alertMessage`、`resourceInformationTitle`、`confirmText` 这类以文案词结尾的复合属性名，以及 `title={`...`}` 这类模板字面量属性值仍不可见（`Teams.tsx` 的删除警告正是靠模板漏检躲过 JSX 口径）。下一簇按 camel 末词扩列属性名，模板值要不要扫得先估增量

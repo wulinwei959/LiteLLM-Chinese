@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
-import { AGENT_FORM_CONFIG, configText } from "./agent_config";
+import { AGENT_FORM_CONFIG, fieldPlaceholderText } from "./agent_config";
 import { AgentFormField, labelWithHint } from "./AgentFormKit";
 
 export const COST_FIELD_NAMES: readonly string[] = AGENT_FORM_CONFIG.cost.fields.map((field) => field.name);
@@ -14,11 +14,7 @@ const CostConfigFields: React.FC = () => {
         <AgentFormField
           key={field.name}
           name={field.name}
-          label={
-            field.tooltip
-              ? labelWithHint(configText(t, field.label), configText(t, field.tooltip))
-              : configText(t, field.label)
-          }
+          label={field.tooltipKey ? labelWithHint(t(field.labelKey), t(field.tooltipKey)) : t(field.labelKey)}
         >
           {({ value, onChange, ref, ...control }) => (
             <Input

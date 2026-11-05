@@ -13,23 +13,26 @@ import {
   type KillSwitchFormValue,
 } from "./kill_switch_config";
 
+export type AgentsTextKey = Parameters<AgentsTranslator>[0];
+
 export interface FieldConfig {
   name: string;
-  label: string;
+  labelKey: AgentsTextKey;
   type: "text" | "textarea" | "url" | "switch" | "list" | "select";
   required?: boolean;
-  tooltip?: string;
+  tooltipKey?: AgentsTextKey;
+  placeholderKey?: AgentsTextKey;
   placeholder?: string;
   defaultValue?: any;
   rows?: number;
   validation?: any[];
   options?: string[];
-  helpText?: string;
+  helpTextKey?: AgentsTextKey;
 }
 
 export interface SectionConfig {
   key: string;
-  title: string;
+  titleKey: AgentsTextKey;
   fields: FieldConfig[];
   defaultExpanded?: boolean;
 }
@@ -45,59 +48,57 @@ export const AGENT_FORM_CONFIG: {
 } = {
   basic: {
     key: "basic",
-    title: "Basic Information",
+    titleKey: "panelBasicTitle",
     defaultExpanded: true,
     fields: [
       {
         name: "name",
-        label: "Display Name",
+        labelKey: "displayName",
         type: "text",
         required: true,
-        placeholder: "e.g., Customer Support Agent",
+        placeholderKey: "phNameExample",
       },
       {
         name: "description",
-        label: "Description",
+        labelKey: "skillDescLabel",
         type: "textarea",
         required: false,
-        placeholder: "Describe what this agent does...",
+        placeholderKey: "phDesc",
         rows: 3,
       },
       {
         name: "url",
-        label: "URL",
+        labelKey: "url",
         type: "url",
         required: false,
-        placeholder: "http://localhost:9999/",
-        tooltip: "Base URL where the agent is hosted (optional)",
+        placeholderKey: "url",
+        tooltipKey: "urlTooltip",
       },
       {
         name: "version",
-        label: "Version",
+        labelKey: "version",
         type: "text",
         placeholder: "1.0.0",
         defaultValue: "1.0.0",
       },
       {
         name: "protocolVersion",
-        label: "Protocol Version",
+        labelKey: "protocolVersion",
         type: "select",
         options: ["1.0", "0.3"],
         defaultValue: "1.0",
-        tooltip:
-          "The A2A protocol version LiteLLM serves to clients for this agent. LiteLLM converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version.",
-        helpText:
-          "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version.",
+        tooltipKey: "protocolVersionTooltip",
+        helpTextKey: "protocolVersionHelpText",
       },
     ],
   },
   skills: {
     key: "skills",
-    title: "Skills",
+    titleKey: "panelSkillsTitle",
     fields: [
       {
         name: "skills",
-        label: "Skills",
+        labelKey: "panelSkillsTitle",
         type: "list",
         defaultValue: [],
       },
@@ -105,137 +106,140 @@ export const AGENT_FORM_CONFIG: {
   },
   capabilities: {
     key: "capabilities",
-    title: "Capabilities",
+    titleKey: "panelCapabilitiesTitle",
     fields: [
       {
         name: "streaming",
-        label: "Streaming",
+        labelKey: "streaming",
         type: "switch",
         defaultValue: false,
       },
       {
         name: "pushNotifications",
-        label: "Push Notifications",
+        labelKey: "pushNotifications",
         type: "switch",
       },
       {
         name: "stateTransitionHistory",
-        label: "State Transition History",
+        labelKey: "stateTransitionHistory",
         type: "switch",
       },
     ],
   },
   optional: {
     key: "optional",
-    title: "Optional Settings",
+    titleKey: "panelOptionalTitle",
     fields: [
       {
         name: "iconUrl",
-        label: "Icon URL",
+        labelKey: "iconUrl",
         type: "url",
-        placeholder: "https://example.com/icon.png",
+        placeholderKey: "phIcon",
       },
       {
         name: "documentationUrl",
-        label: "Documentation URL",
+        labelKey: "documentationUrl",
         type: "url",
-        placeholder: "https://docs.example.com",
+        placeholderKey: "phDocs",
       },
       {
         name: "supportsAuthenticatedExtendedCard",
-        label: "Supports Authenticated Extended Card",
+        labelKey: "supportsAuthExtendedCard",
         type: "switch",
       },
     ],
   },
   litellm: {
     key: "litellm",
-    title: "LiteLLM Parameters",
+    titleKey: "panelLitellmTitle",
     fields: [
       {
         name: "model",
-        label: "Model (Optional)",
+        labelKey: "modelOptional",
         type: "text",
       },
       {
         name: "make_public",
-        label: "Make Public",
+        labelKey: "makePublic",
         type: "switch",
       },
     ],
   },
   cost: {
     key: "cost",
-    title: "Cost Configuration",
+    titleKey: "costConfigTitle",
     fields: [
       {
         name: "cost_per_query",
-        label: "Cost Per Query ($)",
+        labelKey: "costPerQuery",
         type: "text",
         placeholder: "0.0",
-        tooltip: "Fixed cost per query",
+        tooltipKey: "costPerQueryTooltip",
       },
       {
         name: "input_cost_per_token",
-        label: "Input Cost Per Token ($)",
+        labelKey: "inputCostPerToken",
         type: "text",
         placeholder: "0.000001",
-        tooltip: "Cost per input token",
+        tooltipKey: "inputCostTooltip",
       },
       {
         name: "output_cost_per_token",
-        label: "Output Cost Per Token ($)",
+        labelKey: "outputCostPerToken",
         type: "text",
         placeholder: "0.000002",
-        tooltip: "Cost per output token",
+        tooltipKey: "outputCostTooltip",
       },
     ],
   },
   tracing: {
     key: "tracing",
-    title: "Tracing",
+    titleKey: "panelTracingTitle",
     fields: [
       {
         name: "enable_tracing",
-        label: "Enable Tracing",
+        labelKey: "enableTracing",
         type: "switch",
         defaultValue: false,
-        tooltip: "Enable request tracing for this agent",
+        tooltipKey: "enableTracingTooltip",
       },
     ],
   },
 };
 
-export const SKILL_FIELD_CONFIG = {
+export const SKILL_FIELD_CONFIG: Record<
+  string,
+  { name: string; labelKey: AgentsTextKey; required?: boolean; placeholderKey?: AgentsTextKey; rows?: number }
+> = {
   id: {
     name: "id",
-    label: "Skill ID",
+    labelKey: "skillIdLabel",
     required: true,
-    placeholder: "e.g., hello_world",
+    placeholderKey: "skillIdPlaceholder",
   },
   name: {
     name: "name",
-    label: "Skill Name",
+    labelKey: "skillNameLabel",
     required: true,
-    placeholder: "e.g., Returns hello world",
+    placeholderKey: "skillNamePlaceholder",
   },
   description: {
     name: "description",
-    label: "Description",
+    labelKey: "skillDescLabel",
     required: true,
-    placeholder: "What this skill does",
+    placeholderKey: "skillDescPlaceholder",
     rows: 2,
   },
   tags: {
     name: "tags",
-    label: "Tags",
+    labelKey: "skillTagsLabel",
     required: true,
-    placeholder: "Type a tag and press Enter",
+    placeholderKey: "skillTagsPlaceholder",
   },
   examples: {
     name: "examples",
-    label: "Examples",
-    placeholder: "Type an example and press Enter",
+    labelKey: "skillExamplesLabel",
+    placeholderKey: "skillExamplesPlaceholder",
   },
 };
 
@@ -412,6 +416,8 @@ export const parseAgentForForm = (agent: any) => {
   };
 };
 
+// Backend-supplied credential fields arrive with English label/tooltip/placeholder text;
+// this table maps the known ones onto agents message keys so the form renders Chinese.
 const FIELD_TEXT_KEYS: Record<string, string> = {
   "Agent Name": "agentName",
   "Unique identifier for the agent": "nameFieldHint",
@@ -464,5 +470,10 @@ const FIELD_TEXT_KEYS: Record<string, string> = {
   Tracing: "panelTracingTitle",
 };
 
-export const configText = (t: AgentsTranslator, text?: string | null): string =>
-  text && FIELD_TEXT_KEYS[text] ? t(FIELD_TEXT_KEYS[text] as never) : text ?? "";
+export const serverFieldText = (t: AgentsTranslator, text?: string | null): string =>
+  text && FIELD_TEXT_KEYS[text] ? t(FIELD_TEXT_KEYS[text] as AgentsTextKey) : text ?? "";
+
+export const fieldPlaceholderText = (
+  t: AgentsTranslator,
+  field: { placeholderKey?: AgentsTextKey; placeholder?: string },
+): string | undefined => (field.placeholderKey ? t(field.placeholderKey) : field.placeholder);
