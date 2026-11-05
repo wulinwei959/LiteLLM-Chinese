@@ -35,13 +35,11 @@ describe("usage chart sources", () => {
   it.each(["chart.allTeams", "chart.allTags"] as const)(
     "should label an unfiltered %s report and retain combined filters",
     (scope) => {
-      expect(usageChartSource(t, { value: report, query, access: admin, defaultScopeKey: scope })?.scope).toBe(
-        t(scope),
-      );
+      const unfiltered = { value: report, query, access: admin, defaultScopeKey: scope };
+      expect(usageChartSource(t, unfiltered)?.scope).toBe(t(scope));
       const filters = { ...query, user_id: "member", team_ids: "team-a", tags: "production" };
-      expect(usageChartSource(t, { value: report, query: filters, access: admin, defaultScopeKey: scope })?.scope).toBe(
-        "User member · Teams team-a · Tags production",
-      );
+      const filtered = { value: report, query: filters, access: admin, defaultScopeKey: scope };
+      expect(usageChartSource(t, filtered)?.scope).toBe("User member · Teams team-a · Tags production");
     },
   );
 

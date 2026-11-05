@@ -15066,7 +15066,7 @@
       "identityTokenFileLabel": "Identity Token File",
       "identityTokenFileTooltip": "Absolute path on the proxy host of a file holding the identity token, for example a projected Kubernetes service account token. It must sit under an allowed credential directory.",
       "identityTokenRefLabel": "Identity Token Reference",
-      "identityTokenRefTooltip": "An oidc/ secret reference the proxy resolves on each exchange, such as oidc/env/VAR_NAME, oidc/github/<audience>, or oidc/google/<audience>. Raw tokens are not accepted.",
+      "identityTokenRefTooltip": "An oidc/ secret reference the proxy resolves on each exchange, such as oidc/env/VAR_NAME, oidc/github/'<'audience'>', or oidc/google/'<'audience'>'. Raw tokens are not accepted.",
       "issuerUrlLabel": "Issuer URL",
       "issuerUrlTooltip": "The issuer registered on the federation rule. The proxy puts it in the token's iss claim.",
       "subjectLabel": "Subject",

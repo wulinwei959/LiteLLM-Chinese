@@ -15062,7 +15062,7 @@
       "identityTokenFileLabel": "身份令牌文件",
       "identityTokenFileTooltip": "代理主机上保存身份令牌的文件绝对路径，例如挂载的 Kubernetes 服务账号令牌。必须位于允许的凭据目录之下。",
       "identityTokenRefLabel": "身份令牌引用",
-      "identityTokenRefTooltip": "代理每次换取时解析的 oidc/ 密钥引用，例如 oidc/env/VAR_NAME、oidc/github/<audience> 或 oidc/google/<audience>。不接受原始令牌。",
+      "identityTokenRefTooltip": "代理每次换取时解析的 oidc/ 密钥引用，例如 oidc/env/VAR_NAME、oidc/github/'<'audience'>' 或 oidc/google/'<'audience'>'。不接受原始令牌。",
       "issuerUrlLabel": "签发方 URL",
       "issuerUrlTooltip": "在联合身份规则上登记的签发方。代理会把它写入令牌的 iss 声明。",
       "subjectLabel": "Subject（主题）",

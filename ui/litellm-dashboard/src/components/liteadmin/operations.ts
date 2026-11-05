@@ -53,7 +53,11 @@ type ActionTitleKey =
   | "actions.usageTag";
 
 // Tool descriptions are sent to the model, so they stay English regardless of the UI locale.
-const modelLocaleT = createTranslator({ locale: "en", messages: enMessages, namespace: "liteAdmin" });
+let modelLocaleT: ((key: ActionTitleKey) => string) | undefined;
+const modelLocaleTitle = (key: ActionTitleKey): string => {
+  modelLocaleT ??= createTranslator({ locale: "en", messages: enMessages, namespace: "liteAdmin" });
+  return modelLocaleT(key);
+};
 
 export interface LiteAdminAction {
   id: string;
@@ -198,7 +202,7 @@ export function createLiteAdminOperations(context: OperationContext) {
     ) => {
       const definition = {
         name,
-        description: `${modelLocaleT(titleKey)}. Null means omitted or unchanged. ${mode === "read" ? "Read-only." : "Requires the administrator to review and confirm the change."}`,
+        description: `${modelLocaleTitle(titleKey)}. Null means omitted or unchanged. ${mode === "read" ? "Read-only." : "Requires the administrator to review and confirm the change."}`,
         parameters: schema,
         function: async (rawArgs: unknown) => {
           const args = stripNulls(rawArgs as z.output<Schema>);
@@ -254,15 +258,13 @@ export function createLiteAdminOperations(context: OperationContext) {
           let reportScope: ChartScopeKey = "chart.gatewayUsage";
           if (name === "get_team_usage_data") reportScope = "chart.allTeams";
           if (name === "get_tag_usage_data") reportScope = "chart.allTags";
-          const source =
-            kind === "usage"
-              ? usageChartSource(context.t, {
-                  value: result,
-                  query: args,
-                  access: context.access,
-                  defaultScopeKey: reportScope,
-                })
-              : undefined;
+          const chartInput = {
+            value: result,
+            query: args,
+            access: context.access,
+            defaultScopeKey: reportScope,
+          };
+          const source = kind === "usage" ? usageChartSource(context.t, chartInput) : undefined;
           const sourceId = source ? crypto.randomUUID() : undefined;
           if (source && sourceId) usageSources.set(sourceId, source);
           return {
