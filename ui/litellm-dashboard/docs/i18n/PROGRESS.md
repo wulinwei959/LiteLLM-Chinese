@@ -5590,3 +5590,19 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 C 桶里 38 个 hook 文件各一条 `throw new Error("Access token is required")` 记为低优先而非零优先：串本身不进 DOM，但调用方普遍写 `toast.fromError(error.message)`（如 `AccessGroupCreateDialog.tsx:80`），守卫一触发就原文上 toast。真要接得先把 hook 改成抛带键的类型化错误再由调用方映射，逐条翻字符串是错的接法
 
 PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpointCapabilities.ts` 的字面量联合与 `FILE-INVENTORY.md` 的表未格式化。本地 `npx prettier --write` 后复跑 `format:check`。这条门禁不在 `check:dead-keys` 那套 i18n 门禁里，`make check` 也不覆盖 `ui/`，只有 CI 的 `ui` 作业跑，本地改 `.ts`/`.md` 后要么顺手 prettier，要么等 CI
+
+## 2026-11-05 第 563 簇：usage 页数据侧接入，枚举补上模块级 `export const` 口径
+
+把上一簇读出来的两块接掉。`ModelViewToggle.tsx` 的两个切换按钮改成 `labelKey`（`publicModelName`/`litellmModelName`），`usage.modelViewToggle` 两份目录从空对象补齐，中文取「公开模型名称」与「LiteLLM 模型名称」，沿用 `components/logs/constants.ts:86` 的 `labelKey` 先例。`entityUsageSummary.ts` 的七条标题与四条 tooltip 走 translator-first：`buildSummaryTiles(t, metadata, showFlatCost, showPtuHours)` 与 `buildCostBreakdownTiles(t, metadata)` 收 `UsageTranslator`，构建处取值，`SummaryTile` 新增稳定 `id`（`SummaryTileId` 字面量联合），`EntityUsage.tsx` 的 `TILE_TRENDS` 与三处 React key 改按 `id` 比对，标题不再是比对键。四条 tooltip 从 `export const` 挪进目录，四个模块级常量删掉（全仓无其他引用）。六条挂空词条这次真的被用上了，`usage.entity` 新增 `requestCost`/`flatCost`/`ptuHours` 三条标题与 `totalCostHint`/`requestCostHint`/`flatCostHint`/`ptuHoursHint` 四条提示，英文串逐字照搬不改写
+
+`const` 口径顺带浮出 `src/utils/promptCacheUsage.ts` 的两条提示，同簇接掉：`common.promptCacheReadTooltip` 与 `common.promptCacheCreationTooltip`，`chat_ui/ResponseMetrics.tsx` 与 `logs/detail/LogDetailContent.tsx` 各自加 `useTranslations("common")` 取值，两个 `.ts` 常量删除。同一句话在 chatUi 与 logs 两个命名空间各存一份是重复，放 `common` 一条一份事实
+
+测试两侧都要动。`entityUsageSummary.test.ts` 是纯数据层测试，按 `kill_switch_config.test.ts` 的先例用 `createTranslator({ locale: "en", messages: en, namespace: "usage" }) as unknown as UsageTranslator` 注入，英文断言因此一条不用改，但签名要多传 `t`，且原有 `.map((t) => t.title)` 的形参会遮蔽翻译器，改成 `tile`。新增一条 id 契约测试，钉住九宫格的 id 序列而不是显示名，这是 `TILE_TRENDS` 与 key 依赖的事实。渲染侧 `EntityUsage.test.tsx` 四处 `"Total Spend"` 与两处切换按钮、`UsagePageView.test.tsx` 六处切换按钮按 zh-CN 取值翻面。16 条数据层测试与 138 条渲染测试、`npm run typecheck` 全绿
+
+产出脚本加第 7 个口径：模块级大写蛇形 `export const` 的字符串初值。它盖的是 `entityUsageSummary` 这类"文案住在 `.ts` 常量里、由 `.tsx` 直出"的面，此前六个口径全看不见。初值要先过散文判据，再叠一条正则挡 Tailwind 类名串（`text-right tabular-nums` 一类否则会整批涌进来）。复跑数变成 `.tsx` 219 个未接入（18 有证据、201 零命中），`.tsx` 与 `.ts` 合计 687 个（88 有证据：`.tsx` 40 条、`.ts` 287 条，599 零命中）
+
+新口径浮出的 8 个 `.tsx` 里 7 个是 `throw new Error("useAuth must be used within an AuthProvider")` 一类开发期断言串，判同 C 桶；剩 `tag-management/_components/tagTableColumns.tsx` 一条 spend tag 说明串待判。`.ts` 侧浮出 7 个各 1 条，`promptCacheUsage` 已接，`activityTimestamp` 是日期格式串、`aria-brand` 是专名、`budgetUtils` 无生产消费点，另三条待判
+
+一个命令坑值得单独记。`npm run format` 是 `prettier --write .`，追加文件参数没用，它会按 `ui/litellm-dashboard/.prettierrc` 的 `printWidth: 120` 重写全仓 162 个与本次无关的文件（CI 只 `--check` PR 改动的文件，这些历史文件从来没被门禁管过）。跑一次就把别人家的格式全改了，本次靠事先备份 9 个自改文件、`git checkout --` 批量回滚，再用 `npx prettier --write <显式路径>` 只格式化自己改的。改 `ui/` 下的格式只能用后一种写法
+
+`errorsData.ts` 的 `Other`/`No status` 本簇没动。`seriesKey()` 同时是图表的数据键与图例显示名（`codes` 直接渲染进 `ErrorsTab.tsx:238`），接入要先把键与显示名拆开再动渲染处，跟 `agentCatalog.ts` 的 `label` 是同一类纠缠，归到 A 桶剩下 7 个文件 88 条一起做

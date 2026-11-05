@@ -2,9 +2,10 @@
 // which cannot tell "this file has no copy" from "this file has copy nobody
 // wired". This walks every non-test `.tsx` without a hook and prints what a
 // user could see, so each file gets an entry in the ledger instead of an
-// inferred excuse. Two of the categories are blind spots of `scan-english.mjs`:
-// copy sitting in an object property (table column defs, config maps) and copy
-// sitting in a parameter default.
+// inferred excuse. Three of the categories are blind spots of
+// `scan-english.mjs`: copy sitting in an object property (table column defs,
+// config maps), copy sitting in a module-level `export const UPPER_CASE`
+// (tooltip and label constants), and copy sitting in a parameter default.
 //
 // `.ts` data files are invisible to the `.tsx` ledger even though the UI renders
 // out of them, so `--include-ts` adds them. A hit there is only a candidate: the
@@ -41,6 +42,14 @@ const VISIBLE_ATTRS = [
 const VISIBLE_KEYS = [...VISIBLE_ATTRS, "content", "heading", "text", "titleText"];
 
 const NON_COPY = /^(@?use client|use strict)$/i;
+
+const CSS_LIKE = /^[a-z0-9 .:_#/[\]()-]+$/;
+
+const proseOnly = (category, text) => {
+  if (category === "const") return isProse(text) && !CSS_LIKE.test(text);
+  if (category.startsWith("object:")) return isProse(text);
+  return true;
+};
 
 const isProse = (value) => {
   const text = value.replace(/\s+/g, " ").trim();
@@ -82,6 +91,15 @@ const collect = (source, file) => {
       const name = propertyName(node);
       if (VISIBLE_KEYS.includes(name)) add(`object:${name}`, node.initializer.text);
     }
+    if (
+      ts.isVariableDeclaration(node) &&
+      ts.isIdentifier(node.name) &&
+      /^[A-Z][A-Z0-9_]{2,}$/.test(node.name.text) &&
+      node.initializer &&
+      ts.isStringLiteral(node.initializer)
+    ) {
+      add("const", node.initializer.text);
+    }
     if (ts.isParameter(node) && node.initializer && ts.isStringLiteral(node.initializer)) {
       add(`default:${node.name.getText()}`, node.initializer.text);
     }
@@ -95,7 +113,7 @@ const collect = (source, file) => {
     ts.forEachChild(node, visit);
   };
   visit(tree);
-  return hits.filter(([category, text]) => !category.startsWith("object:") || isProse(text));
+  return hits.filter(([category, text]) => proseOnly(category, text));
 };
 
 const TS_SKIP = /(?:^|\/)(?:vendor|i18n)\//;
@@ -134,6 +152,6 @@ for (const [path, lines, hits] of noisy.sort((a, b) => b[2].length - a[2].length
   for (const [category, text] of hits) report(`  - ${category}: ${text.slice(0, 120)}`);
 }
 report("");
-report(`## 四类口径与两个盲区口径均无命中（${silent.length} 个）`);
+report(`## 四类静态口径与三个盲区口径均无命中（${silent.length} 个）`);
 report("");
 for (const [path, lines] of silent.sort((a, b) => a[0].localeCompare(b[0]))) report(`- ${path} (${lines})`);
