@@ -8,6 +8,10 @@ import {
   validateIdentityTokenReference,
   validateIssuerTtlSeconds,
 } from "./anthropic_federation";
+import type { ModelAddTranslator } from "@/lib/i18n/translators";
+import { enMessagesFor } from "@/../tests/i18nStub";
+
+const t = enMessagesFor("modelAdd") as unknown as ModelAddTranslator;
 
 const storedKeycloak = {
   anthropic_federation_rule_id: "fdrl_stored",
@@ -51,11 +55,11 @@ describe("reading a stored identity source", () => {
 
   it("keeps a stored identity source it does not offer as its own option, never as another source", () => {
     expect(inferIdentitySource({ anthropic_identity_source: "spiffe" })).toBe("unrecognized");
-    expect(identitySourceOptions({ anthropic_identity_source: "spiffe" })[0]).toEqual({
+    expect(identitySourceOptions(t, { anthropic_identity_source: "spiffe" })[0]).toEqual({
       value: "unrecognized",
       label: "Stored: spiffe",
     });
-    expect(identitySourceOptions(storedKeycloak).map((option) => option.value)).not.toContain("unrecognized");
+    expect(identitySourceOptions(t, storedKeycloak).map((option) => option.value)).not.toContain("unrecognized");
   });
 });
 
@@ -63,32 +67,32 @@ describe("field validation", () => {
   it.each(["oidc/env/ANTHROPIC_IDENTITY_TOKEN", "oidc/file//var/run/secrets/token", "oidc/github/api.anthropic.com"])(
     "accepts the secret reference %s",
     (reference) => {
-      expect(validateIdentityTokenReference(reference)).toBe(true);
+      expect(validateIdentityTokenReference(t)(reference)).toBe(true);
     },
   );
 
   it.each(["eyJhbGciOiJSUzI1NiJ9.payload.signature", "oidc/env_path/TOKEN_PATH", "os.environ/TOKEN"])(
     "refuses %s, which the proxy would reject on every request",
     (reference) => {
-      expect(validateIdentityTokenReference(reference)).toEqual(expect.stringContaining("oidc/"));
+      expect(validateIdentityTokenReference(t)(reference)).toEqual(expect.stringContaining("oidc/"));
     },
   );
 
   it("leaves an untouched masked reference and an empty one to the other rules", () => {
-    expect(validateIdentityTokenReference("oidc****")).toBe(true);
-    expect(validateIdentityTokenReference("")).toBe(true);
+    expect(validateIdentityTokenReference(t)("oidc****")).toBe(true);
+    expect(validateIdentityTokenReference(t)("")).toBe(true);
   });
 
   it.each(["1", "300", String(MAX_ISSUER_TTL_SECONDS), 300, ""])("accepts the lifetime %s", (ttl) => {
-    expect(validateIssuerTtlSeconds(ttl)).toBe(true);
+    expect(validateIssuerTtlSeconds(t)(ttl)).toBe(true);
   });
 
   it.each(["0", "-5", "1.5", "abc", String(MAX_ISSUER_TTL_SECONDS + 1)])("refuses the lifetime %s", (ttl) => {
-    expect(validateIssuerTtlSeconds(ttl)).toEqual(expect.stringContaining("whole number"));
+    expect(validateIssuerTtlSeconds(t)(ttl)).toEqual(expect.stringContaining("whole number"));
   });
 
   it("refuses the proxy environment source when every id is blank, since the proxy rejects a credential with no values", () => {
-    const rule = validateFederationValueStored("environment");
+    const rule = validateFederationValueStored(t, "environment");
     const blankIds = {
       api_base: "https://gateway.example.com",
       anthropic_federation_rule_id: "",
@@ -97,6 +101,6 @@ describe("field validation", () => {
     };
     expect(rule("", blankIds)).toEqual(expect.stringContaining("at least one"));
     expect(rule("", { ...blankIds, anthropic_federation_workspace_id: "wrkspc_1" })).toBe(true);
-    expect(validateFederationValueStored("token_file")("", blankIds)).toBe(true);
+    expect(validateFederationValueStored(t, "token_file")("", blankIds)).toBe(true);
   });
 });

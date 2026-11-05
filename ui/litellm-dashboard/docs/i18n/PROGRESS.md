@@ -5634,3 +5634,66 @@ PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpo
 断言翻面 10 条，`TopModelView.test.tsx` 八条（五个列头、两个视图按钮、一处 `queryByText` 反查）与 `EntityUsage.test.tsx` 两处面板表，按 `TopKeyView.test.tsx:235` 已落的中文取值对齐。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0
 
 门禁：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222、`npm run typecheck` 0 错。触及六个文件 eslint 0 error、28 条 warning（`TopModelView.tsx` 的 5 条 `any` 与测试文件的 `container`/`node-access` 全在改动区之外，是 HEAD 既有）。四个源文件接完结尾 `node scripts/scan-english.mjs <file>` 均零命中，`npx prettier --check` 只报 `EndpointUsageTable.tsx` 一处超长 `span`，按 `--write` 展开成三行，改动没溢出到别人家。清单复跑 687 个未接入、87 个有证据、600 个零命中，三个数与第 564 簇记的完全一致，本簇四个文件都在线内，对这份清单零影响
+
+## 2026-11-05 第 566 簇：接入 client usage 错误通道与区间说明的界面英文
+
+`clientUsageScope.ts` 的 `resolveClientUsageScope`、`useClientUsage.ts`、`clientUsageData.ts` 的 `clientUsageFromLogs`、`useClientAgentModels.ts` 的 `loadModels`/hook、`clientAgentModelsData.ts` 的 `clientAgentModelsFromExport`、`ClientUsagePanel.tsx` 的 `countLabel` 与两处区间提示——共六个文件、约 16 处硬编码英文。这批文件早已挂翻译器或处于 hook 内，本清单与 `check:english-leaks` 都看不见内部英文，属 FILE-INVENTORY 第四道盲区（接入判据只看有无 `useTranslations`/`getTranslations`）。六处集中改为 translator-first：
+
+- `clientUsageScope.ts`：`resolveClientUsageScope(t: ClientUsageTranslator, input)`，四处错误文案走 `t("chooseAdminTeam")`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`signInRequired`
+- `useClientUsage.ts`：hook 内 `useTranslations("clientUsage")`，`scopeError` 四分支与 `emptyClientUsage` 兜底全部走 `t("selectUserOrTeam")`/`selectValidDateRange`/`signInRequired`/`couldNotLoad`
+- `clientUsageData.ts`：删 `INCOMPLETE_CLIENT_USAGE` 常量，`clientUsageFromLogs(t, response, scope)` 六处错误文案走 `t("selectUserOrTeam")`/`proxyIncompleteData`/`incompleteClientUsage`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`
+- `useClientAgentModels.ts`：`loadModels(t, request, agent)` 与 hook 改为 translator-first，三处走 `t("chooseShorterDateRange")`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`，范围校验走 `t("selectValidDateRange")`
+- `clientAgentModelsData.ts`：`clientAgentModelsFromExport(t, payload, agent)` 三处走 `t("proxyIncompleteModelData")`/`proxyDuplicateModelData`/`modelUsageMismatch`
+- `ClientUsagePanel.tsx`：`countLabel` 收 `t` 走 `t("unavailable")`，两处区间提示 `scopedRequestHint`/`allUsersHint`、`chooseAnotherPerson` 走 `t()`
+
+新增 `clientUsage` 命名空间 17 条：`chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`incompleteClientUsage`/`proxyIncompleteData`/`proxyIncompleteModelData`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`/`chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`modelUsageMismatch`/`scopedRequestHint`/`allUsersHint`/`selectedUser`/`unavailable`/`loadingAria`。其余复用既有 `signInRequired`/`couldNotLoad`/`selectUserOrTeam`/`selectValidDateRange`/`chooseAnotherPerson`。叶子 13594 → 13611，两侧同数、键差集 0。
+
+同步更新 8 个测试文件：`clientUsageScope.test.ts`/`useClientUsage.test.tsx`/`clientUsageData.test.ts`/`useClientAgentModels.test.tsx`/`clientAgentModelsData.test.ts` 注入英语 translator（`createTranslator({locale:"en", messages: en, namespace:"clientUsage"}) as unknown as ClientUsageTranslator`，先例 `kill_switch_config.test.ts`），`useClientUsage.test.tsx`/`useClientAgentModels.test.tsx` 用 `LocaleProvider locale="en"` 包装，`ClientUsagePanel.integration.test.tsx`/`UsagePageView.test.tsx` 断言改为中文键值（默认 `zh-CN` suite）。用例数 95 + 14 = 109 例全绿。
+
+i18n 三闸：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222。TypeScript 0 错、eslint 0 error（新增）。用法可迁移：同模式已在 `SpendByProvider.tsx:33`、`EntityUsage.tsx:563`、`models.addModel`、`models.addModel.overrideCount` 验证。
+
+清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇记录一致，本簇六文件均在清单内部，对清单零影响。FILE-INVENTORY 第四道盲区一节已补记第 566 批 14 个命名空间孤儿键与救活它们的同名兄弟。
+
+## 2026-11-05 第 567 簇：agentCatalog 代理目录接入（A 桶首片）
+
+A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫描与逐文件 `scan-english` 都够不着的第四道盲区：文件没挂翻译器，但 22 个品牌的 `label`/`description` 全部直出界面（Top Agents 行、图表图例、aria-label）。接线形态按第 564/565 簇的 `labelKey` 先例：`FAMILIES` 保持 locale 无关的常量（id/match/kind/logo 不动），每个品牌加 `labelKey` 与 `descriptionKey` 两个字面量键，`agentFor(t, ...)` 建 `AgentRow` 时才按键取译。`descriptionKey` 写成独立字面量而不是 `` `${labelKey}Desc` `` 模板拼接，因为死键门禁按 `referenced_verbatim` 找字面量，模板拼出来的 22 个 Desc 键会全部误报成死键（本簇实测踩到：插字面量前 `check:dead-keys` 报 22 条）。`familyFor` 与 `usageClientFromUserAgent` 只读 `id`，保持免翻译器，`clientUsageData.ts` 的识别链路零改动；需要译员的只有 `topAgents(t, rows)`、`agentDailyData(t, days)` 这条建显示行的链路，三个消费点（`TopAgents.tsx`、`ClientUsagePanel.tsx`、`UsagePageView.tsx`）各加一个 `useTranslations("agents")`。`TopAgents.tsx:128` 的 `` `View ${agent.label} usage` `` aria-label 顺手接成 `catalogViewUsageAria`（带 `{label}` 插值）
+
+新增 `agents.catalog*` 46 键（22 label + 22 Desc + `catalogCustomClient` + `catalogViewUsageAria`），品牌名两侧的 zh 值按惯例保留英文（Claude Desktop、Codex、Cursor 等 21 条无汉字），连同 `catalogLiteLLMSDKDesc`/`catalogOpenAIAgentsDesc` 共 23 条入 `zh-coverage-baseline.json`（`--write` 刷新，222 → 245）。叶子两侧同增至 13659
+
+测试面：`agentCatalog.test.ts` 22 处调用注入 `enMessagesFor("agents")` 英语译员，断言逐字不动（钉 en 值即断言目录本身）；`TopAgents.integration.test.tsx` 三条断言翻面（`Claude (unspecified)` → `Claude (未指定)`、`View Claude Desktop usage` → `查看 Claude Desktop 用量`、`Client not identified` → `未识别的客户端`）。usage 目录 33 文件 537 例全绿、Type Errors 0；死键 0/0、静态英文 280/280、`tsc` 0 错、eslint 0 error、prettier 触及文件合规、`agentCatalog.ts` 与 `TopAgents.tsx` 逐文件 `scan-english` 零命中
+
+清单复跑：未接入 687 → 685、有证据 87 → 85、零命中 600 → 602（`agentCatalog.ts` 接完退桶；A 桶剩 6 个文件，`anthropic_federation.ts` 30 条为下一片）
+
+## 2026-11-05 第 568 簇：A 桶第二片，Anthropic/OpenAI 工作负载身份联合字段接入
+
+`anthropic_federation.ts`(30) 与 `openai_federation.ts`(6) 两片同簇接完。`FederationField` 表是第四道盲区同款数据模块：文件不挂翻译器，但 label/tooltip 全部经 `FederationFields.tsx` 的 `labelWithHint` 直出表单。形态沿用 `labelKey` 先例并更进一步：`federation_field.ts` 把 `label`/`tooltip` 字段改成 `labelKey: \`federation.${id}Label\``/`tooltipKey` 模板联合类型，数据表落全字面量键（第 567 簇的教训：模板拼接键会被死键门禁误报，字面量是硬要求）；校验器改收译员（`requiredFederationValue(t)`、`validateMaskedValueUntouched(t, stored)`、`validateFederationValueStored(t, source)`、`validateIdentityTokenReference(t)`、`validateIssuerTtlSeconds(t)`、`validateOpenAIFederationApiBase(t)`、`identitySourceOptions(t, values)`、`providerFieldValidators(t, selection)`），`ttlRange`/`openaiApiBaseHost`/`storedOption` 走 ICU 插值，`CredentialModal.tsx`两处调用点补`modelAddT`
+
+`tokenLifetimeTooltip` 的 3600 上限写进消息文本而不是插值（tooltip 渲染点拿不到常量），`anthropic_federation.test.ts` 已有 `String(MAX_ISSUER_TTL_SECONDS)` 用例与 `ttlRange` 的 `{max}` 插值共同守住常量与消息的一致性。`Stored: {value}` 收进 `storedOption`，`UNRECOGNIZED_IDENTITY_SOURCE.labelKey` 借用 `sourceEnvironment` 保持形状（它的 label 从不渲染，选择器里未识别项走 `storedOption`）
+
+新增 `modelAdd.federation.*` 52 键，两侧叶子 13659 → 13711。测试：`anthropic_federation`/`openai_federation`/`federation_field`/`credential_federation` 四个纯测试注入 `enMessagesFor("modelAdd")` 英语译员，英文断言逐字保留（含 "Stored: spiffe"、"whole number"、"only reaches the OpenAI API"）；`CredentialModal.integration.test.tsx` 18 组界面取值翻中文（`Federation Rule ID` → `联合身份规则 ID` 等，Microsoft365 fixture 的 API 回传 label 不翻）。model_add 整目录 13 文件 218 例全绿
+
+门禁：死键 0/0、静态英文 280/280、zh 未译 245/245、`tsc` 0 错、eslint 触及文件 0 error、prettier 合规、三个 `.ts` `scan-english` 零命中。清单复跑：未接入 685 不变（translator-first 数据模块按判据仍算未挂线，接入判据第五道盲区入账 FILE-INVENTORY）、有证据 85 → 83、零命中 602 → 604
+
+## 2026-11-05 第 569 簇：A 桶收尾，provider 认证类型、LiteAdmin 与 prompts utils
+
+A 桶剩四片一次接完，88 条命中清零。
+
+`provider_auth_types.ts`(8)：`PROVIDER_AUTH_TYPES` 表改 `labelKey`/`descriptionKey`（模板联合 `` `authTypes.${id}Label` ``），`authTypesFor(t, provider)` 返回 `ResolvedAuthType` 附解析后的 `label`/`description`，`authTypeFieldKeys` 走内部 `rawAuthTypesFor` 保持免译员；消费点 `provider_specific_fields.tsx` 与 `AddModelForm.tsx` 传 `models.addModel` 译员，新增 8 键。
+
+`operations.ts` 与 `usageChart.ts`(6+5 与图表全部显示面)：`OperationContext` 加 `t: LiteAdminTranslator`，35 个动作的 title 参数改 `ActionTitleKey`（34 键字面量联合），确认卡与状态卡渲染的 `action.title` 走 UI 译员；工具 description 发给模型，固定走模块级 `modelLocaleT = createTranslator({ locale: "en" ... })` 取英文，locale 切换不影响模型语料。四条错误串（`signedInRequired`/`actionCancelled`/`changeUnverified`/`lookupFailed`）接 `liteAdmin.errors.*`。`usageChartSource` 收 `UsageChartSourceInput` 对象参（5 位置参触 `max-params`），scope/period/标题/note/行标签全走 `liteAdmin.chart.*`（28 键，`periodRange`/`userScope`/`valuesAria`/`valuesUnavailableFor` 为 ICU 插值）；`buildUsageChart(t, source, view)` 与 `formatUsageChartValue(t, ...)` 同步；`UsageAnswerChart` 的 unit 列与表 aria 走查表避免嵌套三元。renderChart 工具反馈两条判模型语料保留
+
+`prompt_editor_view/utils.ts`(3)：两条 thrown 串经调用方 `toast.fromError` 的 description 露出，接 `prompts.editor.*`；默认用户消息 "Enter task specifics..." 含 `{{template_variables}}` 字面量，ICU 会与插值语法冲突，消息收 `{templateVar}` 参数、调用点传字面量
+
+新增 77 键（authTypes 8、liteAdmin 66、prompts.editor 3），两侧叶子 13711 → 13788。基线两次刷新：静态英文 280 → 276（接掉的 thrown/title 串从基线消失），zh 未译 245 → 246（`chart.unitRequests` 等品牌/单位串入基线）。测试：`provider_auth_types.test`/`usageChart.test`/`agent.test` 注入英语译员零翻面，`AddModelForm.integration`/`provider_specific_fields.test` 等翻中文 20 处，LiteAdmin 两 integration 断言翻面（region 名、figure/table 的 `X 数值`、`你的用量`、`更改无法核实`），fixture 手填的 token 标签行保持英文。全量 `src/components`+`src/app` 复跑无新红
+
+清单：有证据 83 → 80（`provider_auth_types.ts`、`usageChart.ts`、`prompt_editor_view/utils.ts` 退桶），A 桶清零
+
+## 2026-11-05 第 570 簇：errorsData 专项，seriesKey 图例纠缠拆开
+
+判定账里挂了多轮的 `errorsData.ts`：`seriesKey()` 同一函数既产图表数据键又产图例显示名（`codes` 直接渲染进 `ErrorsTab.tsx` 图例与 `StackedUsageChart` 系列名），`"No status"`/`"Other"` 两条英文随数据键进界面；另有 `entityRows` 的 `topStatus` 拼好串 `"No status · 1"` 直进表格单元格。拆开：数据键改稳定标识 `no_status`/`other`（数字码原样），显示名由 `ErrorsTab` 按 `usage.errors` 的现成孤儿键映射（`status.noStatus` 无状态码、`other` 其他——第 4 盲区里躺了很久没人读的正是这两条）；`StackedUsageChart` 用其既有 `labels` 参，`LineChart` 补同形 `categoryLabels`（其 config 原来 `label = category` 回显键名）。`entityRows` 不再拼串，返回 `topStatusCode`/`topStatusRequests`，渲染点组装
+
+同簇清掉三组死导出：`statusCodeLabel`/`STATUS_LABELS`/`ERROR_ENTITY_LABEL`/`ERROR_RATE_VIEW_OPTIONS` 与 `StatusCodeRow.label`——渲染面早被 `ErrorsTab` 本地已译的 `statusLabel`/`entityLabels`/`rateViewOptions` 接管，这些导出的英文只剩测试自己消费，连 `errorsData.test` 的对应 describe 一并删。`ErrorsTab` 本体三处硬编码接现有键：`stat.failedOfRequests`（ICU，zh 语序与 en 相反）、`empty.noFailedRequests` ×2、`totalLabel`；`topStatusText`/`seriesLabel` 用 early-return 拆掉两处嵌套三元
+
+测试：`errorsData.test` 键与形状更新（codes 断言 `"other"`、删 label 断言、`topStatus→topStatusCode/topStatusRequests`）、`ErrorsTab.test` 两处断言翻中文（`1,000 个请求中有 50 个失败`、empty 正则）。usage 目录 33 文件 531 例全绿（净减 6 例即删掉的 `statusCodeLabel` 用例）、`tsc` 0 错、死键 0/0、静态英文 276/276 未再动、zh 246/246、`errorsData.ts` 与 `ErrorsTab.tsx` `scan-english` 零命中、eslint 0 error。新键 0 条，两侧叶子 13788 不变；清单有证据 80 → 79（`errorsData.ts` 命中清零退桶）
+
+A 桶与 `errorsData` 纠缠至此全部清零

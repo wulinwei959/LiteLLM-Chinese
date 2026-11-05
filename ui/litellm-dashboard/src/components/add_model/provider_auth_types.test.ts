@@ -9,13 +9,24 @@ import {
   type ProviderAuthType,
 } from "./provider_auth_types";
 import { Providers } from "../provider_info_helpers";
+import type { ModelsAddModelTranslator } from "@/lib/i18n/translators";
+import { enMessagesFor } from "@/../tests/i18nStub";
+
+const t = enMessagesFor("models.addModel") as unknown as ModelsAddModelTranslator;
+
+const expected = (provider: keyof typeof Providers) =>
+  PROVIDER_AUTH_TYPES[provider]!.map((authType) => ({
+    ...authType,
+    label: t(authType.labelKey),
+    description: t(authType.descriptionKey),
+  }));
 
 describe("provider auth types", () => {
   it("resolves provider enum keys and display names", () => {
-    expect(authTypesFor("MICROSOFT_365_COPILOT")).toEqual(PROVIDER_AUTH_TYPES.MICROSOFT_365_COPILOT);
-    expect(authTypesFor(Providers.MICROSOFT_365_COPILOT)).toEqual(PROVIDER_AUTH_TYPES.MICROSOFT_365_COPILOT);
-    expect(authTypesFor(null)).toEqual([]);
-    expect(authTypesFor("unknown")).toEqual([]);
+    expect(authTypesFor(t, "MICROSOFT_365_COPILOT")).toEqual(expected("MICROSOFT_365_COPILOT"));
+    expect(authTypesFor(t, Providers.MICROSOFT_365_COPILOT)).toEqual(expected("MICROSOFT_365_COPILOT"));
+    expect(authTypesFor(t, null)).toEqual([]);
+    expect(authTypesFor(t, "unknown")).toEqual([]);
   });
 
   it("returns the unique field keys for every auth type", () => {
@@ -32,7 +43,7 @@ describe("provider auth types", () => {
   });
 
   it("infers auth types from required fields and falls back when only optional defaults are present", () => {
-    const authTypes = authTypesFor("MICROSOFT_365_COPILOT");
+    const authTypes = authTypesFor(t, "MICROSOFT_365_COPILOT");
     const delegatedValues: Record<string, unknown> = {
       token_exchange_profile: "jwt_bearer_obo",
       token_exchange_scope: "https://graph.microsoft.com/.default",
@@ -56,22 +67,22 @@ describe("provider auth types", () => {
     const authTypes: readonly ProviderAuthType[] = [
       {
         id: "first",
-        label: "First",
-        description: "First auth type",
+        labelKey: "authTypes.copilotSharedLabel",
+        descriptionKey: "authTypes.copilotSharedDescription",
         fieldKeys: ["shared", "first_key"],
         requiredFieldKeys: ["first_key"],
       },
       {
         id: "second",
-        label: "Second",
-        description: "Second auth type",
+        labelKey: "authTypes.copilotSharedLabel",
+        descriptionKey: "authTypes.copilotSharedDescription",
         fieldKeys: ["shared", "second_key"],
         requiredFieldKeys: ["second_key"],
       },
       {
         id: "third",
-        label: "Third",
-        description: "Third auth type",
+        labelKey: "authTypes.copilotSharedLabel",
+        descriptionKey: "authTypes.copilotSharedDescription",
         fieldKeys: ["third_key"],
         requiredFieldKeys: ["third_key"],
       },
@@ -81,7 +92,7 @@ describe("provider auth types", () => {
   });
 
   it("defaults GitHub Copilot to shared device login and recognises a stored per-user credential", () => {
-    const authTypes = authTypesFor("GITHUB_COPILOT");
+    const authTypes = authTypesFor(t, "GITHUB_COPILOT");
 
     expect(inferAuthTypeId(authTypes, { api_key: "" })).toBe("shared_device_login");
     expect(inferAuthTypeId(authTypes, { github_copilot_auth_type: "per_user_oauth" })).toBe("per_user_oauth");

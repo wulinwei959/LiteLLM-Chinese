@@ -678,3 +678,59 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 ## 静态英文基线（2026-10-26 第 534 簇）
 
 默认四口径扫 `src` 下非测试 `.ts/.tsx` 得到 286 条命中，逐条分类后 1 条真漏已接，284 条判定保留冻结进 `english-leaks-baseline.json`（162 个文件）。本文件原有的 216 个未接入文件判定账不变；静态残留的机读冻结清单、五档判定与刷新方法见 [ENGLISH-BASELINE.md](./ENGLISH-BASELINE.md)
+
+## 第 566 簇（2026-11-05）：client usage 错误通道与区间说明
+
+第 565 簇清单未覆盖到的六个文件内部硬编码英文，接入判据只看 `useTranslations(`/`getTranslations(`，挂了翻译器的文件内部裸串一律不进清单（第四道盲区）。本簇六文件约 16 处，集中改为 translator-first，复用/新增 17 条 `clientUsage` 词条，叶子 13594 → 13611。
+
+| 位置                                                                                     | 接线前                                        | 落定的键                                                                                                              |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src/app/(dashboard)/usage/_components/hooks/clientUsageScope.ts:79/84/88/95`            | 四处 `return { error: "..." }`                | `chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`signInRequired`（复用）                           |
+| `src/app/(dashboard)/usage/_components/hooks/useClientUsage.ts:27/28/29/68`              | `scopeError` 四分支 + `emptyClientUsage` 兜底 | `selectUserOrTeam`/`selectValidDateRange`/`signInRequired`/`couldNotLoad`（复用）                                     |
+| `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts:187/189/191/195/198/200` | `INCOMPLETE_CLIENT_USAGE` 常量 + 五处字面量   | `selectUserOrTeam`/`proxyIncompleteData`/`incompleteClientUsage`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`      |
+| `src/app/(dashboard)/usage/_components/hooks/useClientAgentModels.ts:21/27/29/66`        | `loadModels` 两处 + hook 范围校验             | `chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`selectValidDateRange`（复用） |
+| `src/app/(dashboard)/usage/_components/hooks/clientAgentModelsData.ts:65/70/87`          | 三处字面量                                    | `proxyIncompleteModelData`/`proxyDuplicateModelData`/`modelUsageMismatch`                                             |
+| `src/app/(dashboard)/usage/_components/components/ClientUsagePanel.tsx:57/272/299`       | `countLabel` 回落 "Unavailable"、两处区间提示 | `unavailable`/`scopedRequestHint`/`allUsersHint`/`chooseAnotherPerson`（复用）                                        |
+
+新增 `clientUsage` 词条 17 条（`chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`incompleteClientUsage`/`proxyIncompleteData`/`proxyIncompleteModelData`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`/`chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`modelUsageMismatch`/`scopedRequestHint`/`allUsersHint`/`selectedUser`/`unavailable`/`loadingAria`），叶子 13594 → 13611。其余复用 `signInRequired`/`couldNotLoad`/`selectUserOrTeam`/`selectValidDateRange`/`chooseAnotherPerson`。
+
+同步更新 8 个测试文件，注入英语 translator / `LocaleProvider` 包装 / 断言改中文，109 例全绿。i18n 三闸全绿（死键 0/0、静态英文 280/280、zh 未译 222/222）。
+
+第 565 簇已记的"第四道盲区"（`dead-keys.py` 的 `referenced_verbatim` 把命名空间级孤儿救活）本簇补记 14 个命名空间孤儿键与救活它们的同名兄弟：
+
+| 孤儿键（本簇新增/复用）              | 救活它的同名兄弟（不同命名空间）                                                         |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `usage.topModelView.colSuccessful`   | `AgentsTableColumns.tsx` `t("colSpend")`、`TopKeyView.tsx` `t("tableView")` 这类同名兄弟 |
+| `usage.topModelView.colFailed`       | 同上                                                                                     |
+| `usage.topModelView.colModel`        | 同上                                                                                     |
+| `usage.topModelView.colSpend`        | 同上                                                                                     |
+| `usage.topModelView.colTokens`       | 同上                                                                                     |
+| `usage.topModelView.tableView`       | 同上                                                                                     |
+| `usage.topModelView.chartView`       | 同上                                                                                     |
+| `usage.teamUserSpend.selectTeamHint` | `AddModelForm.tsx` `t("selectTeamHint")` 等                                              |
+| `usage.teamUserSpend.team`           | 同上                                                                                     |
+| `usage.teamUserSpend.user`           | 同上                                                                                     |
+| `usage.teamUserSpend.spend`          | 同上                                                                                     |
+| `usage.teamUserSpend.successful`     | 同上                                                                                     |
+| `usage.teamUserSpend.failed`         | 同上                                                                                     |
+| `usage.teamUserSpend.tokens`         | 同上                                                                                     |
+
+以及 `usage.endpointUsage.noData`、`usage.tabs.endpoints`、`usage.endpointUsage.endpointCount` 三条孤儿，无同名兄弟救活，纯靠本簇接线激活。
+
+清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇完全一致，本簇六文件均在清单内部，对清单零影响。
+
+## 第 567 簇：A 桶首片 `agentCatalog.ts`（2026-11-05）
+
+A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌的 `label`/`description` 直出 Top Agents 面板与图表，文件此前不挂翻译器、逐文件扫描也判它无 JSX 文本可报。接线形态：locale 无关常量保留 `match`/`kind`/`logo`/`id`，显示文本换成 `labelKey`/`descriptionKey` 字面量键，只有建 `AgentRow` 的 `agentFor(t, ...)` 起需要译员；`familyFor`/`usageClientFromUserAgent` 免译员，识别链路（`clientUsageData.ts`）零改动。踩到一条门禁事实：Desc 键若用 `` `${labelKey}Desc` `` 模板拼接，`dead-keys.py` 的 `referenced_verbatim` 找不到字面量、22 条全误报成死键，故 `descriptionKey` 按字面量落表。`TopAgents.tsx` 的 `` `View ${label} usage` `` aria-label 一并接 `catalogViewUsageAria`。新增 46 键，21 条品牌名 zh 值保留英文加 2 条 SDK 描述入 zh 基线（222 → 245）。清单：未接入 687 → 685、有证据 87 → 85、零命中 600 → 602。A 桶剩 `anthropic_federation.ts`(30)、`provider_auth_types.ts`(8)、`openai_federation.ts`(6)、`operations.ts`(6)、`usageChart.ts`(5)、`prompt_editor_view/utils.ts`(3)
+
+## 第 568 簇与接入判据的第五道盲区（2026-11-05）
+
+`anthropic_federation.ts`、`openai_federation.ts` 接完后清单只动了两格：有证据 85 → 83、零命中 602 → 604，未接入总数 685 不变。原因是接入判据按 `useTranslations(`/`getTranslations(` 认线，而 translator-first 数据模块收的是译员参数、文件内不出现这两个调用，接完仍留在未接入桶里（`federation_field.ts` 与 `credential_federation.ts` 同）。第 567 簇的 `agentCatalog.ts` 因 import 了 `useTranslations` 字样在 `TopAgents.tsx` 侧才被记成已接入？不是——它本身也仍未挂线，两簇合起来说明：未接入桶从 567 簇起混入了已接净的 translator-first 模块，读这份清单要交叉核对逐文件 `scan-english` 零命中，不能按桶判断一个 `.ts` 是否有活。后续把判据改成「含 `useTranslations(`/`getTranslations(`/或导出收 `*Translator` 入参的 builder」再说，本簇先在数里记明口径变化
+
+## A 桶清零（2026-11-05 第 569 簇）
+
+`provider_auth_types.ts`(8)、`operations.ts`(6)、`usageChart.ts`(5)、`prompt_editor_view/utils.ts`(3) 接完，A 桶 7 个文件 88 条全部有归属：567 簇 `agentCatalog`、568 簇两份 federation、569 簇这四片，另 `errorsData.ts` 的 `Other`/`No status` 仍按 seriesKey 数据键与图例名纠缠留在判定账。三条口径记录：LiteAdmin 工具 description 与 renderChart 反馈串是发给模型的语料，固定英文（`createTranslator({locale:"en"})` 取值，UI title 另走译员）；`{{template_variables}}` 字面量在 ICU 消息里冲突，收 `{templateVar}` 参数由调用点传字面量；`usageChartSource` 加译员后 5 位置参触 eslint `max-params`，改单对象参。有证据桶 83 → 80，剩余命中集中在 `errorsData.ts` 与 B/C 判定面
+
+## 第 570 簇：errorsData 纠缠拆开（2026-11-05）
+
+`seriesKey` 的双身份拆开：数据键改 `no_status`/`other` 稳定标识，显示名由渲染点按 `usage.errors.status.noStatus`/`usage.errors.other` 两条长期孤儿键映射；`entityRows` 返回状态码数据不再拼串。`statusCodeLabel`/`ERROR_ENTITY_LABEL`/`ERROR_RATE_VIEW_OPTIONS`/`StatusCodeRow.label` 四条死导出连测试删除（渲染面早被组件本地已译版接管，属判定账里"死常量遮蔽"型）。`LineChart` 新增可选 `categoryLabels`（此前 config label 直接回显数据键，`no_status` 会亮进图例）。零新键，有证据桶 80 → 79，A 桶与 `errorsData` 专项清零；残留显示英文自此只剩 B/C 判定面与上游新增

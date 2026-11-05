@@ -50,6 +50,11 @@ function useChatTranslator() {
 }
 export type ChatTranslator = ReturnType<typeof useChatTranslator>;
 
+function useClientUsageTranslator() {
+  return useTranslations("clientUsage");
+}
+export type ClientUsageTranslator = ReturnType<typeof useClientUsageTranslator>;
+
 function useMcpServersTranslator() {
   return useTranslations("mcpServers");
 }
@@ -154,6 +159,11 @@ function usePromptsTranslator() {
   return useTranslations("prompts");
 }
 export type PromptsTranslator = ReturnType<typeof usePromptsTranslator>;
+
+function useLiteAdminTranslator() {
+  return useTranslations("liteAdmin");
+}
+export type LiteAdminTranslator = ReturnType<typeof useLiteAdminTranslator>;
 
 function useUsageKeyActivityTranslator() {
   return useTranslations("usageKeyActivity");

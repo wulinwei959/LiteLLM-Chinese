@@ -1,5 +1,7 @@
+import { createTranslator } from "next-intl";
 import { zodFunction } from "openai/helpers/zod";
 import { z } from "zod";
+import enMessages from "@/messages/en.json";
 import { apiClient } from "@/components/networking";
 import { ApiError } from "@/lib/http/client";
 import type { components } from "@/lib/http/schema";
@@ -8,9 +10,54 @@ import {
   buildUsageChart,
   usageChartRequestSchema,
   usageChartSource,
+  type ChartScopeKey,
   type UsageChart,
   type UsageChartSource,
 } from "./usageChart";
+import type { LiteAdminTranslator } from "@/lib/i18n/translators";
+
+type ActionTitleKey =
+  | "actions.keysList"
+  | "actions.keyInfo"
+  | "actions.keyCreate"
+  | "actions.keyUpdate"
+  | "actions.keyDetach"
+  | "actions.keyDelete"
+  | "actions.keyBlock"
+  | "actions.keyUnblock"
+  | "actions.teamsList"
+  | "actions.teamInfo"
+  | "actions.teamCreate"
+  | "actions.teamUpdate"
+  | "actions.teamDelete"
+  | "actions.teamMemberAdd"
+  | "actions.teamMemberUpdate"
+  | "actions.teamMemberDelete"
+  | "actions.usersList"
+  | "actions.userInfo"
+  | "actions.userCreate"
+  | "actions.userUpdate"
+  | "actions.userDelete"
+  | "actions.budgetsList"
+  | "actions.budgetInfo"
+  | "actions.budgetCreate"
+  | "actions.budgetUpdate"
+  | "actions.budgetDelete"
+  | "actions.spendReport"
+  | "actions.teamSpendReport"
+  | "actions.keySpendReport"
+  | "actions.requestLogs"
+  | "actions.usagePersonal"
+  | "actions.usageGlobal"
+  | "actions.usageTeam"
+  | "actions.usageTag";
+
+// Tool descriptions are sent to the model, so they stay English regardless of the UI locale.
+let modelLocaleT: ((key: ActionTitleKey) => string) | undefined;
+const modelLocaleTitle = (key: ActionTitleKey): string => {
+  modelLocaleT ??= createTranslator({ locale: "en", messages: enMessages, namespace: "liteAdmin" });
+  return modelLocaleT(key);
+};
 
 export interface LiteAdminAction {
   id: string;
@@ -27,6 +74,7 @@ export type AriaAccess =
   | { mode: "usage"; scope: { type: "global" } | { type: "user"; userId: string } };
 
 export interface OperationContext {
+  t: LiteAdminTranslator;
   access: AriaAccess;
   accessToken: string;
   signal: AbortSignal;
@@ -136,7 +184,7 @@ export function createLiteAdminOperations(context: OperationContext) {
       const args = usageChartRequestSchema.parse(rawArgs);
       const source = usageSources.get(args.source_id);
       if (!source) return { success: false, message: "Fetch usage first and use the source_id from that result." };
-      const chart = buildUsageChart(source, args.view);
+      const chart = buildUsageChart(context.t, source, args.view);
       if (!chart)
         return { success: false, message: "No recorded data is available for this chart. Explain that in text." };
       context.onChart(chart);
@@ -148,13 +196,13 @@ export function createLiteAdminOperations(context: OperationContext) {
     (mode: "read" | "write" | "delete", kind: ResultKind, extraArguments?: Record<string, unknown>) =>
     <Schema extends z.ZodType<Record<string, unknown>>>(
       name: string,
-      title: string,
+      titleKey: ActionTitleKey,
       schema: Schema,
       execute: (args: NullsStripped<z.output<Schema>>) => Promise<unknown>,
     ) => {
       const definition = {
         name,
-        description: `${title}. Null means omitted or unchanged. ${mode === "read" ? "Read-only." : "Requires the administrator to review and confirm the change."}`,
+        description: `${modelLocaleTitle(titleKey)}. Null means omitted or unchanged. ${mode === "read" ? "Read-only." : "Requires the administrator to review and confirm the change."}`,
         parameters: schema,
         function: async (rawArgs: unknown) => {
           const args = stripNulls(rawArgs as z.output<Schema>);
@@ -166,7 +214,7 @@ export function createLiteAdminOperations(context: OperationContext) {
               : {
                   id: crypto.randomUUID(),
                   name,
-                  title,
+                  title: context.t(titleKey),
                   arguments: {
                     ...Object.fromEntries(Object.entries(args).filter(([, value]) => value !== undefined)),
                     ...extraArguments,
@@ -176,7 +224,7 @@ export function createLiteAdminOperations(context: OperationContext) {
           if (action) {
             const approved = await context.confirm(action);
             active();
-            if (!approved) throw new Error("Action cancelled. No change was sent.");
+            if (!approved) throw new Error(context.t("errors.actionCancelled"));
           }
           const outcome = await Promise.resolve()
             .then(() => {
@@ -192,7 +240,7 @@ export function createLiteAdminOperations(context: OperationContext) {
             if (action) {
               const result: ActionResult = {
                 status: "unknown",
-                message: "The change could not be verified. Check the resource before trying again.",
+                message: context.t("errors.changeUnverified"),
               };
               context.onResult(action, result);
               throw new Error(result.message);
@@ -201,16 +249,22 @@ export function createLiteAdminOperations(context: OperationContext) {
               operation: name,
               success: false,
               status: outcome.error instanceof ApiError ? outcome.error.status : undefined,
-              message: "The gateway could not complete this lookup.",
+              message: context.t("errors.lookupFailed"),
             };
           }
           const key = name === "key_create" || name === "user_create" ? generatedKey(outcome.value) : undefined;
           if (action) context.onResult(action, { status: "completed", ...(key ? { key } : {}) });
           const result = projectToolResult(kind, outcome.value, [context.accessToken, ...(key ? [key] : [])]);
-          let reportScope: "Gateway usage" | "All teams" | "All tags" = "Gateway usage";
-          if (name === "get_team_usage_data") reportScope = "All teams";
-          if (name === "get_tag_usage_data") reportScope = "All tags";
-          const source = kind === "usage" ? usageChartSource(result, args, context.access, reportScope) : undefined;
+          let reportScope: ChartScopeKey = "chart.gatewayUsage";
+          if (name === "get_team_usage_data") reportScope = "chart.allTeams";
+          if (name === "get_tag_usage_data") reportScope = "chart.allTags";
+          const chartInput = {
+            value: result,
+            query: args,
+            access: context.access,
+            defaultScopeKey: reportScope,
+          };
+          const source = kind === "usage" ? usageChartSource(context.t, chartInput) : undefined;
           const sourceId = source ? crypto.randomUUID() : undefined;
           if (source && sourceId) usageSources.set(sourceId, source);
           return {
@@ -228,46 +282,32 @@ export function createLiteAdminOperations(context: OperationContext) {
     const userId = context.access.scope.userId;
     return [
       renderChart,
-      operation("read", "usage")(
-        "get_usage_data",
-        "View your dated usage totals, daily trends, and top models, providers and keys with prompt, completion, cache-read and cache-creation token counts when available. Do not add cache counts to total_tokens",
-        dated({}),
-        (a) => {
-          if (!userId.trim()) throw new Error("A signed-in user is required to query usage.");
-          return apiClient.get<unknown>("/user/daily/activity/aggregated", {
-            ...auth,
-            query: { ...a, user_id: userId, api_key_limit: 20 },
-          });
-        },
-      ),
+      operation("read", "usage")("get_usage_data", "actions.usagePersonal", dated({}), (a) => {
+        if (!userId.trim()) throw new Error(context.t("errors.signedInRequired"));
+        return apiClient.get<unknown>("/user/daily/activity/aggregated", {
+          ...auth,
+          query: { ...a, user_id: userId, api_key_limit: 20 },
+        });
+      }),
     ];
   }
 
   const usageOperations = [
     renderChart,
-    operation("read", "usage")(
-      "get_usage_data",
-      "View dated global or user usage totals, daily trends, and top models, providers and keys with prompt, completion, cache-read and cache-creation token counts when available. Do not add cache counts to total_tokens",
-      dated({ user_id: optionalText }),
-      (a) => apiClient.get<unknown>("/user/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
+    operation("read", "usage")("get_usage_data", "actions.usageGlobal", dated({ user_id: optionalText }), (a) =>
+      apiClient.get<unknown>("/user/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
     ),
-    operation("read", "usage")(
-      "get_team_usage_data",
-      "View dated usage by team, including model and provider breakdowns with prompt, completion, cache-read and cache-creation token counts when available. Do not add cache counts to total_tokens. Omit team_ids for all teams",
-      dated({ team_ids: optionalText }),
-      (a) => apiClient.get<unknown>("/team/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
+    operation("read", "usage")("get_team_usage_data", "actions.usageTeam", dated({ team_ids: optionalText }), (a) =>
+      apiClient.get<unknown>("/team/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
     ),
-    operation("read", "usage")(
-      "get_tag_usage_data",
-      "View dated usage by tag, including model and provider breakdowns with prompt, completion, cache-read and cache-creation token counts when available. Do not add cache counts to total_tokens. Omit tags for all tags",
-      dated({ tags: optionalText }),
-      (a) => apiClient.get<unknown>("/tag/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
+    operation("read", "usage")("get_tag_usage_data", "actions.usageTag", dated({ tags: optionalText }), (a) =>
+      apiClient.get<unknown>("/tag/daily/activity/aggregated", { ...auth, query: { ...a, api_key_limit: 20 } }),
     ),
   ];
   if (context.access.mode === "usage") return usageOperations;
 
   return [
-    operation("read", "key")("keys_list", "List virtual keys", object(keysListFields), (a) =>
+    operation("read", "key")("keys_list", "actions.keysList", object(keysListFields), (a) =>
       apiClient.get<unknown>("/key/list", {
         ...auth,
         query: {
@@ -280,56 +320,53 @@ export function createLiteAdminOperations(context: OperationContext) {
         },
       }),
     ),
-    operation("read", "key")("key_info", "View a virtual key", object({ key: hash }), (a) =>
+    operation("read", "key")("key_info", "actions.keyInfo", object({ key: hash }), (a) =>
       apiClient.get<unknown>("/key/info", { ...auth, query: a }),
     ),
-    operation("write", "key")("key_create", "Create a virtual key", object(keyFields), (a) =>
+    operation("write", "key")("key_create", "actions.keyCreate", object(keyFields), (a) =>
       apiClient.post<unknown>("/key/generate", { ...auth, body: a satisfies Partial<Schemas["GenerateKeyRequest"]> }),
     ),
-    operation("write", "key")("key_update", "Update a virtual key", object({ key: hash, ...keyFields }), (a) =>
+    operation("write", "key")("key_update", "actions.keyUpdate", object({ key: hash, ...keyFields }), (a) =>
       apiClient.post<unknown>("/key/update", { ...auth, body: a satisfies Partial<Schemas["UpdateKeyRequest"]> }),
     ),
     operation("write", "key", { team_id: null })(
       "key_detach_from_team",
-      "Remove a virtual key from its team without deleting the key",
+      "actions.keyDetach",
       object({ key: hash }),
       (a) =>
         apiClient.post<unknown>("/key/update", { ...auth, body: a satisfies Partial<Schemas["UpdateKeyRequest"]> }),
     ),
-    operation("delete", "key")(
-      "key_delete",
-      "Delete virtual keys",
-      object({ keys: z.array(hash).min(1).max(20) }),
-      (a) => apiClient.post<unknown>("/key/delete", { ...auth, body: a satisfies Schemas["KeyRequest"] }),
+    operation("delete", "key")("key_delete", "actions.keyDelete", object({ keys: z.array(hash).min(1).max(20) }), (a) =>
+      apiClient.post<unknown>("/key/delete", { ...auth, body: a satisfies Schemas["KeyRequest"] }),
     ),
-    operation("write", "key")("key_block", "Block a virtual key", object({ key: hash }), (a) =>
+    operation("write", "key")("key_block", "actions.keyBlock", object({ key: hash }), (a) =>
       apiClient.post<unknown>("/key/block", { ...auth, body: a satisfies Schemas["BlockKeyRequest"] }),
     ),
-    operation("write", "key")("key_unblock", "Unblock a virtual key", object({ key: hash }), (a) =>
+    operation("write", "key")("key_unblock", "actions.keyUnblock", object({ key: hash }), (a) =>
       apiClient.post<unknown>("/key/unblock", { ...auth, body: a satisfies Schemas["BlockKeyRequest"] }),
     ),
-    operation("read", "team")("teams_list", "List teams", object(teamsListFields), (a) =>
+    operation("read", "team")("teams_list", "actions.teamsList", object(teamsListFields), (a) =>
       apiClient.get<unknown>("/v2/team/list", { ...auth, query: a }),
     ),
-    operation("read", "team")("team_info", "View a team and its members", object({ team_id: text }), (a) =>
+    operation("read", "team")("team_info", "actions.teamInfo", object({ team_id: text }), (a) =>
       apiClient.get<unknown>("/team/info", { ...auth, query: { ...a, key_limit: 20 } }),
     ),
-    operation("write", "team")("team_create", "Create a team", object(teamFields), (a) =>
+    operation("write", "team")("team_create", "actions.teamCreate", object(teamFields), (a) =>
       apiClient.post<unknown>("/team/new", { ...auth, body: a satisfies Partial<Schemas["NewTeamRequest"]> }),
     ),
-    operation("write", "team")("team_update", "Update a team", object({ team_id: text, ...teamFields }), (a) =>
+    operation("write", "team")("team_update", "actions.teamUpdate", object({ team_id: text, ...teamFields }), (a) =>
       apiClient.post<unknown>("/team/update", { ...auth, body: a satisfies Schemas["UpdateTeamRequest"] }),
     ),
     operation("delete", "team")(
       "team_delete",
-      "Delete teams",
+      "actions.teamDelete",
       object({ team_ids: z.array(text).min(1).max(20) }),
       (a) => apiClient.post<unknown>("/team/delete", { ...auth, body: a satisfies Schemas["DeleteTeamRequest"] }),
     ),
-    operation("write", "team")("team_member_add", "Add a team member", object(teamMemberAddFields), (a) =>
+    operation("write", "team")("team_member_add", "actions.teamMemberAdd", object(teamMemberAddFields), (a) =>
       apiClient.post<unknown>("/team/member_add", { ...auth, body: a satisfies Schemas["TeamMemberAddRequest"] }),
     ),
-    operation("write", "team")("team_member_update", "Update a team member", object(teamMemberUpdateFields), (a) =>
+    operation("write", "team")("team_member_update", "actions.teamMemberUpdate", object(teamMemberUpdateFields), (a) =>
       apiClient.post<unknown>("/team/member_update", {
         ...auth,
         body: a satisfies Schemas["TeamMemberUpdateRequest"],
@@ -337,7 +374,7 @@ export function createLiteAdminOperations(context: OperationContext) {
     ),
     operation("delete", "team")(
       "team_member_delete",
-      "Remove a team member",
+      "actions.teamMemberDelete",
       object({ team_id: text, user_id: text }),
       (a) =>
         apiClient.post<unknown>("/team/member_delete", {
@@ -347,31 +384,31 @@ export function createLiteAdminOperations(context: OperationContext) {
     ),
     operation("read", "user")(
       "users_list",
-      "List users",
+      "actions.usersList",
       object({ page, page_size: pageSize, search: optionalText }),
       (a) => apiClient.get<unknown>("/user/list", { ...auth, query: a }),
     ),
-    operation("read", "user")("user_info", "View a user", object({ user_id: text }), (a) =>
+    operation("read", "user")("user_info", "actions.userInfo", object({ user_id: text }), (a) =>
       apiClient.get<unknown>("/v2/user/info", { ...auth, query: a }),
     ),
     operation("write", "user", { auto_create_key: false })(
       "user_create",
-      "Create a user without a key",
+      "actions.userCreate",
       object({ user_id: optionalText, ...userFields }),
       (a) => apiClient.post<unknown>("/user/new", { ...auth, body: a satisfies Partial<Schemas["NewUserRequest"]> }),
     ),
-    operation("write", "user")("user_update", "Update a user", object({ user_id: text, ...userFields }), (a) =>
+    operation("write", "user")("user_update", "actions.userUpdate", object({ user_id: text, ...userFields }), (a) =>
       apiClient.post<unknown>("/user/update", { ...auth, body: a satisfies Partial<Schemas["UpdateUserRequest"]> }),
     ),
     operation("delete", "user")(
       "user_delete",
-      "Delete users",
+      "actions.userDelete",
       object({ user_ids: z.array(text).min(1).max(20) }),
       (a) => apiClient.post<unknown>("/user/delete", { ...auth, body: a satisfies Schemas["DeleteUserRequest"] }),
     ),
     operation("read", "budget")(
       "budgets_list",
-      "List budgets",
+      "actions.budgetsList",
       object({ page, page_size: pageSize, search: optionalText }),
       (a) =>
         apiClient.get<unknown>("/management/v1/budgets", {
@@ -379,49 +416,39 @@ export function createLiteAdminOperations(context: OperationContext) {
           query: { page: a.page, page_size: a.page_size, q: a.search },
         }),
     ),
-    operation("read", "budget")("budget_info", "View budgets", object({ budgets: z.array(text).min(1).max(20) }), (a) =>
-      apiClient.post<unknown>("/budget/info", { ...auth, body: a satisfies Schemas["BudgetRequest"] }),
+    operation("read", "budget")(
+      "budget_info",
+      "actions.budgetInfo",
+      object({ budgets: z.array(text).min(1).max(20) }),
+      (a) => apiClient.post<unknown>("/budget/info", { ...auth, body: a satisfies Schemas["BudgetRequest"] }),
     ),
     operation("write", "budget")(
       "budget_create",
-      "Create a budget",
+      "actions.budgetCreate",
       object({ budget_id: optionalText, ...limits }),
       (a) => apiClient.post<unknown>("/budget/new", { ...auth, body: a satisfies Schemas["BudgetNewRequest"] }),
     ),
-    operation("write", "budget")("budget_update", "Update a budget", object({ budget_id: text, ...limits }), (a) =>
+    operation("write", "budget")("budget_update", "actions.budgetUpdate", object({ budget_id: text, ...limits }), (a) =>
       apiClient.post<unknown>("/budget/update", { ...auth, body: a satisfies Schemas["BudgetNewRequest"] }),
     ),
-    operation("delete", "budget")("budget_delete", "Delete a budget", object({ id: text }), (a) =>
+    operation("delete", "budget")("budget_delete", "actions.budgetDelete", object({ id: text }), (a) =>
       apiClient.post<unknown>("/budget/delete", { ...auth, body: a satisfies Schemas["BudgetDeleteRequest"] }),
     ),
-    operation("read", "spend")(
-      "spend_report",
-      "View spend by date and group (requires an enterprise license)",
-      dated(spendReportFields),
-      (a) => apiClient.get<unknown>("/global/spend/report", { ...auth, query: a }),
+    operation("read", "spend")("spend_report", "actions.spendReport", dated(spendReportFields), (a) =>
+      apiClient.get<unknown>("/global/spend/report", { ...auth, query: a }),
     ),
-    operation("read", "spend")(
-      "team_spend_report",
-      "View a team's spend by model and key (requires an enterprise license)",
-      dated({ team_id: text }),
-      (a) => apiClient.get<unknown>("/team/spend/report", { ...auth, query: a }),
+    operation("read", "spend")("team_spend_report", "actions.teamSpendReport", dated({ team_id: text }), (a) =>
+      apiClient.get<unknown>("/team/spend/report", { ...auth, query: a }),
     ),
-    operation("read", "spend")(
-      "key_spend_report",
-      "View a key's spend by model (requires an enterprise license)",
-      dated({ api_key: hash }),
-      (a) => apiClient.get<unknown>("/key/spend/report", { ...auth, query: a }),
+    operation("read", "spend")("key_spend_report", "actions.keySpendReport", dated({ api_key: hash }), (a) =>
+      apiClient.get<unknown>("/key/spend/report", { ...auth, query: a }),
     ),
     ...usageOperations,
-    operation("read", "log")(
-      "request_logs",
-      "List request cost, timing and status, excluding prompts and responses",
-      dated(requestLogsFields),
-      (a) =>
-        apiClient.get<unknown>("/spend/logs/ui", {
-          ...auth,
-          query: { ...a, start_date: `${a.start_date} 00:00:00`, end_date: `${a.end_date} 23:59:59` },
-        }),
+    operation("read", "log")("request_logs", "actions.requestLogs", dated(requestLogsFields), (a) =>
+      apiClient.get<unknown>("/spend/logs/ui", {
+        ...auth,
+        query: { ...a, start_date: `${a.start_date} 00:00:00`, end_date: `${a.end_date} 23:59:59` },
+      }),
     ),
   ];
 }

@@ -101,7 +101,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
   const t = useTranslations("models.addModel");
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
-  const authTypes = authTypesFor(selectedProvider);
+  const authTypes = authTypesFor(t, selectedProvider);
   const availableAuthTypes = React.useMemo(
     () =>
       authTypes.filter(

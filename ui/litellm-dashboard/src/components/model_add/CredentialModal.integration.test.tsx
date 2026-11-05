@@ -159,10 +159,10 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const onSubmit = renderModal({ mode: "edit", existingCredential: microsoftCopilotCredential });
 
     expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "OAuth token exchange (on-behalf-of)",
+      "OAuth 令牌换取（on-behalf-of）",
     );
     await screen.findByLabelText("Token Endpoint URL");
-    await chooseOption(user, /^认证类型：/, "Static delegated access token");
+    await chooseOption(user, /^认证类型：/, "静态委托访问令牌");
     fill("Delegated Access Token", "delegated-graph-token");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
@@ -211,9 +211,9 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
 
     expect(screen.queryByLabelText("API Key")).not.toBeInTheDocument();
     fill("凭据名称：", "anthropic-federated");
-    fill(/Federation Rule ID/, "fdrl_new");
-    fill(/Organization ID/, "org-new");
-    fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
+    fill(/联合身份规则 ID/, "fdrl_new");
+    fill(/组织 ID/, "org-new");
+    fill(/身份令牌文件/, "/var/run/secrets/anthropic/token");
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
     const expectedPayload = {
@@ -233,15 +233,15 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
 
-    await chooseOption(user, /Identity Source/, "Keycloak client credentials");
+    await chooseOption(user, /身份证据源/, "Keycloak 客户端凭据");
 
-    expect(screen.queryByLabelText(/Identity Token File/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/身份令牌文件/)).not.toBeInTheDocument();
     fill("凭据名称：", "anthropic-keycloak");
-    fill(/Federation Rule ID/, "fdrl_new");
-    fill(/Organization ID/, "org-new");
-    fill(/Keycloak Token URL/, "https://keycloak.example.com/realms/litellm/protocol/openid-connect/token");
-    fill(/Keycloak Client ID/, "litellm-proxy");
-    fill(/Client Secret Reference/, "os.environ/KEYCLOAK_CLIENT_SECRET");
+    fill(/联合身份规则 ID/, "fdrl_new");
+    fill(/组织 ID/, "org-new");
+    fill(/Keycloak 令牌 URL/, "https://keycloak.example.com/realms/litellm/protocol/openid-connect/token");
+    fill(/Keycloak 客户端 ID/, "litellm-proxy");
+    fill(/客户端密钥引用/, "os.environ/KEYCLOAK_CLIENT_SECRET");
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -260,11 +260,11 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
     fill("凭据名称：", "anthropic-federated");
-    fill(/Federation Rule ID/, "fdrl_new");
+    fill(/联合身份规则 ID/, "fdrl_new");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
-    expect(await screen.findAllByText("Required")).not.toHaveLength(0);
+    expect(await screen.findAllByText("必填")).not.toHaveLength(0);
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -272,12 +272,10 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: federatedCredential });
 
-    expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
-      "工作负载身份联合",
-    );
-    expect(screen.getByRole("combobox", { name: /Identity Source/ })).toHaveTextContent("Keycloak client credentials");
-    expect(screen.getByLabelText(/Federation Rule ID/)).toHaveValue("fdrl_stored");
-    expect(screen.getByLabelText(/Client Secret Reference/)).toHaveValue("os.e****");
+    expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
+    expect(screen.getByRole("combobox", { name: /身份证据源/ })).toHaveTextContent("Keycloak 客户端凭据");
+    expect(screen.getByLabelText(/联合身份规则 ID/)).toHaveValue("fdrl_stored");
+    expect(screen.getByLabelText(/客户端密钥引用/)).toHaveValue("os.e****");
     expect(screen.queryByLabelText("API Key")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
@@ -292,7 +290,7 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: federatedCredential });
     await screen.findByLabelText("Upstream API Base");
-    fill(/Organization ID/, "org-edited");
+    fill(/组织 ID/, "org-edited");
 
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
@@ -333,9 +331,9 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     await chooseProvider(user, "Anthropic");
     expect(await screen.findByLabelText("Upstream API Base")).toHaveValue("");
     await chooseOption(user, /^认证方式：/, "工作负载身份联合");
-    fill(/Federation Rule ID/, "fdrl_new");
-    fill(/Organization ID/, "org-new");
-    fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
+    fill(/联合身份规则 ID/, "fdrl_new");
+    fill(/组织 ID/, "org-new");
+    fill(/身份令牌文件/, "/var/run/secrets/anthropic/token");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     const [values, valuesToDelete] = onSubmit.mock.calls[0];
@@ -390,7 +388,7 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
   it("deletes the stored federation values when the admin moves a federated credential to another provider", async () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: federatedCredential });
-    await screen.findByLabelText(/Federation Rule ID/);
+    await screen.findByLabelText(/联合身份规则 ID/);
 
     await chooseProvider(user, "OpenAI");
     await screen.findByLabelText("OpenAI API Key");
@@ -409,7 +407,7 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     expect(await screen.findByLabelText("API Key")).toHaveValue("sk-a****");
 
     await chooseOption(user, /^认证方式：/, "工作负载身份联合");
-    expect(screen.getByLabelText(/Federation Rule ID/)).toHaveValue("fdrl_stored");
+    expect(screen.getByLabelText(/联合身份规则 ID/)).toHaveValue("fdrl_stored");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -423,33 +421,33 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
     fill("凭据名称：", "anthropic-federated");
-    fill(/Federation Rule ID/, "fdrl_new");
-    fill(/Organization ID/, "org-new");
-    fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
+    fill(/联合身份规则 ID/, "fdrl_new");
+    fill(/组织 ID/, "org-new");
+    fill(/身份令牌文件/, "/var/run/secrets/anthropic/token");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText("凭据名称：")).toHaveValue("anthropic-federated");
-    expect(screen.getByLabelText(/Federation Rule ID/)).toHaveValue("fdrl_new");
-    expect(screen.getByLabelText(/Identity Token File/)).toHaveValue("/var/run/secrets/anthropic/token");
+    expect(screen.getByLabelText(/联合身份规则 ID/)).toHaveValue("fdrl_new");
+    expect(screen.getByLabelText(/身份令牌文件/)).toHaveValue("/var/run/secrets/anthropic/token");
   });
 
   it("refuses a required federation field that holds only whitespace", async () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
-    await chooseOption(user, /Identity Source/, "Token signed by LiteLLM (internal issuer)");
+    await chooseOption(user, /身份证据源/, "由 LiteLLM 签发的令牌（内部签发方）");
     fill("凭据名称：", "anthropic-issuer");
-    fill(/Federation Rule ID/, "fdrl_new");
-    fill(/Organization ID/, "org-new");
-    fill(/Issuer URL/, "https://litellm.example.com");
+    fill(/联合身份规则 ID/, "fdrl_new");
+    fill(/组织 ID/, "org-new");
+    fill(/签发方 URL/, "https://litellm.example.com");
     fill(/^Subject/, " ");
-    fill(/Signing Key Reference/, "os.environ/ANTHROPIC_ISSUER_SIGNING_KEY");
+    fill(/签名密钥引用/, "os.environ/ANTHROPIC_ISSUER_SIGNING_KEY");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
-    expect(await screen.findByText("Required")).toBeInTheDocument();
+    expect(await screen.findByText("必填")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -457,10 +455,10 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: unknownSourceCredential });
 
-    const sourceSelect = await screen.findByRole("combobox", { name: /Identity Source/ });
+    const sourceSelect = await screen.findByRole("combobox", { name: /身份证据源/ });
     expect(sourceSelect).toHaveTextContent("spiffe");
-    expect(sourceSelect).not.toHaveTextContent("Proxy environment variables");
-    fill(/Organization ID/, "org-edited");
+    expect(sourceSelect).not.toHaveTextContent("代理环境变量");
+    fill(/组织 ID/, "org-edited");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -476,9 +474,9 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
   it("replaces an identity source it does not recognize when the admin picks one it offers", async () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: unknownSourceCredential });
-    await screen.findByRole("combobox", { name: /Identity Source/ });
+    await screen.findByRole("combobox", { name: /身份证据源/ });
 
-    await chooseOption(user, /Identity Source/, "Proxy environment variables");
+    await chooseOption(user, /身份证据源/, "代理环境变量");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -491,15 +489,15 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
-    await chooseOption(user, /Identity Source/, "Proxy environment variables");
+    await chooseOption(user, /身份证据源/, "代理环境变量");
     fill("凭据名称：", "anthropic-env");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
-    expect(await screen.findByText(/Enter at least one of these ids/)).toBeInTheDocument();
+    expect(await screen.findByText(/请至少填写其中一个 ID/)).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
 
-    fill(/Organization ID/, "org-new");
+    fill(/组织 ID/, "org-new");
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -517,7 +515,7 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
     fill("凭据名称：", "anthropic-env-ids");
-    fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
+    fill(/身份令牌文件/, "/var/run/secrets/anthropic/token");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
@@ -543,9 +541,9 @@ describe("CredentialModal with GitHub Copilot auth types", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ initialProvider: "GITHUB_COPILOT" });
 
-    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Shared device login");
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("共享设备登录");
     expect(await screen.findByLabelText("API Key")).toBeInTheDocument();
-    await chooseOption(user, /^认证类型：/, "Per-user GitHub OAuth");
+    await chooseOption(user, /^认证类型：/, "按用户 GitHub OAuth");
     expect(screen.queryByLabelText("API Key")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("API Base")).not.toBeInTheDocument();
     fill("凭据名称：", "copilot-per-user");
@@ -579,9 +577,9 @@ describe("CredentialModal with GitHub Copilot auth types", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: perUserCopilotCredential });
 
-    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Per-user GitHub OAuth");
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("按用户 GitHub OAuth");
     expect(screen.getByLabelText("GitHub host")).toHaveValue("octo.ghe.com");
-    await chooseOption(user, /^认证类型：/, "Shared device login");
+    await chooseOption(user, /^认证类型：/, "共享设备登录");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     const [values, valuesToDelete] = onSubmit.mock.calls[0];
@@ -684,7 +682,7 @@ describe("CredentialModal public JWKS for a LiteLLM-signed Anthropic credential"
     await screen.findByLabelText("Upstream API Base");
     expect(screen.queryByText(/copy the public JWKS/)).not.toBeInTheDocument();
 
-    await chooseOption(user, /Identity Source/, "Token signed by LiteLLM (internal issuer)");
+    await chooseOption(user, /身份证据源/, "由 LiteLLM 签发的令牌（内部签发方）");
 
     expect(await screen.findByText(/保存之后，在 LLM 凭据里重新打开这个凭据/)).toBeInTheDocument();
     expect(screen.queryByLabelText("公钥 JWKS")).not.toBeInTheDocument();
@@ -715,9 +713,9 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
     expect(screen.queryByLabelText("OpenAI API Key")).not.toBeInTheDocument();
     expect(screen.getByText(/只有当代理环境里没有设置 OPENAI_API_KEY/)).toBeInTheDocument();
     fill("凭据名称：", "openai-federated");
-    fill(/Identity Provider ID/, "idp_new");
-    fill(/Service Account ID/, " svc_new ");
-    fill(/Identity Token File/, "/var/run/secrets/kubernetes.io/serviceaccount/token");
+    fill(/身份提供方 ID/, "idp_new");
+    fill(/服务账号 ID/, " svc_new ");
+    fill(/身份令牌文件/, "/var/run/secrets/kubernetes.io/serviceaccount/token");
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
     const expectedPayload = {
@@ -740,7 +738,7 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
       mode: "edit",
       existingCredential: { ...openAIFederatedCredential, credential_values: valuesWithoutServiceAccount },
     });
-    await screen.findByLabelText(/Service Account ID/);
+    await screen.findByLabelText(/服务账号 ID/);
 
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
@@ -755,17 +753,17 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
     const onSubmit = renderModal({ initialProvider: "OpenAI", initialAuthMethod: "federation" });
     await screen.findByLabelText("API Base");
     fill("凭据名称：", "openai-gateway");
-    fill(/Service Account ID/, "svc_new");
+    fill(/服务账号 ID/, "svc_new");
     fill("API Base", "https://gateway.example.com/v1");
 
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
-    expect(await screen.findByText(/only reaches the OpenAI API/)).toBeInTheDocument();
+    expect(await screen.findByText(/工作负载身份联合仅支持 OpenAI API/)).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
 
     await chooseOption(user, /^认证方式：/, "API 密钥");
     await screen.findByLabelText("OpenAI API Key");
-    expect(screen.queryByText(/only reaches the OpenAI API/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/工作负载身份联合仅支持 OpenAI API/)).not.toBeInTheDocument();
     fill("OpenAI API Key", "sk-proj-new");
     await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
@@ -781,11 +779,9 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: openAIFederatedCredential });
 
-    expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
-      "工作负载身份联合",
-    );
-    expect(screen.getByLabelText(/Service Account ID/)).toHaveValue("svc_stored");
-    expect(screen.getByLabelText(/Identity Token File/)).toHaveValue("/var****");
+    expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
+    expect(screen.getByLabelText(/服务账号 ID/)).toHaveValue("svc_stored");
+    expect(screen.getByLabelText(/身份令牌文件/)).toHaveValue("/var****");
     expect(screen.queryByLabelText("OpenAI API Key")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
@@ -799,7 +795,7 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
   it("deletes the stored OpenAI federation values when the admin switches the credential to an API key", async () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: openAIFederatedCredential });
-    await screen.findByLabelText(/Service Account ID/);
+    await screen.findByLabelText(/服务账号 ID/);
 
     await chooseOption(user, /^认证方式：/, "API 密钥");
     await screen.findByLabelText("OpenAI API Key");
@@ -822,15 +818,13 @@ describe("CredentialModal with OpenAI workload identity federation", () => {
   it("restores the stored federation settings when the admin returns to the credential's own provider", async () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: federatedCredential });
-    await screen.findByLabelText(/Federation Rule ID/);
+    await screen.findByLabelText(/联合身份规则 ID/);
 
     await chooseProvider(user, "OpenAI");
     expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("API 密钥");
     await chooseProvider(user, "Anthropic");
 
-    expect(await screen.findByRole("combobox", { name: /Identity Source/ })).toHaveTextContent(
-      "Keycloak client credentials",
-    );
+    expect(await screen.findByRole("combobox", { name: /身份证据源/ })).toHaveTextContent("Keycloak 客户端凭据");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
     expect(onSubmit).toHaveBeenCalledWith(
       { credential_name: "anthropic-federated", custom_llm_provider: "Anthropic", credential_values: {} },

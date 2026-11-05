@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { DailyData, MetricWithMetadata, SpendMetrics } from "@/components/UsagePage/types";
 import type { AgentRow } from "../components/overview/agentCatalog";
 import { clientAgentDetail } from "../components/overview/clientAgentDetail";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
 
 const count = z.number().finite().nonnegative();
 const exportRowFields = {
@@ -59,14 +60,18 @@ const breakdownFor = (
     ]),
   );
 
-export const clientAgentModelsFromExport = (payload: unknown, agent: AgentRow): ClientAgentModelsResult => {
+export const clientAgentModelsFromExport = (
+  t: ClientUsageTranslator,
+  payload: unknown,
+  agent: AgentRow,
+): ClientAgentModelsResult => {
   const parsed = z.array(exportRow).safeParse(payload);
-  if (!parsed.success) return { results: [], error: "The proxy returned incomplete model usage data" };
+  if (!parsed.success) return { results: [], error: t("proxyIncompleteModelData") };
   const tags = new Set(agent.tags);
   const rows = parsed.data.filter((row) => tags.has(row.entity_id));
   const identities = rows.map((row) => JSON.stringify([row.date, row.entity_id, row.model]));
   if (new Set(identities).size !== identities.length) {
-    return { results: [], error: "The proxy returned duplicate model usage data. Try again." };
+    return { results: [], error: t("proxyDuplicateModelData") };
   }
   const results = grouped(rows, (row) => row.date).map(([date, members]) => ({
     date,
@@ -83,7 +88,7 @@ export const clientAgentModelsFromExport = (payload: unknown, agent: AgentRow): 
   if (!clientAgentDetail(agent, results).dailyMatchesSummary) {
     return {
       results: [],
-      error: "Model usage does not match these client totals yet. Refresh or choose a shorter range.",
+      error: t("modelUsageMismatch"),
     };
   }
   return { results, error: null };

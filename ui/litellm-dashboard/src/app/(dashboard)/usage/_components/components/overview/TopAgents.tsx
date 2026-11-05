@@ -82,6 +82,7 @@ function AgentItem({
   onOpen?: (agent: AgentRow) => void;
 }) {
   const t = useTranslations("usage.overview");
+  const tAgents = useTranslations("agents");
 
   const openRow = onOpen && agent.tags.length > 0 ? () => onOpen(agent) : undefined;
   const content = (
@@ -125,7 +126,7 @@ function AgentItem({
       {openRow ? (
         <button
           type="button"
-          aria-label={`View ${agent.label} usage`}
+          aria-label={tAgents("catalogViewUsageAria", { label: agent.label })}
           onClick={openRow}
           className={cn(
             rowClassName,
@@ -171,9 +172,10 @@ export default function TopAgents({
   onOpenAgent?: (agent: AgentRow) => void;
 }) {
   const t = useTranslations("usage.overview");
+  const tAgents = useTranslations("agents");
 
   const [metric, setMetric] = useState<UsageMetric>("tokens");
-  const allAgents = useMemo(() => topAgents(rows ?? []), [rows]);
+  const allAgents = useMemo(() => topAgents(tAgents, rows ?? []), [rows]);
   const agents = useMemo(
     () =>
       [
@@ -182,7 +184,10 @@ export default function TopAgents({
       ].slice(0, ROWS),
     [allAgents],
   );
-  const series = useMemo(() => seriesBy(agentDailyData(daily), "models", metric, CHART_SERIES), [daily, metric]);
+  const series = useMemo(
+    () => seriesBy(agentDailyData(tAgents, daily), "models", metric, CHART_SERIES),
+    [daily, metric],
+  );
   const totalsByDay = useMemo(() => bucketTotals(series), [series]);
   const colorOf = (label: string) => {
     const index = series.labels.indexOf(label);

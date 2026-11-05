@@ -6,7 +6,6 @@ import {
   rateByStatusRows,
   errorSummary,
   formatRate,
-  statusCodeLabel,
   statusCodeRows,
   type RequestErrorActivity,
 } from "./errorsData";
@@ -100,7 +99,7 @@ describe("errorSummary", () => {
 describe("errorSeries", () => {
   it("orders days and stacks the top status codes, with the unrecorded remainder as Other", () => {
     const series = errorSeries(activity());
-    expect(series.codes).toEqual(["429", "401", "503", "Other"]);
+    expect(series.codes).toEqual(["429", "401", "503", "other"]);
     expect(series.rows).toEqual([
       {
         date: "2026-10-07",
@@ -110,7 +109,7 @@ describe("errorSeries", () => {
         "429": 30,
         "401": 10,
         "503": 0,
-        Other: 0,
+        other: 0,
       },
       {
         date: "2026-10-08",
@@ -120,12 +119,12 @@ describe("errorSeries", () => {
         "429": 40,
         "401": 10,
         "503": 5,
-        Other: 5,
+        other: 5,
       },
     ]);
   });
 
-  it("has no Other column when every failure has a recorded status", () => {
+  it("has no other column when every failure has a recorded status", () => {
     const complete = activity({
       by_date: [
         {
@@ -155,7 +154,7 @@ describe("rateByStatusRows", () => {
         "429": expect.closeTo(5.56, 2),
         "401": expect.closeTo(1.85, 2),
         "503": 0,
-        Other: 0,
+        other: 0,
       },
       {
         date: "2026-10-08",
@@ -165,19 +164,19 @@ describe("rateByStatusRows", () => {
         "429": expect.closeTo(8.7, 2),
         "401": expect.closeTo(2.17, 2),
         "503": expect.closeTo(1.09, 2),
-        Other: expect.closeTo(1.09, 2),
+        other: expect.closeTo(1.09, 2),
       },
     ]);
   });
 });
 
 describe("statusCodeRows", () => {
-  it("ranks codes by count, labels them and adds the unrecorded remainder", () => {
+  it("ranks codes by count and adds the unrecorded remainder", () => {
     expect(statusCodeRows(activity())).toEqual([
-      { status_code: 429, label: "Rate Limited", failed_requests: 70, share: 70 },
-      { status_code: 401, label: "Unauthorized", failed_requests: 20, share: 20 },
-      { status_code: 0, label: "Not recorded", failed_requests: 5, share: 5 },
-      { status_code: 503, label: "Service Unavailable", failed_requests: 5, share: 5 },
+      { status_code: 429, failed_requests: 70, share: 70 },
+      { status_code: 401, failed_requests: 20, share: 20 },
+      { status_code: 0, failed_requests: 5, share: 5 },
+      { status_code: 503, failed_requests: 5, share: 5 },
     ]);
   });
 
@@ -187,16 +186,24 @@ describe("statusCodeRows", () => {
 });
 
 describe("entityRows", () => {
-  it("names rows by alias, computes the rate and describes the top status", () => {
+  it("names rows by alias, computes the rate and keeps the top status as data", () => {
     expect(entityRows(activity(), "key")).toEqual([
-      { id: "hash-1", name: "prod-key", requests: 500, failed: 60, rate: 12, topStatus: "429 · 55" },
-      { id: "hash-2", name: "hash-2", requests: 0, failed: 0, rate: null, topStatus: null },
+      {
+        id: "hash-1",
+        name: "prod-key",
+        requests: 500,
+        failed: 60,
+        rate: 12,
+        topStatusCode: 429,
+        topStatusRequests: 55,
+      },
+      { id: "hash-2", name: "hash-2", requests: 0, failed: 0, rate: null, topStatusCode: null, topStatusRequests: 0 },
     ]);
   });
 
-  it("switches source by kind and spells out an unrecorded top status", () => {
+  it("switches source by kind and marks an unrecorded top status with code zero", () => {
     expect(entityRows(activity(), "team")).toEqual([]);
-    expect(entityRows(activity(), "model")[0].topStatus).toBe("No status · 1");
+    expect(entityRows(activity(), "model")[0].topStatusCode).toBe(0);
   });
 });
 
@@ -216,18 +223,5 @@ describe("rates", () => {
     [12.345, "12.3%"],
   ])("formatRate(%s)", (rate, expected) => {
     expect(formatRate(rate)).toBe(expected);
-  });
-});
-
-describe("statusCodeLabel", () => {
-  it.each([
-    [0, "Not recorded"],
-    [401, "Unauthorized"],
-    [429, "Rate Limited"],
-    [503, "Service Unavailable"],
-    [418, "Client Error"],
-    [599, "Server Error"],
-  ] as const)("labels status %s", (code, label) => {
-    expect(statusCodeLabel(code)).toBe(label);
   });
 });

@@ -54,7 +54,8 @@ interface ClientUsagePanelProps {
 }
 
 const dateLabel = (date: Date | null) => date?.toLocaleDateString(undefined, { month: "short", day: "numeric" }) ?? "—";
-const countLabel = (value: number | null) => (value === null ? "Unavailable" : value.toLocaleString());
+const countLabel = (t: ReturnType<typeof useTranslations>, value: number | null) =>
+  value === null ? t("unavailable") : value.toLocaleString();
 
 export default function ClientUsagePanel({
   client,
@@ -86,6 +87,7 @@ export default function ClientUsagePanel({
   const tVirtualkeysColumns = useTranslations("virtualKeys.columns");
   const tUsageTeamuserspend = useTranslations("usage.teamUserSpend");
   const tSharedcomponents = useTranslations("sharedComponents");
+  const tAgents = useTranslations("agents");
   const label = client === "claude-desktop" ? "Claude Desktop" : "Claude Code";
   const scopedRequest = Boolean(userId || teamId) && !accessError;
   const personRequest = {
@@ -107,7 +109,7 @@ export default function ClientUsagePanel({
   })();
   const summaryQuery = useTagSummary(startTime, endTime, allUsersEnabled && agent === null);
   const activeAgent = useMemo(
-    () => agent ?? topAgents(summaryQuery.data ?? []).find((row) => row.id === client) ?? null,
+    () => agent ?? topAgents(tAgents, summaryQuery.data ?? []).find((row) => row.id === client) ?? null,
     [summaryQuery.data, agent, client],
   );
   const modelRequest = { accessToken, startTime, endTime, agent: activeAgent, enabled: allUsersEnabled };
@@ -269,7 +271,7 @@ export default function ClientUsagePanel({
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   {t("noRequestsInRange", { client: label })}
-                  {(canChooseUser || teamId) && " You can also choose another person."}
+                  {(canChooseUser || teamId) && t("chooseAnotherPerson")}
                 </p>
               ) : (
                 <>
@@ -296,10 +298,7 @@ export default function ClientUsagePanel({
                 </>
               )}
               <p className="border-t pt-3 text-xs leading-5 text-muted-foreground">
-                {scopedRequest
-                  ? "Based on retained request logs within the exact selected time range."
-                  : "All-user totals use UTC daily aggregates for the selected dates. Filtering by person uses the exact selected times. Cache values are reported counts."}{" "}
-                {t("spendHint")}
+                {scopedRequest ? t("scopedRequestHint") : t("allUsersHint")} {t("spendHint")}
               </p>
             </>
           )}
@@ -361,7 +360,7 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
               <span className="size-2 rounded-[2px]" style={{ backgroundColor: row.color }} />
               {row.label}
             </dt>
-            <dd className="font-medium tabular-nums">{countLabel(row.value)}</dd>
+            <dd className="font-medium tabular-nums">{countLabel(t, row.value)}</dd>
           </div>
         ))}
       </dl>

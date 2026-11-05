@@ -24,7 +24,7 @@ describe("TopAgents row navigation", () => {
     render(<TopAgents rows={rows} daily={[]} loading={false} totalTokens={600} onOpenAgent={onOpenAgent} />);
 
     expect(screen.getByRole("heading", { name: "热门智能体" })).toBeInTheDocument();
-    const desktop = screen.getByRole("button", { name: "View Claude Desktop usage" });
+    const desktop = screen.getByRole("button", { name: "查看 Claude Desktop 用量" });
     expect(within(desktop).getByRole("img", { name: "Claude Desktop logo" })).toHaveAttribute(
       "src",
       expect.any(String),
@@ -40,7 +40,7 @@ describe("TopAgents row navigation", () => {
     const user = userEvent.setup();
     const onOpenAgent = vi.fn();
     render(<TopAgents rows={rows} daily={[]} loading={false} totalTokens={600} onOpenAgent={onOpenAgent} />);
-    act(() => screen.getByRole("button", { name: "View Claude Desktop usage" }).focus());
+    act(() => screen.getByRole("button", { name: "查看 Claude Desktop 用量" }).focus());
 
     await user.keyboard("{Enter}");
     expect(onOpenAgent).toHaveBeenCalledWith(expect.objectContaining({ id: "claude-desktop" }));
@@ -50,9 +50,9 @@ describe("TopAgents row navigation", () => {
     const rollup = { ...row("User-Agent: claude-cli", 1000), total_requests: 2 };
     render(<TopAgents rows={[rollup, rows[0]]} daily={[]} loading={false} totalTokens={1000} onOpenAgent={vi.fn()} />);
 
-    expect(screen.getByText("Claude (unspecified)")).toBeInTheDocument();
-    expect(screen.getByText("Client not identified")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "View Claude (unspecified) usage" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "View Claude Desktop usage" })).toBeInTheDocument();
+    expect(screen.getByText("Claude (未指定)")).toBeInTheDocument();
+    expect(screen.getByText("未识别的客户端")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "查看 Claude (未指定) 用量" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "查看 Claude Desktop 用量" })).toBeInTheDocument();
   });
 });

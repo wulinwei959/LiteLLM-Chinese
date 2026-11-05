@@ -1,8 +1,12 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import React from "react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { uiSpendLogsCall } from "@/components/networking";
 import { UsageClient } from "./clientUsageData";
 import { useClientUsage } from "./useClientUsage";
+import type { ClientUsageTranslator } from "@/lib/i18n/translators";
+import en from "@/messages/en.json";
 
 vi.mock("@/components/networking", () => ({ uiSpendLogsCall: vi.fn() }));
 const options = {
@@ -14,6 +18,30 @@ const options = {
 };
 const emptyPage = { data: [], total: 0, page: 1, total_pages: 0, total_is_capped: false };
 
+type Catalog = { [key: string]: string | Catalog };
+const enMessagesFor =
+  (namespace: string) =>
+  (key: string, values?: Record<string, string | number>): string => {
+    const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
+    const resolved = segments.reduce<Catalog | string | undefined>(
+      (node, segment) => (typeof node === "object" ? node[segment] : undefined),
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
+    );
+    if (typeof resolved !== "string") throw new Error(`No en.json message for "${namespace}.${key}"`);
+    return values
+      ? resolved.replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole))
+      : resolved;
+  };
+const tClientUsage = enMessagesFor("clientUsage") as unknown as ClientUsageTranslator;
+
+const LocaleWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <LocaleProvider locale="en">{children}</LocaleProvider>
+);
+
 describe("useClientUsage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -21,7 +49,7 @@ describe("useClientUsage", () => {
 
   it("should send a bounded authenticated user query with UTC bounds covering the selected interval", async () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue(emptyPage);
-    const { result } = renderHook(() => useClientUsage(options));
+    const { result } = renderHook(() => useClientUsage(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
     const expectedRequest = {
       accessToken: "test-token",
@@ -39,9 +67,12 @@ describe("useClientUsage", () => {
     const { result, rerender } = renderHook(
       ({ userId, client }: { userId: string | null; client: UsageClient | null }) =>
         useClientUsage({ ...options, userId, client }),
-      { initialProps: { userId: null as string | null, client: UsageClient.ClaudeDesktop as UsageClient | null } },
+      {
+        initialProps: { userId: null as string | null, client: UsageClient.ClaudeDesktop as UsageClient | null },
+        wrapper: LocaleWrapper,
+      },
     );
-    expect(result.current.error).toBe("Select a user or team to view client usage");
+    expect(result.current.error).toBe(tClientUsage("selectUserOrTeam"));
     expect(result.current.loading).toBe(false);
     rerender({ userId: "user-1", client: null });
     expect(result.current.error).toBeNull();
@@ -50,15 +81,15 @@ describe("useClientUsage", () => {
 
   it("should expose incomplete results as an error without loading more pages", async () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue({ ...emptyPage, total: 1001, total_pages: 2 });
-    const { result } = renderHook(() => useClientUsage(options));
-    await waitFor(() => expect(result.current.error).toContain("Narrow the date range"));
+    const { result } = renderHook(() => useClientUsage(options), { wrapper: LocaleWrapper });
+    await waitFor(() => expect(result.current.error).toBe(tClientUsage("incompleteClientUsage")));
     expect(result.current.data.results).toEqual([]);
     expect(uiSpendLogsCall).toHaveBeenCalledTimes(1);
   });
 
   it("should expose network failures", async () => {
     vi.mocked(uiSpendLogsCall).mockRejectedValue(new Error("No permission to view these logs"));
-    const { result } = renderHook(() => useClientUsage(options));
+    const { result } = renderHook(() => useClientUsage(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.error).toBe("No permission to view these logs"));
     expect(result.current.loading).toBe(false);
   });
@@ -71,6 +102,7 @@ describe("useClientUsage", () => {
     vi.mocked(uiSpendLogsCall).mockReturnValueOnce(first).mockResolvedValueOnce(emptyPage);
     const { result, rerender } = renderHook(({ userId }) => useClientUsage({ ...options, userId }), {
       initialProps: { userId: "user-1" },
+      wrapper: LocaleWrapper,
     });
     rerender({ userId: "user-2" });
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -85,9 +117,9 @@ describe("useClientUsage", () => {
     vi.mocked(uiSpendLogsCall).mockResolvedValue({ ...emptyPage, total: 1001, total_pages: 2 });
     const { result, rerender } = renderHook(
       ({ client }: { client: UsageClient | null }) => useClientUsage({ ...options, client }),
-      { initialProps: { client: UsageClient.ClaudeDesktop as UsageClient | null } },
+      { initialProps: { client: UsageClient.ClaudeDesktop as UsageClient | null }, wrapper: LocaleWrapper },
     );
-    await waitFor(() => expect(result.current.error).toContain("Narrow the date range"));
+    await waitFor(() => expect(result.current.error).toBe(tClientUsage("incompleteClientUsage")));
     rerender({ client: null });
     expect(result.current.error).toBeNull();
     expect(result.current.loading).toBe(false);
@@ -96,7 +128,7 @@ describe("useClientUsage", () => {
 
   it("should retry a failed request with the same authenticated user and dates", async () => {
     vi.mocked(uiSpendLogsCall).mockRejectedValueOnce(new Error("Logs unavailable")).mockResolvedValueOnce(emptyPage);
-    const { result } = renderHook(() => useClientUsage(options));
+    const { result } = renderHook(() => useClientUsage(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.error).toBe("Logs unavailable"));
 
     act(() => result.current.reload());
@@ -123,7 +155,7 @@ describe("useClientUsage", () => {
     vi.mocked(uiSpendLogsCall)
       .mockResolvedValueOnce(page)
       .mockReturnValueOnce(new Promise(() => {}));
-    const { result } = renderHook(() => useClientUsage(options));
+    const { result } = renderHook(() => useClientUsage(options), { wrapper: LocaleWrapper });
     await waitFor(() => expect(result.current.data.metadata?.total_spend).toBe(3));
 
     act(() => result.current.reload());
@@ -135,7 +167,7 @@ describe("useClientUsage", () => {
     const initialProps: { userId: string | null } = { userId: null };
     const { result, rerender } = renderHook(
       ({ userId }: { userId: string | null }) => useClientUsage({ ...options, userId, teamId: "engineering" }),
-      { initialProps },
+      { initialProps, wrapper: LocaleWrapper },
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
     const teamParams = {
@@ -159,6 +191,7 @@ describe("useClientUsage", () => {
     vi.mocked(uiSpendLogsCall).mockReturnValueOnce(first).mockResolvedValueOnce(emptyPage);
     const { result, rerender } = renderHook(({ teamId }) => useClientUsage({ ...options, teamId, userId: null }), {
       initialProps: { teamId: "engineering" },
+      wrapper: LocaleWrapper,
     });
     rerender({ teamId: "design" });
     await waitFor(() => expect(result.current.loading).toBe(false));

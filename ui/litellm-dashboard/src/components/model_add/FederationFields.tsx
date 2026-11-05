@@ -31,22 +31,25 @@ const IDENTITY_SOURCE_SELECT_ID = "anthropic_federation_identity_source";
 const STORED_VALUE_MESSAGE_FIELD_KEY = FEDERATION_CORE_FIELDS[0].key;
 
 const anthropicValidators = (
+  t: ModelAddTranslator,
   field: FederationField,
   identitySource: IdentitySourceId,
 ): Readonly<Record<string, FieldValidator>> => ({
-  ...(field.key === STORED_VALUE_MESSAGE_FIELD_KEY ? { stored: validateFederationValueStored(identitySource) } : {}),
-  ...(field.key === "anthropic_identity_token" ? { reference: validateIdentityTokenReference } : {}),
-  ...(field.control === "integer" ? { ttl: validateIssuerTtlSeconds } : {}),
+  ...(field.key === STORED_VALUE_MESSAGE_FIELD_KEY ? { stored: validateFederationValueStored(t, identitySource) } : {}),
+  ...(field.key === "anthropic_identity_token" ? { reference: validateIdentityTokenReference(t) } : {}),
+  ...(field.control === "integer" ? { ttl: validateIssuerTtlSeconds(t) } : {}),
 });
 
-const selectItems = (field: FederationField, value: unknown) => [
-  ...(isMaskedSecret(value) ? [{ value: value as string, label: `Stored: ${value as string}` }] : []),
+const selectItems = (field: FederationField, value: unknown, t: ModelAddTranslator) => [
+  ...(isMaskedSecret(value)
+    ? [{ value: value as string, label: t("federation.storedOption", { value: value as string }) }]
+    : []),
   ...(field.options ?? []).map((option) => ({ value: option, label: option })),
 ];
 
 const renderControl = (field: FederationField, control: MountedFieldControlProps, t: ModelAddTranslator) => {
   if (field.control === "select") {
-    const items = selectItems(field, control.value);
+    const items = selectItems(field, control.value, t);
     return (
       <Select
         items={items}
@@ -90,14 +93,14 @@ function FederationFieldInput({ field, storedValue, validators }: FederationFiel
   const t = useTranslations("modelAdd");
   return (
     <MountedFormField
-      label={labelWithHint(field.label, field.tooltip)}
+      label={labelWithHint(t(field.labelKey), t(field.tooltipKey))}
       name={field.key}
       required={field.required}
       rules={{
         validate: {
-          ...(field.required ? { required: requiredFederationValue } : {}),
+          ...(field.required ? { required: requiredFederationValue(t) } : {}),
           ...validators,
-          masked: validateMaskedValueUntouched(storedValue),
+          masked: validateMaskedValueUntouched(t, storedValue),
         },
       }}
       className="mb-4"
@@ -119,13 +122,13 @@ function AnthropicFederationFields({
   storedValues,
 }: AnthropicFederationFieldsProps) {
   const t = useTranslations("modelAdd");
-  const identitySourceItems = identitySourceOptions(storedValues);
+  const identitySourceItems = identitySourceOptions(t, storedValues);
   const renderField = (field: FederationField) => (
     <FederationFieldInput
       key={field.key}
       field={field}
       storedValue={storedValues[field.key]}
-      validators={anthropicValidators(field, identitySource)}
+      validators={anthropicValidators(t, field, identitySource)}
     />
   );
 
@@ -134,10 +137,7 @@ function AnthropicFederationFields({
       {FEDERATION_CORE_FIELDS.map(renderField)}
       <div className="mb-4 flex flex-col gap-2">
         <label htmlFor={IDENTITY_SOURCE_SELECT_ID} className="text-sm font-medium">
-          {labelWithHint(
-            "Identity Source",
-            "Where the proxy gets the identity token it exchanges with Anthropic for an access token.",
-          )}
+          {labelWithHint(t("federation.identitySourceLabel"), t("federation.identitySourceTooltip"))}
         </label>
         <Select
           items={identitySourceItems}

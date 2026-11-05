@@ -129,6 +129,7 @@ export function useLiteAdmin(session: LiteAdminSession) {
     try {
       const options: Parameters<typeof runLiteAdmin>[0] = {
         ...session,
+        t,
         model,
         messages: [...history, message],
         signal: turn.controller.signal,

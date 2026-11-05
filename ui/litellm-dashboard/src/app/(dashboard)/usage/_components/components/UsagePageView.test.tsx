@@ -1659,7 +1659,7 @@ describe("UsagePage", () => {
         userId: "maya",
         teamId: "engineering",
         canChooseUser: false,
-        scopeError: "Choose a member of the selected team",
+        scopeError: "选择该团队的一个成员",
       };
       expect(lastPanelProps()).toMatchObject(expectedScope);
       expect(mockClientUsagePanel.mock.calls.every(([props]) => Boolean(props.scopeError))).toBe(true);
@@ -1673,7 +1673,7 @@ describe("UsagePage", () => {
       renderClientAt(searchParams);
       expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
       if (searchParams.includes("client_team")) {
-        await waitFor(() => expect(lastPanelProps().scopeError).toBe("Choose a team you administer"));
+        await waitFor(() => expect(lastPanelProps().scopeError).toBe("选择一个你管理的团队"));
       } else {
         await waitFor(() => expect(lastPanelProps()).toMatchObject({ userId: "user-123", scopeError: null }));
       }
@@ -1696,7 +1696,7 @@ describe("UsagePage", () => {
       expect(await screen.findByRole("region", { name: "Client usage panel" })).toBeInTheDocument();
       expect(lastPanelProps()).toMatchObject({
         teamId: "outside-team",
-        scopeError: "Choose a team you administer",
+        scopeError: "选择一个你管理的团队",
         canChooseUser: false,
       });
       expect(new URLSearchParams(onUrlUpdate.mock.lastCall?.[0].queryString).get("client_team")).toBe("outside-team");
