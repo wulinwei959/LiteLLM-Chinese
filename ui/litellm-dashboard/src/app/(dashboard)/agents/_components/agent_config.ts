@@ -464,5 +464,5 @@ const FIELD_TEXT_KEYS: Record<string, string> = {
   Tracing: "panelTracingTitle",
 };
 
-export const configText = (t: AgentsTranslator, text?: string): string =>
+export const configText = (t: AgentsTranslator, text?: string | null): string =>
   text && FIELD_TEXT_KEYS[text] ? t(FIELD_TEXT_KEYS[text] as never) : text ?? "";
