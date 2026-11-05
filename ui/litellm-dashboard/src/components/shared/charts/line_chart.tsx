@@ -13,6 +13,8 @@ export type LineChartProps<TDatum extends Record<string, unknown>> = {
   data: readonly TDatum[];
   index: string;
   categories: readonly string[];
+  /** Display names for `categories`, same order; defaults to the keys. */
+  categoryLabels?: readonly string[];
   colors?: readonly ChartColor[];
   valueFormatter?: (value: number) => string;
   yAxisWidth?: number;
@@ -33,6 +35,7 @@ export function LineChart<TDatum extends Record<string, unknown>>({
   data,
   index,
   categories,
+  categoryLabels,
   colors,
   valueFormatter,
   yAxisWidth = 56,
@@ -49,7 +52,9 @@ export function LineChart<TDatum extends Record<string, unknown>>({
   style,
 }: LineChartProps<TDatum>) {
   const fills = categoryFills(categories.length, colors);
-  const config: ChartConfig = Object.fromEntries(categories.map((category) => [category, { label: category }]));
+  const config: ChartConfig = Object.fromEntries(
+    categories.map((category, i) => [category, { label: categoryLabels?.[i] ?? category }]),
+  );
   const TooltipContent = customTooltip ?? ValueTooltip;
 
   return (

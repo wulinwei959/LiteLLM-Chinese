@@ -5688,3 +5688,13 @@ A 桶剩四片一次接完，88 条命中清零。
 新增 77 键（authTypes 8、liteAdmin 66、prompts.editor 3），两侧叶子 13711 → 13788。基线两次刷新：静态英文 280 → 276（接掉的 thrown/title 串从基线消失），zh 未译 245 → 246（`chart.unitRequests` 等品牌/单位串入基线）。测试：`provider_auth_types.test`/`usageChart.test`/`agent.test` 注入英语译员零翻面，`AddModelForm.integration`/`provider_specific_fields.test` 等翻中文 20 处，LiteAdmin 两 integration 断言翻面（region 名、figure/table 的 `X 数值`、`你的用量`、`更改无法核实`），fixture 手填的 token 标签行保持英文。全量 `src/components`+`src/app` 复跑无新红
 
 清单：有证据 83 → 80（`provider_auth_types.ts`、`usageChart.ts`、`prompt_editor_view/utils.ts` 退桶），A 桶清零
+
+## 2026-11-05 第 570 簇：errorsData 专项，seriesKey 图例纠缠拆开
+
+判定账里挂了多轮的 `errorsData.ts`：`seriesKey()` 同一函数既产图表数据键又产图例显示名（`codes` 直接渲染进 `ErrorsTab.tsx` 图例与 `StackedUsageChart` 系列名），`"No status"`/`"Other"` 两条英文随数据键进界面；另有 `entityRows` 的 `topStatus` 拼好串 `"No status · 1"` 直进表格单元格。拆开：数据键改稳定标识 `no_status`/`other`（数字码原样），显示名由 `ErrorsTab` 按 `usage.errors` 的现成孤儿键映射（`status.noStatus` 无状态码、`other` 其他——第 4 盲区里躺了很久没人读的正是这两条）；`StackedUsageChart` 用其既有 `labels` 参，`LineChart` 补同形 `categoryLabels`（其 config 原来 `label = category` 回显键名）。`entityRows` 不再拼串，返回 `topStatusCode`/`topStatusRequests`，渲染点组装
+
+同簇清掉三组死导出：`statusCodeLabel`/`STATUS_LABELS`/`ERROR_ENTITY_LABEL`/`ERROR_RATE_VIEW_OPTIONS` 与 `StatusCodeRow.label`——渲染面早被 `ErrorsTab` 本地已译的 `statusLabel`/`entityLabels`/`rateViewOptions` 接管，这些导出的英文只剩测试自己消费，连 `errorsData.test` 的对应 describe 一并删。`ErrorsTab` 本体三处硬编码接现有键：`stat.failedOfRequests`（ICU，zh 语序与 en 相反）、`empty.noFailedRequests` ×2、`totalLabel`；`topStatusText`/`seriesLabel` 用 early-return 拆掉两处嵌套三元
+
+测试：`errorsData.test` 键与形状更新（codes 断言 `"other"`、删 label 断言、`topStatus→topStatusCode/topStatusRequests`）、`ErrorsTab.test` 两处断言翻中文（`1,000 个请求中有 50 个失败`、empty 正则）。usage 目录 33 文件 531 例全绿（净减 6 例即删掉的 `statusCodeLabel` 用例）、`tsc` 0 错、死键 0/0、静态英文 276/276 未再动、zh 246/246、`errorsData.ts` 与 `ErrorsTab.tsx` `scan-english` 零命中、eslint 0 error。新键 0 条，两侧叶子 13788 不变；清单有证据 80 → 79（`errorsData.ts` 命中清零退桶）
+
+A 桶与 `errorsData` 纠缠至此全部清零

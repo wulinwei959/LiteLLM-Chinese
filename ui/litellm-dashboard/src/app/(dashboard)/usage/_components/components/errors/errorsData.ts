@@ -30,38 +30,6 @@ export interface RequestErrorActivity {
 export const ERROR_ENTITY_KINDS = ["key", "team", "user", "model"] as const;
 export type ErrorEntityKind = (typeof ERROR_ENTITY_KINDS)[number];
 
-export const ERROR_ENTITY_LABEL: Record<ErrorEntityKind, { singular: string; plural: string }> = {
-  key: { singular: "Virtual key", plural: "Virtual keys" },
-  team: { singular: "Team", plural: "Teams" },
-  user: { singular: "User", plural: "Users" },
-  model: { singular: "Model", plural: "Models" },
-};
-
-const STATUS_LABELS: Record<number, string> = {
-  400: "Bad Request",
-  401: "Unauthorized",
-  402: "Payment Required",
-  403: "Forbidden",
-  404: "Not Found",
-  408: "Request Timeout",
-  413: "Payload Too Large",
-  422: "Unprocessable Entity",
-  429: "Rate Limited",
-  500: "Internal Server Error",
-  502: "Bad Gateway",
-  503: "Service Unavailable",
-  504: "Gateway Timeout",
-};
-
-export const statusCodeLabel = (code: number): string => {
-  if (code === 0) return "Not recorded";
-  const known = STATUS_LABELS[code];
-  if (known) return known;
-  if (code >= 500) return "Server Error";
-  if (code >= 400) return "Client Error";
-  return "Error";
-};
-
 export const errorRate = (failed: number, total: number): number | null => (total > 0 ? (failed / total) * 100 : null);
 
 export const formatRate = (rate: number | null): string => {
@@ -110,9 +78,10 @@ export interface ErrorSeries {
 }
 
 export const ERROR_SERIES_MAX_CODES = 6;
-export const ERROR_SERIES_OTHER = "Other";
+export const ERROR_SERIES_OTHER = "other";
+export const ERROR_SERIES_NO_STATUS = "no_status";
 
-const seriesKey = (code: number): string => (code === 0 ? "No status" : String(code));
+const seriesKey = (code: number): string => (code === 0 ? ERROR_SERIES_NO_STATUS : String(code));
 
 export const errorSeries = (activity: RequestErrorActivity): ErrorSeries => {
   const ranked = [...activity.by_status_code]
@@ -149,11 +118,6 @@ export const errorSeries = (activity: RequestErrorActivity): ErrorSeries => {
 
 export type ErrorRateView = "total" | "status";
 
-export const ERROR_RATE_VIEW_OPTIONS: readonly { value: ErrorRateView; label: string }[] = [
-  { value: "total", label: "Total" },
-  { value: "status", label: "By status code" },
-];
-
 export const rateByStatusRows = (series: ErrorSeries): ErrorSeriesRow[] =>
   series.rows.map((row) => ({
     date: row.date,
@@ -168,7 +132,6 @@ const hasUnrecordedFailures = (day: RequestErrorDailyEntry): boolean =>
 
 export interface StatusCodeRow {
   status_code: number;
-  label: string;
   failed_requests: number;
   share: number;
 }
@@ -178,13 +141,8 @@ export const statusCodeRows = (activity: RequestErrorActivity): StatusCodeRow[] 
   const notRecorded = Math.max(0, activity.total_failed_requests - recorded);
   const recordedRows = activity.by_status_code
     .filter((row) => row.failed_requests > 0)
-    .map((row) => ({
-      status_code: row.status_code,
-      label: statusCodeLabel(row.status_code),
-      failed_requests: row.failed_requests,
-    }));
-  const unrecordedRows =
-    notRecorded > 0 ? [{ status_code: 0, label: statusCodeLabel(0), failed_requests: notRecorded }] : [];
+    .map((row) => ({ status_code: row.status_code, failed_requests: row.failed_requests }));
+  const unrecordedRows = notRecorded > 0 ? [{ status_code: 0, failed_requests: notRecorded }] : [];
   const total = activity.total_failed_requests || 1;
   return [...recordedRows, ...unrecordedRows]
     .sort((a, b) => b.failed_requests - a.failed_requests || a.status_code - b.status_code)
@@ -197,7 +155,8 @@ export interface ErrorEntityRow {
   requests: number;
   failed: number;
   rate: number | null;
-  topStatus: string | null;
+  topStatusCode: number | null;
+  topStatusRequests: number;
 }
 
 export const entityRows = (activity: RequestErrorActivity, kind: ErrorEntityKind): ErrorEntityRow[] => {
@@ -210,9 +169,7 @@ export const entityRows = (activity: RequestErrorActivity, kind: ErrorEntityKind
     requests: entry.api_requests,
     failed: entry.failed_requests,
     rate: errorRate(entry.failed_requests, entry.api_requests),
-    topStatus:
-      entry.top_status_code === null
-        ? null
-        : `${entry.top_status_code === 0 ? "No status" : entry.top_status_code} · ${entry.top_status_code_requests.toLocaleString()}`,
+    topStatusCode: entry.top_status_code,
+    topStatusRequests: entry.top_status_code_requests,
   }));
 };

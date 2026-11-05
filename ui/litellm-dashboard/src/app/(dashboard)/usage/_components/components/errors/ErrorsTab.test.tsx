@@ -87,7 +87,7 @@ describe("ErrorsTab", () => {
     renderWithProviders(<ErrorsTab activity={activity} loading={false} failed={false} />);
 
     expect(screen.getByText("5.0%")).toBeInTheDocument();
-    expect(screen.getByText("50 of 1,000 requests")).toBeInTheDocument();
+    expect(screen.getByText("1,000 个请求中有 50 个失败")).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "限流（429）" })).toHaveTextContent("40");
     expect(screen.getByRole("group", { name: "鉴权失败（401/403）" })).toHaveTextContent("5");
     expect(screen.getByTestId("rate-chart")).toHaveTextContent("2 points · rate");

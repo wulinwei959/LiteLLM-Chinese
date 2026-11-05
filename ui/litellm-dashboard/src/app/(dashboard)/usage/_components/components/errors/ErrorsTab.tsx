@@ -12,6 +12,8 @@ import { uiHref } from "@/utils/uiHref";
 import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented, Stat } from "../overview/Primitives";
 import {
   ERROR_ENTITY_KINDS,
+  ERROR_SERIES_NO_STATUS,
+  ERROR_SERIES_OTHER,
   entityRows,
   errorSeries,
   type ErrorRateView,
@@ -119,12 +121,26 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     if (code >= 400) return t("statusClient");
     return t("statusError");
   };
+  const topStatusText = (code: number | null, requests: number): string => {
+    if (code === null) return "—";
+    const label = code === 0 ? t("status.noStatus") : String(code);
+    return `${label} · ${count(requests)}`;
+  };
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
   const series = useMemo(() => (activity ? errorSeries(activity) : { rows: [], codes: [] }), [activity]);
   const statusRows = useMemo(() => (activity ? statusCodeRows(activity) : []), [activity]);
   const rows = useMemo(() => (activity ? entityRows(activity, kind) : []), [activity, kind]);
+  const seriesLabels = useMemo(
+    () =>
+      series.codes.map((code) => {
+        if (code === ERROR_SERIES_NO_STATUS) return t("status.noStatus");
+        if (code === ERROR_SERIES_OTHER) return t("other");
+        return code;
+      }),
+    [series, t],
+  );
   const failedByDate = useMemo(() => new Map(series.rows.map((row) => [row.date, row.failed])), [series]);
   const rateRows = useMemo(
     () =>
@@ -165,7 +181,11 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             value={summary ? formatRate(summary.rate) : null}
             pending={loading}
             tone={summary && summary.failed > 0 ? "destructive" : undefined}
-            hint={summary ? `${count(summary.failed)} of ${count(summary.requests)} requests` : undefined}
+            hint={
+              summary
+                ? t("stat.failedOfRequests", { failed: count(summary.failed), requests: count(summary.requests) })
+                : undefined
+            }
           />
         </StatCell>
         <StatCell label={t("failedRequests")}>
@@ -196,6 +216,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               data={rateRows}
               index="date"
               categories={rateView === "total" ? ["rate"] : series.codes}
+              categoryLabels={rateView === "total" ? undefined : seriesLabels}
               colors={
                 rateView === "total"
                   ? ["red"]
@@ -212,16 +233,17 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           <PanelBody
             loading={loading}
             height="h-64"
-            empty={series.rows.every((row) => row.failed === 0) ? "No failed requests in this range" : null}
+            empty={series.rows.every((row) => row.failed === 0) ? t("empty.noFailedRequests") : null}
           >
             <StackedUsageChart
               data={series.rows}
               series={series.codes}
+              labels={seriesLabels}
               xKey="date"
               xLabel={shortDate}
               format={count}
               totalFor={(date) => failedByDate.get(date)}
-              totalLabel="failed"
+              totalLabel={t("failed")}
               className="h-64"
             />
             <ul
@@ -248,7 +270,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           <PanelBody
             loading={loading}
             height="h-48"
-            empty={statusRows.length === 0 ? "No failed requests in this range" : null}
+            empty={statusRows.length === 0 ? t("empty.noFailedRequests") : null}
           >
             <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label={t("statusListAria")}>
               {statusRows.map((row) => (
@@ -310,7 +332,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
                     <TableCell>
                       <RateBar rate={row.rate} />
                     </TableCell>
-                    <TableCell className="tabular-nums text-muted-foreground">{row.topStatus ?? "—"}</TableCell>
+                    <TableCell className="tabular-nums text-muted-foreground">
+                      {topStatusText(row.topStatusCode, row.topStatusRequests)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
