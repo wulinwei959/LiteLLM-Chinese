@@ -5717,3 +5717,9 @@ A 桶与 `errorsData` 纠缠至此全部清零
 第 573 簇待接列里最大的一片。`AGENT_FORM_CONFIG` 与 `SKILL_FIELD_CONFIG` 的 45 条 `label:`/`title:`/`tooltip:`/`helpText:`/`placeholder:` 表值直接写英文，显示时靠 `configText(t, text)` 用 `FIELD_TEXT_KEYS` 反查键。改成 `labelKey`/`titleKey`/`tooltipKey`/`helpTextKey`/`placeholderKey` 正向键引用，`FieldConfig`/`SectionConfig` 与 `SKILL_FIELD_CONFIG` 的键槽位类型取 `AgentsTextKey = Parameters<AgentsTranslator>[0]`，消费点直接 `t(field.labelKey)`，placeholder 走 `fieldPlaceholderText(t, field)`（键优先，无键回落字面量）。`FIELD_TEXT_KEYS` 与反查器保留但改名 `serverFieldText`，因为它真正服务的对象是后端下发的 `credential_fields` 元数据，那批 label 不在本地表里
 
 纯数字与版本号占位符（`0.0`、`0.000001`、`1.0.0`）继续写字面量，`scanSource` 的字母过滤本就不认它们。零新键，零翻面断言（渲染文本逐字未变），基线 529 到 484，`prop:` 命中 330 到 285，待接从 54 条缩到 9 条（`timeRange.ts` 5 与 `budgetUtils.ts` 3 无生产消费者、`networking.tsx` 1 为解析失败返回值）。死键 0/0、zh 246/246、`tsc` 0 错、agents 目录 16 文件全绿
+
+## 2026-11-05 第 574 簇尾：渲染扫描补属性口径并进 CI
+
+渲染扫描只读 `innerText()`，`alt`/`aria-label`/`placeholder`/`title` 里的英文不可见（第 561 簇就记过这条盲区）。`rendered-ui-lib.mjs` 导出 `COPY_ATTRIBUTES`，扫描每页多读这四类属性值，按 `attr:<属性名>` 记发现。41 页复跑 0 渲染错误、正文英文 0 新增，属性口径新增 228 条，去重后 31 个串：`beta`/`Slack`/`Notifications alt`/`unknown` 四条是外壳与数据值在每页重复计入（占 202 条），其余是工具与步骤名（`config.yaml`、`agent`/`research`/`plan`/`docs`/`search`/`benchmark`/`run`/`answer`）和输入示例（`Valkey`/`redis`/`host`/`password`/`Cmd`/`Ctrl`/`Shift`/`logo.png`）。本轮没有撞出新的产品文案漏翻，基线 58 到 286 条，`Notifications alt` 在 `src` 里找不到字面量、记待查
+
+按 2026-11-05 的口径决定，这道门禁进 CI 兜底：`.github/workflows/test-litellm-ui-lint.yml` 新增 `rendered-scan` job，装 Chromium、`npm run build` 后起 `npm run start`，跑 `npm run scan:rendered -- --channel chromium --settle-ms 8000`。脚本相应加 `--channel`（默认 `chrome` 走本机 Chrome，CI 用 Playwright 自带内核）与 `--nav-timeout-ms`（默认 60 秒，本地 dev 模式冷页首编译不再撞 30 秒默认值）

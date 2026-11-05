@@ -1,9 +1,794 @@
 {
   "findings": [
     {
+      "page": "home",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "home",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "home",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "home",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "home",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "keys",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "keys",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "keys",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "keys",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "keys",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "models",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "models",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "teams",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "teams",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "teams",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "teams",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "teams",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "logs",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "logs",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "logs",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "logs",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "logs",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "usage",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "usage",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "usage",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "usage",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "usage",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "guardrails",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "guardrails",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "guardrails",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "guardrails",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "guardrails",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "policies",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "policies",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "policies",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "policies",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "policies",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "agents",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "agents",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "agents",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "agents",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "agents",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "prompts",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "prompts",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "prompts",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "prompts",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "prompts",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "budgets",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "budgets",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "budgets",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "budgets",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "budgets",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "users",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "users",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "users",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "users",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "users",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "search-tools",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "search-tools",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "search-tools",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "search-tools",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "search-tools",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "roi-calculator",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "roi-calculator",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "roi-calculator",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "roi-calculator",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "roi-calculator",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "model-health",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "model-health",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "model-health",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "model-health",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "model-health",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "mcp-servers",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "mcp-servers",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "mcp-servers",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "mcp-servers",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "mcp-servers",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "vector-stores",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "vector-stores",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "vector-stores",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "vector-stores",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "vector-stores",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "memory",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "memory",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "memory",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "memory",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "memory",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "workflows",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "workflows",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "workflows",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "workflows",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "workflows",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "projects",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "projects",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "projects",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "projects",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "projects",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "skills",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "skills",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "skills",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "skills",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "skills",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "tool-policies",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "tool-policies",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "tool-policies",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "tool-policies",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "tool-policies",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "organizations",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "organizations",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "organizations",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "organizations",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "organizations",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "access-groups",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "access-groups",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "access-groups",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "access-groups",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "access-groups",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "telemetry",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "telemetry",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "telemetry",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "telemetry",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "telemetry",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:placeholder",
+      "text": "Valkey"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:placeholder",
+      "text": "host"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:placeholder",
+      "text": "password"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:placeholder",
+      "text": "redis"
+    },
+    {
+      "page": "caching",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "router-settings",
+      "kind": "attr:title",
+      "text": "config.yaml"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "cost-optimization",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "cost-tracking",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "guardrails-monitor",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "guardrails-monitor",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "guardrails-monitor",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "guardrails-monitor",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "guardrails-monitor",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
       "page": "model-insights",
       "kind": "english",
       "text": "session"
+    },
+    {
+      "page": "model-insights",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "model-insights",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "model-insights",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "model-insights",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "model-insights",
+      "kind": "attr:title",
+      "text": "beta"
     },
     {
       "page": "lens",
@@ -44,6 +829,141 @@
       "page": "lens",
       "kind": "english",
       "text": "search"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "benchmark"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "failed"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "run"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "answer"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "agent"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "research"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "plan"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "docs"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "search"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "benchmark"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "run"
+    },
+    {
+      "page": "lens",
+      "kind": "attr:title",
+      "text": "answer"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "admin-panel",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "tag-management",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "tag-management",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "tag-management",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "tag-management",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "tag-management",
+      "kind": "attr:title",
+      "text": "beta"
     },
     {
       "page": "transform-request",
@@ -134,6 +1054,111 @@
       "page": "transform-request",
       "kind": "english",
       "text": "temperature"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:placeholder",
+      "text": "Cmd"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:placeholder",
+      "text": "Ctrl"
+    },
+    {
+      "page": "transform-request",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:placeholder",
+      "text": "https"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:placeholder",
+      "text": "logo.png"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:placeholder",
+      "text": "logo-dark.png"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:placeholder",
+      "text": "favicon.ico"
+    },
+    {
+      "page": "ui-theme",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "logging-and-alerts",
+      "kind": "attr:title",
+      "text": "beta"
     },
     {
       "page": "api-reference",
@@ -289,6 +1314,121 @@
       "page": "api-reference",
       "kind": "english",
       "text": "your"
+    },
+    {
+      "page": "api-reference",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "api-reference",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "api-reference",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "api-reference",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "api-reference",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:aria-label",
+      "text": "PDF"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:placeholder",
+      "text": "Shift"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:placeholder",
+      "text": "area"
+    },
+    {
+      "page": "playground",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "old-usage",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "old-usage",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "old-usage",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "old-usage",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "old-usage",
+      "kind": "attr:title",
+      "text": "beta"
+    },
+    {
+      "page": "change-password",
+      "kind": "attr:aria-label",
+      "text": "unknown"
+    },
+    {
+      "page": "change-password",
+      "kind": "attr:aria-label",
+      "text": "Slack"
+    },
+    {
+      "page": "change-password",
+      "kind": "attr:aria-label",
+      "text": "beta"
+    },
+    {
+      "page": "change-password",
+      "kind": "attr:aria-label",
+      "text": "Notifications alt"
+    },
+    {
+      "page": "change-password",
+      "kind": "attr:title",
+      "text": "beta"
     }
   ]
 }

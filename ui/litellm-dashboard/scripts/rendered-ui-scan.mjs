@@ -23,7 +23,7 @@ import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { englishPhrases, findingKey, stubFor } from "./rendered-ui-lib.mjs";
+import { COPY_ATTRIBUTES, englishPhrases, findingKey, stubFor } from "./rendered-ui-lib.mjs";
 import { ADMIN_SESSION_CLAIMS, ALLOWED_ENGLISH, API_STUBS, IGNORED_CONSOLE, PAGES } from "./rendered-ui-fixtures.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -41,6 +41,7 @@ const PROXY_URL = value("proxy-url", "");
 const MASTER_KEY = value("master-key", "");
 const UPDATE_BASELINE = flag("update-baseline");
 const SETTLE_MS = Number(value("settle-ms", "4000"));
+const BROWSER_CHANNEL = value("channel", "chrome");
 
 const b64url = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
 const ADMIN_TOKEN = `${b64url({ alg: "HS256", typ: "JWT" })}.${b64url(ADMIN_SESSION_CLAIMS)}.scan`;
@@ -97,12 +98,14 @@ const main = async () => {
   const proxyUrl = PROXY_URL || "http://localhost:4000";
   const stubServer = PROXY_URL ? null : await startStubProxy(new URL(proxyUrl).port || "4000");
 
-  const browser = await chromium.launch({ channel: "chrome" }).catch((error) => {
-    throw new Error(
-      `Chromium could not start: ${String(error).split("\n")[0]}\n` +
-        "On Linux the browser needs system libraries; `npx playwright install --with-deps chromium` installs them.",
-    );
-  });
+  const browser = await chromium
+    .launch(BROWSER_CHANNEL === "chromium" ? {} : { channel: BROWSER_CHANNEL })
+    .catch((error) => {
+      throw new Error(
+        `Chromium could not start: ${String(error).split("\n")[0]}\n` +
+          "On Linux the browser needs system libraries; `npx playwright install --with-deps chromium` installs them.",
+      );
+    });
   const context = await browser.newContext({ locale: "zh-CN", viewport: { width: 1440, height: 900 } });
   await context.addCookies([{ name: "token", value: await sessionToken(proxyUrl), url: BASE_URL }]);
   await context.addInitScript(() => window.localStorage.setItem("litellm-ui-locale", "zh-CN"));
@@ -120,6 +123,7 @@ const main = async () => {
   }
 
   const page = await context.newPage();
+  await page.setDefaultNavigationTimeout(Number(value("nav-timeout-ms", "60000")));
   const findings = [];
 
   for (const target of PAGES) {
@@ -147,13 +151,41 @@ const main = async () => {
       .locator("body")
       .innerText()
       .catch(() => "");
+    const attrValues = await page
+      .evaluate(
+        (names) =>
+          names.flatMap((name) =>
+            [...document.querySelectorAll(`[${name}]`)].map((element) => ({
+              name,
+              value: (element.getAttribute(name) ?? "").replace(/\s+/g, " ").trim(),
+            })),
+          ),
+        COPY_ATTRIBUTES,
+      )
+      .then((rows) => rows.filter((row) => row.value.length > 0))
+      .catch(() => []);
     page.off("console", onConsole);
     page.off("pageerror", onPageError);
 
     for (const error of errors) findings.push({ page: target.name, kind: "error", text: error });
     const phrases = englishPhrases(text, ALLOWED_ENGLISH);
     for (const phrase of phrases) findings.push({ page: target.name, kind: "english", text: phrase });
-    console.warn(`[${target.name}] ${target.path}  ${errors.length} 个渲染错误，${phrases.length} 处英文`);
+    const attrPhrases = new Set(
+      attrValues.flatMap(({ name, value }) =>
+        englishPhrases(value, ALLOWED_ENGLISH).map((phrase) => `${name}|${phrase}`),
+      ),
+    );
+    for (const entry of attrPhrases) {
+      const split = entry.indexOf("|");
+      findings.push({
+        page: target.name,
+        kind: `attr:${entry.slice(0, split)}`,
+        text: entry.slice(split + 1),
+      });
+    }
+    console.warn(
+      `[${target.name}] ${target.path}  ${errors.length} 个渲染错误，${phrases.length} 处正文英文，${attrPhrases.size} 处属性英文`,
+    );
   }
 
   await browser.close();
