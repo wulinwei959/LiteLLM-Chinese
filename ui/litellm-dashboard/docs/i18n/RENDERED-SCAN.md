@@ -59,7 +59,7 @@ npm run scan:rendered -- --update-baseline
 
 刷新。
 
-第 574 簇起这道门禁进 CI：`.github/workflows/test-litellm-ui-lint.yml`（名字就叫 UI i18n Gates）新增 `rendered-scan` job，`npm ci` 后装 Chromium、`npm run build` 起 `npm run start`，再跑 `npm run scan:rendered -- --channel chromium --settle-ms 8000`，与死键、静态英文、中文取值三道静态口径并列。扫描脚本的浏览器渠道可由 `--channel` 指定（默认 `chrome` 走本机 Chrome，CI 传 `chromium` 用 Playwright 自带内核），页面导航超时由 `--nav-timeout-ms` 指定，默认 60 秒，本地 dev 模式首次编译冷页不再撞 30 秒默认值
+第 574 簇起这道门禁进 CI：`.github/workflows/test-litellm-ui-lint.yml`（名字就叫 UI i18n Gates）新增 `rendered-scan` job，`npm ci` 后装 Chromium，`npm run dev` 起服务，等 `http://localhost:3000/` 就绪再跑 `npm run scan:rendered -- --channel chromium --settle-ms 8000`，与死键、静态英文、中文取值三道静态口径并列。第 575 簇修掉首轮红灯：面板是 `output: "export"` 静态导出，`npm run start` 的 `next start` 不支持这种产物，进程直接退出，3000 端口从未监听；原先的等待循环 60 次全失败也不报错，白等两分钟后扫描撞 `ERR_CONNECTION_REFUSED`。现在改回本地口径的 `npm run dev`，循环放宽到 90 次并在末尾加一条硬校验，起不来就打印 dev 日志并立即失败。扫描脚本的浏览器渠道可由 `--channel` 指定（默认 `chrome` 走本机 Chrome，CI 传 `chromium` 用 Playwright 自带内核），页面导航超时由 `--nav-timeout-ms` 指定，默认 60 秒，本地 dev 模式首次编译冷页不再撞 30 秒默认值
 
 ## 数据从哪来
 

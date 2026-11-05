@@ -203,7 +203,7 @@ describe("VectorStoreForm submit payload", () => {
     await user.click(await screen.findByRole("option", { name: /bedrock-prod/ }));
     expect(picker).toHaveValue("Bedrock Prod");
     await user.click(picker);
-    await user.click(await screen.findByRole("option", { name: "None" }));
+    await user.click(await screen.findByRole("option", { name: "无" }));
     await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-none");
     await submit(user);
 

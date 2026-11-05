@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
-import { AGENT_FORM_CONFIG, fieldPlaceholderText } from "./agent_config";
+import { AGENT_FORM_CONFIG } from "./agent_config";
 import { AgentFormField, labelWithHint } from "./AgentFormKit";
 
 export const COST_FIELD_NAMES: readonly string[] = AGENT_FORM_CONFIG.cost.fields.map((field) => field.name);

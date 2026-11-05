@@ -86,10 +86,10 @@ jobs:
       - name: Scan every page for English left in a Chinese interface
         if: steps.changes.outputs.decision != 'skip'
         run: |
-          npm run build
-          npm run start > /tmp/next-start.log 2>&1 &
-          for attempt in $(seq 1 60); do
+          npm run dev > /tmp/next-dev.log 2>&1 &
+          for attempt in $(seq 1 90); do
             curl -sf http://localhost:3000/ > /dev/null && break
             sleep 2
           done
+          curl -sf http://localhost:3000/ > /dev/null || { cat /tmp/next-dev.log; exit 1; }
           npm run scan:rendered -- --channel chromium --settle-ms 8000

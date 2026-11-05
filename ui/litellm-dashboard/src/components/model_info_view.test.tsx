@@ -1683,7 +1683,7 @@ describe("ModelInfoView", () => {
         throw new Error(`Could not find credential selector${triggerText ? ` with ${triggerText}` : ""}`);
       }
       await user.click(trigger);
-      await screen.findByRole("option", { name: "None" });
+      await screen.findByRole("option", { name: "无" });
     };
 
     const save = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -2019,7 +2019,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
 
       const payload = await save(user);
 
@@ -2032,7 +2032,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await openCredentialSelect(user);
       await user.click(await screen.findByRole("option", { name: "selected-credential" }));
 
@@ -2054,7 +2054,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user);
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
 
       const payload = await save(user);
 
@@ -2067,7 +2067,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await user.click(screen.getByRole("button", { name: /取消/ }));
       await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
@@ -2082,7 +2082,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await save(user);
 
       expect(await screen.findByText("手动")).toBeInTheDocument();
@@ -2119,7 +2119,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => expect(mockToast.fromError).toHaveBeenCalled());
