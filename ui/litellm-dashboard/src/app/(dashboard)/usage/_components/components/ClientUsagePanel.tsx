@@ -87,6 +87,7 @@ export default function ClientUsagePanel({
   const tVirtualkeysColumns = useTranslations("virtualKeys.columns");
   const tUsageTeamuserspend = useTranslations("usage.teamUserSpend");
   const tSharedcomponents = useTranslations("sharedComponents");
+  const tAgents = useTranslations("agents");
   const label = client === "claude-desktop" ? "Claude Desktop" : "Claude Code";
   const scopedRequest = Boolean(userId || teamId) && !accessError;
   const personRequest = {
@@ -108,7 +109,7 @@ export default function ClientUsagePanel({
   })();
   const summaryQuery = useTagSummary(startTime, endTime, allUsersEnabled && agent === null);
   const activeAgent = useMemo(
-    () => agent ?? topAgents(summaryQuery.data ?? []).find((row) => row.id === client) ?? null,
+    () => agent ?? topAgents(tAgents, summaryQuery.data ?? []).find((row) => row.id === client) ?? null,
     [summaryQuery.data, agent, client],
   );
   const modelRequest = { accessToken, startTime, endTime, agent: activeAgent, enabled: allUsersEnabled };

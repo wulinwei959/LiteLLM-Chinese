@@ -13,11 +13,39 @@ import pydanticAiLogo from "../../../../../../../public/assets/logos/pydantic-ai
 import xaiLogo from "../../../../../../../public/assets/logos/xai.svg";
 import type { components } from "@/lib/http/schema";
 import type { DailyData, SpendMetrics } from "@/components/UsagePage/types";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 
 /** One row of `GET /tag/summary`. */
 export type TagSummaryRow = components["schemas"]["TagSummaryMetrics"];
 
 export type AgentKind = "agent" | "sdk";
+
+/** The `agents` message keys behind each family's display name and description. */
+export type CatalogLabelKey =
+  | "catalogClaudeDesktop"
+  | "catalogClaudeCode"
+  | "catalogClaudeUnspecified"
+  | "catalogCodex"
+  | "catalogOpenCode"
+  | "catalogCursor"
+  | "catalogCopilot"
+  | "catalogHermes"
+  | "catalogGrok"
+  | "catalogCline"
+  | "catalogKiloCode"
+  | "catalogAider"
+  | "catalogOpenAIAgents"
+  | "catalogLangChain"
+  | "catalogPydanticAI"
+  | "catalogGitHubActions"
+  | "catalogLiteLLMSDK"
+  | "catalogOpenAISDK"
+  | "catalogAnthropicSDK"
+  | "catalogPython"
+  | "catalogNodeJS"
+  | "catalogCurl";
+
+export type CatalogDescriptionKey = `${CatalogLabelKey}Desc`;
 
 export enum UsageClient {
   ClaudeDesktop = "claude-desktop",
@@ -46,8 +74,8 @@ export interface AgentRow {
 
 interface AgentFamily {
   id: string;
-  label: string;
-  description: string;
+  labelKey: CatalogLabelKey;
+  descriptionKey: CatalogDescriptionKey;
   kind: AgentKind;
   logo: string | null;
   /** Matched against the user-agent with its `User-Agent: ` prefix removed, case-insensitively. */
@@ -62,166 +90,180 @@ interface AgentFamily {
 const FAMILIES: readonly AgentFamily[] = [
   {
     id: UsageClient.ClaudeDesktop,
-    label: "Claude Desktop",
-    description: "Anthropic's desktop assistant",
+    labelKey: "catalogClaudeDesktop",
+    descriptionKey: "catalogClaudeDesktopDesc",
     kind: "agent",
     logo: claudeLogo.src,
     match: /^claude[-_ ]desktop\b|^claude-cli\/[^\s]+\s+\((?:[^)]*,\s*)?claude-desktop-3p\s*[,)]/i,
   },
   {
     id: UsageClient.ClaudeCode,
-    label: "Claude Code",
-    description: "Anthropic's coding agent",
+    labelKey: "catalogClaudeCode",
+    descriptionKey: "catalogClaudeCodeDesc",
     kind: "agent",
     logo: claudeLogo.src,
     match: /^(claude-code|claude_code|claude-user)\b|^claude-cli\/[^\s]+\s+\((?:[^)]*,\s*)?cli\s*[,)]/i,
   },
   {
     id: "claude-unspecified",
-    label: "Claude (unspecified)",
-    description: "Client not identified",
+    labelKey: "catalogClaudeUnspecified",
+    descriptionKey: "catalogClaudeUnspecifiedDesc",
     kind: "agent",
     logo: claudeLogo.src,
     match: /^claude-cli\b/i,
   },
   {
     id: "codex",
-    label: "Codex",
-    description: "OpenAI's coding agent",
+    labelKey: "catalogCodex",
+    descriptionKey: "catalogCodexDesc",
     kind: "agent",
     logo: openaiLogo.src,
     match: /^(codex[ _-]|codex$)/i,
   },
   {
     id: "opencode",
-    label: "OpenCode",
-    description: "Open-source terminal coding agent",
+    labelKey: "catalogOpenCode",
+    descriptionKey: "catalogOpenCodeDesc",
     kind: "agent",
     logo: opencodeLogo.src,
     match: /^opencode\b/i,
   },
   {
     id: "cursor",
-    label: "Cursor",
-    description: "AI code editor",
+    labelKey: "catalogCursor",
+    descriptionKey: "catalogCursorDesc",
     kind: "agent",
     logo: cursorLogo.src,
     match: /^cursor\b/i,
   },
   {
     id: "copilot",
-    label: "GitHub Copilot",
-    description: "GitHub's coding assistant",
+    labelKey: "catalogCopilot",
+    descriptionKey: "catalogCopilotDesc",
     kind: "agent",
     logo: copilotLogo.src,
     match: /^(github-?copilot|copilot)\b/i,
   },
   {
     id: "hermes",
-    label: "Hermes Agent",
-    description: "Open-source agent",
+    labelKey: "catalogHermes",
+    descriptionKey: "catalogHermesDesc",
     kind: "agent",
     logo: hermesLogo.src,
     match: /^hermes\b/i,
   },
-  { id: "grok", label: "Grok", description: "xAI's assistant", kind: "agent", logo: xaiLogo.src, match: /^grok\b/i },
+  {
+    id: "grok",
+    labelKey: "catalogGrok",
+    descriptionKey: "catalogGrokDesc",
+    kind: "agent",
+    logo: xaiLogo.src,
+    match: /^grok\b/i,
+  },
   {
     id: "cline",
-    label: "Cline",
-    description: "Open-source coding agent",
+    labelKey: "catalogCline",
+    descriptionKey: "catalogClineDesc",
     kind: "agent",
     logo: null,
     match: /^cline\b/i,
   },
   {
     id: "kilo-code",
-    label: "Kilo Code",
-    description: "Open-source coding agent",
+    labelKey: "catalogKiloCode",
+    descriptionKey: "catalogKiloCodeDesc",
     kind: "agent",
     logo: null,
     match: /^kilo[- ]?code\b/i,
   },
   {
     id: "aider",
-    label: "Aider",
-    description: "AI pair programming in the terminal",
+    labelKey: "catalogAider",
+    descriptionKey: "catalogAiderDesc",
     kind: "agent",
     logo: null,
     match: /^aider\b/i,
   },
   {
     id: "openai-agents",
-    label: "OpenAI Agents",
-    description: "OpenAI Agents SDK",
+    labelKey: "catalogOpenAIAgents",
+    descriptionKey: "catalogOpenAIAgentsDesc",
     kind: "sdk",
     logo: openaiAgentsLogo.src,
     match: /^agents$/i,
   },
   {
     id: "langchain",
-    label: "LangChain",
-    description: "Agent framework",
+    labelKey: "catalogLangChain",
+    descriptionKey: "catalogLangChainDesc",
     kind: "sdk",
     logo: langchainLogo.src,
     match: /^(langchain|langgraph|deepagents)/i,
   },
   {
     id: "pydantic-ai",
-    label: "Pydantic AI",
-    description: "Agent framework",
+    labelKey: "catalogPydanticAI",
+    descriptionKey: "catalogPydanticAIDesc",
     kind: "sdk",
     logo: pydanticAiLogo.src,
     match: /^pydantic-ai\b/i,
   },
   {
     id: "github-actions",
-    label: "GitHub Actions",
-    description: "CI workflows",
+    labelKey: "catalogGitHubActions",
+    descriptionKey: "catalogGitHubActionsDesc",
     kind: "sdk",
     logo: githubLogo.src,
     match: /^github-actions\b/i,
   },
   {
     id: "litellm",
-    label: "LiteLLM SDK",
-    description: "litellm Python SDK",
+    labelKey: "catalogLiteLLMSDK",
+    descriptionKey: "catalogLiteLLMSDKDesc",
     kind: "sdk",
     logo: litellmLogo.src,
     match: /^litellm\b/i,
   },
   {
     id: "openai-sdk",
-    label: "OpenAI SDK",
-    description: "OpenAI client library",
+    labelKey: "catalogOpenAISDK",
+    descriptionKey: "catalogOpenAISDKDesc",
     kind: "sdk",
     logo: openaiLogo.src,
     match: /^(openai|asyncopenai)\b/i,
   },
   {
     id: "anthropic-sdk",
-    label: "Anthropic SDK",
-    description: "Anthropic client library",
+    labelKey: "catalogAnthropicSDK",
+    descriptionKey: "catalogAnthropicSDKDesc",
     kind: "sdk",
     logo: anthropicLogo.src,
     match: /^anthropic\b/i,
   },
   {
     id: "python",
-    label: "Python",
-    description: "Scripts and HTTP clients",
+    labelKey: "catalogPython",
+    descriptionKey: "catalogPythonDesc",
     kind: "sdk",
     logo: null,
     match: /^(python|httpx|aiohttp|urllib|requests)/i,
   },
   {
     id: "node",
-    label: "Node.js",
-    description: "Scripts and HTTP clients",
+    labelKey: "catalogNodeJS",
+    descriptionKey: "catalogNodeJSDesc",
     kind: "sdk",
     logo: null,
     match: /^(node|bun|deno|axios|undici)\b/i,
   },
-  { id: "curl", label: "curl", description: "Command line", kind: "sdk", logo: null, match: /^curl\b/i },
+  {
+    id: "curl",
+    labelKey: "catalogCurl",
+    descriptionKey: "catalogCurlDesc",
+    kind: "sdk",
+    logo: null,
+    match: /^curl\b/i,
+  },
 ];
 
 const USER_AGENT_PREFIX = /^user[- ]agent:\s*/i;
@@ -253,12 +295,12 @@ const contributingRows = (product: string, rows: readonly TagSummaryRow[]): read
   return bare ? [bare] : rows;
 };
 
-const agentFor = (product: string, rows: readonly TagSummaryRow[]): AgentRow => {
+const agentFor = (t: AgentsTranslator, product: string, rows: readonly TagSummaryRow[]): AgentRow => {
   const family = familyFor(product);
   return {
     id: family?.id ?? `ua:${product.toLowerCase()}`,
-    label: family?.label ?? product,
-    description: family?.description ?? "Custom client",
+    label: family ? t(family.labelKey) : product,
+    description: family ? t(family.descriptionKey) : t("catalogCustomClient"),
     kind: family?.kind ?? "sdk",
     logo: family?.logo ?? null,
     spend: rows.reduce((sum, row) => sum + (row.total_spend || 0), 0),
@@ -279,13 +321,13 @@ const mergeAgents = (a: AgentRow, b: AgentRow): AgentRow => ({
   tags: a.tags.length && b.tags.length ? [...a.tags, ...b.tags] : [],
 });
 
-const agentsForProduct = (product: string, rows: readonly TagSummaryRow[]): AgentRow[] => {
-  if (product.toLowerCase() !== "claude-cli") return [agentFor(product, contributingRows(product, rows))];
+const agentsForProduct = (t: AgentsTranslator, product: string, rows: readonly TagSummaryRow[]): AgentRow[] => {
+  if (product.toLowerCase() !== "claude-cli") return [agentFor(t, product, contributingRows(product, rows))];
   const bare = rows.find((row) => isBareTag(row, product));
   const versions = rows.filter((row) => !isBareTag(row, product));
-  const versionAgents = versions.map((row) => agentFor(row.tag.trim().replace(USER_AGENT_PREFIX, ""), [row]));
+  const versionAgents = versions.map((row) => agentFor(t, row.tag.trim().replace(USER_AGENT_PREFIX, ""), [row]));
   if (!bare) return versionAgents;
-  const rollup = agentFor(product, [bare]);
+  const rollup = agentFor(t, product, [bare]);
   if (!versions.length) return [rollup];
   const emptyTotals = { spend: 0, tokens: 0, requests: 0, users: 0 };
   const totals = versionAgents.reduce(
@@ -318,11 +360,12 @@ const agentsForProduct = (product: string, rows: readonly TagSummaryRow[]): Agen
  * One row per agent from `/tag/summary`. Products are keyed case-sensitively: prod reports `python`
  * and `Python` as distinct products, and folding them let one rollup overwrite the other.
  */
-export const topAgents = (rows: readonly TagSummaryRow[]): AgentRow[] => {
+export const topAgents = (t: AgentsTranslator, rows: readonly TagSummaryRow[]): AgentRow[] => {
   const userAgentRows = rows.filter((row) => isUserAgentTag(row.tag) && userAgentProduct(row.tag));
   const products = [...new Set(userAgentRows.map((row) => userAgentProduct(row.tag)))];
   const perProduct = products.flatMap((product) =>
     agentsForProduct(
+      t,
       product,
       userAgentRows.filter((row) => userAgentProduct(row.tag) === product),
     ),
@@ -342,6 +385,7 @@ export const topAgents = (rows: readonly TagSummaryRow[]): AgentRow[] => {
  * Uses the same bare-vs-versioned rule as `topAgents`, per day, so no day double-counts a product.
  */
 const agentEntitiesForDay = (
+  t: AgentsTranslator,
   entities: Readonly<Record<string, { metrics: SpendMetrics }>>,
 ): Record<string, { metrics: SpendMetrics }> => {
   const rows: TagSummaryRow[] = Object.entries(entities).map(([tag, { metrics }]) => ({
@@ -354,7 +398,7 @@ const agentEntitiesForDay = (
     unique_users: 0,
   }));
   return Object.fromEntries(
-    topAgents(rows).map((agent) => [
+    topAgents(t, rows).map((agent) => [
       agent.label,
       {
         metrics: {
@@ -377,9 +421,9 @@ const agentEntitiesForDay = (
  * Tag daily activity with each day's raw tags folded into agents, written into `breakdown.models`
  * so `seriesBy(..., "models", ...)` stacks agents per day with no agent-specific chart code.
  */
-export const agentDailyData = (days: readonly DailyData[]): DailyData[] =>
+export const agentDailyData = (t: AgentsTranslator, days: readonly DailyData[]): DailyData[] =>
   days.map((day) => {
-    const models = agentEntitiesForDay(day.breakdown.entities ?? {}) as DailyData["breakdown"]["models"];
+    const models = agentEntitiesForDay(t, day.breakdown.entities ?? {}) as DailyData["breakdown"]["models"];
     const agentTotal = (key: "spend" | "total_tokens" | "api_requests") =>
       Object.values(models).reduce((sum, entry) => sum + entry.metrics[key], 0);
     // The day total becomes the agents' own sum, so the chart's "Other" means agents past the top N,

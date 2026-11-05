@@ -117,6 +117,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   const t = useTranslations("usage");
   const tCommon = useTranslations("common");
   const tClientUsage = useTranslations("clientUsage");
+  const tAgents = useTranslations("agents");
 
   const { accessToken, userRole, userId: userID, premiumUser, isLoading: authorizationLoading } = useAuthorized();
   const [gatewayActivityData, setGatewayActivityData] = useState<FetchedGatewayActivity | null>(null);
@@ -395,7 +396,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   } = useTagSummary(startTime, endTime, needsAgentSummary);
 
   const clientAgent = useMemo(
-    () => topAgents(tagSummary ?? []).find((agent) => agent.id === selectedClient) ?? null,
+    () => topAgents(tAgents, tagSummary ?? []).find((agent) => agent.id === selectedClient) ?? null,
     [tagSummary, selectedClient],
   );
 

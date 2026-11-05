@@ -5654,3 +5654,13 @@ i18n 三闸：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 
 
 清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇记录一致，本簇六文件均在清单内部，对清单零影响。FILE-INVENTORY 第四道盲区一节已补记第 566 批 14 个命名空间孤儿键与救活它们的同名兄弟。
 
+
+## 2026-11-05 第 567 簇：agentCatalog 代理目录接入（A 桶首片）
+
+A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫描与逐文件 `scan-english` 都够不着的第四道盲区：文件没挂翻译器，但 22 个品牌的 `label`/`description` 全部直出界面（Top Agents 行、图表图例、aria-label）。接线形态按第 564/565 簇的 `labelKey` 先例：`FAMILIES` 保持 locale 无关的常量（id/match/kind/logo 不动），每个品牌加 `labelKey` 与 `descriptionKey` 两个字面量键，`agentFor(t, ...)` 建 `AgentRow` 时才按键取译。`descriptionKey` 写成独立字面量而不是 `` `${labelKey}Desc` `` 模板拼接，因为死键门禁按 `referenced_verbatim` 找字面量，模板拼出来的 22 个 Desc 键会全部误报成死键（本簇实测踩到：插字面量前 `check:dead-keys` 报 22 条）。`familyFor` 与 `usageClientFromUserAgent` 只读 `id`，保持免翻译器，`clientUsageData.ts` 的识别链路零改动；需要译员的只有 `topAgents(t, rows)`、`agentDailyData(t, days)` 这条建显示行的链路，三个消费点（`TopAgents.tsx`、`ClientUsagePanel.tsx`、`UsagePageView.tsx`）各加一个 `useTranslations("agents")`。`TopAgents.tsx:128` 的 `` `View ${agent.label} usage` `` aria-label 顺手接成 `catalogViewUsageAria`（带 `{label}` 插值）
+
+新增 `agents.catalog*` 46 键（22 label + 22 Desc + `catalogCustomClient` + `catalogViewUsageAria`），品牌名两侧的 zh 值按惯例保留英文（Claude Desktop、Codex、Cursor 等 21 条无汉字），连同 `catalogLiteLLMSDKDesc`/`catalogOpenAIAgentsDesc` 共 23 条入 `zh-coverage-baseline.json`（`--write` 刷新，222 → 245）。叶子两侧同增至 13659
+
+测试面：`agentCatalog.test.ts` 22 处调用注入 `enMessagesFor("agents")` 英语译员，断言逐字不动（钉 en 值即断言目录本身）；`TopAgents.integration.test.tsx` 三条断言翻面（`Claude (unspecified)` → `Claude (未指定)`、`View Claude Desktop usage` → `查看 Claude Desktop 用量`、`Client not identified` → `未识别的客户端`）。usage 目录 33 文件 537 例全绿、Type Errors 0；死键 0/0、静态英文 280/280、`tsc` 0 错、eslint 0 error、prettier 触及文件合规、`agentCatalog.ts` 与 `TopAgents.tsx` 逐文件 `scan-english` 零命中
+
+清单复跑：未接入 687 → 685、有证据 87 → 85、零命中 600 → 602（`agentCatalog.ts` 接完退桶；A 桶剩 6 个文件，`anthropic_federation.ts` 30 条为下一片）
