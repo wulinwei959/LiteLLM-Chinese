@@ -734,3 +734,94 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 ## 第 570 簇：errorsData 纠缠拆开（2026-11-05）
 
 `seriesKey` 的双身份拆开：数据键改 `no_status`/`other` 稳定标识，显示名由渲染点按 `usage.errors.status.noStatus`/`usage.errors.other` 两条长期孤儿键映射；`entityRows` 返回状态码数据不再拼串。`statusCodeLabel`/`ERROR_ENTITY_LABEL`/`ERROR_RATE_VIEW_OPTIONS`/`StatusCodeRow.label` 四条死导出连测试删除（渲染面早被组件本地已译版接管，属判定账里"死常量遮蔽"型）。`LineChart` 新增可选 `categoryLabels`（此前 config label 直接回显数据键，`no_status` 会亮进图例）。零新键，有证据桶 80 → 79，A 桶与 `errorsData` 专项清零；残留显示英文自此只剩 B/C 判定面与上游新增
+
+## 门禁口径第五条：对象属性字面量（2026-11-05 第 571 簇）
+
+`check:english-leaks` 的 `scanSource` 此前只认 JSX 文本、JSX 属性、toast 首参与 `new Error` 四类，`.ts` 数据表里 `label:` / `tooltip:` / `title:` 这类对象属性字面量一律不可见，A 桶那批表就是靠 FILE-INVENTORY 人肉逐簇清的。本簇给库加 `scanObjectProperty`（COPY_PROPS 同名属性、纯小写点分键引用豁免：`nav.virtualKeys` 这类值是键不是文案），口径一次扩出 361 条 `prop:` 存量命中，全部冻结进 `english-leaks-baseline.json`（276 到 560）。存量按下列队列分簇接清，接一簇从基线删一簇（resolved 触红即门禁生效）；新增英文串不再能静默进表
+
+| 条数 | 文件                                                                                          |
+| ---- | --------------------------------------------------------------------------------------------- |
+| 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         |
+| 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         |
+| 45   | `src/app/(dashboard)/agents/_components/agent_config.ts`                                      |
+| 17   | `src/components/callback_info_helpers.tsx`                                                    |
+| 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          |
+| 8    | `src/data/compliancePrompts.ts`                                                               |
+| 6    | `src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx`                             |
+| 6    | `src/components/liteadmin/LiteAdminHomeComposer.tsx`                                          |
+| 6    | `src/components/model_add/anthropic_federation.ts`                                            |
+| 6    | `src/components/model_dashboard/HealthCheckComponent.tsx`                                     |
+| 5    | `src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx`                  |
+| 5    | `src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx`                             |
+| 5    | `src/app/(dashboard)/skills/_components/add_plugin_form.tsx`                                  |
+| 5    | `src/components/add_model/ComplexityRouterConfig.tsx`                                         |
+| 5    | `src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx`            |
+| 5    | `src/components/shared/timeRange/timeRange.ts`                                                |
+| 5    | `src/components/Teams.tsx`                                                                    |
+| 4    | `src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx`    |
+| 4    | `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                        |
+| 4    | `src/components/shared/CreatedKeyDisplay.tsx`                                                 |
+| 3    | `src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx` |
+| 3    | `src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx`                            |
+| 3    | `src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx`                     |
+| 3    | `src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx`           |
+| 3    | `src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`                                            |
+| 3    | `src/components/liteadmin/operations.ts`                                                      |
+| 3    | `src/components/routing_groups/RoutingGroupUsagePanel.tsx`                                    |
+| 3    | `src/components/shared/search/SearchBox.tsx`                                                  |
+| 3    | `src/components/user_agent_activity.tsx`                                                      |
+| 3    | `src/utils/budgetUtils.ts`                                                                    |
+| 2    | `src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx`                             |
+| 2    | `src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx`            |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx`                             |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx`                             |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx`                       |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/MCPNetworkSettings.tsx`                          |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx`                 |
+| 2    | `src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx`                   |
+| 2    | `src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx`                      |
+| 2    | `src/app/layout.tsx`                                                                          |
+| 2    | `src/components/add_model/advanced_settings.tsx`                                              |
+| 2    | `src/components/add_model/OpeningPromptEditor.tsx`                                            |
+| 2    | `src/components/add_model/ReminderMarkers.tsx`                                                |
+| 2    | `src/components/key_team_helpers/key_sorting.ts`                                              |
+| 2    | `src/components/ModelSelect/ModelSelect.tsx`                                                  |
+| 2    | `src/components/pass_through_info.tsx`                                                        |
+| 2    | `src/components/team/TeamEditSettingsForm.tsx`                                                |
+| 2    | `src/components/TeamsPage/teamTableColumns.tsx`                                               |
+| 1    | `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                  |
+| 1    | `src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx`                              |
+| 1    | `src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx`                        |
+| 1    | `src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx`                  |
+| 1    | `src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx`                         |
+| 1    | `src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx`                           |
+| 1    | `src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx`                           |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/MCPToolsetTableColumns.tsx`                      |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx`                           |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx`                          |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx`                    |
+| 1    | `src/app/(dashboard)/memory/_components/MemoryEditModal.tsx`                                  |
+| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx`        |
+| 1    | `src/app/(dashboard)/playground/components/chat/PlaygroundChat.tsx`                           |
+| 1    | `src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx`                           |
+| 1    | `src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx`                         |
+| 1    | `src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx`                      |
+| 1    | `src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx`                         |
+| 1    | `src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx`                           |
+| 1    | `src/app/(dashboard)/workflows/WorkflowRuns.tsx`                                              |
+| 1    | `src/components/add_pass_through.tsx`                                                         |
+| 1    | `src/components/AIHub/UsefulLinksManagement.tsx`                                              |
+| 1    | `src/components/cloudzero_export_modal.tsx`                                                   |
+| 1    | `src/components/leftnav.tsx`                                                                  |
+| 1    | `src/components/model_add/openai_federation.ts`                                               |
+| 1    | `src/components/Navbar/ViewSwitcher.tsx`                                                      |
+| 1    | `src/components/networking.tsx`                                                               |
+| 1    | `src/components/routing_groups/RoutingGroupModal.tsx`                                         |
+| 1    | `src/components/shared/credentialOptions.ts`                                                  |
+| 1    | `src/components/team/EditMembership.tsx`                                                      |
+| 1    | `src/components/templates/KeyEditViewControls.tsx`                                            |
+| 1    | `src/components/UsagePage/keyActivityData.ts`                                                 |
+| 1    | `src/data/financialCompliancePrompts.ts`                                                      |
+| 1    | `src/data/insultsCompliancePrompts.ts`                                                        |
+
+首片排第 572 簇：`agent_config.ts` 45 条（表内 label/tooltip 已是 `configText` 键表机制的消费面，补齐 `FIELD_TEXT_KEYS` 映射并把 `add_agent_form.tsx`/`dynamic_agent_form_fields.tsx` 两处裸显的 `field.label` 改走 `configText`）
