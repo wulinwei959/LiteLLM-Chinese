@@ -8,6 +8,7 @@ import {
   hasFlatCost,
   hasPtuHours,
   type SummaryTile,
+  type SummaryTileId,
 } from "./entityUsageSummary";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { hasCapability, type Capability } from "@/utils/capabilities";
@@ -48,7 +49,6 @@ import {
   formatMetricValue,
   type Granularity,
   type Series,
-  type UsageMetric,
 } from "../overview/overviewData";
 import { Panel, Segmented, Sparkline, Stat } from "../overview/Primitives";
 import TopModelView from "./TopModelView";
@@ -57,34 +57,32 @@ import { ProviderSpendBreakdown } from "./SpendByProvider";
 import { useTranslations } from "next-intl";
 
 const BRAND = "#2b3fd6";
-const FLAT_COST_SERIES = "Flat cost";
 const FLAT_COST_COLOR = "#8b5cf6";
-const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
-/** Summary tiles that carry a sparkline, keyed by tile title, valued by the dailyTotals field. */
-const TILE_TRENDS: Readonly<Record<string, string>> = {
-  "Total Spend": "spend",
-  "Total Cost": "spend",
-  "Total Requests": "requests",
-  "Total Tokens": "tokens",
+/** Summary tiles that carry a sparkline, keyed by tile id, valued by the dailyTotals field. */
+const TILE_TRENDS: Readonly<Partial<Record<SummaryTileId, string>>> = {
+  totalSpend: "spend",
+  totalCost: "spend",
+  totalRequests: "requests",
+  totalTokens: "tokens",
 };
 const GRANULARITY_OPTIONS = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-] as const satisfies readonly { value: Granularity; label: string }[];
+  { value: "day", labelKey: "granularityDaily" },
+  { value: "week", labelKey: "granularityWeekly" },
+] as const satisfies readonly { value: Granularity; labelKey: "granularityDaily" | "granularityWeekly" }[];
 const SCALE_OPTIONS = [
-  { value: "linear", label: "Linear" },
-  { value: "log", label: "Log" },
-] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+  { value: "linear", labelKey: "scaleLinear" },
+  { value: "log", labelKey: "scaleLog" },
+] as const satisfies readonly { value: StackedUsageScale; labelKey: "scaleLinear" | "scaleLog" }[];
 const QUIET_HEADER = { headerClassName: "font-normal" };
 const FLAT_COST_KEY = "flat_cost";
 
 /** Stacks reserved-capacity flat cost on top of the per-model spend, so each bar is the day's full cost. */
-const withFlatCost = (series: Series, results: readonly DailyData[]): Series => {
+const withFlatCost = (series: Series, results: readonly DailyData[], flatCostLabel: string): Series => {
   const flatByDate = new Map(results.map((day) => [day.date, day.metrics.flat_cost ?? 0]));
   return {
     data: series.data.map((day) => ({ ...day, [FLAT_COST_KEY]: flatByDate.get(day.date) ?? 0 })),
     keys: [...series.keys, FLAT_COST_KEY],
-    labels: [...series.labels, FLAT_COST_SERIES],
+    labels: [...series.labels, flatCostLabel],
     colors: [...series.colors, FLAT_COST_COLOR],
   };
 };
@@ -371,10 +369,11 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const providerSpend = useMemo(() => getProviderSpend(spendData.results), [spendData.results]);
   const dailyTrend = useMemo(() => dailyTotals(spendData.results), [spendData.results]);
   const stackFlatCost = showFlatCost && breakdown.metric === "spend";
+  const flatCostLabel = t("entity.flatCost");
   const chartSeries = useMemo(() => {
-    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results) : dailySeries;
+    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results, flatCostLabel) : dailySeries;
     return bucketSeries(series, granularity);
-  }, [stackFlatCost, dailySeries, spendData.results, granularity]);
+  }, [stackFlatCost, dailySeries, spendData.results, granularity, flatCostLabel]);
   const chartTotals = useMemo(() => bucketTotals(chartSeries), [chartSeries]);
 
   const entityBreakdownColumns = useMemo<ColumnDef<EntityMetricWithMetadata>[]>(
@@ -386,37 +385,37 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         cell: ({ row }) => <span className="font-medium text-foreground">{row.original.metadata.alias}</span>,
       },
       {
-        header: "Share",
+        header: t("entity.share"),
         id: "share",
         meta: { ...QUIET_HEADER, className: "w-40" },
         cell: ({ row }) => <ShareBar value={row.original.metrics.spend} max={maxEntitySpend} />,
       },
       {
-        header: "Spend",
+        header: t("provider.spend"),
         accessorKey: "metrics.spend",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
       },
       {
-        header: "Successful",
+        header: t("provider.successful"),
         accessorKey: "metrics.successful_requests",
         meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
       },
       {
-        header: "Failed",
+        header: t("provider.failed"),
         accessorKey: "metrics.failed_requests",
         meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
       },
       {
-        header: "Tokens",
+        header: t("provider.tokens"),
         accessorKey: "metrics.total_tokens",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
       },
     ],
-    [capitalizedEntityLabel, maxEntitySpend],
+    [capitalizedEntityLabel, maxEntitySpend, t],
   );
 
   const chev = "size-3 text-muted-foreground";
@@ -436,7 +435,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const renderSummaryTile = (tile: SummaryTile, index: number) => {
-    const trendKey = TILE_TRENDS[tile.title];
+    const trendKey = TILE_TRENDS[tile.id];
     const stat = <Stat label={tileLabel(tile)} value={<span className={tile.className}>{tile.value}</span>} />;
     const trend = trendKey ? (
       <Sparkline data={dailyTrend} dataKey={trendKey} color={BRAND} className="h-12" />
@@ -444,14 +443,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     const span = index === 0 ? "col-span-2 lg:col-span-1" : undefined;
     if (!tile.expandable) {
       return (
-        <StatCell key={tile.title} trend={trend} className={span}>
+        <StatCell key={tile.id} trend={trend} className={span}>
           {stat}
         </StatCell>
       );
     }
     return (
       <div
-        key={tile.title}
+        key={tile.id}
         role="button"
         tabIndex={0}
         aria-expanded={showCostBreakdown}
@@ -469,8 +468,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     );
   };
 
-  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
-  const summaryTiles = buildSummaryTiles(spendData.metadata, showFlatCost, showPtuHours);
+  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(t, spendData.metadata) : [];
+  const summaryTiles = buildSummaryTiles(t, spendData.metadata, showFlatCost, showPtuHours);
 
   const modelViewTitle = modelViewType === "groups" ? t("topModelGroups") : t("topModelSingle");
   const chartFormat = (value: number) => formatMetricValue(value, breakdown.metric);
@@ -494,7 +493,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         {breakdownTiles.length > 0 && (
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border">
             {breakdownTiles.map((tile) => (
-              <StatCell key={tile.title}>
+              <StatCell key={tile.id}>
                 <Stat label={tileLabel(tile)} value={<span className={tile.className}>{tile.value}</span>} />
               </StatCell>
             ))}
@@ -506,13 +505,18 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
           <div>
             <h3 className="text-sm font-medium text-foreground">
-              {METRIC_TITLE[breakdown.metric]} {t("by")}{" "}
-              {modelViewType === "groups" ? t("modelLabel") : t("deploymentLabel")}
+              {t("entity.metricByModel", {
+                metric: t(`overview.metric.${breakdown.metric}`),
+                model: modelViewType === "groups" ? t("modelLabel") : t("deploymentLabel"),
+              })}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {granularity === "day" ? "Daily" : "Weekly"} {breakdown.metric}
-              {t("topStackedSuffix")}
-              {stackFlatCost ? ", flat cost on top" : ""}
+              {t("entity.stackCaption", {
+                granularity: t(granularity === "day" ? "entity.granularityDaily" : "entity.granularityWeekly"),
+                metric: t(`overview.metric.${breakdown.metric}`),
+                suffix: t("topStackedSuffix"),
+              })}
+              {stackFlatCost ? t("entity.flatCostOnTop") : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -520,10 +524,15 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
             <Segmented
               label={t("entity.bucketSize")}
               value={granularity}
-              options={GRANULARITY_OPTIONS}
+              options={GRANULARITY_OPTIONS.map(({ value, labelKey }) => ({ value, label: t(`entity.${labelKey}`) }))}
               onChange={setGranularity}
             />
-            <Segmented label={t("entity.scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+            <Segmented
+              label={t("entity.scale")}
+              value={scale}
+              options={SCALE_OPTIONS.map(({ value, labelKey }) => ({ value, label: t(`entity.${labelKey}`) }))}
+              onChange={setScale}
+            />
           </div>
         </header>
         <div className="px-3 pt-4 pb-2">
@@ -669,7 +678,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         />
       ),
     },
-    { key: "endpoints", label: "Endpoint Activity", content: <EndpointUsage userSpendData={spendData} /> },
+    { key: "endpoints", label: t("tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
   ];
 
   return (

@@ -5547,3 +5547,90 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 复测：playground 相关五个测试文件 61 例全绿，含测试的 `tsc --noEmit` 0 错（6 GB 堆），改动文件 eslint 0 error 且无新增告警，死键 0，静态英文 286/286，中文取值 215/0，lint 预算 complexity 138/140（下降），`eslint . --prune-suppressions` 清 14 条失效抑制，`npm run build` exit 0。渲染扫描本轮未复跑（本机无浏览器服务器），沿用第 539 簇结论，纯 JSX 搬迁无文案改动
 
 静态英文账的两条坑记在这里。`FN`/`FP` 与 CSV 列名 `prompt`、`expected_result`、`framework`、`category` 属机读面，拆文件后六条基线条目要改指新文件而不是删掉，删了会让 CI 报 6 条新漏。首轮本地按 280/280 记账，是因为扫描取 `git ls-files`，新文件还没 `git add` 时不在扫描范围，与第 524、554 簇同一个坑
+
+## 2026-11-04 第 561 簇：渲染扫描扩到 playground，修掉七条新发现
+
+第 539 簇把渲染扫描固定成 chrome 通道时 PAGES 停在 38 页，playground、change-password、old-usage 三条在侧栏能点到的路由始终没进扫描面。这三页恰好是本轮全部真漏的出处，静态口径一道都抓不到它们
+
+扩面先把 PAGES 抬到 41 页，首轮拿到 6 处英文加 1 条运行期错误，共 7 条新发现，逐条溯源如下
+
+`/change-password` 面包屑渲染成 `Change Password`。`src/components/leftnav.tsx` 的 `getBreadcrumb` 只对 `UNLISTED_TITLES` 里登记过的路由取 nav 键，其余回落 `prettify(route)`，把路径段当标题拼。补 `nav.changePassword` 中英各一条，`UNLISTED_TITLES` 加映射，测试跟着补一条按键取标题的断言
+
+`/playground` 空会话渲染出三条英文示例提示词按钮。往回追到 `chat/endpointCapabilities.ts`，这张端点能力表是 2026-10-20 上游合并 `797ecb32` 带进来的，从没进过汉化批次。除了扫描抓到的三条，表里还有八条输入框占位符和三条附件按钮提示是英文，这十一条扫描看不见：`.ts` 不在 `check:english-leaks` 的遍历范围是一层，`rendered-ui-scan.mjs` 取 `innerText()`、属性文案不在口径里是另一层，只能读代码捞。改法沿用 `src/app/chat/page.tsx` 的 `SUGGESTION_KEYS` 先例，能力表里存键名（`placeholderKey`、`ATTACH_LABEL_KEYS`、`SUGGESTION_KEYS`、`CODE_INTERPRETER_SUGGESTION_KEYS`），`Composer.tsx` 与 `PlaygroundChat.tsx` 在渲染处 `t()` 取值，目录补 15 叶
+
+`/playground` 另有一条运行期 `FORMATTING_ERROR`：合规测试面板的框架行把「全选/清除」按钮嵌在整行可点的 `<button>` 里，HTML 不允许交互元素嵌套。`CompliancePromptLibrary.tsx` 拆成一行 `div` 容器加两个平级按钮，折叠图标与计数徽标归展开按钮，全选按钮留在右侧
+
+扫描剩下的 `chat`、`completions` 两个词是端点下拉里的 API 名，属机读面，进 `ALLOWED_ENGLISH`。`/v1/mcp/toolset` 无桩导致 `skills` 页轮询报错，补一条空数组桩
+
+复测：41 页 0 渲染错误、0 条新发现、0 条 stub-miss，基线 60 降到 58，剩余分布 api-reference 31、transform-request 18、lens 8、model-insights 1。中英目录各 13575 叶、键差集 0、zh 未译 221/0、en 夹中文 0、死键 0、静态英文 280/280。i18n 目录加 chat 目录加 leftnav 25 个测试文件 283 例全绿，playground 全目录加 leftnav 46 个文件 583 例全绿，`npm run build` exit 0，全仓 `npm run lint` 0 error（3250 条既有 warning）
+
+键的类型这一条值得单记。`src/lib/i18n/next-intl.d.ts` 把 `AppConfig.Messages` 声明成 `typeof en.json`，`t()` 收的是 `NamespacedMessageKeys`，首轮把存键名常量写成 `string`，`check:english-leaks` 看不见（`.ts` 不在遍历范围），jsdom 测试全绿（zh-CN 渲染照常命中），只有 CI 的 `npm run typecheck` 与 `next build` 报三处 TS2345。改回 `src/app/chat/page.tsx` 的 `SuggestionKey` 先例，用字面量联合列全 11 条键，`suggestions.default.0` 这类下标键也在带类型的目录里逐个可查，拼错键名从此是编译期错
+
+新增三条本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红
+
+顺着这个盲区把 `.ts` 侧的账量了出来，写进 `FILE-INVENTORY.md` 的「`.ts` 侧的待接队列」，当时记的数是 11 个文件 122 条、去掉 27 条差分测试用例与 3 条待判的工具返回串后剩 92 条"确认渲染在界面上"。**这个判定不成立**，次日重做，见下面第 562 簇。错因是按"文件里有英文"记真漏，没按消费点记，`.ts` 是数据层，同一字符串可能是渲染值、回退数据、比较键、协议字段或没人调的死代码
+
+## 2026-11-05 第 562 簇：`.ts` 队列的判定重做，枚举口径扩到 `.ts`
+
+上一簇记下的「92 条确认渲染在界面上」是错的。判据用成了"文件里有英文就算真漏"，而 `.ts` 是数据层，同一条字符串得先问它到底进不进 DOM、进之前有没有过键间接层。把 A 桶那批的消费点逐个读出来重判，真漏从 10 个文件缩到 8 个文件。按消费点重数的条数是 97，比上一版的 92 还多，因为上一版漏数了 federation 两份的 `tooltip`（跨行字面量，单行 grep 抓不到）与 `entityUsageSummary` 整块，四个文件根本不是漏
+
+产出脚本 `scripts/i18n-file-inventory.mjs` 加 `--include-ts`，把枚举口径从 `.tsx` 扩到 `.ts`。三处必须留意：`.ts` 要用 `ScriptKind.TS` 解析，按 TSX 解析会把泛型 `<T>(...)` 读成 JSX 而静默失配；排除规则从"文件名含 `.test.`"改成匹配 `.(test|spec)[-]`，`searchToolTypes.test-d.ts` 这类类型测试原名不含 `.test.`，会混进队列；`vendor/` 与 `src/lib/i18n/` 要跳过，后者是 i18n 基础设施本身。不带 `--include-ts` 时的输出与扩面之前只差一行，`DataTable.test-d.tsx` 被新排除规则挡掉，那是类型测试不是源文件（拿 HEAD 的副本跑一遍 diff 对出来的）
+
+复跑数：`.tsx` 与 `.ts` 未接入翻译器共 688 个，83 个有可见文案证据（`.tsx` 18、`.ts` 65，`.ts` 侧 289 条命中），605 个零命中。只跑 `.tsx` 是 220 个未接入、18 个有证据、202 个零命中。
+`.ts` 的 289 条按消费点分三桶：A 真漏 8 个文件 97 条、B 已有键间接层 4 个文件 82 条、C 不渲染或机读值 53 个文件 110 条
+
+上一版判错的四块，逐条给结论。`guardrail_garden_data.ts` 47 条走 `:592` 的 `localizeGuardrailCard` 查 `guardrails.garden.cards.<id>`，英文是回退数据，真缺口是目录少 3 条（`llm_shield_proxy`、`wingback`、`airia`，数据侧 58 个 id 对中英各 55 条）；`agent_config.ts` 30 条全部经 `:467` 的 `configText` 配 `FIELD_TEXT_KEYS`（46 项、中英两侧齐全），`agent_form_fields.tsx:247-363` 无一条直出，真漏为零，只有 `:196`/`:200`/`:203` 的 tracing 段无人消费；`systemOneUI/lib/example.ts` 的 `label` 渲染处 `SystemOneUI.tsx:68` 按 `preset.id` 查 `t("preset.<id>")`，`label` 只有自身测试读；`budgetUtils.ts:96` 的 `Never resets` 所在 `describeBudgetResetSchedule` 全仓无生产调用点
+
+读消费点读出来的新增面，上一版没数到。`entityUsageSummary.ts` 七条标题与四条 tooltip 直出在 `EntityUsage.tsx:425`/`:431`，且标题同时是 `TILE_TRENDS` 的对比键，接入要先把键与显示名拆开，`agentCatalog.ts` 的 `label` 同样被 `:358` 拿来建每日序列、`:240` 取色，是一样的纠缠。`anthropic_federation.ts` 与 `openai_federation.ts` 的 `tooltip` 是跨行字面量，上一版按单行 grep 数的 19/3 直接漏掉一批。`errorsData.ts` 表里那条 `label: "By status code"` 反而没人 import（`ErrorsTab.tsx:96` 已用 `t()` 自建），真正进 DOM 的是 `series.codes` 的 `Other`/`No status`（`:238` 图例）和 `row.topStatus`（`:313`），这两个字段名不在枚举的十二个可见键里
+
+顺带查出一批挂空词条：`usage.entity.totalSpend`、`usage.entity.totalCost`、`usage.metrics.successfulRequests`、`usage.metrics.failedRequests`、`usage.totalRequests`、`usage.totalTokens` 六条中英齐全、全仓无 `t()` 引用，正好对上 `entityUsageSummary.ts` 的标题；errors 侧 `usage.errors.status.noStatus`、`usage.errors.other` 同理。接入时复用这些键，不要新建
+
+`.tsx` 侧同一次复跑漂出一条真漏，上一版记的「有证据且判为真漏 0」不再成立。`ModelViewToggle.tsx:24` 直出 `{option.label}`，`"Public Model Name"` 与 `"Litellm Model Name"` 无翻译器，由 `d20a9cb6` 带入，`usage.modelViewToggle` 在两份目录里都是空对象、键位留着没人填。它归进 A 桶一起做，要连带翻面 `EntityUsage.test.tsx:877`/`:883` 与 `UsagePageView.test.tsx:1364-1387` 按英文字面量取元素的断言。`.tsx` 的账也从 10-26 的 955/739/216 漂到 990/770/220，零命中一节整节按脚本重生成，目录分布跟着变成 `src/app` 89、shadcn 原语 40、共享容器 22、其余 51 个散在 31 个目录
+
+C 桶里 38 个 hook 文件各一条 `throw new Error("Access token is required")` 记为低优先而非零优先：串本身不进 DOM，但调用方普遍写 `toast.fromError(error.message)`（如 `AccessGroupCreateDialog.tsx:80`），守卫一触发就原文上 toast。真要接得先把 hook 改成抛带键的类型化错误再由调用方映射，逐条翻字符串是错的接法
+
+PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpointCapabilities.ts` 的字面量联合与 `FILE-INVENTORY.md` 的表未格式化。本地 `npx prettier --write` 后复跑 `format:check`。这条门禁不在 `check:dead-keys` 那套 i18n 门禁里，`make check` 也不覆盖 `ui/`，只有 CI 的 `ui` 作业跑，本地改 `.ts`/`.md` 后要么顺手 prettier，要么等 CI
+
+## 2026-11-05 第 563 簇：usage 页数据侧接入，枚举补上模块级 `export const` 口径
+
+把上一簇读出来的两块接掉。`ModelViewToggle.tsx` 的两个切换按钮改成 `labelKey`（`publicModelName`/`litellmModelName`），`usage.modelViewToggle` 两份目录从空对象补齐，中文取「公开模型名称」与「LiteLLM 模型名称」，沿用 `components/logs/constants.ts:86` 的 `labelKey` 先例。`entityUsageSummary.ts` 的七条标题与四条 tooltip 走 translator-first：`buildSummaryTiles(t, metadata, showFlatCost, showPtuHours)` 与 `buildCostBreakdownTiles(t, metadata)` 收 `UsageTranslator`，构建处取值，`SummaryTile` 新增稳定 `id`（`SummaryTileId` 字面量联合），`EntityUsage.tsx` 的 `TILE_TRENDS` 与三处 React key 改按 `id` 比对，标题不再是比对键。四条 tooltip 从 `export const` 挪进目录，四个模块级常量删掉（全仓无其他引用）。六条挂空词条这次真的被用上了，`usage.entity` 新增 `requestCost`/`flatCost`/`ptuHours` 三条标题与 `totalCostHint`/`requestCostHint`/`flatCostHint`/`ptuHoursHint` 四条提示，英文串逐字照搬不改写
+
+`const` 口径顺带浮出 `src/utils/promptCacheUsage.ts` 的两条提示，同簇接掉：`common.promptCacheReadTooltip` 与 `common.promptCacheCreationTooltip`，`chat_ui/ResponseMetrics.tsx` 与 `logs/detail/LogDetailContent.tsx` 各自加 `useTranslations("common")` 取值，两个 `.ts` 常量删除。同一句话在 chatUi 与 logs 两个命名空间各存一份是重复，放 `common` 一条一份事实
+
+测试两侧都要动。`entityUsageSummary.test.ts` 是纯数据层测试，按 `kill_switch_config.test.ts` 的先例用 `createTranslator({ locale: "en", messages: en, namespace: "usage" }) as unknown as UsageTranslator` 注入，英文断言因此一条不用改，但签名要多传 `t`，且原有 `.map((t) => t.title)` 的形参会遮蔽翻译器，改成 `tile`。新增一条 id 契约测试，钉住九宫格的 id 序列而不是显示名，这是 `TILE_TRENDS` 与 key 依赖的事实。渲染侧 `EntityUsage.test.tsx` 四处 `"Total Spend"` 与两处切换按钮、`UsagePageView.test.tsx` 六处切换按钮按 zh-CN 取值翻面。16 条数据层测试与 138 条渲染测试、`npm run typecheck` 全绿
+
+产出脚本加第 7 个口径：模块级大写蛇形 `export const` 的字符串初值。它盖的是 `entityUsageSummary` 这类"文案住在 `.ts` 常量里、由 `.tsx` 直出"的面，此前六个口径全看不见。初值要先过散文判据，再叠一条正则挡 Tailwind 类名串（`text-right tabular-nums` 一类否则会整批涌进来）。复跑数变成 `.tsx` 219 个未接入（18 有证据、201 零命中），`.tsx` 与 `.ts` 合计 687 个（88 有证据：`.tsx` 40 条、`.ts` 287 条，599 零命中）
+
+新口径浮出的 8 个 `.tsx` 里 7 个是 `throw new Error("useAuth must be used within an AuthProvider")` 一类开发期断言串，判同 C 桶；剩 `tag-management/_components/tagTableColumns.tsx` 一条 spend tag 说明串待判。`.ts` 侧浮出 7 个各 1 条，`promptCacheUsage` 已接，`activityTimestamp` 是日期格式串、`aria-brand` 是专名、`budgetUtils` 无生产消费点，另三条待判
+
+一个命令坑值得单独记。`npm run format` 是 `prettier --write .`，追加文件参数没用，它会按 `ui/litellm-dashboard/.prettierrc` 的 `printWidth: 120` 重写全仓 162 个与本次无关的文件（CI 只 `--check` PR 改动的文件，这些历史文件从来没被门禁管过）。跑一次就把别人家的格式全改了，本次靠事先备份 9 个自改文件、`git checkout --` 批量回滚，再用 `npx prettier --write <显式路径>` 只格式化自己改的。改 `ui/` 下的格式只能用后一种写法
+
+`errorsData.ts` 的 `Other`/`No status` 本簇没动。`seriesKey()` 同时是图表的数据键与图例显示名（`codes` 直接渲染进 `ErrorsTab.tsx:238`），接入要先把键与显示名拆开再动渲染处，跟 `agentCatalog.ts` 的 `label` 是同一类纠缠，归到 A 桶剩下 7 个文件 88 条一起做
+
+## 2026-11-05 第 564 簇：接掉 `EntityUsage.tsx` 图表头区的硬编码英文
+
+第 563 簇把 `entityUsageSummary.ts` 交给消费点，读 `EntityUsage.tsx:505-537` 时发现同一块界面上的图表头区还是硬编码。这个文件早就挂着 `t = useTranslations("usage")`，接入判据把它算作已接入，本文件的清单口径看不见它，`check:english-leaks` 也没数到过那批串。收口的六处：`FLAT_COST_SERIES`、`METRIC_TITLE` 两个模块级常量，`GRANULARITY_OPTIONS` 与 `SCALE_OPTIONS` 的四个 `label`，标题 `h3` 与副标题 `p`
+
+两个选项数组改 `labelKey` 加 `as const satisfies`，联合类型直接写键名字面量，`t(\`entity.${labelKey}\`)` 因此是类型可查的模板字面量。`withFlatCost`的系列名从常量改成第三个入参，调用处传`t("entity.flatCost")`，`flatCostLabel`跟着进`chartSeries`的`useMemo` 依赖，漏掉它就会在换语言时留一条英文图例。`Flat cost`、`Daily`/`Weekly`、`Linear`/`Log`、`Spend`/`Tokens`/`Requests` 全部复用已有键，一条没新建：`entity.flatCost` 是第 563 簇刚开的，其余七条（`entity.granularityDaily`/`granularityWeekly`/`scaleLinear`/`scaleLog`与`overview.metric.spend`/`tokens`/`requests`）在两份目录里躺了很久没人引用（model-insights 用的 `granularityDaily`与`scaleLinear`在`modelInsights`命名空间，跟`usage.entity` 这四条只是同名）
+
+标题与副标题这两句改成 ICU 整句，新增 `entity.metricByModel`、`entity.stackCaption`、`entity.flatCostOnTop` 三键，叶子 13586 → 13589，两侧同数、键差集 0。顺带修掉两处老缺陷：原 `h3` 是 `${METRIC_TITLE[metric]} ${t("by")} ${modelLabel}` 三段拼出来的，中文会念成「花费 按 模型」；原副标题直接把 `breakdown.metric` 的键名打进界面，渲染出来是 `Daily spend，前 8 项堆叠` 这种中英夹生的串。整句进目录之后两处都按目标语言自己的语序走
+
+`check:zh-coverage` 报了一条新的未译：`entity.stackCaption` 的中文值「{granularity}{metric}{suffix}」整串都是参数，没有汉字可判。按门禁给的出口把它入基线，理由与先例是 `logs.routing.bandWithTier`（同样是全参数拼句）。`--write` 顺带把 `playground.compliance.csvTemplateRow{1,2,3}Framework` 三行的排序改成 ASCII 序，那是生成文件自己的事。死键 0（`usage.by` 还有 `access-groups` 与 `projects` 四个消费点，没被这次改动变成孤儿）、静态英文 280/280 且无 resolved 条目、`npm run typecheck` 0 错
+
+测试加一条按中文取元素的断言，`EntityUsage.test.tsx` 钉住四个 `radio`（每日/每周/线性/对数）、`h3`「按模型统计的花费」与副标题「每日花费，前 8 项堆叠」，接线前这些串在界面上一条都不存在。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0，`src/lib/i18n` 的 parity 守卫 5 个文件 23 例全绿。`METRIC_TITLE` 删掉后 `UsageMetric` 这个类型导入也没了消费点，一并删除，否则 eslint 报 unused-imports 一条 error。eslint 触及两文件 0 error，`EntityUsage.tsx` 4 条 warning、测试文件 8 条，行号全在改动区之外，是 HEAD 既有。触及的七个文件 `npx prettier --check` 合规，`EntityUsage.tsx` 里第 563 簇留下的那处 `Segmented` 缩进欠账一并修直，`PROGRESS.md` 本次新增段被 prettier 按中文正文规则收紧了行内代码两侧的空格
+
+清单复跑（`node scripts/i18n-file-inventory.mjs --include-ts`）：未接入 687 个不变，有可见文案证据 88 → 87（`.ts` 少 `entityUsageSummary.ts` 一个文件一条命中，第 563 簇接完退桶），零命中 599 → 600。本簇改动全在已接入文件内部，对这份清单是零影响，FILE-INVENTORY 的「口径盲区」两节因此补了第三道：判据只看有没有挂翻译器，接了线的文件内部的硬编码英文一律不进清单，只能靠读消费点捞
+
+## 2026-11-05 第 565 簇：接掉 usage 四个文件的表格列头、页签与空态
+
+第 564 簇读 `EntityUsage.tsx` 消费点时，把同一屏上还没接的面记了下来，本簇清掉。四个文件早已挂着翻译器，本清单与 `check:english-leaks` 都看不见它们内部的硬编码，只能按面收：`EntityUsage.tsx` 下钻表的五个列头加 `endpoints` 页签，`TopModelView.tsx` 的五个列头加视图切换的两个按钮，`TeamUserSpendCard.tsx` 的七个列头加两条空态，`EndpointUsageTable.tsx` 的空态与端点计数
+
+接线沿用前两簇的形状。模块级 `const columns` 换成收翻译器的 builder（`buildTeamUserColumns(t: UsageTeamUserSpendTranslator)`，先例是 `SpendByProvider.tsx:33`），翻译器类型从 `src/lib/i18n/translators.ts` 取，不在组件里重新声明命名空间。选项数组用 `labelKey` 加字面量联合：`VIEW_OPTIONS` 原来是 `as const satisfies readonly { value: ViewMode; label: string }[]`，`label` 是自由串，接不了 `t()`，改成 `readonly { value: ViewMode; labelKey: ViewLabelKey }[]`，`t(labelKey)` 因此是类型可查的按键取值。`EntityUsage.tsx` 那五列头复用 `usage.provider` 的 `spend`/`successful`/`failed`/`tokens`（同一批词在供应商表和实体表里是同一个事实），`useMemo` 依赖补 `t`，漏了它会换语言不换表头。端点计数走 ICU 复数，`{count, plural, one {# endpoint} other {# endpoints}}` 对 `{count, plural, other {# 个端点}}`，先例是 `models.addModel.overrideCount`，原来那句 `dataSource.length === 1 ? "endpoint" : "endpoints"` 的英文单复数在中文里本就不成立
+
+新增只有五键：`usage.entity.share`、`usage.teamUserSpend.noData`、`usage.topModelView.colSuccessful`/`colFailed`、`usage.endpointUsage.endpointCount`，叶子 13589 → 13594，两侧同数、键差集 0。其余 19 条全部复用已有词条
+
+复用这一步浮出一条工具事实，值得单记。复用的 19 条里有 14 条，接之前在自己的命名空间里没有任何读取点：`usage.topModelView` 的 `colModel`/`colSpend`/`colTokens`/`tableView`/`chartView`（本文件此前只读 `modelCountAria` 与 `viewModeAria`）、`usage.teamUserSpend` 的 `team`/`user`/`spend`/`successful`/`failed`/`tokens`/`selectTeamHint`（`requests` 由 `ClientUsagePanel.tsx:267` 在读，那七条没人读）、`usage.endpointUsage.noData`、`usage.tabs.endpoints`。可死键门禁一直是 0。原因是 `scripts/dead-keys.py` 的 `referenced_verbatim`：键路径的任意后缀在全仓任意字符串字面量里出现过就算活着，`AgentsTableColumns.tsx` 的 `t("colSpend")`、`TopKeyView.tsx` 的 `t("tableView")`、`AddModelForm.tsx` 的 `t("selectTeamHint")` 这些别的命名空间里的同名兄弟把它们全救了下来。命名空间级孤儿这个门禁看不见，FILE-INVENTORY 的盲区一节因此加了第四道。挂空词条能复用的比想象多，接入前先按命名空间查一遍读取点，别急着开新键
+
+断言翻面 10 条，`TopModelView.test.tsx` 八条（五个列头、两个视图按钮、一处 `queryByText` 反查）与 `EntityUsage.test.tsx` 两处面板表，按 `TopKeyView.test.tsx:235` 已落的中文取值对齐。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0
+
+门禁：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222、`npm run typecheck` 0 错。触及六个文件 eslint 0 error、28 条 warning（`TopModelView.tsx` 的 5 条 `any` 与测试文件的 `container`/`node-access` 全在改动区之外，是 HEAD 既有）。四个源文件接完结尾 `node scripts/scan-english.mjs <file>` 均零命中，`npx prettier --check` 只报 `EndpointUsageTable.tsx` 一处超长 `span`，按 `--write` 展开成三行，改动没溢出到别人家。清单复跑 687 个未接入、87 个有证据、600 个零命中，三个数与第 564 簇记的完全一致，本簇四个文件都在线内，对这份清单零影响

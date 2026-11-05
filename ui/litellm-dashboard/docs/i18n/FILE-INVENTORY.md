@@ -8,21 +8,86 @@
 node scripts/i18n-file-inventory.mjs
 ```
 
-它遍历 `src` 下所有非测试 `.tsx`，跳过带翻译器的，对剩下的按六个口径取证据：JSX 文本、可见属性（`title`/`label`/`aria-label`/`alt`/`description`/`placeholder`/`tooltip`/`hint`/`helperText`/`sublabel`/`subtitle`/`emptyText`/`header`/`message`）、对象属性（表格列定义与配置映射，`scan-english.mjs` 看不见的盲区）、参数默认值（第二个盲区）、toast 首参、`new Error` 首参。对象属性口径要求值像散文（两个以上纯字母词）以免被 Tailwind 类名淹没
+它遍历 `src` 下所有非测试 `.tsx`，跳过带翻译器的，对剩下的按七个口径取证据：JSX 文本、可见属性（`title`/`label`/`aria-label`/`alt`/`description`/`placeholder`/`tooltip`/`hint`/`helperText`/`sublabel`/`subtitle`/`emptyText`/`header`/`message`）、对象属性（表格列定义与配置映射，`scan-english.mjs` 看不见的盲区）、参数默认值（第二个盲区）、toast 首参、`new Error` 首参、模块级 `export const` 的字符串初值（第三个盲区，2026-11-05 补，判据是大写蛇形名）。对象属性与 `const` 两个口径要求值像散文（两个以上纯字母词），`const` 还另加一条正则挡掉 Tailwind 类名串
 
 ## 结论
 
-2026-10-26 复跑，非测试 `.tsx` 共 955 个，接入翻译器 739 个，未接入 216 个。枚举规则即本文件的产出脚本 `node scripts/i18n-file-inventory.mjs`：`src` 下 `.tsx`，文件名含 `.test.` 的排除，接入判据是源码出现 `useTranslations(` 或 `getTranslations(`
+2026-11-05 补上 `const` 口径并接入 usage 页那批之后复跑，非测试 `.tsx` 共 990 个，接入翻译器 771 个，未接入 219 个。枚举规则即本文件的产出脚本 `node scripts/i18n-file-inventory.mjs`：`src` 下 `.tsx`，文件名匹配 `.(test|spec)` 与 `.d.ts` 的排除，接入判据是源码出现 `useTranslations(` 或 `getTranslations(`
 
-| 分桶             | 数量 | 含义                                                   |
-| ---------------- | ---- | ------------------------------------------------------ |
-| 六口径零命中     | 200  | 文件里没有任何面向用户的英文字面量，不需要接入         |
-| 有证据且已判定   | 17   | 有英文串，但都属数据、协议标识、程序异常串或测试脚手架 |
-| 有证据且判为真漏 | 0    | 本桶为空                                               |
+| 分桶           | 数量 | 含义                                                   |
+| -------------- | ---- | ------------------------------------------------------ |
+| 七口径零命中   | 201  | 文件里没有任何面向用户的英文字面量，不需要接入         |
+| 有证据且已判定 | 18   | 有英文串，但都属数据、协议标识、程序异常串或测试脚手架 |
 
-216 个里 199 个零命中，按目录的分布：`src/app` 路由文件 88 个（其中 `page.tsx` 40 个，只做重定向或包一层 Panel），shadcn 原语 40 个（`src/components/ui`，只有样式与转接），共享容器 23 个，其余 48 个散在 58 个目录里；另 17 个有可见文案证据。全部清单见下面两节
+按目录的分布：`src/app` 路由文件 89 个（其中 `page.tsx` 39 个，只做重定向或包一层 Panel），shadcn 原语 40 个（`src/components/ui`，只有样式与转接），共享容器 22 个，其余 50 个散在 30 个目录里；另 18 个有可见文案证据。全部清单见下面两节
 
-## 有可见文案证据的 17 个
+（已接，2026-11-05 第 563 簇）真漏那条是 2026-11-05 扩口径重跑时新漂出来的，2026-10-26 那一版还没有它。`src/app/(dashboard)/usage/_components/components/ModelViewToggle.tsx:24` 直出 `{option.label}`，`"Public Model Name"` 与 `"Litellm Model Name"` 两个切换按钮无翻译器，文件由 `d20a9cb6` 带入。`usage.modelViewToggle` 在两份目录里都是空对象，键位留着没人填。渲染扫描抓不到它，`/usage` 的 stub 返回空数组，模型视图为空时这个 toggle 不进 DOM。接入把 `label` 换成 `labelKey`（`publicModelName`/`litellmModelName`），`usage.modelViewToggle` 两份目录补齐，消费方 `EntityUsage.test.tsx:877`、`:883` 与 `UsagePageView.test.tsx` 的六处断言按中文取值翻面
+
+## 口径盲区：`.ts` 文件
+
+这份清单原本只遍历 `.tsx`，`check:english-leaks` 同样只看 `.tsx`。文案放在 `.ts` 的对象字面量里，这道静态口径与本文件都看不见，只有渲染扫描按词组抓得到
+
+2026-11-04 第 561 簇把扫描扩到 playground 时命中一条真漏。`src/app/(dashboard)/playground/components/chat/endpointCapabilities.ts` 由 2026-10-20 的上游合并带入，八条端点能力里的 `placeholder`、三条附件提示和七组示例提示词全是英文字面量。页面渲染出英文，死键、静态英文、中文取值三道门禁当时全绿。修法是把字面量换成键名常量（`placeholderKey`、`ATTACH_LABEL_KEYS`、`SUGGESTION_KEYS`），渲染处 `t()` 取值，沿用 `src/app/chat/page.tsx` 的 `SUGGESTION_KEYS` 先例
+
+渲染扫描也补不上这个洞的一半。它取的是 `innerText()`，`placeholder` 与 tooltip 这类属性文案不在口径里，本轮那十一条属性英文是靠读代码捞的。扫描侧要不要一并读属性，仍是没定的事
+
+还有第三道盲区，判据本身挡不住：接入判据只看文件里有没有 `useTranslations(`/`getTranslations(`，所以已挂翻译器的文件内部的硬编码英文一律不进这份清单。第 564 簇接的那批全在这里，`EntityUsage.tsx` 早就握着 `t = useTranslations("usage")`，JSX 里却仍写死 `Daily`/`Weekly`/`Linear`/`Log`/`Flat cost` 与两处图表标题。它也不是 `check:english-leaks` 的命中（接完复跑 280/280、无 resolved 条目，那批串本就不在它的口径里），是靠读第 563 簇那两个 builder 的消费点读出来的。同一文件的同类活账散在 PROGRESS 的各簇里，没有机读的清单，这是缺口
+
+第 565 簇清的是同一块地：`EntityUsage.tsx` 下钻表的五个列头与「端点活动」页签、`TopModelView.tsx` 的五个列头与视图切换按钮、`TeamUserSpendCard.tsx` 的七个列头与两条空态、`EndpointUsageTable.tsx` 的空态与端点计数。四个文件全都挂着翻译器，接完复跑本清单，687、87、600 三个数一个没动。这批改动里 19 条是复用已有词条，其中 14 条接之前在自己的命名空间内没有任何读取点
+
+死键门禁看不见这一层，是第四道盲区，而且它自己的 docstring 写明了原因。`scripts/dead-keys.py` 最后一步 `referenced_verbatim` 是：键路径的任意后缀在全仓任意字符串字面量里出现过，这个键就算活着。`usage.topModelView` 的五条（`colModel`/`colSpend`/`colTokens`/`tableView`/`chartView`）、`usage.teamUserSpend` 的七条（`team`/`user`/`spend`/`successful`/`failed`/`tokens`/`selectTeamHint`，同命名空间的 `requests` 由 `ClientUsagePanel.tsx:267` 在读）、`usage.endpointUsage.noData`、`usage.tabs.endpoints` 在自己的命名空间内此前无人读取，靠的是 `AgentsTableColumns.tsx` 的 `t("colSpend")`、`TopKeyView.tsx` 的 `t("tableView")`、`AddModelForm.tsx` 的 `t("selectTeamHint")`、`EndpointUsageTable.tsx` 的 `t("endpoints")` 这类别处的同名兄弟把它们救活，所以门禁报 0。命名空间级孤儿只能靠读消费点或逐文件 `node scripts/scan-english.mjs <file>` 捞
+
+## `.ts` 侧的枚举与判定
+
+2026-11-05 把枚举口径从 `.tsx` 扩到 `.ts`，产出脚本加了 `--include-ts`（`.ts` 按 `ScriptKind.TS` 解析，避免把泛型读成 JSX；跳过 `.test.`、`.spec.`、`.d.ts`、`vendor/`、`src/lib/i18n/`）。同日又补了 `const` 口径，`.ts` 侧因此多浮出 7 个文件各 1 条：`src/utils/promptCacheUsage.ts` 的两条提示（真漏，第 563 簇已接，`common.promptCacheReadTooltip` 与 `common.promptCacheCreationTooltip` 一条一个键，由 `chat_ui/ResponseMetrics.tsx` 和 `logs/detail/LogDetailContent.tsx` 各自经 `useTranslations('common')` 取值，英文串不再住在 `.ts` 里）、`src/utils/budgetUtils.ts` 的预算说明串（`describeBudgetResetSchedule` 无生产消费点）、`src/utils/activityTimestamp.ts` 的日期格式串（机读值）、`src/components/liteadmin/aria-brand.ts` 的专名、`src/app/(dashboard)/agents/_components/kill_switch_config.ts` 与 `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts` 和 `src/components/add_model/build_auto_router_routing_test_request.ts` 各 1 条待判不带 `--include-ts` 时输出与扩面之前只差一行：`src/components/shared/DataTable/DataTable.test-d.tsx` 被新的排除规则挡掉，它是类型测试不是源文件
+
+```
+node scripts/i18n-file-inventory.mjs --include-ts
+```
+
+复跑：`.tsx` 与 `.ts` 未接入翻译器共 687 个，87 个有可见文案证据（`.tsx` 18 个 40 条、`.ts` 69 个 286 条），600 个零命中。上一版记的 88 个与 287 条是第 563 簇落地之前取的数，`entityUsageSummary.ts` 接完之后退出证据桶（少 1 个文件 1 条）
+
+`.ts` 的判据跟 `.tsx` 不一样。`.tsx` 里一条命中基本就是待接文案，`.ts` 是数据层，同一个字符串可能是渲染值、回退数据、比较键、协议字段或没人调的死代码，这五种只能靠消费点区分。2026-11-04 那一版按"文件里有英文"就记真漏，判错了，把渲染处读出来重判之后真漏从 10 个文件缩到 8 个文件，其中 4 个文件根本不是漏。按消费点重数的条数是 97，比上一版的 92 还多，因为上一版漏数了 federation 两份的 `tooltip`（跨行字面量，单行 grep 抓不到）与 `entityUsageSummary` 整块。`entityUsageSummary` 那 9 条已接，形状是 `SummaryTile` 加稳定 `id`，标题与 tooltip 由 `buildSummaryTiles(t, metadata, …)` 在构建处经 `UsageTranslator` 取值，`EntityUsage.tsx` 的 `TILE_TRENDS` 与 React key 改按 `id` 比对，六条挂空词条（`usage.entity.totalSpend`、`usage.entity.totalCost`、`usage.totalRequests`、`usage.totalTokens`、`usage.metrics.successfulRequests`、`usage.metrics.failedRequests`）全部复用，新增 `usage.entity.requestCost`/`flatCost`/`ptuHours` 三条标题与四条 `…Hint`。下面按消费点分三桶，命中条数取脚本输出，判定列的 file:line 是渲染处或"无消费点"的证据
+
+### A 真漏，无键间接层，直接渲染成可见文案（7 个文件 88 条，`entityUsageSummary.ts` 已于 2026-11-05 第 563 簇接入）
+
+| 文件                                                                        | 命中 | 渲染处与接入要点                                                                                                                                                                                            |
+| --------------------------------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/(dashboard)/usage/_components/components/overview/agentCatalog.ts` | 30   | `TopAgents.tsx:101` 与 `:108` 取 `agent.label`/`agent.description`。label 同时是数据键（`agentCatalog.ts:358` 按 label 建每日序列、`:240` `colorOf(label)`），接入要把键与显示名拆开                        |
+| `src/components/model_add/anthropic_federation.ts`                          | 30   | `FederationFields.tsx:93` 经 `LabelWithHint.tsx:10` 把 `label` 与 `tooltip` 直出；`:165`/`:153` 的下拉项来自 `anthropic_federation.ts:242`；`:249`/`:258`/`:268` 的校验串经 `MountedFormField.tsx:170` 显示 |
+| `src/components/add_model/provider_auth_types.ts`                           | 8    | `provider_specific_fields.tsx:363` 的 `SelectItem`、`:368` 的描述段、`:353` 的 `items`，同段兄弟文案已经走 `t()`                                                                                            |
+| `src/components/model_add/openai_federation.ts`                             | 6    | 同 anthropic 那份，`FederationFields.tsx:93` 渲染 `label`/`tooltip`，校验串在 `openai_federation.ts:46`                                                                                                     |
+| `src/components/liteadmin/operations.ts`                                    | 6    | 只有 `:195` 的 `ActionResult.message` 进气泡（`LiteAdminConversation.tsx:205` 的 `<AlertDescription>`），`:138`/`:141`/`:179`/`:204` 是回给 Agents SDK 的工具结果，不渲染                                   |
+| `src/components/liteadmin/usageChart.ts`                                    | 5    | `UsageAnswerChart.tsx:16` 的图表标题、`:25` 的 scope 与 period、`:74` 的 note、`:66` 的点标签。LiteAdmin 挂在 `layout.tsx:193`，确实在出货界面上                                                            |
+| `src/app/(dashboard)/prompts/_components/prompt_editor_view/utils.ts`       | 3    | 只有 `:249` 的示例任务串，它被塞进 `messages[0].content` 再由 `PromptMessagesCard.tsx:119` 的 textarea 显示；另两处 `throw` 在 `index.tsx:24` 被 catch 换成 `t("editor.parseFailed")`                       |
+
+`errorsData.ts` 的命中标在 C 桶，但同文件确有两条真漏（`series.codes` 的 `Other`/`No status` 渲染在 `ErrorsTab.tsx:238` 图例、`row.topStatus` 渲染在 `:313`），只是那两个字段不在枚举的可见键里
+
+一条附带发现：A 桶里六条标题在消息目录早有对应键、中英齐全却无人引用（`usage.entity.totalSpend`、`usage.entity.totalCost`、`usage.metrics.successfulRequests`、`usage.metrics.failedRequests`、`usage.totalRequests`、`usage.totalTokens`，errors 侧的 `usage.errors.status.noStatus`、`usage.errors.other` 同理）。这些是挂空词条，接入时优先复用而不是新建
+
+### B 已有键间接层，英文字面量是回退数据（4 个文件 82 条，非真漏）
+
+| 文件                                                                         | 命中 | 间接层与残留缺口                                                                                                                                                                      |
+| ---------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`        | 47   | `:592` 的 `localizeGuardrailCard` 查 `guardrails.garden.cards.<id>`，渲染处走它。真缺口是目录少 3 条（`llm_shield_proxy`、`wingback`、`airia`），数据侧 58 个 id、中英目录各 55 条    |
+| `src/app/(dashboard)/agents/_components/agent_config.ts`                     | 30   | `:467` 的 `configText(t, text)` 配 `FIELD_TEXT_KEYS`（46 项，中英两侧齐全），`agent_form_fields.tsx:247-363` 全部经它取值，命中无一条直出。`:196`/`:200`/`:203` 的 tracing 段无消费点 |
+| `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`       | 4    | `SystemOneUI.tsx:68` 按 `preset.id` 查 `t("preset.<id>")`，`preset.label` 只有自身测试读                                                                                              |
+| `src/app/(dashboard)/cost-optimization/_components/costOptimizationUtils.ts` | 1    | `SAVINGS_DRIVERS` 的名字是 `chart_tooltip.tsx:33` 那张 `chartLabels` 的查找键。残留漏点在 `donut_chart.tsx:56` 把原名当 label 传出，`chart_tooltip.tsx:70` 接不住                     |
+
+### C 命中但不渲染，无消费点、属死代码或是机读与协议值（其余 53 个文件 110 条）
+
+- `src/app/(dashboard)/hooks/**` 与 `src/hooks/**` 里 38 个文件各 1 条，是 `throw new Error("Access token is required")` 一类的守卫串（30 条同文），另有 `liteadmin/agent.ts` 2 条、`dataUtils.ts` 与 `keyExpiryUtils.ts` 各 1 条。它们本身不进 DOM，但调用方普遍写 `toast.fromError(error.message)`（如 `AccessGroupCreateDialog.tsx:80`），守卫一旦触发就原文贴进 toast。算低优先：正常会话取不到空 access token，真要接得先把 hook 改成抛带键的类型化错误再由调用方映射，而不是逐条翻字符串
+- `src/components/shared/timeRange/timeRange.ts` 5 条 `label` 是孤儿，`RANGE_PRESETS`/`presetLabel` 只被同目录 `timeRange.test.ts` 引用，活的等价物在 `components/logs/constants.ts:86` 已经用 `labelKey`
+- `src/components/UsagePage/keyActivityData.ts:11` 的 `label` 只用于搜索匹配（`modelActivityFilter.ts:11`），`KeyActivityPanel.tsx` 不读它
+- `errorsData.ts` 的 `ERROR_RATE_VIEW_OPTIONS`、`ERROR_ENTITY_LABEL`、`StatusCodeRow.label` 无人 import，`ErrorsTab.tsx:96` 已用 `t("viewTotal")`/`t("viewStatus")` 自建
+- `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts` 47 条是差分测试用例，不渲染，文件名不含 `.test.` 所以进了枚举
+- `prompts/.../utils.ts` 的 dotprompt 线格式串、`networking/core.ts` 的 `headerName: "Authorization"`、`useUrlTab.ts` 的 `key: "tab"`、`jev_classifier_config.ts` 的 `provider: "jev"`、`validatePayload.ts` 的 `endpoint`、`budgetUtils.ts:96` 的 `Never resets`（`describeBudgetResetSchedule` 只被自身测试引用）
+
+`anthropic_federation.ts` 的 `fdrl_`/`svac_`/`wrkspc_` 前缀和路径、URL、secret 引用示例是输入值提示，`client_secret_basic`/`client_secret_post` 是协议枚举。`src/data/compliancePrompts.ts`、`financialCompliancePrompts.ts`、`insultsCompliancePrompts.ts` 的 `content` 是发给模型的提示词正文。`agentCatalog.ts` 的产品名（`Claude Desktop`、`GitHub Copilot`）与 `provider_auth_types.ts` 的 `id`/`fieldKeys` 同名同值，属专名与配置字段
+
+还有一层盲区叠加在这几张表上：渲染扫描的 stub 对 `/guardrails`、`/agents`、`/usage` 这类页返回空数组，卡片与表格行根本不进 DOM，所以这些字符串既不在静态口径里、也不在扫描面上。等 A 桶接完，`rendered-ui-fixtures.mjs` 要按第 530 簇的先例给这几个端点补最小非空形状，扫描才接得住它们
+
+## 有可见文案证据的 18 个
 
 | 文件                                                                                                                                                                              | 证据                                                                                                                                                 | 判定                                                                                                                                                                                                         |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -37,22 +102,23 @@ node scripts/i18n-file-inventory.mjs
 | `src/contexts/LocaleContext.tsx`、`ThemeContext.tsx`、`AuthContext.tsx`、`ChatShellContext.tsx`                                                                                   | `useX must be used within a XProvider`                                                                                                               | React provider 缺失时的程序异常串，进控制台与错误堆栈，不渲染成人面文案                                                                                                                                      |
 | `src/components/CommandPalette/CommandPaletteProvider.tsx`、`common_components/MountedFormField.tsx`、`shared/InspectorTable.tsx`、`shared/dotField/DotField.tsx`、`ui/chart.tsx` | 同上形态的组合根守卫串                                                                                                                               | 同上，程序异常串                                                                                                                                                                                             |
 
+上表 10 行加上下面这 8 个，就是本轮 `.tsx` 侧的 18 个有证据文件。`const` 口径在 `.tsx` 侧新浮出 8 个文件。7 个是 `throw new Error("useAuth must be used within an AuthProvider")` 一类的开发期断言串（`src/contexts/AuthContext.tsx`、`ChatShellContext.tsx`、`ThemeContext.tsx`、`src/components/ui/chart.tsx`、`src/components/shared/InspectorTable.tsx`、`src/components/shared/dotField/DotField.tsx`、`src/components/common_components/MountedFormField.tsx`），React 契约违背时抛在开发控制台，不进 DOM，判同 C 桶的 hook 守卫串。剩 1 个待判：`src/app/(dashboard)/tag-management/_components/tagTableColumns.tsx` 的 `"This is just a spend tag that was passed dynamically in a request. It does not control any LLM models."`，要先确认它渲染在哪个 tooltip 或说明列
+
 一处可选的收口：`callback_info_helpers.tsx` 里 `description` 与 `descriptionKey` 是两份并列事实，前者已无消费点，删掉它可以避免有人改英文却忘了改目录
 
-## 六口径零命中的 200 个
+## 七口径零命中的 201 个
 
-共 200 个，按目录分组，括号里是文件行数。判定标准是四条静态口径（JSX 文本、`placeholder`/`title`/`label`/`aria-label`/`alt`/`description` 等属性、toast 与 `new Error` 首参、模板串）加两个盲区口径（对象属性、参数默认值）全部零命中，即文件里没有任何面向用户的英文字面量
+共 201 个，2026-11-05 由 `node scripts/i18n-file-inventory.mjs` 产出，按目录分组，括号里是文件行数。判定标准是四条静态口径（JSX 文本、`placeholder`/`title`/`label`/`aria-label`/`alt`/`description` 等属性、toast 与 `new Error` 首参、模板串）加三个盲区口径（对象属性、参数默认值、模块级 `export const`）全部零命中，即文件里没有任何面向用户的英文字面量
 
 ### `src/components/ui`（40 个）
 
-- `Bubble.tsx`（75 行）
-- `Resizable.tsx`（42 行）
 - `accordion.tsx`（60 行）
 - `alert-dialog.tsx`（171 行）
 - `alert.tsx`（57 行）
 - `attachment.tsx`（186 行）
 - `avatar.tsx`（49 行）
 - `badge.tsx`（50 行）
+- `Bubble.tsx`（75 行）
 - `button-group.tsx`（79 行）
 - `button.tsx`（52 行）
 - `card.tsx`（87 行）
@@ -72,6 +138,7 @@ node scripts/i18n-file-inventory.mjs
 - `message.tsx`（75 行）
 - `popover.tsx`（66 行）
 - `radio-group.tsx`（30 行）
+- `Resizable.tsx`（42 行）
 - `scroll-area.tsx`（41 行）
 - `select.tsx`（168 行）
 - `separator.tsx`（22 行）
@@ -90,14 +157,14 @@ node scripts/i18n-file-inventory.mjs
 
 - `Alert.tsx`（33 行）
 - `BadgeLink.tsx`（47 行）
-- `CopyButton.tsx`（97 行）
+- `CopyButton.tsx`（87 行）
 - `DurationInput.tsx`（71 行）
 - `EntityLink.tsx`（56 行）
+- `errorUtils.tsx`（47 行）
 - `Meter.tsx`（83 行）
 - `Page.tsx`（41 行）
 - `Sidebar.tsx`（207 行）
 - `ToolbarSeparator.tsx`（13 行）
-- `errorUtils.tsx`（47 行）
 
 ### `src/app/(dashboard)/playground/llm_calls`（9 个）
 
@@ -111,14 +178,13 @@ node scripts/i18n-file-inventory.mjs
 - `image_generation.tsx`（66 行）
 - `interactions_api.tsx`（131 行）
 
-### `src/components`（7 个）
+### `src/components`（6 个）
 
-- `DocsMenu.tsx`（68 行）
-- `LeftnavMenuGroups.tsx`（337 行）
-- `PublicModelHubTableColumns.tsx`（481 行）
 - `constants.tsx`（18 行）
 - `key_info_utils.tsx`（64 行）
-- `provider_info_helpers.tsx`（558 行）
+- `LeftnavMenuGroups.tsx`（337 行）
+- `provider_info_helpers.tsx`（562 行）
+- `PublicModelHubTableColumns.tsx`（481 行）
 - `vector_store_providers.tsx`（452 行）
 
 ### `src/components/shared/table_cells`（5 个）
@@ -131,15 +197,15 @@ node scripts/i18n-file-inventory.mjs
 
 ### `src/components/add_model`（4 个）
 
-- `TierRowSelect.tsx`（26 行）
 - `add_model_modes.tsx`（16 行）
 - `handle_add_auto_router_submit.tsx`（67 行）
 - `handle_add_model_submit.tsx`（250 行）
+- `TierRowSelect.tsx`（26 行）
 
 ### `src/app/(dashboard)/mcp-servers/_components`（3 个）
 
-- `MCPStandardsSettings.tsx`（89 行）
 - `index.tsx`（5 行）
+- `MCPStandardsSettings.tsx`（89 行）
 - `utils.tsx`（166 行）
 
 ### `src/app/(dashboard)/playground/components/chat_ui`（3 个）
@@ -150,14 +216,14 @@ node scripts/i18n-file-inventory.mjs
 
 ### `src/app/(dashboard)/prompts/_components`（3 个）
 
-- `PromptTableColumns.tsx`（243 行）
 - `prompt_editor_view.tsx`（4 行）
 - `prompt_utils.tsx`（105 行）
+- `PromptTableColumns.tsx`（243 行）
 
 ### `src/app/(dashboard)/search-tools/_components`（3 个）
 
-- `SearchToolTableColumns.tsx`（175 行）
 - `index.tsx`（2 行）
+- `SearchToolTableColumns.tsx`（175 行）
 - `types.tsx`（31 行）
 
 ### `src/app/(dashboard)/vector-stores/_components`（3 个）
@@ -169,20 +235,20 @@ node scripts/i18n-file-inventory.mjs
 ### `src/components/AIHub`（3 个）
 
 - `MCPHubTableColumns.tsx`（242 行）
-- `ModelHubTableColumns.tsx`（255 行）
+- `ModelHubTableColumns.tsx`（272 行）
 - `SkillHubTableColumns.tsx`（181 行）
 
 ### `src/components/key_team_helpers`（3 个）
 
 - `fetch_available_models_team_key.tsx`（76 行）
-- `key_list.tsx`（129 行）
+- `key_list.tsx`（131 行）
 - `transform_key_info.tsx`（12 行）
 
 ### `src/components/llm_calls`（3 个）
 
 - `chat_completion.tsx`（302 行）
 - `fetch_models.tsx`（79 行）
-- `responses_api.tsx`（346 行）
+- `responses_api.tsx`（361 行）
 
 ### `src/components/shared/charts`（3 个）
 
@@ -196,10 +262,21 @@ node scripts/i18n-file-inventory.mjs
 - `LabelWithHint.tsx`（35 行）
 - `UtcDateTimeInput.tsx`（54 行）
 
+### `src/components/team`（3 个）
+
+- `EditLoggingSettings.tsx`（32 行）
+- `permission_definitions.tsx`（66 行）
+- `TeamInfoOverview.tsx`（272 行）
+
 ### `src/app/(dashboard)/api-keys`（2 个）
 
 - `ApiKeysDashboard.tsx`（85 行）
 - `page.tsx`（23 行）
+
+### `src/app/(dashboard)/models-and-endpoints/panels`（2 个）
+
+- `LlmCredentialsPanel.tsx`（18 行）
+- `PassThroughPanel.tsx`（10 行）
 
 ### `src/app/(dashboard)/policies/_components`（2 个）
 
@@ -216,6 +293,11 @@ node scripts/i18n-file-inventory.mjs
 - `layout.tsx`（21 行）
 - `page.tsx`（29 行）
 
+### `src/components/chat`（2 个）
+
+- `ChatFileChip.tsx`（19 行）
+- `ConnectFlowSurface.tsx`（60 行）
+
 ### `src/components/chat_ui`（2 个）
 
 - `CodeSnippets.tsx`（596 行）
@@ -226,14 +308,9 @@ node scripts/i18n-file-inventory.mjs
 - `PrettyMessagesView.tsx`（44 行）
 - `SimpleMessageBlock.tsx`（53 行）
 
-### `src/components/team`（2 个）
-
-- `EditLoggingSettings.tsx`（32 行）
-- `permission_definitions.tsx`（66 行）
-
 ### `src/contexts`（2 个）
 
-- `PluginModeContext.tsx`（102 行）
+- `PluginModeContext.tsx`（114 行）
 - `ReactQueryProvider.tsx`（18 行）
 
 ### `src/app/(dashboard)`（1 个）
@@ -340,13 +417,17 @@ node scripts/i18n-file-inventory.mjs
 
 - `AccessGroupBudgetColumns.tsx`（183 行）
 
-### `src/app/(dashboard)/models-and-endpoints/panels`（1 个）
+### `src/app/(dashboard)/old-usage/_components`（1 个）
 
-- `LlmCredentialsPanel.tsx`（18 行）
+- `TeamSpendBarList.tsx`（30 行）
 
 ### `src/app/(dashboard)/organizations`（1 个）
 
 - `page.tsx`（10 行）
+
+### `src/app/(dashboard)/playground/components/complianceUI`（1 个）
+
+- `ComplianceUIShared.tsx`（98 行）
 
 ### `src/app/(dashboard)/policies`（1 个）
 
@@ -380,10 +461,6 @@ node scripts/i18n-file-inventory.mjs
 
 - `page.tsx`（10 行）
 
-### `src/app/(dashboard)/tag-management/_components`（1 个）
-
-- `tagTableColumns.tsx`（176 行）
-
 ### `src/app/(dashboard)/teams`（1 个）
 
 - `page.tsx`（18 行）
@@ -403,10 +480,6 @@ node scripts/i18n-file-inventory.mjs
 ### `src/app/(dashboard)/ui-theme`（1 个）
 
 - `page.tsx`（10 行）
-
-### `src/app/(dashboard)/usage`（1 个）
-
-- `page.tsx`（14 行）
 
 ### `src/app/(dashboard)/usage/_components/components/EndpointUsage`（1 个）
 
@@ -482,11 +555,7 @@ node scripts/i18n-file-inventory.mjs
 
 ### `src/components/VirtualKeysPage`（1 个）
 
-- `keyTableColumns.tsx`（383 行）
-
-### `src/components/chat`（1 个）
-
-- `ConnectFlowSurface.tsx`（60 行）
+- `keyTableColumns.tsx`（386 行）
 
 ### `src/components/common_components/Filters`（1 个）
 
@@ -500,9 +569,9 @@ node scripts/i18n-file-inventory.mjs
 
 - `TableIconActionButton.tsx`（67 行）
 
-### `src/components/lens`（1 个）
+### `src/components/liteadmin`（1 个）
 
-- `EmbeddedLens.tsx`（33 行）
+- `AriaAvatar.tsx`（18 行）
 
 ### `src/components/logs/audit`（1 个）
 
@@ -523,10 +592,6 @@ node scripts/i18n-file-inventory.mjs
 ### `src/components/molecules/models`（1 个）
 
 - `ProviderLogo.tsx`（12 行）
-
-### `src/components/shared/DataTable`（1 个）
-
-- `DataTable.test-d.tsx`（93 行）
 
 ### `src/components/shared/__fixtures__`（1 个）
 
@@ -599,14 +664,14 @@ node scripts/i18n-file-inventory.mjs
 
 lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源文件经 `scripts/lens-localize.mjs --apply` 改写，lens 命名空间在目录两侧各 1503 键，这份"未接入清单"对 vendor 不再有未接条目。手工位点与批量改写的分工账记在 [PROGRESS.md](./PROGRESS.md) 第 533 簇，此处只记渲染扫描事后揪出的尾账：
 
-| 位置 | 接线前 | 落定的键 |
-| --- | --- | --- |
-| `vendor/.../onboarding/tracing/TracingSetupCard.tsx:508` | 三条 `message = "…"` 整句漏抽（抽取工具只认翻译调用形态） | 新开 `onboarding.enableLensExistingHelmDocker`/`lensConfiguredLiteLLMUnreachable`/`lensConnectedTracingStorageUnavailable` |
-| `vendor/.../agents/AgentGitHubDialog.tsx:161` | `availability_error \|\| "The App may have been…"` 英文 fallback 藏在 ICU 参数值里 | 复用批量抽好的 `agents.appMayBeenRemoved` |
-| `vendor/.../agents/GitHubWorkflowSetup.tsx:221` | `gate.passed ? "Gate passed" : "Gate failed, review…"` 同上 | 复用 `agents.gatePassed`/`agents.gateFailedReviewResult` |
-| `vendor/.../investigations/WatchAllBanner.tsx:30` | `` `${name} needs a fix` `` / `` `${n} need a fix` `` 模板拼串 | 复用 `investigations.value0NeedsFix`/`value0NeedFix` |
-| `vendor/.../evals/runs/connectSnippets.ts:141` | `` `, model=${pyString(scorer.model)}` `` 内嵌插值 | 复用 `evals.modelValue0` |
-| `vendor/.../settings/signals/SignalSettings.tsx:32` | 模块顶层 `new Set(SIGNAL_LIBRARY.map(...question))` 在翻译器注册前触发 getter，lens 页整页崩溃 | 改惰性函数 `LIBRARY_QUESTIONS()` |
+| 位置                                                     | 接线前                                                                                         | 落定的键                                                                                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `vendor/.../onboarding/tracing/TracingSetupCard.tsx:508` | 三条 `message = "…"` 整句漏抽（抽取工具只认翻译调用形态）                                      | 新开 `onboarding.enableLensExistingHelmDocker`/`lensConfiguredLiteLLMUnreachable`/`lensConnectedTracingStorageUnavailable` |
+| `vendor/.../agents/AgentGitHubDialog.tsx:161`            | `availability_error \|\| "The App may have been…"` 英文 fallback 藏在 ICU 参数值里             | 复用批量抽好的 `agents.appMayBeenRemoved`                                                                                  |
+| `vendor/.../agents/GitHubWorkflowSetup.tsx:221`          | `gate.passed ? "Gate passed" : "Gate failed, review…"` 同上                                    | 复用 `agents.gatePassed`/`agents.gateFailedReviewResult`                                                                   |
+| `vendor/.../investigations/WatchAllBanner.tsx:30`        | `` `${name} needs a fix` `` / `` `${n} need a fix` `` 模板拼串                                 | 复用 `investigations.value0NeedsFix`/`value0NeedFix`                                                                       |
+| `vendor/.../evals/runs/connectSnippets.ts:141`           | `` `, model=${pyString(scorer.model)}` `` 内嵌插值                                             | 复用 `evals.modelValue0`                                                                                                   |
+| `vendor/.../settings/signals/SignalSettings.tsx:32`      | 模块顶层 `new Set(SIGNAL_LIBRARY.map(...question))` 在翻译器注册前触发 getter，lens 页整页崩溃 | 改惰性函数 `LIBRARY_QUESTIONS()`                                                                                           |
 
 这批接线同时把死键判定器真死账清零：判定器此前只扫 `src`，lens 键全库误报 1293 条死，文件清单补 `vendor/lens-ui/src` 后剩的 6 条真死键即上表中间四行
 

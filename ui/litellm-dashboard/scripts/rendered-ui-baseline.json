@@ -83,16 +83,6 @@
     {
       "page": "transform-request",
       "kind": "english",
-      "text": "chat"
-    },
-    {
-      "page": "transform-request",
-      "kind": "english",
-      "text": "completions"
-    },
-    {
-      "page": "transform-request",
-      "kind": "english",
       "text": "content"
     },
     {

@@ -573,7 +573,7 @@ describe("EntityUsage", () => {
     });
 
     expect(screen.getByText("Tag 花费概览")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -756,7 +756,7 @@ describe("EntityUsage", () => {
     ["成本", "Tag 花费概览"],
     ["模型活动", "metrics-source:model_groups"],
     ["密钥活动", "总体用量"],
-    ["Endpoint Activity", "Endpoint Usage Panel"],
+    ["端点活动", "Endpoint Usage Panel"],
   ];
 
   it.each(NON_TEAM_PANELS)("shows only the %s panel for a non-team entity type", async (tabLabel, marker) => {
@@ -782,7 +782,7 @@ describe("EntityUsage", () => {
     ["模型活动", "metrics-source:model_groups"],
     ["智能体活动", "metrics-source:entities"],
     ["密钥活动", "总体用量"],
-    ["Endpoint Activity", "Endpoint Usage Panel"],
+    ["端点活动", "Endpoint Usage Panel"],
   ];
 
   it.each(TEAM_PANELS)("shows only the %s panel for the team entity type", async (tabLabel, marker) => {
@@ -826,7 +826,7 @@ describe("EntityUsage", () => {
     expect(await screen.findByText("Tag 花费概览")).toBeInTheDocument();
     const costTab = screen.getByRole("tabpanel");
     expect(await within(costTab).findByText("$0.00")).toBeInTheDocument();
-    expect(within(costTab).getByText("Total Spend")).toBeInTheDocument();
+    expect(within(costTab).getByText("总消费")).toBeInTheDocument();
     expect(within(costTab).getAllByText("0")[0]).toBeInTheDocument();
   });
 
@@ -860,6 +860,21 @@ describe("EntityUsage", () => {
     expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
   });
 
+  it("labels the chart controls and caption in the active locale", async () => {
+    render(<StatefulEntityUsage {...defaultProps} entityType="tag" />);
+
+    await waitFor(() => {
+      expect(mockTagDailyActivityCall).toHaveBeenCalled();
+    });
+
+    expect(await screen.findByRole("radio", { name: "每日" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "每周" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "线性" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "对数" })).toBeInTheDocument();
+    expect(screen.getByText("按模型统计的花费")).toBeInTheDocument();
+    expect(screen.getByText("每日花费，前 8 项堆叠")).toBeInTheDocument();
+  });
+
   it("defaults Model Activity to public model names and toggles to litellm models", async () => {
     render(<StatefulEntityUsage {...defaultProps} />);
 
@@ -874,13 +889,13 @@ describe("EntityUsage", () => {
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Litellm Model Name"));
+      fireEvent.click(showingText("LiteLLM 模型名称"));
     });
 
     expect(showingCount("metrics-source:models")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Public Model Name"));
+      fireEvent.click(showingText("公开模型名称"));
     });
 
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
@@ -1039,7 +1054,7 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
     expect(screen.getAllByText("正在加载图表数据...")).toHaveLength(2);
-    expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("总消费")).not.toBeInTheDocument();
     expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
@@ -1049,7 +1064,7 @@ describe("EntityUsage", () => {
 
     expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
     expect(screen.getByText("总体用量")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
   });
 

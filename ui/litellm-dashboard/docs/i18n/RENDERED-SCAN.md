@@ -2,7 +2,9 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-29 第 539 簇。PR #14/#15 合并后复跑，38 页 0 渲染错误，撞出 25 条新英文泄漏（usage 17、caching 2、cost-optimization 3、home 3），全部集中在 PR #13/#14 接回的用量域。逐条溯源修复后复扫归零：`UsageStatStrip`、`UsageBreakdownChart`、`BreakdownChart`、`UsageViewSelect`、`advanced_date_picker`、`overviewData`、`ClientUsagePanel` 的硬编码英文与 `en-US` locale 格式化全部接翻译键或改按当前 locale 渲染，图表月份轴从 Oct/Sep 变 10月/9月。基线维持 60 条，0 条新发现。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，不再要求 Playwright 下载的 Chromium。剩余 60 条按页是 lens 8、api-reference 31、transform-request 20、model-insights 1
+最近一次复跑：2026-11-04 第 561 簇。`PAGES` 从 38 扩到 41，补上从未进过扫描面的 `playground`、`old-usage`、`change-password`（`/` 与 `/home` 是同一个组件，不必单列）。扩面撞出 7 条新发现，6 处英文加 1 条运行期错误，逐条溯源后全部接掉或判归。`change-password` 的面包屑渲染出 `Change Password`，走的是 `getBreadcrumb` 的 `prettify` 回落，新开 `nav.changePassword` 并把它列进 `UNLISTED_TITLES`。playground 空会话的三条示例提示词是英文，同一张能力表由 2026-10-20 的上游合并带入、从没进过汉化批次。`chat` 与 `completions` 是端点下拉里展示的 `/v1/chat/completions` 路径段，判机读面进 `ALLOWED_ENGLISH`。`CompliancePromptLibrary.tsx` 把框架行的"全选/清除"按钮嵌在整行可点的展开按钮里，React 直接报 `<button>` 不能是 `<button>` 的后代，拆成同一行的兄弟按钮，`stopPropagation` 随之删掉。那张能力表里还躺着八条输入占位符和三条附件提示，扫描一条也看不见，`rendered-ui-scan.mjs` 取的是 `innerText()`，属性文案不在它的口径里，只能读代码捞，一并改成常量存键名、渲染处 `t()`，示例提示词复用既有的 `playground.chat.suggestions.default` 与 `.a2a`，代码解释器三条另开 `.codeInterpreter`。白名单那一条顺带让 `transform-request` 的两条基线项消失，基线从 60 降到 58。桩表补 `/v1/mcp/toolset` 后 0 条 stub-miss。复跑 41 页 0 渲染错误、0 条新发现，剩余 58 条按页是 api-reference 31、transform-request 18、lens 8、model-insights 1
+
+（沿革）2026-10-29 第 539 簇。PR #14/#15 合并后复跑，38 页 0 渲染错误，撞出 25 条新英文泄漏（usage 17、caching 2、cost-optimization 3、home 3），全部集中在 PR #13/#14 接回的用量域。逐条溯源修复后复扫归零：`UsageStatStrip`、`UsageBreakdownChart`、`BreakdownChart`、`UsageViewSelect`、`advanced_date_picker`、`overviewData`、`ClientUsagePanel` 的硬编码英文与 `en-US` locale 格式化全部接翻译键或改按当前 locale 渲染，图表月份轴从 Oct/Sep 变 10月/9月。基线维持 60 条，0 条新发现。`rendered-ui-scan.mjs` 改用 `channel: "chrome"` 走本机 Chrome，不再要求 Playwright 下载的 Chromium。剩余 60 条按页是 lens 8、api-reference 31、transform-request 20、model-insights 1
 
 （沿革）第 532 簇把第 530 簇进基线的零头（除 lens 86、api-reference 31、transform-request 20 外的 25 条）逐条甄别完：6 条真漏接键（model-insights 的 Requests/Spend/Linear/Log、telemetry 的面包屑 Telemetry、cost-tracking 的 Docs 按钮默认值），18 条判技术 token 或品牌名进 `ALLOWED_ENGLISH`，`model-insights` 的 `session` 判保留（`session_id` API 字段词）。基线从 162 撤到 138，38 页 0 渲染错误、0 条新发现
 
@@ -37,6 +39,13 @@ npx playwright install chromium
 
 Linux 上 Chromium 还要系统库，`npx playwright install --with-deps chromium` 会一并装上（要 sudo）。
 
+第 561 簇在一台 Ubuntu 开发机上从零跑通，四条环境前提记在这里，免得下回重新排查
+
+1. `rendered-ui-scan.mjs` 走 `channel: "chrome"`，Chrome 要在 `google-chrome-stable` 或 `/opt/google/chrome/chrome`。装不到稳定版时把 playwright 的 Chrome for Testing 解到后一个路径即可
+2. Turbopack 的文件监听会撞 `fs.inotify.max_user_watches` 的默认 61281 直接 panic。抬到 524288（`sudo sysctl -w fs.inotify.max_user_watches=524288`），不写进 `/etc/sysctl.d/` 就重启回落
+3. 别用 `npm run dev:webpack` 跑扫描：`public/assets/logos/claude.svg` 文件头是一段 HTML 注释，webpack 的图片规则判它"不是合法图片"，`usage` 与 `models-and-endpoints` 两页直接 500，Turbopack 和 `next build` 都不受影响，这不是汉化缺陷
+4. 内存吃紧的机器上 Next dev 会在接近阈值时自动重启，扫描中途表现为 `ERR_CONNECTION_REFUSED`。41 页一轮约 3 分钟，Turbopack 本轮没重启，webpack 那轮在第 15 页被撞断
+
 ## 怎么判
 
 发现跟基线比，规则和死键门禁一样：基线里有的算已知，新增的让运行失败。基线在 `scripts/rendered-ui-baseline.json`，确认过要保留的发现之后用
@@ -46,6 +55,8 @@ npm run scan:rendered -- --update-baseline
 ```
 
 刷新。
+
+这道门禁目前只在本地手动跑，`.github/workflows/` 里没有接它，接的是死键、静态英文、中文取值三道静态口径。也就是说扫描给的 0 条新发现是每次改动的自证，不是 CI 兜底，改到界面文案却忘了复跑，CI 不会响
 
 ## 数据从哪来
 

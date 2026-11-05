@@ -26,11 +26,13 @@ const TOP_MODEL_LIMITS = [5, 10, 25, 50];
 
 type ViewMode = "chart" | "table";
 
+type ViewLabelKey = "tableView" | "chartView";
+
 const LIMIT_OPTIONS = TOP_MODEL_LIMITS.map((limit) => ({ value: String(limit), label: String(limit) }));
-const VIEW_OPTIONS = [
-  { value: "table", label: "Table View" },
-  { value: "chart", label: "Chart View" },
-] as const satisfies readonly { value: ViewMode; label: string }[];
+const VIEW_OPTIONS: readonly { value: ViewMode; labelKey: ViewLabelKey }[] = [
+  { value: "table", labelKey: "tableView" },
+  { value: "chart", labelKey: "chartView" },
+];
 
 const BAR_COLOR = "#2b3fd6";
 const QUIET_HEADER = { headerClassName: "font-normal" };
@@ -57,31 +59,31 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
 
   const columns = [
     {
-      header: "Model",
+      header: t("colModel"),
       accessorKey: "key",
       meta: QUIET_HEADER,
       cell: (info: any) => <ModelName name={info.getValue()} />,
     },
     {
-      header: "Spend (USD)",
+      header: t("colSpend"),
       accessorKey: "spend",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
     },
     {
-      header: "Successful",
+      header: t("colSuccessful"),
       accessorKey: "successful_requests",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-success">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
-      header: "Failed",
+      header: t("colFailed"),
       accessorKey: "failed_requests",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-destructive">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
-      header: "Tokens",
+      header: t("colTokens"),
       accessorKey: "tokens",
       meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => info.getValue()?.toLocaleString() || 0,
@@ -98,7 +100,12 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
           options={LIMIT_OPTIONS}
           onChange={(limit) => setTopModelsLimit(Number(limit))}
         />
-        <Segmented label={t("viewModeAria")} value={modelViewMode} options={VIEW_OPTIONS} onChange={setModelViewMode} />
+        <Segmented
+          label={t("viewModeAria")}
+          value={modelViewMode}
+          options={VIEW_OPTIONS.map(({ value, labelKey }) => ({ value, label: t(labelKey) }))}
+          onChange={setModelViewMode}
+        />
       </div>
       {modelViewMode === "chart" ? (
         <div className="relative max-h-[600px] overflow-y-auto">

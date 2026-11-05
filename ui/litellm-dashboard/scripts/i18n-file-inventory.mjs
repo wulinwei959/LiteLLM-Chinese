@@ -1,14 +1,19 @@
-// Inventory the non-test `.tsx` files that have no translator hook.
-//
-// Coverage is counted by the presence of `useTranslations(`/`getTranslations(`,
+// Wired-ness is counted by the presence of `useTranslations(`/`getTranslations(`,
 // which cannot tell "this file has no copy" from "this file has copy nobody
 // wired". This walks every non-test `.tsx` without a hook and prints what a
 // user could see, so each file gets an entry in the ledger instead of an
-// inferred excuse. Two of the categories are blind spots of `scan-english.mjs`:
-// copy sitting in an object property (table column defs, config maps) and copy
-// sitting in a parameter default.
+// inferred excuse. Three of the categories are blind spots of
+// `scan-english.mjs`: copy sitting in an object property (table column defs,
+// config maps), copy sitting in a module-level `export const UPPER_CASE`
+// (tooltip and label constants), and copy sitting in a parameter default.
 //
-// Usage: node scripts/i18n-file-inventory.mjs [--root=src]
+// `.ts` data files are invisible to the `.tsx` ledger even though the UI renders
+// out of them, so `--include-ts` adds them. A hit there is only a candidate: the
+// literal may be fallback data behind a key indirection (`localizeGuardrailCard`,
+// `configText`), a machine value, or a string nobody renders. Each hit needs its
+// consumer read before it goes in the ledger.
+//
+// Usage: node scripts/i18n-file-inventory.mjs [--root=src] [--include-ts]
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -38,6 +43,14 @@ const VISIBLE_KEYS = [...VISIBLE_ATTRS, "content", "heading", "text", "titleText
 
 const NON_COPY = /^(@?use client|use strict)$/i;
 
+const CSS_LIKE = /^[a-z0-9 .:_#/[\]()-]+$/;
+
+const proseOnly = (category, text) => {
+  if (category === "const") return isProse(text) && !CSS_LIKE.test(text);
+  if (category.startsWith("object:")) return isProse(text);
+  return true;
+};
+
 const isProse = (value) => {
   const text = value.replace(/\s+/g, " ").trim();
   if (!text || NON_COPY.test(text)) return false;
@@ -50,7 +63,13 @@ const isProse = (value) => {
 const propertyName = (node) => node.name.getText().replace(/^["']|["']$/g, "");
 
 const collect = (source, file) => {
-  const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const tree = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
   const hits = [];
   const seen = new Set();
   const add = (category, value) => {
@@ -72,6 +91,15 @@ const collect = (source, file) => {
       const name = propertyName(node);
       if (VISIBLE_KEYS.includes(name)) add(`object:${name}`, node.initializer.text);
     }
+    if (
+      ts.isVariableDeclaration(node) &&
+      ts.isIdentifier(node.name) &&
+      /^[A-Z][A-Z0-9_]{2,}$/.test(node.name.text) &&
+      node.initializer &&
+      ts.isStringLiteral(node.initializer)
+    ) {
+      add("const", node.initializer.text);
+    }
     if (ts.isParameter(node) && node.initializer && ts.isStringLiteral(node.initializer)) {
       add(`default:${node.name.getText()}`, node.initializer.text);
     }
@@ -85,20 +113,27 @@ const collect = (source, file) => {
     ts.forEachChild(node, visit);
   };
   visit(tree);
-  return hits.filter(([category, text]) => !category.startsWith("object:") || isProse(text));
+  return hits.filter(([category, text]) => proseOnly(category, text));
 };
 
-const listTsx = (dir) =>
+const TS_SKIP = /(?:^|\/)(?:vendor|i18n)\//;
+const TEST_FILE = /\.(?:test|spec)[-.]/;
+
+const listFiles = (dir, extensions) =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) return listTsx(path);
-    return entry.name.endsWith(".tsx") && !entry.name.includes(".test.") ? [path] : [];
+    if (entry.isDirectory()) return listFiles(path, extensions);
+    if (TEST_FILE.test(entry.name) || entry.name.endsWith(".d.ts")) return [];
+    if (!extensions.some((extension) => entry.name.endsWith(extension))) return [];
+    return [path];
   });
 
 const root = process.argv.find((argument) => argument.startsWith("--root="))?.slice(7) ?? "src";
+const extensions = process.argv.includes("--include-ts") ? [".tsx", ".ts"] : [".tsx"];
 const cwd = process.cwd();
 const ledger = [];
-for (const file of listTsx(join(cwd, root))) {
+for (const file of listFiles(join(cwd, root), extensions)) {
+  if (extensions.length > 1 && TS_SKIP.test(relative(cwd, file))) continue;
   const source = readFileSync(file, "utf8");
   if (WIRED.test(source)) continue;
   ledger.push([relative(cwd, file), source.split("\n").length, collect(source, file)]);
@@ -108,7 +143,7 @@ const silent = ledger.filter(([, , hits]) => hits.length === 0);
 const noisy = ledger.filter(([, , hits]) => hits.length > 0);
 const report = (text) => process.stdout.write(`${text}\n`);
 
-report(`# 未接入翻译器的非测试 .tsx 清单（自动产出，共 ${ledger.length} 个）`);
+report(`# 未接入翻译器的非测试 ${extensions.join("/")} 清单（自动产出，共 ${ledger.length} 个）`);
 report("");
 report(`## 有可见文案证据（${noisy.length} 个，逐条判定）`);
 report("");
@@ -117,6 +152,6 @@ for (const [path, lines, hits] of noisy.sort((a, b) => b[2].length - a[2].length
   for (const [category, text] of hits) report(`  - ${category}: ${text.slice(0, 120)}`);
 }
 report("");
-report(`## 四类口径与两个盲区口径均无命中（${silent.length} 个）`);
+report(`## 四类静态口径与三个盲区口径均无命中（${silent.length} 个）`);
 report("");
 for (const [path, lines] of silent.sort((a, b) => a[0].localeCompare(b[0]))) report(`- ${path} (${lines})`);

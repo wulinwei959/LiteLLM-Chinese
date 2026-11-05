@@ -58,4 +58,11 @@ describe("Composer", () => {
 
     expect(screen.getByLabelText("消息")).toHaveFocus();
   });
+
+  it("localizes the message placeholder and the attach control for the endpoint", () => {
+    renderComposer();
+
+    expect(screen.getByPlaceholderText("发送一个测试请求")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加图片或 PDF" })).toBeInTheDocument();
+  });
 });

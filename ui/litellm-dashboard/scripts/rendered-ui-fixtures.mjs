@@ -47,6 +47,9 @@ export const PAGES = [
   { name: "ui-theme", path: "/ui-theme" },
   { name: "logging-and-alerts", path: "/logging-and-alerts" },
   { name: "api-reference", path: "/api-reference" },
+  { name: "playground", path: "/playground" },
+  { name: "old-usage", path: "/old-usage" },
+  { name: "change-password", path: "/change-password" },
 ];
 
 /**
@@ -119,6 +122,8 @@ export const ALLOWED_ENGLISH = new Set([
   "SSL",
   // 文件扩展名与界面上当数据展示的标识符（URL 后缀、端点路径段、单位）
   "claude-code",
+  "chat",
+  "completions",
   "decisions",
   "UTC",
   "TLS",
@@ -176,6 +181,7 @@ export const API_STUBS = [
   ["/user_banner", { banner: null }],
   ["/v1/mcp/server", []],
   ["/v1/mcp/server/health", []],
+  ["/v1/mcp/toolset", []],
   [
     "/model-insights",
     { start_date: "2026-10-01", end_date: "2026-10-24", daily: [], daily_totals: [], rows: [], top_models: [] },

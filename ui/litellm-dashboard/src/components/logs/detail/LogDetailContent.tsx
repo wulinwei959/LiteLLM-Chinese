@@ -11,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { LogEntry } from "../types";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
-import { PROMPT_CACHE_CREATION_TOOLTIP, PROMPT_CACHE_READ_TOOLTIP } from "@/utils/promptCacheUsage";
 import GuardrailViewer from "./sections/GuardrailViewer/GuardrailViewer";
 import EvalViewer from "./sections/EvalViewer/EvalViewer";
 import {
@@ -492,6 +491,7 @@ function BatchResultsSection({ logEntry, metadata }: { logEntry: LogEntry; metad
 
 function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: Record<string, any> }) {
   const t = useTranslations("logs");
+  const tCommon = useTranslations("common");
   const completionStartTime = logEntry.completionStartTime;
   const ttftMs =
     completionStartTime && completionStartTime !== logEntry.endTime
@@ -584,7 +584,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 label={
                   <MetricLabel
                     label={t("detail.promptCacheRead")}
-                    tooltip={PROMPT_CACHE_READ_TOOLTIP}
+                    tooltip={tCommon("promptCacheReadTooltip")}
                     docsUrl={PROMPT_CACHE_DOCS_URL}
                   />
                 }
@@ -597,7 +597,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 label={
                   <MetricLabel
                     label={t("detail.promptCacheCreation")}
-                    tooltip={PROMPT_CACHE_CREATION_TOOLTIP}
+                    tooltip={tCommon("promptCacheCreationTooltip")}
                     docsUrl={PROMPT_CACHE_DOCS_URL}
                   />
                 }

@@ -249,6 +249,8 @@
     "healthCheckModelPlaceholder": "Select existing health check model",
     "cacheControlLabel": "Cache Control Injection Points",
     "cacheControlTooltipDesc": "Tell litellm where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.",
+    "promptCacheReadTooltip": "Input tokens read from the LLM provider's prompt cache (e.g. Anthropic / OpenAI), billed at a discounted rate. Reported by the provider.",
+    "promptCacheCreationTooltip": "Input tokens written to the LLM provider's prompt cache for reuse by later requests.",
     "teamLabel": "Team",
     "saveChanges": "Save Changes",
     "sourceUnknown": "Unknown source",
@@ -341,7 +343,8 @@
     "navigation": "Navigation",
     "gatewayTools": "Gateway tools",
     "moreOptions": "More options",
-    "telemetry": "Telemetry"
+    "telemetry": "Telemetry",
+    "changePassword": "Change Password"
   },
   "viewSwitcher": {
     "aiGateway": "AI Gateway",
@@ -5285,7 +5288,18 @@
       "spendOverview": "{entity} Spend Overview",
       "bucketSize": "Bucket size",
       "scale": "Scale",
-      "trackCostPer": "Track cost per {entity}"
+      "trackCostPer": "Track cost per {entity}",
+      "requestCost": "Request Cost",
+      "flatCost": "Flat Cost",
+      "ptuHours": "PTU Hours",
+      "share": "Share",
+      "totalCostHint": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
+      "requestCostHint": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
+      "flatCostHint": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
+      "ptuHoursHint": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
+      "metricByModel": "{metric} by {model}",
+      "stackCaption": "{granularity} {metric}{suffix}",
+      "flatCostOnTop": ", flat cost on top"
     },
     "provider": {
       "title": "Spend by Provider",
@@ -5312,6 +5326,7 @@
       "successful": "Successful",
       "failed": "Failed",
       "tokens": "Tokens",
+      "noData": "No user spend in this range",
       "attributionNote": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
     },
     "old": {
@@ -5364,12 +5379,18 @@
       "noData": "No endpoint usage data",
       "endpoints": "Endpoints",
       "successFailed": "Successful / Failed",
-      "totalRequest": "Total Request"
+      "totalRequest": "Total Request",
+      "endpointCount": "{count, plural, one {# endpoint} other {# endpoints}}"
     },
-    "modelViewToggle": {},
+    "modelViewToggle": {
+      "publicModelName": "Public Model Name",
+      "litellmModelName": "Litellm Model Name"
+    },
     "topModelView": {
       "colModel": "Model",
       "colSpend": "Spend (USD)",
+      "colSuccessful": "Successful",
+      "colFailed": "Failed",
       "colTokens": "Tokens",
       "modelCountAria": "Number of models to show",
       "viewModeAria": "Top model view mode",
@@ -8630,7 +8651,12 @@
       },
       "suggestions": {
         "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
-        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
+        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
+        "codeInterpreter": [
+          "Generate sample sales data CSV and create a chart",
+          "Create a PNG bar chart comparing AI gateway providers including LiteLLM",
+          "Generate a CSV of LLM pricing data and visualize it as a line chart"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -9536,6 +9562,21 @@
       "empty": {
         "noVectorStores": "No vector stores yet",
         "noGuardrails": "No guardrails yet"
+      },
+      "attach": {
+        "chat": "Attach an image or PDF",
+        "images": "Add images to edit",
+        "audio": "Attach an audio file"
+      },
+      "placeholder": {
+        "testRequest": "Send a test request",
+        "image": "Describe the image you want to generate",
+        "video": "Describe the video you want to generate",
+        "imageEdits": "Describe how to edit the images",
+        "embeddings": "Text to embed",
+        "speech": "Text to turn into speech",
+        "transcription": "Optional context for the transcription",
+        "agent": "Send a message to the agent"
       }
     },
     "controls": {

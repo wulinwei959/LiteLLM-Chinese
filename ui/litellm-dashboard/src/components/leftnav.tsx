@@ -200,7 +200,10 @@ export const sectionText = (groupLabel: string): string => SECTION_DISPLAY[group
  * English for any multi-segment key. The ones users can reach are mapped to
  * their nav keys here; a route outside both lists still prettifies.
  */
-const UNLISTED_TITLES: Partial<Record<string, NavMessageKey>> = { telemetry: "telemetry" };
+const UNLISTED_TITLES: Partial<Record<string, NavMessageKey>> = {
+  telemetry: "telemetry",
+  "change-password": "changePassword",
+};
 
 const prettify = (key: string): string =>
   key

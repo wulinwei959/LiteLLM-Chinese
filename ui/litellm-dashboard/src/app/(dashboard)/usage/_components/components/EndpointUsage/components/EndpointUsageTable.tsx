@@ -124,7 +124,7 @@ const EndpointUsageTable: React.FC<EndpointUsageTableProps> = ({ endpointData })
       title={t("endpoints")}
       action={
         <span className="text-xs text-muted-foreground tabular-nums">
-          {dataSource.length.toLocaleString()} {dataSource.length === 1 ? "endpoint" : "endpoints"}
+          {t("endpointCount", { count: dataSource.length })}
         </span>
       }
     >
@@ -132,7 +132,7 @@ const EndpointUsageTable: React.FC<EndpointUsageTableProps> = ({ endpointData })
         columns={columns}
         data={dataSource}
         getRowId={(row) => row.key}
-        noDataMessage="No endpoint usage data"
+        noDataMessage={t("noData")}
         size="compact"
       />
     </Panel>

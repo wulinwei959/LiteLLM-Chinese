@@ -249,6 +249,8 @@
     "healthCheckModelPlaceholder": "选择现有的健康检查模型",
     "cacheControlLabel": "缓存控制注入点",
     "cacheControlTooltipDesc": "告诉 litellm 在哪里注入缓存控制检查点。你可以按角色指定（应用于该角色的所有消息）或按特定消息索引指定。",
+    "promptCacheReadTooltip": "从 LLM 提供商的提示词缓存（例如 Anthropic、OpenAI）读取的输入 token，按折扣费率计费，由提供商上报",
+    "promptCacheCreationTooltip": "写入 LLM 提供商提示词缓存、供后续请求复用的输入 token",
     "teamLabel": "团队",
     "saveChanges": "保存更改",
     "sourceUnknown": "未知来源",
@@ -341,7 +343,8 @@
     "navigation": "导航",
     "gatewayTools": "网关工具",
     "moreOptions": "更多选项",
-    "telemetry": "遥测"
+    "telemetry": "遥测",
+    "changePassword": "修改密码"
   },
   "viewSwitcher": {
     "aiGateway": "AI 网关",
@@ -5285,7 +5288,18 @@
       "spendOverview": "{entity} 消费总览",
       "bucketSize": "分桶大小",
       "scale": "时间粒度",
-      "trackCostPer": "按{entity}跟踪成本"
+      "trackCostPer": "按{entity}跟踪成本",
+      "requestCost": "请求成本",
+      "flatCost": "固定成本",
+      "ptuHours": "PTU 小时数",
+      "share": "占比",
+      "totalCostHint": "请求成本加上预留容量的固定成本，选中这张卡片可查看明细",
+      "requestCostHint": "所选周期内该实体发出请求的按量成本，按 token 计价",
+      "flatCostHint": "预留的置备吞吐量，无论是否发出请求都按小时计费。只在这里展示，不计入团队、密钥、用户或组织的预算",
+      "ptuHoursHint": "已消耗的置备吞吐量，单位为 PTU 小时。发给 PTU 部署的 token 按每个模型的 Azure 规格表换算，用它除以预留 PTU 数与周期小时数的乘积就是预留容量的使用率",
+      "metricByModel": "按{model}统计的{metric}",
+      "stackCaption": "{granularity}{metric}{suffix}",
+      "flatCostOnTop": "，固定成本叠加在上"
     },
     "provider": {
       "title": "按供应商统计消费",
@@ -5312,6 +5326,7 @@
       "successful": "成功",
       "failed": "失败",
       "tokens": "Token",
+      "noData": "该区间内无用户消费",
       "attributionNote": "按请求从花费日志归属，因此包含不使用虚拟密钥的 JWT/SSO 流量"
     },
     "old": {
@@ -5364,12 +5379,18 @@
       "noData": "暂无端点用量数据",
       "endpoints": "端点",
       "successFailed": "成功 / 失败",
-      "totalRequest": "请求总数"
+      "totalRequest": "请求总数",
+      "endpointCount": "{count, plural, other {# 个端点}}"
     },
-    "modelViewToggle": {},
+    "modelViewToggle": {
+      "publicModelName": "公开模型名称",
+      "litellmModelName": "LiteLLM 模型名称"
+    },
     "topModelView": {
       "colModel": "模型",
       "colSpend": "花费（美元）",
+      "colSuccessful": "成功",
+      "colFailed": "失败",
       "colTokens": "Token 数",
       "modelCountAria": "要展示的模型数量",
       "viewModeAria": "头部模型视图模式",
@@ -8630,7 +8651,12 @@
       },
       "suggestions": {
         "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
-        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
+        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
+        "codeInterpreter": [
+          "生成示例销售数据 CSV 并创建图表",
+          "创建对比 AI 网关提供商（含 LiteLLM）的 PNG 柱状图",
+          "生成 LLM 定价数据 CSV 并绘制为折线图"
+        ]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -9532,6 +9558,21 @@
       "empty": {
         "noVectorStores": "还没有向量库",
         "noGuardrails": "还没有防护栏"
+      },
+      "attach": {
+        "chat": "添加图片或 PDF",
+        "images": "添加要编辑的图片",
+        "audio": "添加音频文件"
+      },
+      "placeholder": {
+        "testRequest": "发送一个测试请求",
+        "image": "描述您想生成的图片",
+        "video": "描述您想生成的视频",
+        "imageEdits": "描述您想如何编辑图片",
+        "embeddings": "要嵌入的文本",
+        "speech": "要转换为语音的文本",
+        "transcription": "可选：为转录添加上下文",
+        "agent": "向智能体发送消息"
       }
     },
     "controls": {

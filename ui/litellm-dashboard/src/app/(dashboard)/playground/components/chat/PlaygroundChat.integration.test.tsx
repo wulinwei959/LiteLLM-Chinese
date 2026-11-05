@@ -106,6 +106,14 @@ describe("PlaygroundChat", () => {
     vi.unstubAllGlobals();
   });
 
+  it("offers localized example prompts on a fresh conversation", async () => {
+    renderChat();
+    await settled();
+
+    expect(screen.getByRole("button", { name: "写一首诗" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "起草一封礼貌的会议请求邮件" })).toBeInTheDocument();
+  });
+
   it("sends the chosen model and guardrails with the session key", async () => {
     const user = userEvent.setup();
     chatRequest.mockImplementation(replyWith("Hi there"));

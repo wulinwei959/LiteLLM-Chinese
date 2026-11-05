@@ -30,7 +30,7 @@ import RealtimePlayground from "../chat_ui/RealtimePlayground";
 import { Composer } from "./Composer";
 import { EndpointMenu, VoiceMenu } from "./ComposerControls";
 import { Conversation, formatCost } from "./Conversation";
-import { capabilitiesFor, CODE_INTERPRETER_SUGGESTIONS, SUGGESTIONS } from "./endpointCapabilities";
+import { capabilitiesFor, CODE_INTERPRETER_SUGGESTION_KEYS, SUGGESTION_KEYS } from "./endpointCapabilities";
 import { InspectorPanel, type CodeSdk } from "./Inspector";
 import { ByokKeyButton } from "./ByokConnect";
 import { McpDialog, serverName } from "./McpDialog";
@@ -408,10 +408,11 @@ export function PlaygroundChat({
     />
   );
 
-  const suggestions =
+  const suggestionKeys =
     settings.endpoint === EndpointType.RESPONSES && codeInterpreter.enabled
-      ? CODE_INTERPRETER_SUGGESTIONS
-      : SUGGESTIONS[settings.endpoint] ?? [];
+      ? CODE_INTERPRETER_SUGGESTION_KEYS
+      : SUGGESTION_KEYS[settings.endpoint] ?? [];
+  const suggestions = suggestionKeys.map((key) => t(key));
 
   const inspector = <InspectorPanel message={inspectedMessage} code={code} />;
 
