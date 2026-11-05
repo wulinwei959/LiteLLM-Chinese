@@ -735,93 +735,98 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 
 `seriesKey` 的双身份拆开：数据键改 `no_status`/`other` 稳定标识，显示名由渲染点按 `usage.errors.status.noStatus`/`usage.errors.other` 两条长期孤儿键映射；`entityRows` 返回状态码数据不再拼串。`statusCodeLabel`/`ERROR_ENTITY_LABEL`/`ERROR_RATE_VIEW_OPTIONS`/`StatusCodeRow.label` 四条死导出连测试删除（渲染面早被组件本地已译版接管，属判定账里"死常量遮蔽"型）。`LineChart` 新增可选 `categoryLabels`（此前 config label 直接回显数据键，`no_status` 会亮进图例）。零新键，有证据桶 80 → 79，A 桶与 `errorsData` 专项清零；残留显示英文自此只剩 B/C 判定面与上游新增
 
-## 门禁口径第五条：对象属性字面量（2026-11-05 第 571 簇）
+## 门禁口径第五条：对象属性字面量（2026-11-05 第 571 簇开线，第 573 簇扩口径并首片接清）
 
-`check:english-leaks` 的 `scanSource` 此前只认 JSX 文本、JSX 属性、toast 首参与 `new Error` 四类，`.ts` 数据表里 `label:` / `tooltip:` / `title:` 这类对象属性字面量一律不可见，A 桶那批表就是靠 FILE-INVENTORY 人肉逐簇清的。本簇给库加 `scanObjectProperty`（COPY_PROPS 同名属性、纯小写点分键引用豁免：`nav.virtualKeys` 这类值是键不是文案），口径一次扩出 361 条 `prop:` 存量命中，全部冻结进 `english-leaks-baseline.json`（276 到 560）。存量按下列队列分簇接清：一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除（resolved 触红即门禁生效）；新增英文串不再能静默进表
+`check:english-leaks` 的 `scanSource` 此前只认 JSX 文本、JSX 属性、toast 首参与 `new Error` 四类，`.ts` 数据表里 `label:` / `tooltip:` / `title:` 这类对象属性字面量一律不可见，A 桶那批表就是靠 FILE-INVENTORY 人肉逐簇清的。第 571 簇给库加 `scanObjectProperty`，口径一次扩出 361 条 `prop:` 存量命中，全部冻结进 `english-leaks-baseline.json`（276 到 560）。第 573 簇把键引用豁免补全：`KEY_REFERENCE` 允许无点小写开头的单段标识符（`allProxyModels`、`openingBuiltInPlaceholder` 这类值与 `nav.virtualKeys` 同性质），并让同一条豁免作用于 JSX 属性口径，8 条误报当场退场（`gatewaySessions.byAiClient`/`byUser`、`allProxyModels`/`noDefaultModels`、两处 `cURL`、两处 placeholder 键名）
 
-| 条数 | 文件                                                                                          |
-| ---- | --------------------------------------------------------------------------------------------- |
-| 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         |
-| 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         |
-| 45   | `src/app/(dashboard)/agents/_components/agent_config.ts`                                      |
-| 17   | `src/components/callback_info_helpers.tsx`                                                    |
-| 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          |
-| 8    | `src/data/compliancePrompts.ts`                                                               |
-| 6    | `src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx`                             |
-| 6    | `src/components/liteadmin/LiteAdminHomeComposer.tsx`                                          |
-| 6    | `src/components/model_add/anthropic_federation.ts`                                            |
-| 6    | `src/components/model_dashboard/HealthCheckComponent.tsx`                                     |
-| 5    | `src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx`                  |
-| 5    | `src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx`                             |
-| 5    | `src/app/(dashboard)/skills/_components/add_plugin_form.tsx`                                  |
-| 5    | `src/components/add_model/ComplexityRouterConfig.tsx`                                         |
-| 5    | `src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx`            |
-| 5    | `src/components/shared/timeRange/timeRange.ts`                                                |
-| 5    | `src/components/Teams.tsx`                                                                    |
-| 4    | `src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx`    |
-| 4    | `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                        |
-| 4    | `src/components/shared/CreatedKeyDisplay.tsx`                                                 |
-| 3    | `src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx` |
-| 3    | `src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx`                            |
-| 3    | `src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx`                     |
-| 3    | `src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx`           |
-| 3    | `src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`                                            |
-| 3    | `src/components/liteadmin/operations.ts`                                                      |
-| 3    | `src/components/routing_groups/RoutingGroupUsagePanel.tsx`                                    |
-| 3    | `src/components/shared/search/SearchBox.tsx`                                                  |
-| 3    | `src/components/user_agent_activity.tsx`                                                      |
-| 3    | `src/utils/budgetUtils.ts`                                                                    |
-| 2    | `src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx`                             |
-| 2    | `src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx`            |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx`                             |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx`                             |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx`                       |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/MCPNetworkSettings.tsx`                          |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx`                 |
-| 2    | `src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx`                   |
-| 2    | `src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx`                      |
-| 2    | `src/app/layout.tsx`                                                                          |
-| 2    | `src/components/add_model/advanced_settings.tsx`                                              |
-| 2    | `src/components/add_model/OpeningPromptEditor.tsx`                                            |
-| 2    | `src/components/add_model/ReminderMarkers.tsx`                                                |
-| 2    | `src/components/key_team_helpers/key_sorting.ts`                                              |
-| 2    | `src/components/ModelSelect/ModelSelect.tsx`                                                  |
-| 2    | `src/components/pass_through_info.tsx`                                                        |
-| 2    | `src/components/team/TeamEditSettingsForm.tsx`                                                |
-| 2    | `src/components/TeamsPage/teamTableColumns.tsx`                                               |
-| 1    | `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                  |
-| 1    | `src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx`                              |
-| 1    | `src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx`                        |
-| 1    | `src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx`                  |
-| 1    | `src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx`                         |
-| 1    | `src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx`                           |
-| 1    | `src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx`                           |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/MCPToolsetTableColumns.tsx`                      |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx`                           |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx`                          |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx`                    |
-| 1    | `src/app/(dashboard)/memory/_components/MemoryEditModal.tsx`                                  |
-| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx`        |
-| 1    | `src/app/(dashboard)/playground/components/chat/PlaygroundChat.tsx`                           |
-| 1    | `src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx`                           |
-| 1    | `src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx`                         |
-| 1    | `src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx`                      |
-| 1    | `src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx`                         |
-| 1    | `src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx`                           |
-| 1    | `src/app/(dashboard)/workflows/WorkflowRuns.tsx`                                              |
-| 1    | `src/components/add_pass_through.tsx`                                                         |
-| 1    | `src/components/AIHub/UsefulLinksManagement.tsx`                                              |
-| 1    | `src/components/cloudzero_export_modal.tsx`                                                   |
-| 1    | `src/components/leftnav.tsx`                                                                  |
-| 1    | `src/components/model_add/openai_federation.ts`                                               |
-| 1    | `src/components/Navbar/ViewSwitcher.tsx`                                                      |
-| 1    | `src/components/networking.tsx`                                                               |
-| 1    | `src/components/routing_groups/RoutingGroupModal.tsx`                                         |
-| 1    | `src/components/shared/credentialOptions.ts`                                                  |
-| 1    | `src/components/team/EditMembership.tsx`                                                      |
-| 1    | `src/components/templates/KeyEditViewControls.tsx`                                            |
-| 1    | `src/components/UsagePage/keyActivityData.ts`                                                 |
-| 1    | `src/data/financialCompliancePrompts.ts`                                                      |
-| 1    | `src/data/insultsCompliancePrompts.ts`                                                        |
+同一簇接清真显示面 27 条，基线 560 到 534 到 529：
 
-第 572 簇首片已接：`add_agent_form.tsx` 与 `dynamic_agent_form_fields.tsx` 共 8 处绕过 `configText` 的裸显（label/tooltip/placeholder 与两处校验消息插值）统一走键表，表值 45 条全部有 `FIELD_TEXT_KEYS` 映射，UI 不再直出英文；表源字符串仍冻结在基线，待后续把表改成正向键引用（`labelKey` 形态）才从基线退场。剩余队列里 agent_config 计数按此更新为 0
+- `LiteAdminHomeComposer.tsx` 首页 6 条建议词改 `labelKey`，新键 `liteAdmin.composer.suggest*`
+- `SearchBox.tsx` 运算符说明 4 条（含被小写词过滤器漏掉的 `equals`）改 `labelKey`，新键 `searchBox.operators.*`
+- `Teams.tsx` 删除确认弹窗的 4 条 label、`resourceInformationTitle` 和模板字面量警告全部改走已有键（`listTeamId`/`listTeamName`/`keys`/`members`/`listTeamInformation`/`listDeleteKeysWarning`），此前是整块绕过 i18n 的漏接
+- `MCPNetworkSettings.tsx` 两条能力开关名改 `labelKey`，新键 `mcpServers.capabilityPrompts`/`capabilityResources`
+- `MCPToolsetTableColumns.tsx` 的 `Toolset ID` 用回已有键 `toolsets.columnToolsetId`
+- `PlaygroundChat.tsx` 的 MCP 分组名新键 `playground.chat.mcpServers`
+- `credentialOptions.ts` 的 `None` 改 `noCredentialOption(t)` 与 `credentialOptions(t, credentials)`，形参类型取 `(key: "none") => string`，4 处消费者传 common 译者
+- `ComplexityRouterConfig.tsx` 的 `TIER_DESCRIPTIONS.label` 改名 `builtInName`，5 条随之退场（该字段只用于和用户自填层名的相等比对，显示走 `labelKey`，属误挂文案槽位）
+
+下表按当前 529 条基线里的 330 条 `prop:` 命中重排，判定列区分两类：判定保留是长期留在基线的账（语料、品牌与缩写、格式示例），不是待办；待接才是下一簇的活。一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除，resolved 触红即门禁生效，新增英文串不再能静默进表
+
+| 条数 | 文件                                                                                          | 判定                             |
+| ---- | --------------------------------------------------------------------------------------------- | -------------------------------- |
+| 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         | 判定保留：第三方网关语料         |
+| 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         | 判定保留：差分用例语料           |
+| 45   | `src/app/(dashboard)/agents/_components/agent_config.ts`                                      | 待接：表值改正向键引用           |
+| 17   | `src/components/callback_info_helpers.tsx`                                                    | 判定保留：集成商产品名           |
+| 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          | 判定保留：API 路径               |
+| 8    | `src/data/compliancePrompts.ts`                                                               | 判定保留：合规提示语料           |
+| 6    | `src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
+| 6    | `src/components/model_add/anthropic_federation.ts`                                            | 判定保留：URL/JSON/正则格式示例  |
+| 6    | `src/components/model_dashboard/HealthCheckComponent.tsx`                                     | 判定保留：异常类名               |
+| 5    | `src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx`                  | 判定保留：示例工具语料           |
+| 5    | `src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
+| 5    | `src/app/(dashboard)/skills/_components/add_plugin_form.tsx`                                  | 判定保留：URL/JSON/正则格式示例  |
+| 5    | `src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx`            | 判定保留：URL/JSON/正则格式示例  |
+| 5    | `src/components/shared/timeRange/timeRange.ts`                                                | 待接：无生产消费者，接线时一并翻 |
+| 4    | `src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx`    | 判定保留：URL/JSON/正则格式示例  |
+| 4    | `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                        | 判定保留：示例负载语料           |
+| 4    | `src/components/shared/CreatedKeyDisplay.tsx`                                                 | 判定保留：品牌名                 |
+| 3    | `src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx`                            | 判定保留：URL/JSON/正则格式示例  |
+| 3    | `src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx` | 判定保留：URL/JSON/正则格式示例  |
+| 3    | `src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx`                     | 判定保留：URL/JSON/正则格式示例  |
+| 3    | `src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`                                            | 判定保留：URL/JSON/正则格式示例  |
+| 3    | `src/components/liteadmin/operations.ts`                                                      | 判定保留：模型侧工具说明         |
+| 3    | `src/components/user_agent_activity.tsx`                                                      | 判定保留：缩写                   |
+| 3    | `src/utils/budgetUtils.ts`                                                                    | 待接：无生产消费者，接线时一并翻 |
+| 2    | `src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx`            | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx`                 | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx`                   | 判定保留：SDK 名                 |
+| 2    | `src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx`           | 判定保留：SDK 名                 |
+| 2    | `src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx`                      | 判定保留：品牌名                 |
+| 2    | `src/app/layout.tsx`                                                                          | 判定保留：产品名（文档标题）     |
+| 2    | `src/components/TeamsPage/teamTableColumns.tsx`                                               | 判定保留：缩写 RPM/TPM           |
+| 2    | `src/components/add_model/ReminderMarkers.tsx`                                                | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/components/add_model/advanced_settings.tsx`                                              | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/components/key_team_helpers/key_sorting.ts`                                              | 判定保留：缩写 RPM/TPM           |
+| 2    | `src/components/pass_through_info.tsx`                                                        | 判定保留：URL/JSON/正则格式示例  |
+| 2    | `src/components/routing_groups/RoutingGroupUsagePanel.tsx`                                    | 判定保留：SDK 名                 |
+| 2    | `src/components/team/TeamEditSettingsForm.tsx`                                                | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                  | 判定保留：缩写 ID                |
+| 1    | `src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx`                              | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx`                        | 判定保留：预置技能种子           |
+| 1    | `src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx`                  | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx`                           | 判定保留：API 路径               |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx`                          | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx`                    | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/memory/_components/MemoryEditModal.tsx`                                  | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx`        | 判定保留：缩写 ID                |
+| 1    | `src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx`                           | 判定保留：缩写 ID                |
+| 1    | `src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx`                      | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/app/(dashboard)/workflows/WorkflowRuns.tsx`                                              | 判定保留：元数据键名             |
+| 1    | `src/components/AIHub/UsefulLinksManagement.tsx`                                              | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/Navbar/ViewSwitcher.tsx`                                                      | 判定保留：品牌名                 |
+| 1    | `src/components/Teams.tsx`                                                                    | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/UsagePage/keyActivityData.ts`                                                 | 判定保留：度量集名，渲染侧另有键 |
+| 1    | `src/components/add_pass_through.tsx`                                                         | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/cloudzero_export_modal.tsx`                                                   | 判定保留：品牌名                 |
+| 1    | `src/components/leftnav.tsx`                                                                  | 判定保留：品牌名                 |
+| 1    | `src/components/model_add/openai_federation.ts`                                               | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/networking.tsx`                                                               | 待接：解析失败的返回值           |
+| 1    | `src/components/routing_groups/RoutingGroupModal.tsx`                                         | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/team/EditMembership.tsx`                                                      | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/components/templates/KeyEditViewControls.tsx`                                            | 判定保留：URL/JSON/正则格式示例  |
+| 1    | `src/data/financialCompliancePrompts.ts`                                                      | 判定保留：合规提示语料           |
+| 1    | `src/data/insultsCompliancePrompts.ts`                                                        | 判定保留：合规提示语料           |
+
+待接 54 条分三型：`agent_config.ts` 45 条是表值仍存英文，UI 已在第 572 簇首片改走 `configText` 键表，只剩把 `FIELD_TEXT_KEYS` 反转的表改成正向 `labelKey` 形态才从基线退场；`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
+
+第六条口径待办：`COPY_PROPS` 按属性名精确匹配，`alertMessage`、`resourceInformationTitle`、`confirmText` 这类以文案词结尾的复合属性名，以及 `title={`...`}` 这类模板字面量属性值仍不可见（`Teams.tsx` 的删除警告正是靠模板漏检躲过 JSX 口径）。下一簇按 camel 末词扩列属性名，模板值要不要扫得先估增量

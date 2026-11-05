@@ -295,7 +295,7 @@ export function PlaygroundChat({
             placeholder={t("placeholder.selectMcpServer")}
             groups={[
               {
-                label: "MCP servers",
+                label: t("mcpServers"),
                 options: mcp.servers.map((server) => ({ value: server.server_id, label: serverName(server) })),
               },
               {

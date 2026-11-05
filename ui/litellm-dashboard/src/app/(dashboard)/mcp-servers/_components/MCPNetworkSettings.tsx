@@ -117,10 +117,10 @@ const AllowedClientDialog: React.FC<AllowedClientDialogProps> = ({ draft, onChan
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{draft.key === null ? t("networkSettings.addClient") : t("networkSettings.editClient")}</DialogTitle>
-          <DialogDescription>
-            {t("networkSettings.clientDialogDesc")}
-          </DialogDescription>
+          <DialogTitle>
+            {draft.key === null ? t("networkSettings.addClient") : t("networkSettings.editClient")}
+          </DialogTitle>
+          <DialogDescription>{t("networkSettings.clientDialogDesc")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-2">
@@ -165,11 +165,11 @@ type DisableableCapability = "prompts" | "resources";
 
 const CAPABILITY_TOGGLES: {
   capability: DisableableCapability;
-  label: string;
+  labelKey: "capabilityPrompts" | "capabilityResources";
   descriptionKey: "capabilityPromptsDesc" | "capabilityResourcesDesc";
 }[] = [
-  { capability: "prompts", label: "Prompts", descriptionKey: "capabilityPromptsDesc" },
-  { capability: "resources", label: "Resources", descriptionKey: "capabilityResourcesDesc" },
+  { capability: "prompts", labelKey: "capabilityPrompts", descriptionKey: "capabilityPromptsDesc" },
+  { capability: "resources", labelKey: "capabilityResources", descriptionKey: "capabilityResourcesDesc" },
 ];
 
 const parseDisabledCapabilities = (value: unknown): DisableableCapability[] =>
@@ -422,9 +422,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
             }
           }}
         />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("networkSettings.rangesHint")}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("networkSettings.rangesHint")}</p>
       </Card>
 
       <div>
@@ -434,14 +432,10 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
 
       <Card className="p-6">
         {storedAllowlistIsMalformed && (
-          <p className="mb-2 text-sm text-destructive">
-            {t("networkSettings.allowlistMalformed")}
-          </p>
+          <p className="mb-2 text-sm text-destructive">{t("networkSettings.allowlistMalformed")}</p>
         )}
         {storedAllowlistIsEmpty && (
-          <p className="mb-2 text-sm text-destructive">
-            {t("networkSettings.allowlistEmpty")}
-          </p>
+          <p className="mb-2 text-sm text-destructive">{t("networkSettings.allowlistEmpty")}</p>
         )}
         {allowedClients.length > 0 && (
           <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -467,9 +461,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
           <Plus />
           {t("networkSettings.addClient")}
         </Button>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("networkSettings.clientsListHint")}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("networkSettings.clientsListHint")}</p>
 
         <div className="mt-6 mb-2 flex items-center">
           <p className="text-sm font-medium">{t("networkSettings.clientHeaderTitle")}</p>
@@ -480,9 +472,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
           placeholder={t("networkSettings.clientHeaderPlaceholder")}
           onChange={(e) => setClientIdHeader(e.target.value)}
         />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("networkSettings.clientHeaderDesc")}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("networkSettings.clientHeaderDesc")}</p>
       </Card>
 
       <div>
@@ -491,11 +481,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
       </div>
 
       <Card className="space-y-4 p-6">
-        {CAPABILITY_TOGGLES.map(({ capability, label, descriptionKey }) => (
+        {CAPABILITY_TOGGLES.map(({ capability, labelKey, descriptionKey }) => (
           <div key={capability} className="flex items-center justify-between gap-4">
             <div>
               <Label htmlFor={`${capabilityToggleId}-${capability}`} className="text-sm font-medium">
-                {label}
+                {t(labelKey)}
               </Label>
               <p className="text-xs text-muted-foreground">{t(descriptionKey)}</p>
             </div>

@@ -5697,3 +5697,17 @@ A 桶剩四片一次接完，88 条命中清零。
 测试：`errorsData.test` 键与形状更新（codes 断言 `"other"`、删 label 断言、`topStatus→topStatusCode/topStatusRequests`）、`ErrorsTab.test` 两处断言翻中文（`1,000 个请求中有 50 个失败`、empty 正则）。usage 目录 33 文件 531 例全绿（净减 6 例即删掉的 `statusCodeLabel` 用例）、`tsc` 0 错、死键 0/0、静态英文 276/276 未再动、zh 246/246、`errorsData.ts` 与 `ErrorsTab.tsx` `scan-english` 零命中、eslint 0 error。新键 0 条，两侧叶子 13788 不变；清单有证据 80 → 79（`errorsData.ts` 命中清零退桶）
 
 A 桶与 `errorsData` 纠缠至此全部清零
+
+## 2026-11-05 第 571 簇：english-leaks 门禁补对象属性口径
+
+`scripts/english-scan-lib.mjs` 加 `scanObjectProperty`，`.ts`/`.tsx` 对象字面量里 `label:` `tooltip:` `title:` `description:` `placeholder:` 等 14 个文案属性名的字符串值进扫描口径，纯点分小写键引用（`nav.virtualKeys`）豁免。口径一次扩出 361 条 `prop:` 存量，基线 276 → 560，死键 0/0 与 zh 246/246 不动，`tsc` 0 错。存量按判定分组写进 FILE-INVENTORY 第五条，作为后续分簇接清的账
+
+## 2026-11-05 第 572 簇：agent 表单两处消费者改走 configText 键表
+
+`agent_config.ts` 的 45 条表值早就有 `FIELD_TEXT_KEYS` 反向映射，漏的是两个绕过它的显示点：`add_agent_form.tsx` 与 `dynamic_agent_form_fields.tsx` 里 8 处裸显 `field.label`/`field.tooltip`/`field.placeholder` 和两处校验消息插值（`pleaseEnter`、`fieldMalformed` 的 `{field}`）改 `configText(t, field.X)`，界面不再直出英文。`configText` 签名收 `string | null | undefined`（placeholder 可为 null，首片只放开 `undefined` 造成 6 处 TS2345）。零新键，表源字符串仍留在基线，等表改成正向 `labelKey` 才退场。agents 目录 16 文件 156 例全绿
+
+## 2026-11-05 第 573 簇：豁免补全与 27 条真显示面接清
+
+`KEY_REFERENCE` 放开无点单段标识符并同样作用于 JSX 属性口径，8 条键引用误报退场（`gatewaySessions.byAiClient`/`byUser`、`allProxyModels`/`noDefaultModels`、两处 `cURL`、`openingBuiltInPlaceholder`/`openingCustomPlaceholder`）。同簇接清 27 条：LiteAdmin 首页 6 条建议词（新键 `liteAdmin.composer.suggest*`）、SearchBox 4 条运算符（新键 `searchBox.operators.*`，含被小写词过滤器漏掉的 `equals`）、`Teams.tsx` 删除确认整块绕过 i18n 的 4 label + 标题 + 模板字面量警告（全用已有键）、MCP 网络设置 2 条能力名（新键 `mcpServers.capabilityPrompts`/`capabilityResources`）、toolset 列头 `Toolset ID` 用回 `toolsets.columnToolsetId`、playground MCP 分组名（新键 `playground.chat.mcpServers`）、`credentialOptions.ts` 的 `None` 改 `credentialOptions(t, credentials)`（形参 `(key: "none") => string`，4 处消费者传 common 译者）、`TIER_DESCRIPTIONS.label` 改名 `builtInName`（该字段只用于与用户自填层名相等比对，非显示槽位，5 条退场）
+
+新键 13 条，两侧叶子 13788 → 13801。基线 560 → 534 → 529（`prop:` 命中 361 → 330），死键 0/0、zh 未译 246/246、`tsc` 0 错、eslint 触及文件 0 error。测试翻面 6 处：LiteAdmin integration 建议词断言、SearchBox 运算符断言与正则、`credentialOptions.test` 改传 `enMessagesFor("common")`；`Teams.test` 的译员 stub 早已备好这些键，无需改断言。FILE-INVENTORY 第五条台账重排成判定与待接两列：待接 54 条（`agent_config.ts` 表改造 45、`timeRange.ts` 5 与 `budgetUtils.ts` 3 属无生产消费者、`networking.tsx` 1），判定保留 276 条。第六条口径待办记在文档里：以文案词结尾的复合属性名（`alertMessage`、`resourceInformationTitle`、`confirmText`）与模板字面量属性值仍不可见

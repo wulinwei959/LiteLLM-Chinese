@@ -438,7 +438,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                       <SearchSelect
                         inputId={id}
                         placeholder={addModelT("selectCredentials")}
-                        options={credentialOptions(credentialsList)}
+                        options={credentialOptions(commonT, credentialsList)}
                         value={(value as string | null) ?? ""}
                         allowClear={false}
                         onValueChange={(selected) => {

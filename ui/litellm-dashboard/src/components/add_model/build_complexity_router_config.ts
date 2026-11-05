@@ -320,7 +320,7 @@ export interface ComplexityRouterConfigPayload {
 
 export const serializeTierLabels = (tierLabels: ComplexityTierLabels | undefined): ComplexityTierLabels | undefined => {
   const renamed = TIER_KEYS.map((tier) => [tier, tierLabels?.[tier]?.trim() ?? ""] as const).filter(
-    ([tier, label]) => label !== "" && label !== TIER_DESCRIPTIONS[tier].label,
+    ([tier, label]) => label !== "" && label !== TIER_DESCRIPTIONS[tier].builtInName,
   );
   if (renamed.length === 0) return undefined;
   return Object.fromEntries(renamed);
@@ -348,7 +348,7 @@ export const getTierLabelsError = (
     return t("tierLabelsShadowing", { names: shadowing.join(", ") });
   }
   const labels = TIER_KEYS.map((tier) =>
-    (tierLabels?.[tier]?.trim() || TIER_DESCRIPTIONS[tier].label).toLowerCase(),
+    (tierLabels?.[tier]?.trim() || TIER_DESCRIPTIONS[tier].builtInName).toLowerCase(),
   );
   const duplicates = Array.from(new Set(labels.filter((label, index) => labels.indexOf(label) !== index)));
   if (duplicates.length > 0) {
@@ -386,8 +386,7 @@ export const getKeywordTierRulesError = (
   rows: readonly TierRow[],
 ): string | null => {
   const emptyRows = emptyKeywordTierRuleIndexes(keywordTierRules);
-  if (emptyRows.length > 0)
-    return t("keywordRuleEmpty", { indexes: emptyRows.map((index) => index + 1).join(", ") });
+  if (emptyRows.length > 0) return t("keywordRuleEmpty", { indexes: emptyRows.map((index) => index + 1).join(", ") });
   const names = rows.map(activeTierName);
   const orphaned = keywordTierRules.flatMap((rule, index) => (names.includes(rule.tier) ? [] : [index + 1]));
   if (orphaned.length === 0) return null;

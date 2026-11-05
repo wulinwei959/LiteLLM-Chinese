@@ -632,20 +632,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
             title={t("deleteConfirmTitle")}
             alertMessage={(() => {
               const deleteKeyCount = teamToDelete?.keys_count ?? teamToDelete?.keys?.length ?? 0;
-              return deleteKeyCount === 0
-                ? undefined
-                : `Warning: This team has ${deleteKeyCount} keys associated with it. Deleting the team will also delete all associated keys, along with any models created for this team. This action is irreversible.`;
+              return deleteKeyCount === 0 ? undefined : t("listDeleteKeysWarning", { count: deleteKeyCount });
             })()}
             message={t("listDeleteConfirmMessage")}
-            resourceInformationTitle="Team Information"
+            resourceInformationTitle={t("listTeamInformation")}
             resourceInformation={[
-              { label: "Team ID", value: teamToDelete?.team_id, code: true },
-              { label: "Team Name", value: teamToDelete?.team_alias },
+              { label: t("listTeamId"), value: teamToDelete?.team_id, code: true },
+              { label: t("listTeamName"), value: teamToDelete?.team_alias },
               {
-                label: "Keys",
+                label: t("keys"),
                 value: teamToDelete?.keys_count ?? teamToDelete?.keys?.length ?? 0,
               },
-              { label: "Members", value: teamToDelete?.members_with_roles?.length },
+              { label: t("members"), value: teamToDelete?.members_with_roles?.length },
             ]}
             requiredConfirmation={teamToDelete?.team_alias}
             onCancel={cancelDelete}

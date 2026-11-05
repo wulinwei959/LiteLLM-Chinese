@@ -23,23 +23,28 @@ const scanJsxText = (node, add) => {
   if (ts.isJsxText(node)) add(node.getText(), "jsx");
 };
 
+// Tables like agent_config and leftnav hold message-key references (e.g. "nav.virtualKeys",
+// "allProxyModels") in the same `label` slot that other tables fill with display copy; a
+// lowercase-initial identifier with no spaces is never a user-visible English string.
+const KEY_REFERENCE = /^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9-]+)*$/;
+
+const isKeyReference = (value) => KEY_REFERENCE.test(value);
+
 const scanJsxAttribute = (node, add) => {
   if (!ts.isJsxAttribute(node) || !node.initializer || !ts.isStringLiteral(node.initializer)) return;
   const name = node.name.getText();
-  if (COPY_PROPS.has(name)) add(node.initializer.text, `prop:${name}`);
+  if (!COPY_PROPS.has(name)) return;
+  const value = node.initializer.text;
+  if (isKeyReference(value)) return;
+  add(value, `prop:${name}`);
 };
-
-// Tables like agent_config and leftnav hold message-key references (e.g. "nav.virtualKeys")
-// in the same `label` slot that other tables fill with display copy; a bare dotted
-// camelCase identifier is never a user-visible English string.
-const KEY_REFERENCE = /^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9-]+)+$/;
 
 const scanObjectProperty = (node, add) => {
   if (!ts.isPropertyAssignment(node) || !ts.isStringLiteral(node.initializer)) return;
   const name = node.name.getText().replace(/^['"]|['"]$/g, "");
   if (!COPY_PROPS.has(name)) return;
   const value = node.initializer.text;
-  if (KEY_REFERENCE.test(value)) return;
+  if (isKeyReference(value)) return;
   add(value, `prop:${name}`);
 };
 

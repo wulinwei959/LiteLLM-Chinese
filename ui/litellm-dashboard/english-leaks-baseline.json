@@ -1301,31 +1301,6 @@
       "text": "v"
     },
     {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
-      "kind": "prop:title",
-      "text": "gatewaySessions.byAiClient"
-    },
-    {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPGatewaySessionsTab.tsx",
-      "kind": "prop:title",
-      "text": "gatewaySessions.byUser"
-    },
-    {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPNetworkSettings.tsx",
-      "kind": "prop:label",
-      "text": "Prompts"
-    },
-    {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPNetworkSettings.tsx",
-      "kind": "prop:label",
-      "text": "Resources"
-    },
-    {
-      "file": "src/app/(dashboard)/mcp-servers/_components/MCPToolsetTableColumns.tsx",
-      "kind": "prop:title",
-      "text": "Toolset ID"
-    },
-    {
       "file": "src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx",
       "kind": "prop:placeholder",
       "text": "https://auth.example.com/oauth/token"
@@ -1521,11 +1496,6 @@
       "text": "MCP"
     },
     {
-      "file": "src/app/(dashboard)/playground/components/chat/PlaygroundChat.tsx",
-      "kind": "prop:label",
-      "text": "MCP servers"
-    },
-    {
       "file": "src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts",
       "kind": "prop:label",
       "text": "Moderate a forum comment"
@@ -1604,11 +1574,6 @@
       "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/index.tsx",
       "kind": "jsx",
       "text": "PRETTY"
-    },
-    {
-      "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx",
-      "kind": "prop:label",
-      "text": "cURL"
     },
     {
       "file": "src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx",
@@ -1821,31 +1786,6 @@
       "text": "&middot;"
     },
     {
-      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
-      "kind": "prop:label",
-      "text": "Complex"
-    },
-    {
-      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
-      "kind": "prop:label",
-      "text": "Medium"
-    },
-    {
-      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
-      "kind": "prop:label",
-      "text": "Non-reasoning"
-    },
-    {
-      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
-      "kind": "prop:label",
-      "text": "Reasoning"
-    },
-    {
-      "file": "src/components/add_model/ComplexityRouterConfig.tsx",
-      "kind": "prop:label",
-      "text": "Simple"
-    },
-    {
       "file": "src/components/add_model/DecisionModelNote.tsx",
       "kind": "jsx",
       "text": "/v1/decisions"
@@ -1854,16 +1794,6 @@
       "file": "src/components/add_model/DecisionModelNote.tsx",
       "kind": "jsx",
       "text": "/v1/systemone"
-    },
-    {
-      "file": "src/components/add_model/OpeningPromptEditor.tsx",
-      "kind": "prop:placeholder",
-      "text": "openingBuiltInPlaceholder"
-    },
-    {
-      "file": "src/components/add_model/OpeningPromptEditor.tsx",
-      "kind": "prop:placeholder",
-      "text": "openingCustomPlaceholder"
     },
     {
       "file": "src/components/add_model/ReminderMarkers.tsx",
@@ -2166,36 +2096,6 @@
       "text": "⌘J"
     },
     {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Add a model"
-    },
-    {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Compare models"
-    },
-    {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Create a key"
-    },
-    {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Explain my costs"
-    },
-    {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Set a budget"
-    },
-    {
-      "file": "src/components/liteadmin/LiteAdminHomeComposer.tsx",
-      "kind": "prop:label",
-      "text": "Summarize my usage"
-    },
-    {
       "file": "src/components/liteadmin/operations.ts",
       "kind": "prop:description",
       "text": "Show one chart with the answer using the source_id of a successful usage lookup in this turn. Choose daily_spend for spend over time, model_spend or provider_spend for cost comparisons, daily_requests or daily_tokens for trends, or token_breakdown for input/output/cache analysis. Values come directly from that lookup. Follow with a short explanation, not a duplicate table. A later chart replaces the earlier chart for this answer. Read-only."
@@ -2346,16 +2246,6 @@
       "text": "router_settings:"
     },
     {
-      "file": "src/components/ModelSelect/ModelSelect.tsx",
-      "kind": "prop:label",
-      "text": "allProxyModels"
-    },
-    {
-      "file": "src/components/ModelSelect/ModelSelect.tsx",
-      "kind": "prop:label",
-      "text": "noDefaultModels"
-    },
-    {
       "file": "src/components/molecules/DecisionModelsBanner.tsx",
       "kind": "jsx",
       "text": "/v1/decisions"
@@ -2448,11 +2338,6 @@
     {
       "file": "src/components/routing_groups/RoutingGroupUsagePanel.tsx",
       "kind": "prop:label",
-      "text": "cURL"
-    },
-    {
-      "file": "src/components/routing_groups/RoutingGroupUsagePanel.tsx",
-      "kind": "prop:label",
       "text": "JavaScript (OpenAI SDK)"
     },
     {
@@ -2516,11 +2401,6 @@
       "text": "Codex"
     },
     {
-      "file": "src/components/shared/credentialOptions.ts",
-      "kind": "prop:label",
-      "text": "None"
-    },
-    {
       "file": "src/components/shared/dotField/DotField.tsx",
       "kind": "error",
       "text": "DotField parts must be rendered inside DotFieldRoot"
@@ -2539,21 +2419,6 @@
       "file": "src/components/shared/search/SearchBox.tsx",
       "kind": "error",
       "text": "SearchBox parts must be rendered inside SearchBox.Root"
-    },
-    {
-      "file": "src/components/shared/search/SearchBox.tsx",
-      "kind": "prop:label",
-      "text": "does not contain"
-    },
-    {
-      "file": "src/components/shared/search/SearchBox.tsx",
-      "kind": "prop:label",
-      "text": "not equals"
-    },
-    {
-      "file": "src/components/shared/search/SearchBox.tsx",
-      "kind": "prop:label",
-      "text": "wildcard match"
     },
     {
       "file": "src/components/shared/timeRange/timeRange.ts",
@@ -2624,26 +2489,6 @@
       "file": "src/components/team/TeamInfo.tsx",
       "kind": "jsx",
       "text": ": TPM"
-    },
-    {
-      "file": "src/components/Teams.tsx",
-      "kind": "prop:label",
-      "text": "Keys"
-    },
-    {
-      "file": "src/components/Teams.tsx",
-      "kind": "prop:label",
-      "text": "Members"
-    },
-    {
-      "file": "src/components/Teams.tsx",
-      "kind": "prop:label",
-      "text": "Team ID"
-    },
-    {
-      "file": "src/components/Teams.tsx",
-      "kind": "prop:label",
-      "text": "Team Name"
     },
     {
       "file": "src/components/Teams.tsx",
