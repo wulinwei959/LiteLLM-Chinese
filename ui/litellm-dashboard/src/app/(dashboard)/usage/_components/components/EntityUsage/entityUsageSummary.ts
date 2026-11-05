@@ -1,6 +1,19 @@
+import type { UsageTranslator } from "@/lib/i18n/translators";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 
+export type SummaryTileId =
+  | "flatCost"
+  | "failedRequests"
+  | "ptuHours"
+  | "requestCost"
+  | "successfulRequests"
+  | "totalCost"
+  | "totalRequests"
+  | "totalSpend"
+  | "totalTokens";
+
 export interface SummaryTile {
+  id: SummaryTileId;
   title: string;
   value: string;
   className?: string;
@@ -18,23 +31,12 @@ interface SpendSummaryMetadata {
   total_tokens: number;
 }
 
-export const TOTAL_COST_TOOLTIP =
-  "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.";
-
-export const REQUEST_COST_TOOLTIP =
-  "Usage-based cost of the requests this entity sent during the selected period, priced per token.";
-
-export const FLAT_COST_TOOLTIP =
-  "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.";
-
-export const PTU_HOURS_TOOLTIP =
-  "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.";
-
 export const hasFlatCost = (metadata: SpendSummaryMetadata): boolean => (metadata.total_flat_cost ?? 0) > 0;
 
 export const hasPtuHours = (metadata: SpendSummaryMetadata): boolean => (metadata.total_ptu_hours ?? 0) > 0;
 
 export const buildSummaryTiles = (
+  t: UsageTranslator,
   metadata: SpendSummaryMetadata,
   showFlatCost: boolean,
   showPtuHours: boolean = false,
@@ -43,44 +45,58 @@ export const buildSummaryTiles = (
   const ptuHoursTile: SummaryTile[] = showPtuHours
     ? [
         {
-          title: "PTU Hours",
+          id: "ptuHours",
+          title: t("entity.ptuHours"),
           value: formatNumberWithCommas(metadata.total_ptu_hours ?? 0, 2),
-          tooltip: PTU_HOURS_TOOLTIP,
+          tooltip: t("entity.ptuHoursHint"),
         },
       ]
     : [];
   return [
     showFlatCost
       ? {
-          title: "Total Cost",
+          id: "totalCost",
+          title: t("entity.totalCost"),
           value: `$${formatNumberWithCommas(metadata.total_spend + flatCost, 2)}`,
-          tooltip: TOTAL_COST_TOOLTIP,
+          tooltip: t("entity.totalCostHint"),
           expandable: true,
         }
-      : { title: "Total Spend", value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
-    { title: "Total Requests", value: metadata.total_api_requests.toLocaleString() },
+      : {
+          id: "totalSpend",
+          title: t("entity.totalSpend"),
+          value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
+        },
+    { id: "totalRequests", title: t("totalRequests"), value: metadata.total_api_requests.toLocaleString() },
     {
-      title: "Successful Requests",
+      id: "successfulRequests",
+      title: t("metrics.successfulRequests"),
       value: metadata.total_successful_requests.toLocaleString(),
       className: "text-success",
     },
-    { title: "Failed Requests", value: metadata.total_failed_requests.toLocaleString(), className: "text-destructive" },
-    { title: "Total Tokens", value: metadata.total_tokens.toLocaleString() },
+    {
+      id: "failedRequests",
+      title: t("metrics.failedRequests"),
+      value: metadata.total_failed_requests.toLocaleString(),
+      className: "text-destructive",
+    },
+    { id: "totalTokens", title: t("totalTokens"), value: metadata.total_tokens.toLocaleString() },
     ...ptuHoursTile,
   ];
 };
 
-export const buildCostBreakdownTiles = (metadata: SpendSummaryMetadata): SummaryTile[] => [
+export const buildCostBreakdownTiles = (t: UsageTranslator, metadata: SpendSummaryMetadata): SummaryTile[] => [
   {
-    title: "Request Cost",
+    id: "requestCost",
+    title: t("entity.requestCost"),
     value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
     className: "text-info",
-    tooltip: REQUEST_COST_TOOLTIP,
+    tooltip: t("entity.requestCostHint"),
   },
   {
-    title: "Flat Cost",
+    id: "flatCost",
+    title: t("entity.flatCost"),
     value: `$${formatNumberWithCommas(metadata.total_flat_cost ?? 0, 2)}`,
     className: "text-violet-600",
-    tooltip: FLAT_COST_TOOLTIP,
+    tooltip: t("entity.flatCostHint"),
   },
 ];

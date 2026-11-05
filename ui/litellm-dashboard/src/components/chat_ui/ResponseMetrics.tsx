@@ -13,7 +13,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { PROMPT_CACHE_CREATION_TOOLTIP, PROMPT_CACHE_READ_TOOLTIP } from "@/utils/promptCacheUsage";
 
 export interface TokenUsage {
   completionTokens?: number;
@@ -68,6 +67,7 @@ function ResponseCacheIndicator() {
 
 function PromptCacheChips({ usage }: { usage?: TokenUsage }) {
   const t = useTranslations("chatUi");
+  const tCommon = useTranslations("common");
   if (usage?.servedFromResponseCache) {
     return <ResponseCacheIndicator />;
   }
@@ -80,7 +80,7 @@ function PromptCacheChips({ usage }: { usage?: TokenUsage }) {
       {readTokens > 0 && (
         <MetricItem
           label={t("cacheRead")}
-          tooltip={PROMPT_CACHE_READ_TOOLTIP}
+          tooltip={tCommon("promptCacheReadTooltip")}
           icon={<Database className="size-3" aria-hidden="true" />}
           value={String(readTokens)}
         />
@@ -89,7 +89,7 @@ function PromptCacheChips({ usage }: { usage?: TokenUsage }) {
       {creationTokens > 0 && (
         <MetricItem
           label={t("cacheWrite")}
-          tooltip={PROMPT_CACHE_CREATION_TOOLTIP}
+          tooltip={tCommon("promptCacheCreationTooltip")}
           icon={<DatabaseBackup className="size-3" aria-hidden="true" />}
           value={String(creationTokens)}
         />

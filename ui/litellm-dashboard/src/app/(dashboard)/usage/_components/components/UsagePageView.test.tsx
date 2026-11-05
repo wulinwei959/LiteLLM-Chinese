@@ -1361,8 +1361,8 @@ describe("UsagePage", () => {
 
       // Default should be the "groups" view, which feeds Model Activity from model_groups
       expect(screen.getByText("activity-source:model_groups")).toBeInTheDocument();
-      expect(screen.getAllByText("Public Model Name").length).toBeGreaterThan(0);
-      expect(screen.getAllByText("Litellm Model Name").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("公开模型名称").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("LiteLLM 模型名称").length).toBeGreaterThan(0);
     });
 
     it("should switch to Litellm Model Name view on toggle click", async () => {
@@ -1373,7 +1373,7 @@ describe("UsagePage", () => {
       });
 
       // Click the "Litellm Model Name" toggle
-      const litellmToggle = screen.getAllByText("Litellm Model Name")[0];
+      const litellmToggle = screen.getAllByText("LiteLLM 模型名称")[0];
       act(() => {
         fireEvent.click(litellmToggle);
       });
@@ -1392,7 +1392,7 @@ describe("UsagePage", () => {
       });
 
       // Switch to individual first
-      const litellmToggle = screen.getAllByText("Litellm Model Name")[0];
+      const litellmToggle = screen.getAllByText("LiteLLM 模型名称")[0];
       act(() => {
         fireEvent.click(litellmToggle);
       });
@@ -1402,7 +1402,7 @@ describe("UsagePage", () => {
       });
 
       // Switch back to groups
-      const publicToggle = screen.getAllByText("Public Model Name")[0];
+      const publicToggle = screen.getAllByText("公开模型名称")[0];
       act(() => {
         fireEvent.click(publicToggle);
       });
@@ -1432,7 +1432,7 @@ describe("UsagePage", () => {
       });
 
       act(() => {
-        fireEvent.click(screen.getAllByText("Litellm Model Name")[0]);
+        fireEvent.click(screen.getAllByText("LiteLLM 模型名称")[0]);
       });
 
       await waitFor(() => {

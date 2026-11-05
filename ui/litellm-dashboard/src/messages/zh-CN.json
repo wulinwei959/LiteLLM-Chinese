@@ -249,6 +249,8 @@
     "healthCheckModelPlaceholder": "选择现有的健康检查模型",
     "cacheControlLabel": "缓存控制注入点",
     "cacheControlTooltipDesc": "告诉 litellm 在哪里注入缓存控制检查点。你可以按角色指定（应用于该角色的所有消息）或按特定消息索引指定。",
+    "promptCacheReadTooltip": "从 LLM 提供商的提示词缓存（例如 Anthropic、OpenAI）读取的输入 token，按折扣费率计费，由提供商上报",
+    "promptCacheCreationTooltip": "写入 LLM 提供商提示词缓存、供后续请求复用的输入 token",
     "teamLabel": "团队",
     "saveChanges": "保存更改",
     "sourceUnknown": "未知来源",
@@ -5286,7 +5288,14 @@
       "spendOverview": "{entity} 消费总览",
       "bucketSize": "分桶大小",
       "scale": "时间粒度",
-      "trackCostPer": "按{entity}跟踪成本"
+      "trackCostPer": "按{entity}跟踪成本",
+      "requestCost": "请求成本",
+      "flatCost": "固定成本",
+      "ptuHours": "PTU 小时数",
+      "totalCostHint": "请求成本加上预留容量的固定成本，选中这张卡片可查看明细",
+      "requestCostHint": "所选周期内该实体发出请求的按量成本，按 token 计价",
+      "flatCostHint": "预留的置备吞吐量，无论是否发出请求都按小时计费。只在这里展示，不计入团队、密钥、用户或组织的预算",
+      "ptuHoursHint": "已消耗的置备吞吐量，单位为 PTU 小时。发给 PTU 部署的 token 按每个模型的 Azure 规格表换算，用它除以预留 PTU 数与周期小时数的乘积就是预留容量的使用率"
     },
     "provider": {
       "title": "按供应商统计消费",
@@ -5367,7 +5376,10 @@
       "successFailed": "成功 / 失败",
       "totalRequest": "请求总数"
     },
-    "modelViewToggle": {},
+    "modelViewToggle": {
+      "publicModelName": "公开模型名称",
+      "litellmModelName": "LiteLLM 模型名称"
+    },
     "topModelView": {
       "colModel": "模型",
       "colSpend": "花费（美元）",

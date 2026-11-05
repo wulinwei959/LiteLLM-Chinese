@@ -573,7 +573,7 @@ describe("EntityUsage", () => {
     });
 
     expect(screen.getByText("Tag 花费概览")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -826,7 +826,7 @@ describe("EntityUsage", () => {
     expect(await screen.findByText("Tag 花费概览")).toBeInTheDocument();
     const costTab = screen.getByRole("tabpanel");
     expect(await within(costTab).findByText("$0.00")).toBeInTheDocument();
-    expect(within(costTab).getByText("Total Spend")).toBeInTheDocument();
+    expect(within(costTab).getByText("总消费")).toBeInTheDocument();
     expect(within(costTab).getAllByText("0")[0]).toBeInTheDocument();
   });
 
@@ -874,13 +874,13 @@ describe("EntityUsage", () => {
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Litellm Model Name"));
+      fireEvent.click(showingText("LiteLLM 模型名称"));
     });
 
     expect(showingCount("metrics-source:models")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Public Model Name"));
+      fireEvent.click(showingText("公开模型名称"));
     });
 
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
@@ -1039,7 +1039,7 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
     expect(screen.getAllByText("正在加载图表数据...")).toHaveLength(2);
-    expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("总消费")).not.toBeInTheDocument();
     expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
@@ -1049,7 +1049,7 @@ describe("EntityUsage", () => {
 
     expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
     expect(screen.getByText("总体用量")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
   });
 

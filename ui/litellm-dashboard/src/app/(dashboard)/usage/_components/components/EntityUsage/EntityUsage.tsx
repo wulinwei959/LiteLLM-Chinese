@@ -8,6 +8,7 @@ import {
   hasFlatCost,
   hasPtuHours,
   type SummaryTile,
+  type SummaryTileId,
 } from "./entityUsageSummary";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { hasCapability, type Capability } from "@/utils/capabilities";
@@ -60,12 +61,12 @@ const BRAND = "#2b3fd6";
 const FLAT_COST_SERIES = "Flat cost";
 const FLAT_COST_COLOR = "#8b5cf6";
 const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
-/** Summary tiles that carry a sparkline, keyed by tile title, valued by the dailyTotals field. */
-const TILE_TRENDS: Readonly<Record<string, string>> = {
-  "Total Spend": "spend",
-  "Total Cost": "spend",
-  "Total Requests": "requests",
-  "Total Tokens": "tokens",
+/** Summary tiles that carry a sparkline, keyed by tile id, valued by the dailyTotals field. */
+const TILE_TRENDS: Readonly<Partial<Record<SummaryTileId, string>>> = {
+  totalSpend: "spend",
+  totalCost: "spend",
+  totalRequests: "requests",
+  totalTokens: "tokens",
 };
 const GRANULARITY_OPTIONS = [
   { value: "day", label: "Daily" },
@@ -436,7 +437,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const renderSummaryTile = (tile: SummaryTile, index: number) => {
-    const trendKey = TILE_TRENDS[tile.title];
+    const trendKey = TILE_TRENDS[tile.id];
     const stat = <Stat label={tileLabel(tile)} value={<span className={tile.className}>{tile.value}</span>} />;
     const trend = trendKey ? (
       <Sparkline data={dailyTrend} dataKey={trendKey} color={BRAND} className="h-12" />
@@ -444,14 +445,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     const span = index === 0 ? "col-span-2 lg:col-span-1" : undefined;
     if (!tile.expandable) {
       return (
-        <StatCell key={tile.title} trend={trend} className={span}>
+        <StatCell key={tile.id} trend={trend} className={span}>
           {stat}
         </StatCell>
       );
     }
     return (
       <div
-        key={tile.title}
+        key={tile.id}
         role="button"
         tabIndex={0}
         aria-expanded={showCostBreakdown}
@@ -469,8 +470,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     );
   };
 
-  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
-  const summaryTiles = buildSummaryTiles(spendData.metadata, showFlatCost, showPtuHours);
+  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(t, spendData.metadata) : [];
+  const summaryTiles = buildSummaryTiles(t, spendData.metadata, showFlatCost, showPtuHours);
 
   const modelViewTitle = modelViewType === "groups" ? t("topModelGroups") : t("topModelSingle");
   const chartFormat = (value: number) => formatMetricValue(value, breakdown.metric);
@@ -494,7 +495,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         {breakdownTiles.length > 0 && (
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border">
             {breakdownTiles.map((tile) => (
-              <StatCell key={tile.title}>
+              <StatCell key={tile.id}>
                 <Stat label={tileLabel(tile)} value={<span className={tile.className}>{tile.value}</span>} />
               </StatCell>
             ))}
