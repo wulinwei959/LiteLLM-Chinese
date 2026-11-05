@@ -337,9 +337,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
 
                       {/* Credentials */}
                       <div className="mb-4">
-                        <span className="text-sm text-muted-foreground">
-                          {addModelT("credentialsDesc")}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{addModelT("credentialsDesc")}</span>
                       </div>
 
                       <MountedFormField
@@ -396,19 +394,9 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {(isAdmin || !isTeamAdmin) && (
                         <Field className="mb-4">
                           <FieldLabel>
-                            {labelWithHint(
-                              addModelT("teamByokLabel"),
-                              addModelT("teamByokHint"),
-                            )}
+                            {labelWithHint(addModelT("teamByokLabel"), addModelT("teamByokHint"))}
                           </FieldLabel>
-                          <SimpleTooltip
-                            content={
-                              !premiumUser
-                                ? addModelT("teamByokPremiumDesc")
-                                : ""
-                            }
-                            side="top"
-                          >
+                          <SimpleTooltip content={!premiumUser ? addModelT("teamByokPremiumDesc") : ""} side="top">
                             <span className="inline-flex">
                               <Switch
                                 checked={isTeamOnly}

@@ -683,14 +683,14 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 
 第 565 簇清单未覆盖到的六个文件内部硬编码英文，接入判据只看 `useTranslations(`/`getTranslations(`，挂了翻译器的文件内部裸串一律不进清单（第四道盲区）。本簇六文件约 16 处，集中改为 translator-first，复用/新增 17 条 `clientUsage` 词条，叶子 13594 → 13611。
 
-| 位置 | 接线前 | 落定的键 |
-|------|--------|----------|
-| `src/app/(dashboard)/usage/_components/hooks/clientUsageScope.ts:79/84/88/95` | 四处 `return { error: "..." }` | `chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`signInRequired`（复用） |
-| `src/app/(dashboard)/usage/_components/hooks/useClientUsage.ts:27/28/29/68` | `scopeError` 四分支 + `emptyClientUsage` 兜底 | `selectUserOrTeam`/`selectValidDateRange`/`signInRequired`/`couldNotLoad`（复用） |
-| `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts:187/189/191/195/198/200` | `INCOMPLETE_CLIENT_USAGE` 常量 + 五处字面量 | `selectUserOrTeam`/`proxyIncompleteData`/`incompleteClientUsage`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam` |
-| `src/app/(dashboard)/usage/_components/hooks/useClientAgentModels.ts:21/27/29/66` | `loadModels` 两处 + hook 范围校验 | `chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`selectValidDateRange`（复用） |
-| `src/app/(dashboard)/usage/_components/hooks/clientAgentModelsData.ts:65/70/87` | 三处字面量 | `proxyIncompleteModelData`/`proxyDuplicateModelData`/`modelUsageMismatch` |
-| `src/app/(dashboard)/usage/_components/components/ClientUsagePanel.tsx:57/272/299` | `countLabel` 回落 "Unavailable"、两处区间提示 | `unavailable`/`scopedRequestHint`/`allUsersHint`/`chooseAnotherPerson`（复用） |
+| 位置                                                                                     | 接线前                                        | 落定的键                                                                                                              |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src/app/(dashboard)/usage/_components/hooks/clientUsageScope.ts:79/84/88/95`            | 四处 `return { error: "..." }`                | `chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`signInRequired`（复用）                           |
+| `src/app/(dashboard)/usage/_components/hooks/useClientUsage.ts:27/28/29/68`              | `scopeError` 四分支 + `emptyClientUsage` 兜底 | `selectUserOrTeam`/`selectValidDateRange`/`signInRequired`/`couldNotLoad`（复用）                                     |
+| `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts:187/189/191/195/198/200` | `INCOMPLETE_CLIENT_USAGE` 常量 + 五处字面量   | `selectUserOrTeam`/`proxyIncompleteData`/`incompleteClientUsage`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`      |
+| `src/app/(dashboard)/usage/_components/hooks/useClientAgentModels.ts:21/27/29/66`        | `loadModels` 两处 + hook 范围校验             | `chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`selectValidDateRange`（复用） |
+| `src/app/(dashboard)/usage/_components/hooks/clientAgentModelsData.ts:65/70/87`          | 三处字面量                                    | `proxyIncompleteModelData`/`proxyDuplicateModelData`/`modelUsageMismatch`                                             |
+| `src/app/(dashboard)/usage/_components/components/ClientUsagePanel.tsx:57/272/299`       | `countLabel` 回落 "Unavailable"、两处区间提示 | `unavailable`/`scopedRequestHint`/`allUsersHint`/`chooseAnotherPerson`（复用）                                        |
 
 新增 `clientUsage` 词条 17 条（`chooseAdminTeam`/`chooseTeamMember`/`chooseTeamBeforeOtherMember`/`incompleteClientUsage`/`proxyIncompleteData`/`proxyIncompleteModelData`/`proxyUsageOutsideUser`/`proxyUsageOutsideTeam`/`chooseShorterDateRange`/`couldNotLoadCompleteModelUsage`/`couldNotLoadModelBreakdown`/`modelUsageMismatch`/`scopedRequestHint`/`allUsersHint`/`selectedUser`/`unavailable`/`loadingAria`），叶子 13594 → 13611。其余复用 `signInRequired`/`couldNotLoad`/`selectUserOrTeam`/`selectValidDateRange`/`chooseAnotherPerson`。
 
@@ -698,27 +698,26 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 
 第 565 簇已记的"第四道盲区"（`dead-keys.py` 的 `referenced_verbatim` 把命名空间级孤儿救活）本簇补记 14 个命名空间孤儿键与救活它们的同名兄弟：
 
-| 孤儿键（本簇新增/复用） | 救活它的同名兄弟（不同命名空间） |
-|-------------------------|----------------------------------|
-| `usage.topModelView.colSuccessful` | `AgentsTableColumns.tsx` `t("colSpend")`、`TopKeyView.tsx` `t("tableView")` 这类同名兄弟 |
-| `usage.topModelView.colFailed` | 同上 |
-| `usage.topModelView.colModel` | 同上 |
-| `usage.topModelView.colSpend` | 同上 |
-| `usage.topModelView.colTokens` | 同上 |
-| `usage.topModelView.tableView` | 同上 |
-| `usage.topModelView.chartView` | 同上 |
-| `usage.teamUserSpend.selectTeamHint` | `AddModelForm.tsx` `t("selectTeamHint")` 等 |
-| `usage.teamUserSpend.team` | 同上 |
-| `usage.teamUserSpend.user` | 同上 |
-| `usage.teamUserSpend.spend` | 同上 |
-| `usage.teamUserSpend.successful` | 同上 |
-| `usage.teamUserSpend.failed` | 同上 |
-| `usage.teamUserSpend.tokens` | 同上 |
+| 孤儿键（本簇新增/复用）              | 救活它的同名兄弟（不同命名空间）                                                         |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `usage.topModelView.colSuccessful`   | `AgentsTableColumns.tsx` `t("colSpend")`、`TopKeyView.tsx` `t("tableView")` 这类同名兄弟 |
+| `usage.topModelView.colFailed`       | 同上                                                                                     |
+| `usage.topModelView.colModel`        | 同上                                                                                     |
+| `usage.topModelView.colSpend`        | 同上                                                                                     |
+| `usage.topModelView.colTokens`       | 同上                                                                                     |
+| `usage.topModelView.tableView`       | 同上                                                                                     |
+| `usage.topModelView.chartView`       | 同上                                                                                     |
+| `usage.teamUserSpend.selectTeamHint` | `AddModelForm.tsx` `t("selectTeamHint")` 等                                              |
+| `usage.teamUserSpend.team`           | 同上                                                                                     |
+| `usage.teamUserSpend.user`           | 同上                                                                                     |
+| `usage.teamUserSpend.spend`          | 同上                                                                                     |
+| `usage.teamUserSpend.successful`     | 同上                                                                                     |
+| `usage.teamUserSpend.failed`         | 同上                                                                                     |
+| `usage.teamUserSpend.tokens`         | 同上                                                                                     |
 
 以及 `usage.endpointUsage.noData`、`usage.tabs.endpoints`、`usage.endpointUsage.endpointCount` 三条孤儿，无同名兄弟救活，纯靠本簇接线激活。
 
 清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇完全一致，本簇六文件均在清单内部，对清单零影响。
-
 
 ## 第 567 簇：A 桶首片 `agentCatalog.ts`（2026-11-05）
 

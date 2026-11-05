@@ -111,9 +111,7 @@ describe("AriaAnswer", () => {
 
     const table = within(preview.body).getByRole("table");
     expect(within(table).getByRole("row", { name: "provider/long-deployment-primary $0.000123" })).toBeInTheDocument();
-    expect(
-      within(table).getByRole("row", { name: "provider/long-deployment-secondary 不可用" }),
-    ).toBeInTheDocument();
+    expect(within(table).getByRole("row", { name: "provider/long-deployment-secondary 不可用" })).toBeInTheDocument();
     expect(within(table).getByRole("row", { name: "Unused deployment $0.00" })).toBeInTheDocument();
     expect(preview.body).toHaveTextContent(question);
     expect(within(preview.body).queryByRole("button")).not.toBeInTheDocument();

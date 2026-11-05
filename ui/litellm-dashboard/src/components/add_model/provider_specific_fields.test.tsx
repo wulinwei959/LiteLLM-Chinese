@@ -520,9 +520,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(
-      await screen.findByText("此认证类型将保存为 LLM 凭据并附加到此模型。"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("此认证类型将保存为 LLM 凭据并附加到此模型。")).toBeInTheDocument();
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "创建凭据" }));
     expect(onCreateCredential).toHaveBeenCalledWith("oauth_token_exchange");
@@ -542,9 +540,7 @@ describe("ProviderSpecificFields", () => {
     const authTypeSelect = await screen.findByRole("combobox", { name: "认证类型：" });
     expect(authTypeSelect).toHaveTextContent("静态委托访问令牌");
     await user.click(authTypeSelect);
-    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
-      "静态委托访问令牌",
-    ]);
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["静态委托访问令牌"]);
 
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Client ID")).not.toBeInTheDocument();
@@ -564,11 +560,7 @@ describe("ProviderSpecificFields", () => {
     );
 
     await screen.findByLabelText("Token Endpoint URL");
-    await chooseSelectOption(
-      user,
-      screen.getByRole("combobox", { name: "认证类型：" }),
-      "静态委托访问令牌",
-    );
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "认证类型：" }), "静态委托访问令牌");
 
     expect(await screen.findByLabelText("Delegated Access Token")).toBeInTheDocument();
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
@@ -588,9 +580,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "静态委托访问令牌",
-    );
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("静态委托访问令牌");
     expect(screen.getByLabelText("Delegated Access Token")).toHaveValue("delegated-token");
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
   });
@@ -629,9 +619,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
-      "静态委托访问令牌",
-    );
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("静态委托访问令牌");
   });
 
   it("requires only the required OAuth token exchange fields", async () => {

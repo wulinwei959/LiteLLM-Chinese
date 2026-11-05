@@ -712,11 +712,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup();
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin();
-      await chooseSelectOption(
-        user,
-        screen.getByRole("combobox", { name: "认证类型：" }),
-        "静态委托访问令牌",
-      );
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "认证类型：" }), "静态委托访问令牌");
       await waitFor(() =>
         expect(screen.getByRole("combobox", { name: "认证类型：" })).toHaveTextContent("静态委托访问令牌"),
       );

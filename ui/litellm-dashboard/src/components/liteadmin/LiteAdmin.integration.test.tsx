@@ -1679,9 +1679,7 @@ describe("Aria Agent in the gateway", () => {
     send("Create a key");
     fireEvent.click(await screen.findByRole("button", { name: "确认改动" }));
     expect(await screen.findByText("Check result")).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent(
-      /更改无法核实/,
-    );
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent(/更改无法核实/);
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(1);
     send("What happened?");
     await screen.findByText("Check the key list before retrying.");

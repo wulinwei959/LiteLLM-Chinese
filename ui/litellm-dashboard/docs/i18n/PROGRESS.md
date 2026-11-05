@@ -5654,7 +5654,6 @@ i18n 三闸：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 
 
 清单复跑：未接入 687、有证据 87、零命中 600，三个数与 565 簇记录一致，本簇六文件均在清单内部，对清单零影响。FILE-INVENTORY 第四道盲区一节已补记第 566 批 14 个命名空间孤儿键与救活它们的同名兄弟。
 
-
 ## 2026-11-05 第 567 簇：agentCatalog 代理目录接入（A 桶首片）
 
 A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫描与逐文件 `scan-english` 都够不着的第四道盲区：文件没挂翻译器，但 22 个品牌的 `label`/`description` 全部直出界面（Top Agents 行、图表图例、aria-label）。接线形态按第 564/565 簇的 `labelKey` 先例：`FAMILIES` 保持 locale 无关的常量（id/match/kind/logo 不动），每个品牌加 `labelKey` 与 `descriptionKey` 两个字面量键，`agentFor(t, ...)` 建 `AgentRow` 时才按键取译。`descriptionKey` 写成独立字面量而不是 `` `${labelKey}Desc` `` 模板拼接，因为死键门禁按 `referenced_verbatim` 找字面量，模板拼出来的 22 个 Desc 键会全部误报成死键（本簇实测踩到：插字面量前 `check:dead-keys` 报 22 条）。`familyFor` 与 `usageClientFromUserAgent` 只读 `id`，保持免翻译器，`clientUsageData.ts` 的识别链路零改动；需要译员的只有 `topAgents(t, rows)`、`agentDailyData(t, days)` 这条建显示行的链路，三个消费点（`TopAgents.tsx`、`ClientUsagePanel.tsx`、`UsagePageView.tsx`）各加一个 `useTranslations("agents")`。`TopAgents.tsx:128` 的 `` `View ${agent.label} usage` `` aria-label 顺手接成 `catalogViewUsageAria`（带 `{label}` 插值）
@@ -5667,7 +5666,7 @@ A 桶 7 个 `.ts` 的第一片。`agentCatalog.ts` 的 `FAMILIES` 是渲染扫�
 
 ## 2026-11-05 第 568 簇：A 桶第二片，Anthropic/OpenAI 工作负载身份联合字段接入
 
-`anthropic_federation.ts`(30) 与 `openai_federation.ts`(6) 两片同簇接完。`FederationField` 表是第四道盲区同款数据模块：文件不挂翻译器，但 label/tooltip 全部经 `FederationFields.tsx` 的 `labelWithHint` 直出表单。形态沿用 `labelKey` 先例并更进一步：`federation_field.ts` 把 `label`/`tooltip` 字段改成 `labelKey: \`federation.${id}Label\`` / `tooltipKey` 模板联合类型，数据表落全字面量键（第 567 簇的教训：模板拼接键会被死键门禁误报，字面量是硬要求）；校验器改收译员（`requiredFederationValue(t)`、`validateMaskedValueUntouched(t, stored)`、`validateFederationValueStored(t, source)`、`validateIdentityTokenReference(t)`、`validateIssuerTtlSeconds(t)`、`validateOpenAIFederationApiBase(t)`、`identitySourceOptions(t, values)`、`providerFieldValidators(t, selection)`），`ttlRange`/`openaiApiBaseHost`/`storedOption` 走 ICU 插值，`CredentialModal.tsx` 两处调用点补 `modelAddT`
+`anthropic_federation.ts`(30) 与 `openai_federation.ts`(6) 两片同簇接完。`FederationField` 表是第四道盲区同款数据模块：文件不挂翻译器，但 label/tooltip 全部经 `FederationFields.tsx` 的 `labelWithHint` 直出表单。形态沿用 `labelKey` 先例并更进一步：`federation_field.ts` 把 `label`/`tooltip` 字段改成 `labelKey: \`federation.${id}Label\``/`tooltipKey` 模板联合类型，数据表落全字面量键（第 567 簇的教训：模板拼接键会被死键门禁误报，字面量是硬要求）；校验器改收译员（`requiredFederationValue(t)`、`validateMaskedValueUntouched(t, stored)`、`validateFederationValueStored(t, source)`、`validateIdentityTokenReference(t)`、`validateIssuerTtlSeconds(t)`、`validateOpenAIFederationApiBase(t)`、`identitySourceOptions(t, values)`、`providerFieldValidators(t, selection)`），`ttlRange`/`openaiApiBaseHost`/`storedOption` 走 ICU 插值，`CredentialModal.tsx`两处调用点补`modelAddT`
 
 `tokenLifetimeTooltip` 的 3600 上限写进消息文本而不是插值（tooltip 渲染点拿不到常量），`anthropic_federation.test.ts` 已有 `String(MAX_ISSUER_TTL_SECONDS)` 用例与 `ttlRange` 的 `{max}` 插值共同守住常量与消息的一致性。`Stored: {value}` 收进 `storedOption`，`UNRECOGNIZED_IDENTITY_SOURCE.labelKey` 借用 `sourceEnvironment` 保持形状（它的 label 从不渲染，选择器里未识别项走 `storedOption`）
 
