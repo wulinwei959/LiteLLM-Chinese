@@ -385,37 +385,37 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         cell: ({ row }) => <span className="font-medium text-foreground">{row.original.metadata.alias}</span>,
       },
       {
-        header: "Share",
+        header: t("entity.share"),
         id: "share",
         meta: { ...QUIET_HEADER, className: "w-40" },
         cell: ({ row }) => <ShareBar value={row.original.metrics.spend} max={maxEntitySpend} />,
       },
       {
-        header: "Spend",
+        header: t("provider.spend"),
         accessorKey: "metrics.spend",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
       },
       {
-        header: "Successful",
+        header: t("provider.successful"),
         accessorKey: "metrics.successful_requests",
         meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
       },
       {
-        header: "Failed",
+        header: t("provider.failed"),
         accessorKey: "metrics.failed_requests",
         meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
       },
       {
-        header: "Tokens",
+        header: t("provider.tokens"),
         accessorKey: "metrics.total_tokens",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
       },
     ],
-    [capitalizedEntityLabel, maxEntitySpend],
+    [capitalizedEntityLabel, maxEntitySpend, t],
   );
 
   const chev = "size-3 text-muted-foreground";
@@ -678,7 +678,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         />
       ),
     },
-    { key: "endpoints", label: "Endpoint Activity", content: <EndpointUsage userSpendData={spendData} /> },
+    { key: "endpoints", label: t("tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
   ];
 
   return (

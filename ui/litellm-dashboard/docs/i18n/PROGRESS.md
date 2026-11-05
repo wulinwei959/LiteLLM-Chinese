@@ -5620,3 +5620,17 @@ PR #43 的 `ui` 作业在 382f2117 上又红一次，原因是 prettier：`endpo
 测试加一条按中文取元素的断言，`EntityUsage.test.tsx` 钉住四个 `radio`（每日/每周/线性/对数）、`h3`「按模型统计的花费」与副标题「每日花费，前 8 项堆叠」，接线前这些串在界面上一条都不存在。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0，`src/lib/i18n` 的 parity 守卫 5 个文件 23 例全绿。`METRIC_TITLE` 删掉后 `UsageMetric` 这个类型导入也没了消费点，一并删除，否则 eslint 报 unused-imports 一条 error。eslint 触及两文件 0 error，`EntityUsage.tsx` 4 条 warning、测试文件 8 条，行号全在改动区之外，是 HEAD 既有。触及的七个文件 `npx prettier --check` 合规，`EntityUsage.tsx` 里第 563 簇留下的那处 `Segmented` 缩进欠账一并修直，`PROGRESS.md` 本次新增段被 prettier 按中文正文规则收紧了行内代码两侧的空格
 
 清单复跑（`node scripts/i18n-file-inventory.mjs --include-ts`）：未接入 687 个不变，有可见文案证据 88 → 87（`.ts` 少 `entityUsageSummary.ts` 一个文件一条命中，第 563 簇接完退桶），零命中 599 → 600。本簇改动全在已接入文件内部，对这份清单是零影响，FILE-INVENTORY 的「口径盲区」两节因此补了第三道：判据只看有没有挂翻译器，接了线的文件内部的硬编码英文一律不进清单，只能靠读消费点捞
+
+## 2026-11-05 第 565 簇：接掉 usage 四个文件的表格列头、页签与空态
+
+第 564 簇读 `EntityUsage.tsx` 消费点时，把同一屏上还没接的面记了下来，本簇清掉。四个文件早已挂着翻译器，本清单与 `check:english-leaks` 都看不见它们内部的硬编码，只能按面收：`EntityUsage.tsx` 下钻表的五个列头加 `endpoints` 页签，`TopModelView.tsx` 的五个列头加视图切换的两个按钮，`TeamUserSpendCard.tsx` 的七个列头加两条空态，`EndpointUsageTable.tsx` 的空态与端点计数
+
+接线沿用前两簇的形状。模块级 `const columns` 换成收翻译器的 builder（`buildTeamUserColumns(t: UsageTeamUserSpendTranslator)`，先例是 `SpendByProvider.tsx:33`），翻译器类型从 `src/lib/i18n/translators.ts` 取，不在组件里重新声明命名空间。选项数组用 `labelKey` 加字面量联合：`VIEW_OPTIONS` 原来是 `as const satisfies readonly { value: ViewMode; label: string }[]`，`label` 是自由串，接不了 `t()`，改成 `readonly { value: ViewMode; labelKey: ViewLabelKey }[]`，`t(labelKey)` 因此是类型可查的按键取值。`EntityUsage.tsx` 那五列头复用 `usage.provider` 的 `spend`/`successful`/`failed`/`tokens`（同一批词在供应商表和实体表里是同一个事实），`useMemo` 依赖补 `t`，漏了它会换语言不换表头。端点计数走 ICU 复数，`{count, plural, one {# endpoint} other {# endpoints}}` 对 `{count, plural, other {# 个端点}}`，先例是 `models.addModel.overrideCount`，原来那句 `dataSource.length === 1 ? "endpoint" : "endpoints"` 的英文单复数在中文里本就不成立
+
+新增只有五键：`usage.entity.share`、`usage.teamUserSpend.noData`、`usage.topModelView.colSuccessful`/`colFailed`、`usage.endpointUsage.endpointCount`，叶子 13589 → 13594，两侧同数、键差集 0。其余全是复用
+
+复用这一步浮出一条工具事实，值得单记。`usage.topModelView.colModel`/`colSpend`/`colTokens`/`tableView`/`chartView`、`usage.tabs.endpoints`、`usage.teamUserSpend.selectTeamHint`、`usage.endpointUsage.noData` 这一批，接之前在自己的命名空间里没有任何读取点，可死键门禁一直是 0。原因是 `scripts/dead-keys.py` 的 `referenced_verbatim`：键路径的任意后缀在全仓任意字符串字面量里出现过就算活着，`AgentsTableColumns.tsx` 的 `t("colSpend")` 与 `TopKeyView.tsx` 的 `t("tableView")` 这些同名兄弟把本命名空间的孤儿全救了下来。命名空间级孤儿这个门禁看不见，FILE-INVENTORY 的盲区一节因此加了第四道。挂空词条能复用的比想象多，接入前先按命名空间查一遍读取点，别急着开新键
+
+断言翻面 10 条，`TopModelView.test.tsx` 八条（五个列头、两个视图按钮、一处 `queryByText` 反查）与 `EntityUsage.test.tsx` 两处面板表，按 `TopKeyView.test.tsx:235` 已落的中文取值对齐。usage 目录整跑 33 个文件 537 例全绿、Type Errors 0
+
+门禁：死键 0/0、静态英文 280/280 无 resolved 条目、zh 未译 222/222、`npm run typecheck` 0 错。触及六个文件 eslint 0 error、28 条 warning（`TopModelView.tsx` 的 5 条 `any` 与测试文件的 `container`/`node-access` 全在改动区之外，是 HEAD 既有）。四个源文件接完结尾 `node scripts/scan-english.mjs <file>` 均零命中，`npx prettier --check` 只报 `EndpointUsageTable.tsx` 一处超长 `span`，按 `--write` 展开成三行，改动没溢出到别人家。清单复跑 687 个未接入、87 个有证据、600 个零命中，三个数与第 564 簇记的完全一致，本簇四个文件都在线内，对这份清单零影响

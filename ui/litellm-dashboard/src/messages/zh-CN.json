@@ -5292,6 +5292,7 @@
       "requestCost": "请求成本",
       "flatCost": "固定成本",
       "ptuHours": "PTU 小时数",
+      "share": "占比",
       "totalCostHint": "请求成本加上预留容量的固定成本，选中这张卡片可查看明细",
       "requestCostHint": "所选周期内该实体发出请求的按量成本，按 token 计价",
       "flatCostHint": "预留的置备吞吐量，无论是否发出请求都按小时计费。只在这里展示，不计入团队、密钥、用户或组织的预算",
@@ -5325,6 +5326,7 @@
       "successful": "成功",
       "failed": "失败",
       "tokens": "Token",
+      "noData": "该区间内无用户消费",
       "attributionNote": "按请求从花费日志归属，因此包含不使用虚拟密钥的 JWT/SSO 流量"
     },
     "old": {
@@ -5377,7 +5379,8 @@
       "noData": "暂无端点用量数据",
       "endpoints": "端点",
       "successFailed": "成功 / 失败",
-      "totalRequest": "请求总数"
+      "totalRequest": "请求总数",
+      "endpointCount": "{count, plural, other {# 个端点}}"
     },
     "modelViewToggle": {
       "publicModelName": "公开模型名称",
@@ -5386,6 +5389,8 @@
     "topModelView": {
       "colModel": "模型",
       "colSpend": "花费（美元）",
+      "colSuccessful": "成功",
+      "colFailed": "失败",
       "colTokens": "Token 数",
       "modelCountAria": "要展示的模型数量",
       "viewModeAria": "头部模型视图模式",

@@ -33,6 +33,10 @@ node scripts/i18n-file-inventory.mjs
 
 还有第三道盲区，判据本身挡不住：接入判据只看文件里有没有 `useTranslations(`/`getTranslations(`，所以已挂翻译器的文件内部的硬编码英文一律不进这份清单。第 564 簇接的那批全在这里，`EntityUsage.tsx` 早就握着 `t = useTranslations("usage")`，JSX 里却仍写死 `Daily`/`Weekly`/`Linear`/`Log`/`Flat cost` 与两处图表标题。它也不是 `check:english-leaks` 的命中（接完复跑 280/280、无 resolved 条目，那批串本就不在它的口径里），是靠读第 563 簇那两个 builder 的消费点读出来的。同一文件的同类活账散在 PROGRESS 的各簇里，没有机读的清单，这是缺口
 
+第 565 簇清的是同一块地：`EntityUsage.tsx` 下钻表的五个列头与「端点活动」页签、`TopModelView.tsx` 的五个列头与视图切换按钮、`TeamUserSpendCard.tsx` 的七个列头与两条空态、`EndpointUsageTable.tsx` 的空态与端点计数。四个文件全都挂着翻译器，接完复跑本清单，687、87、600 三个数一个没动
+
+死键门禁看不见这一层，是第四道盲区，而且它自己的 docstring 写明了原因。`scripts/dead-keys.py` 最后一步 `referenced_verbatim` 是：键路径的任意后缀在全仓任意字符串字面量里出现过，这个键就算活着。`usage.topModelView.colModel`/`colSpend`/`colTokens`/`tableView`/`chartView` 与 `usage.tabs.endpoints`、`usage.teamUserSpend.selectTeamHint`、`usage.endpointUsage.noData` 在自己的命名空间内此前无人读取，靠的是 `AgentsTableColumns.tsx` 的 `t("colSpend")`、`TopKeyView.tsx` 的 `t("tableView")` 这类同名兄弟把它们救活，所以门禁报 0。命名空间级孤儿只能靠读消费点或逐文件 `node scripts/scan-english.mjs <file>` 捞
+
 ## `.ts` 侧的枚举与判定
 
 2026-11-05 把枚举口径从 `.tsx` 扩到 `.ts`，产出脚本加了 `--include-ts`（`.ts` 按 `ScriptKind.TS` 解析，避免把泛型读成 JSX；跳过 `.test.`、`.spec.`、`.d.ts`、`vendor/`、`src/lib/i18n/`）。同日又补了 `const` 口径，`.ts` 侧因此多浮出 7 个文件各 1 条：`src/utils/promptCacheUsage.ts` 的两条提示（真漏，第 563 簇已接，`common.promptCacheReadTooltip` 与 `common.promptCacheCreationTooltip` 一条一个键，由 `chat_ui/ResponseMetrics.tsx` 和 `logs/detail/LogDetailContent.tsx` 各自经 `useTranslations('common')` 取值，英文串不再住在 `.ts` 里）、`src/utils/budgetUtils.ts` 的预算说明串（`describeBudgetResetSchedule` 无生产消费点）、`src/utils/activityTimestamp.ts` 的日期格式串（机读值）、`src/components/liteadmin/aria-brand.ts` 的专名、`src/app/(dashboard)/agents/_components/kill_switch_config.ts` 与 `src/app/(dashboard)/usage/_components/hooks/clientUsageData.ts` 和 `src/components/add_model/build_auto_router_routing_test_request.ts` 各 1 条待判不带 `--include-ts` 时输出与扩面之前只差一行：`src/components/shared/DataTable/DataTable.test-d.tsx` 被新的排除规则挡掉，它是类型测试不是源文件

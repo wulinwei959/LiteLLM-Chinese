@@ -5292,6 +5292,7 @@
       "requestCost": "Request Cost",
       "flatCost": "Flat Cost",
       "ptuHours": "PTU Hours",
+      "share": "Share",
       "totalCostHint": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
       "requestCostHint": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
       "flatCostHint": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
@@ -5325,6 +5326,7 @@
       "successful": "Successful",
       "failed": "Failed",
       "tokens": "Tokens",
+      "noData": "No user spend in this range",
       "attributionNote": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
     },
     "old": {
@@ -5377,7 +5379,8 @@
       "noData": "No endpoint usage data",
       "endpoints": "Endpoints",
       "successFailed": "Successful / Failed",
-      "totalRequest": "Total Request"
+      "totalRequest": "Total Request",
+      "endpointCount": "{count, plural, one {# endpoint} other {# endpoints}}"
     },
     "modelViewToggle": {
       "publicModelName": "Public Model Name",
@@ -5386,6 +5389,8 @@
     "topModelView": {
       "colModel": "Model",
       "colSpend": "Spend (USD)",
+      "colSuccessful": "Successful",
+      "colFailed": "Failed",
       "colTokens": "Tokens",
       "modelCountAria": "Number of models to show",
       "viewModeAria": "Top model view mode",

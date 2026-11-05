@@ -756,7 +756,7 @@ describe("EntityUsage", () => {
     ["成本", "Tag 花费概览"],
     ["模型活动", "metrics-source:model_groups"],
     ["密钥活动", "总体用量"],
-    ["Endpoint Activity", "Endpoint Usage Panel"],
+    ["端点活动", "Endpoint Usage Panel"],
   ];
 
   it.each(NON_TEAM_PANELS)("shows only the %s panel for a non-team entity type", async (tabLabel, marker) => {
@@ -782,7 +782,7 @@ describe("EntityUsage", () => {
     ["模型活动", "metrics-source:model_groups"],
     ["智能体活动", "metrics-source:entities"],
     ["密钥活动", "总体用量"],
-    ["Endpoint Activity", "Endpoint Usage Panel"],
+    ["端点活动", "Endpoint Usage Panel"],
   ];
 
   it.each(TEAM_PANELS)("shows only the %s panel for the team entity type", async (tabLabel, marker) => {

@@ -7,6 +7,7 @@ import { teamSpendByUserCall } from "@/components/networking";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { Button } from "@/components/ui/button";
+import type { UsageTeamUserSpendTranslator } from "@/lib/i18n/translators";
 
 import { Panel } from "../overview/Primitives";
 
@@ -31,41 +32,47 @@ interface TeamUserSpendCardProps {
 
 const QUIET_HEADER = { headerClassName: "font-normal" };
 
-const columns: ColumnDef<TeamUserSpendRow>[] = [
-  { header: "Team", accessorFn: teamLabel, id: "team", meta: QUIET_HEADER, cell: ({ row }) => teamLabel(row.original) },
+const buildTeamUserColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUserSpendRow>[] => [
   {
-    header: "User",
+    header: t("team"),
+    accessorFn: teamLabel,
+    id: "team",
+    meta: QUIET_HEADER,
+    cell: ({ row }) => teamLabel(row.original),
+  },
+  {
+    header: t("user"),
     accessorFn: userLabel,
     id: "user",
     meta: QUIET_HEADER,
     cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original)}</span>,
   },
   {
-    header: "Spend",
+    header: t("spend"),
     accessorKey: "spend",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={4} />,
   },
   {
-    header: "Requests",
+    header: t("requests"),
     accessorKey: "api_requests",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.api_requests.toLocaleString(),
   },
   {
-    header: "Successful",
+    header: t("successful"),
     accessorKey: "successful_requests",
     meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
     cell: ({ row }) => row.original.successful_requests.toLocaleString(),
   },
   {
-    header: "Failed",
+    header: t("failed"),
     accessorKey: "failed_requests",
     meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
     cell: ({ row }) => row.original.failed_requests.toLocaleString(),
   },
   {
-    header: "Tokens",
+    header: t("tokens"),
     accessorKey: "total_tokens",
     meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.total_tokens.toLocaleString(),
@@ -83,6 +90,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
     enabled: Boolean(accessToken && startTime && endTime) && hasTeams,
   });
   const rows = useMemo(() => sortBySpendDesc(data?.results ?? []), [data]);
+  const columns = buildTeamUserColumns(t);
 
   return (
     <Panel
@@ -107,7 +115,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
         getRowId={teamUserSpendRowId}
         isLoading={isLoading}
         maxBodyHeight={320}
-        noDataMessage={teamIds.length === 0 ? "Select a team to see spend per user" : "No user spend in this range"}
+        noDataMessage={teamIds.length === 0 ? t("selectTeamHint") : t("noData")}
         size="compact"
       />
     </Panel>
