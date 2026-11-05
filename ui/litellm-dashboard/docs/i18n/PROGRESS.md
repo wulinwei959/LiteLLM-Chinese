@@ -5567,3 +5567,5 @@ PR #15 合并后按第六步复跑渲染扫描，38 页 0 渲染错误，撞出 
 键的类型这一条值得单记。`src/lib/i18n/next-intl.d.ts` 把 `AppConfig.Messages` 声明成 `typeof en.json`，`t()` 收的是 `NamespacedMessageKeys`，首轮把存键名常量写成 `string`，`check:english-leaks` 看不见（`.ts` 不在遍历范围），jsdom 测试全绿（zh-CN 渲染照常命中），只有 CI 的 `npm run typecheck` 与 `next build` 报三处 TS2345。改回 `src/app/chat/page.tsx` 的 `SuggestionKey` 先例，用字面量联合列全 11 条键，`suggestions.default.0` 这类下标键也在带类型的目录里逐个可查，拼错键名从此是编译期错
 
 新增三条本地化断言（`Composer` 占位符与附件标签、`PlaygroundChat` 示例提示词、`getBreadcrumb` 按键取标题），逐条改前必红
+
+顺着这个盲区把 `.ts` 侧的账量了出来，写进 `FILE-INVENTORY.md` 的「`.ts` 侧的待接队列」：478 个非测试 `.ts` 里 11 个文件 122 条十二个可见属性键上的英文字面量，去掉 27 条差分测试用例与 3 条待判的工具返回串，剩 92 条确认渲染在界面上，最大四块是 guardrail 花园 32、anthropic 联合认证字段 19、usage 的 agent 目录 16、agent 配置表单 12。这批还有第二层盲区叠着：扫描的 stub 对 `/guardrails`、`/agents`、`/usage` 返回空数组，卡片与表格行不进 DOM，接完文案要连带给这几个端点补非空形状，扫描才接得住

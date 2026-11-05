@@ -30,6 +30,25 @@ node scripts/i18n-file-inventory.mjs
 
 渲染扫描也补不上这个洞的一半。它取的是 `innerText()`，`placeholder` 与 tooltip 这类属性文案不在口径里，本轮那十一条属性英文是靠读代码捞的。把枚举口径从 `.tsx` 扩到 `.ts` 是下一个节点的判断题，扩了要连带把上面那套判定（数据、协议标识、程序异常串、测试脚手架）在 `.ts` 侧重新过一遍命中；扫描侧要不要一并读属性，同样是没定的事
 
+## `.ts` 侧的待接队列
+
+2026-11-05 按同样的口径把 `src` 下 478 个非测试 `.ts`（排除 `.test.`、`.d.`、`vendor/`、`src/lib/i18n/`）过了一遍，取 `title`/`label`/`description`/`placeholder`/`tooltip`/`hint`/`helperText`/`sublabel`/`subtitle`/`emptyText`/`message`/`header`/`text`/`content` 十二个可见属性键、值是两个以上纯字母词的字面量，命中 11 个文件 122 条。每条都逐个确认过消费点：`editServerPayload.differential.cases.ts` 的 27 条是差分测试用例、不渲染，`operations.ts` 的 3 条要单独判它进不进聊天气泡，其余 10 个文件的 92 条都渲染在界面上
+
+| 文件                                                                                                          | 条数 | 消费点与判定                                                                                     |
+| ------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------ |
+| `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                                          | 32   | `guardrail_garden_card.tsx` 与详情页渲染卡片标题和描述，真漏                                     |
+| `src/components/model_add/anthropic_federation.ts`                                                             | 19   | 联合认证字段的 `label` 与 `placeholder`，`placeholder: "fdrl_..."` 属 ID 前缀、判机读面，真漏    |
+| `src/app/(dashboard)/usage/_components/components/overview/agentCatalog.ts`                                    | 16   | usage 概览的 agent 目录名，`clientAgentDetail.ts` 消费，真漏                                     |
+| `src/app/(dashboard)/agents/_components/agent_config.ts`                                                       | 12   | `dynamic_agent_form_fields.tsx`、`cost_config_fields.tsx` 的表单 label 与 placeholder，真漏     |
+| `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                                         | 4    | 系统提示词示例的 `label`，在 inspector 里展示，真漏                                              |
+| `src/components/add_model/provider_auth_types.ts`                                                              | 4    | `CredentialModal.tsx` 与 `AddModelForm.tsx` 的认证类型说明，真漏                                 |
+| `src/components/liteadmin/operations.ts`                                                                       | 3    | LiteAdmin 工具返回值里的 `message`，是否算人面文案要按它是否进聊天气泡判                          |
+| `src/components/model_add/openai_federation.ts`                                                                | 3    | 同 anthropic 那份，字段 label                                                                     |
+| `src/utils/budgetUtils.ts`                                                                                     | 1    | `label: "Never resets"` 与 `"Unknown"`，渲染在预算周期选择器，真漏                               |
+| `src/app/(dashboard)/usage/_components/components/errors/errorsData.ts`                                        | 1    | 图表视图切换 `label`（`Total`、`By status code`），真漏                                          |
+
+还有一层盲区叠加在这张表上：渲染扫描的 stub 对 `/guardrails`、`/agents`、`/usage` 这类页返回空数组，卡片与表格行根本不进 DOM，所以这些字符串既不在静态口径里、也不在扫描面上。等这批接完，`rendered-ui-fixtures.mjs` 要按第 530 簇的先例给这几个端点补最小非空形状，扫描才接得住它们
+
 ## 有可见文案证据的 17 个
 
 | 文件                                                                                                                                                                              | 证据                                                                                                                                                 | 判定                                                                                                                                                                                                         |
