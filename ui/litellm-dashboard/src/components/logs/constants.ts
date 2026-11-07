@@ -3,9 +3,11 @@ export type LogsTimeRangeKey =
   | "timeRange.lastOneMinute"
   | "timeRange.last15Minutes"
   | "timeRange.lastHour"
+  | "timeRange.last6Hours"
   | "timeRange.last4Hours"
   | "timeRange.last24Hours"
-  | "timeRange.last7Days";
+  | "timeRange.last7Days"
+  | "timeRange.last30Days";
 
 export type LogsErrorCodeKey =
   | "filters.errorCodes.code400"
@@ -84,7 +86,9 @@ export const QUICK_SELECT_OPTIONS: readonly QuickSelectOption[] = [
   { labelKey: "timeRange.lastMinute", value: 1, unit: "minutes" },
   { labelKey: "timeRange.last15Minutes", value: 15, unit: "minutes" },
   { labelKey: "timeRange.lastHour", value: 1, unit: "hours" },
+  { labelKey: "timeRange.last6Hours", value: 6, unit: "hours" },
   { labelKey: "timeRange.last4Hours", value: 4, unit: "hours" },
   { labelKey: "timeRange.last24Hours", value: 24, unit: "hours" },
   { labelKey: "timeRange.last7Days", value: 7, unit: "days" },
+  { labelKey: "timeRange.last30Days", value: 30, unit: "days" },
 ];

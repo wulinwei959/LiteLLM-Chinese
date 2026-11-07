@@ -5116,7 +5116,7 @@ export const listMCPTools = async (
   try {
     data = await response.json();
   } catch (parseError) {
-    console.error("Failed to parse MCP tools response:", parseError);
+    console.error(toastMessage("parseMCPToolsFailed"), parseError);
     return {
       tools: [],
       error: "parse_error",
@@ -5208,7 +5208,7 @@ export const callMCPTool = async (
           errorMessage = errorData.message || errorData.error || errorMessage;
         }
       } catch (parseError) {
-        console.error("Failed to parse JSON error response:", parseError);
+        console.error(toastMessage("parseJSONErrorFailed"), parseError);
         // If JSON parsing fails, use the raw text
         if (responseText) {
           errorMessage = responseText;

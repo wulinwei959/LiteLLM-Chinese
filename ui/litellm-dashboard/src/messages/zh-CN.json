@@ -3472,7 +3472,15 @@
       "testCurl": "测试（cURL）",
       "testOpenAiSdk": "测试（OpenAI SDK）"
     },
-    "notAvailable": "不适用"
+    "notAvailable": "不适用",
+    "neverResets": "永不重置",
+    "rolloverNote": "重置时超过结转上限的支出将结转至下一周期。",
+    "coversPeriod": "当前周期支出涵盖 {period}，每 {budgetDuration} 重置一次。",
+    "resetsOnSchedule": "当前周期支出按计划重置。",
+    "nextReset": "下次重置 {label} ({timeZone})。",
+    "lifetimeSpend": "此预算无重置窗口，因此这是会员存在期间的终身支出。",
+    "resetsButNotScheduled": "每 {budgetDuration} 重置一次，但下次重置时间尚未安排。",
+    "unknownReset": "未知"
   },
   "guardrails": {
     "voiceWarn": "警告",
@@ -5814,7 +5822,9 @@
       "lastHour": "最近 1 小时",
       "last4Hours": "最近 4 小时",
       "last24Hours": "最近 24 小时",
-      "last7Days": "最近 7 天"
+      "last7Days": "最近 7 天",
+      "last6Hours": "最近 6 小时",
+      "last30Days": "最近 30 天"
     },
     "filters": {
       "search": "搜索",
@@ -14905,7 +14915,9 @@
     "patchAgentFailed": "更新代理失败",
     "guardrailInfoFailed": "获取护栏信息失败",
     "guardrailUiSettingsFailed": "获取护栏界面设置失败",
-    "guardrailProviderParamsFailed": "获取护栏提供商专用参数失败"
+    "guardrailProviderParamsFailed": "获取护栏提供商专用参数失败",
+    "parseMCPToolsFailed": "解析 MCP 工具响应失败",
+    "parseJSONErrorFailed": "解析 JSON 错误响应失败"
   },
   "telemetry": {
     "enterprise": {

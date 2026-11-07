@@ -2291,31 +2291,6 @@
       "text": "SearchBox parts must be rendered inside SearchBox.Root"
     },
     {
-      "file": "src/components/shared/timeRange/timeRange.ts",
-      "kind": "prop:label",
-      "text": "Last 24 hours"
-    },
-    {
-      "file": "src/components/shared/timeRange/timeRange.ts",
-      "kind": "prop:label",
-      "text": "Last 30 days"
-    },
-    {
-      "file": "src/components/shared/timeRange/timeRange.ts",
-      "kind": "prop:label",
-      "text": "Last 6 hours"
-    },
-    {
-      "file": "src/components/shared/timeRange/timeRange.ts",
-      "kind": "prop:label",
-      "text": "Last 7 days"
-    },
-    {
-      "file": "src/components/shared/timeRange/timeRange.ts",
-      "kind": "prop:label",
-      "text": "Last hour"
-    },
-    {
       "file": "src/components/SidebarAccountMenu/SidebarAccountMenu.tsx",
       "kind": "jsx",
       "text": "LiteLLM"
@@ -2674,21 +2649,6 @@
       "file": "src/hooks/policies/useDeletePolicyAttachment.ts",
       "kind": "error",
       "text": "Access token is required"
-    },
-    {
-      "file": "src/utils/budgetUtils.ts",
-      "kind": "prop:label",
-      "text": "Never resets"
-    },
-    {
-      "file": "src/utils/budgetUtils.ts",
-      "kind": "prop:label",
-      "text": "Unknown"
-    },
-    {
-      "file": "src/utils/budgetUtils.ts",
-      "kind": "prop:tooltip",
-      "text": "This budget has no reset window, so this is lifetime spend for as long as the membership exists."
     },
     {
       "file": "src/utils/dataUtils.ts",

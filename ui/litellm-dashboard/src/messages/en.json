@@ -3472,7 +3472,15 @@
       "testCurl": "Test it (Curl)",
       "testOpenAiSdk": "Test it (OpenAI SDK)"
     },
-    "notAvailable": "n/a"
+    "notAvailable": "n/a",
+    "neverResets": "Never resets",
+    "rolloverNote": "Spend above a rollover cap at reset carries into the next period.",
+    "coversPeriod": "Current Period Spend covers {period} and resets every {budgetDuration}.",
+    "resetsOnSchedule": "Current Period Spend resets on a schedule.",
+    "nextReset": "Next reset {label} ({timeZone}).",
+    "lifetimeSpend": "This budget has no reset window, so this is lifetime spend for as long as the membership exists.",
+    "resetsButNotScheduled": "Resets every {budgetDuration}, but the next reset time has not been scheduled yet.",
+    "unknownReset": "Unknown"
   },
   "guardrails": {
     "voiceWarn": "Warn",
@@ -5814,7 +5822,9 @@
       "lastHour": "Last Hour",
       "last4Hours": "Last 4 Hours",
       "last24Hours": "Last 24 Hours",
-      "last7Days": "Last 7 Days"
+      "last7Days": "Last 7 Days",
+      "last6Hours": "Last 6 hours",
+      "last30Days": "Last 30 days"
     },
     "filters": {
       "search": "Search",
@@ -14909,7 +14919,9 @@
     "patchAgentFailed": "Failed to patch agent",
     "guardrailInfoFailed": "Failed to get guardrail info",
     "guardrailUiSettingsFailed": "Failed to get guardrail UI settings",
-    "guardrailProviderParamsFailed": "Failed to get guardrail provider specific parameters"
+    "guardrailProviderParamsFailed": "Failed to get guardrail provider specific parameters",
+    "parseMCPToolsFailed": "Failed to parse MCP tools response",
+    "parseJSONErrorFailed": "Failed to parse JSON error response"
   },
   "telemetry": {
     "enterprise": {
