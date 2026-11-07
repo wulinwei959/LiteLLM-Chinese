@@ -1,10 +1,10 @@
-import { formatBudgetReset } from "@/utils/budgetUtils";
+import { formatBudgetReset, describeBudgetResetSchedule } from "@/utils/budgetUtils";
+import { useTranslations } from "next-intl";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { CircleHelp } from "lucide-react";
-import { useTranslations } from "next-intl";
 import React from "react";
 import { useMyTeamMember } from "./useMyTeamMember";
 
@@ -33,6 +33,7 @@ const formatRateLimit = (value: number | null | undefined, unlimitedLabel: strin
 
 export default function MyUserTab({ teamId }: MyUserTabProps) {
   const t = useTranslations("teams");
+  const budgetT = useTranslations("budgets");
   const { data, isLoading, error } = useMyTeamMember(teamId);
 
   if (isLoading) {
@@ -67,7 +68,12 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
   const totalSpend = data.total_spend ?? 0;
   const tpmLimit = budgetTable?.tpm_limit ?? null;
   const rpmLimit = budgetTable?.rpm_limit ?? null;
-  const budgetReset = formatBudgetReset(budgetTable?.budget_reset_at);
+  const budgetSchedule = describeBudgetResetSchedule(
+    budgetTable?.budget_duration,
+    budgetTable?.budget_reset_at,
+    budgetT,
+  );
+  const budgetReset = formatBudgetReset(budgetTable?.budget_reset_at) ?? "";
   const allowedModels = budgetTable?.allowed_models ?? null;
 
   return (
@@ -106,8 +112,19 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
                 })}
               </span>
             </div>
-            {budgetReset && (
-              <div className="mt-1 text-muted-foreground">{t("member.resetsAt", { date: budgetReset })}</div>
+            {budgetSchedule.resetAt && (
+              <div className="mt-1 text-muted-foreground">
+                {t("member.resetsAt", { date: budgetReset })}
+                <SimpleTooltip content={budgetSchedule.tooltip}>
+                  <CircleHelp
+                    className="size-4 ml-1"
+                    aria-label={budgetT("nextReset", {
+                      label: budgetSchedule.label,
+                      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    })}
+                  />
+                </SimpleTooltip>
+              </div>
             )}
           </CardContent>
         </Card>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isRangeHours, presetLabel, timeWindow } from "./timeRange";
+import { isRangeHours, presetLabelKey, timeWindow } from "./timeRange";
 
 const HOUR = 3600 * 1000;
 
@@ -26,7 +26,7 @@ describe("presets", () => {
   it("accepts only the preset lengths from the URL and names them", () => {
     expect(isRangeHours(168)).toBe(true);
     expect(isRangeHours(2)).toBe(false);
-    expect(presetLabel(168)).toBe("Last 7 days");
-    expect(presetLabel(2)).toBe("Last 2 hours");
+    expect(presetLabelKey(168)).toBe("timeRange.last7Days");
+    expect(presetLabelKey(2)).toBe("timeRange.last2Hours");
   });
 });

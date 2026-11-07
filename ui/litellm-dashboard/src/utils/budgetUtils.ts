@@ -3,6 +3,8 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
+import type { BudgetsTranslator } from "@/lib/i18n/translators";
+
 export function formatBudgetReset(iso: string | null | undefined): string | null {
   if (!iso) return null;
   const resetDate = dayjs(iso);
@@ -73,6 +75,7 @@ export function formatBudgetPeriod(start: Dayjs, end: Dayjs): string {
 export function describeBudgetResetSchedule(
   budgetDuration: string | null | undefined,
   budgetResetAt: string | null | undefined,
+  t: BudgetsTranslator,
 ): BudgetResetSchedule {
   const resetDate = budgetResetAt ? dayjs(budgetResetAt) : null;
   if (resetDate?.isValid()) {
@@ -82,28 +85,28 @@ export function describeBudgetResetSchedule(
       ? formatBudgetPeriod(getBudgetPeriodStart(budgetDuration, resetDate.utc()).local(), resetDate)
       : null;
     const coverage = period
-      ? `Current Period Spend covers ${period} and resets every ${budgetDuration}.`
-      : "Current Period Spend resets on a schedule.";
+      ? t("coversPeriod", { period, budgetDuration: budgetDuration ?? "" })
+      : t("resetsOnSchedule");
     return {
       label,
       resetAt: resetDate.toISOString(),
       period,
-      tooltip: `${coverage} Next reset ${label} (${timeZone}). ${ROLLOVER_NOTE}`,
+      tooltip: coverage + " " + t("nextReset", { label, timeZone }) + " " + t("rolloverNote"),
     };
   }
   if (!budgetDuration) {
     return {
-      label: "Never resets",
+      label: t("neverResets"),
       resetAt: null,
       period: null,
-      tooltip: "This budget has no reset window, so this is lifetime spend for as long as the membership exists.",
+      tooltip: t("lifetimeSpend"),
     };
   }
   return {
-    label: "Unknown",
+    label: t("unknownReset"),
     resetAt: null,
     period: null,
-    tooltip: `Resets every ${budgetDuration}, but the next reset time has not been scheduled yet. ${ROLLOVER_NOTE}`,
+    tooltip: t("resetsButNotScheduled", { budgetDuration }) + " " + t("rolloverNote"),
   };
 }
 
