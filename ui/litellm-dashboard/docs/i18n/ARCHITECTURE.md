@@ -129,7 +129,9 @@
 
 死键守卫管“有没有人用”，这道管“填没填中文”。`scripts/check-zh-coverage.mjs` 摊平两份目录后查两个方向：`zh-CN.json` 里不含汉字的叶子（判据 `/\p{Script=Han}/u`），以及 `en.json` 里含汉字的叶子。前者防新键的中文值直接写英文，后者防中文串漏进英文目录（第 527 簇就手工清出过 `telemetry.note.changesApply` 一枚）
 
-基线 `zh-coverage-baseline.json` 冻结 215 条无汉字与 0 条 en 夹中文。215 条里 183 条与 `en` 取值相同，判定依据在 `GLOSSARY.md` 的保留英文五档：单位与缩写（`RPM：{value}`、`{count} LLM`）、品牌与协议取值（`Hashicorp Vault`、`Client Secret Post`、`Streamable HTTP`）、格式示例与产品名（`CSV（Excel、Google Sheets）`）、lens 的大写区段标识（`02 / TRACE EXPLORER`）。多词且无汉字的 16 条逐条读过，无一是漏翻
+基线 `zh-coverage-baseline.json` 冻结 246 条无汉字与 0 条 en 夹中文，2026-11-11 第 578 簇把 246 条按 40 个命名空间逐条复核完，无一是漏翻，全部有意保留英文。246 条里 214 条与 `en` 取值相同，恰好是全目录同值键的全部（同值且无汉字必然落进本基线，两个口径由此互证）；其余 32 条是中文排版适配，全角标点（`ID：`、`RPM：{value}`、`？`）、单复数与大小写归一（`tokens`/`Token`/`Logo`）、格式改写（`{amount} / {period}`、`{date} {time}`），没有可译散文。多词且无汉字的 86 条也逐条读过，同样无漏翻
+
+判定依据在 `GLOSSARY.md` 的保留英文五档，246 条按类别归册。品牌与产品目录名是大头，agents 30 条的 `Anthropic SDK`、`Claude Code`、`GitHub Copilot`，adminPanel 12 条的 `Hashicorp Vault`、`CyberArk Conjur`、`Google SSO`。协议取值与凭证字段名集中在 mcpServers 20 条（`Streamable HTTP`、`Client Secret Basic/Post`、`AWS Access Key ID`），凭证名的 tooltip 已译且中文 tooltip 里引用的就是英文凭证名，字段名本身保持英文才能对上控制台。缩写与单位散在各处（`{count} LLM`、`SSO ID`、`API Base URL`、`CSV（Excel、Google Sheets）`）。机读示例与占位符两簇：vectorStores 23 条全部是输入占位符（`sk-...`、`text-embedding-3-small`、`my-vector-index`），playground 17 条是 CSV 模板数据值（`fail`/`pass`/`EU AI Act`/`GDPR`）、端点路径 `/v1/chat/completions` 与 SDK 名。lens 58 条分三类，代码与 SQL 模式（`eval_{value0}`、`Gate()`、`ILIKE`、`arrayExists`、`uv add`、`import`）、品牌与集成名（`Discord`、`Slack`、`Jira`）、7 条大写章节标识（`02 / TRACE EXPLORER`）。章节标识是 `LensPageHeader` 的 kicker，`styles.css` 钉死 font-mono、10px、uppercase，属装饰设计不是正文，第 533 簇批量接入时刻意保留，渲染扫描的空桩也看不到它
 
 `npm run check:zh-coverage` 新增即红并打印 `::error file=`，`--write` 刷新基线，基线里已消失的条目同样让门禁红。判定库 `zh-coverage-lib.mjs` 的六例单测在 `tests/zh-coverage-lib.test.ts`。门禁接在 `unit` 的 `ui-unit`，与静态英文门禁同段执行，push main 与 PR 都覆盖
 
