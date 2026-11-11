@@ -2,10 +2,10 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 的主远端是 GitHub 公开仓库，LAN Gitea 作后备镜像同步（双推），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
+**当前节点（2026-11-07）**：汉化推进到第 576 簇，预算重置与时间范围接键，静态英文基线从 540 撤到 532，待接列清零；代码在 `main`（commit `96ebd2ae`），本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、静态英文与中文取值基线、i18n 守卫）。此前 2026-10-25 的 533 簇完成九项收口清单，那段数字按沿革读：静态四条口径与运行期渲染扫描的命中全部接键或判定归册，最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕。`main` 的主远端是 GitHub 公开仓库，LAN Gitea 作后备镜像同步（双推）
 **2026-10-27 更新**：五个修复分支已合并进 main（PR #8）。随后 main 加了 ruleset 硬保护，必须走 PR 且 `lint passed`、`unit passed`、`osv-scan` 三项全绿才能合并，禁止直推与强推。依赖安全方面把 `requires-python` 提到 `>=3.11`，据此 filelock 升到 4.2.x、pillow 升到 13、dashboard 的 next 升到 16.4.1；opentelemetry-api 与 dev-only 的 @azure/msal-node 因上游 pin 限制，用带过期时间的 osv 豁免。汉化范围也就此定边界：技术示例（URL、JSON、URN、正则、单位符号）保留英文，日期/数字/金额的 locale 格式化不再作为收尾目标继续推进，个别位置仍按 en-US 显示属有意不跟进
 
-上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
+上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 576 簇
 
 **2026-10-27 上游同步**：用完整官方克隆复核后确认本仓的真实上游基线是 `66c8f5b1a9`，而代理侧未改动文件与它逐字节一致。分支 `litellm_sync_v1.108.0` 已把代理侧、`litellm-rust`、`tests`、依赖与仓库脚本同步到上游 main `cfe0100e1`（1.108.0-dev，178 个提交）并合入 main（PR #11），保留本仓 6 处 proxy 补丁与依赖安全底线。仪表盘侧随后同步（分支 `litellm_ui_sync_cfe0100`）：上游小改与新增的文件保住译文并接上上游改动，上游结构大改的模块分簇接回：用量页的 client usage 视图、LiteAdmin 的 Aria 应答与用量图、新版日期选择器已并入（PR #13）；chat 附件与 moyai、auto router 预设、模型中心 provider 标识等仍在待接清单，记在 `ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md` 第十一、十二篇。API 类型与 lazy OpenAPI 快照按合并后的后端重生成
 
@@ -70,23 +70,23 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | `format.test.tsx` | 格式化按当前 locale 走，无效日期不抛 |
 | `toast.test.ts` | `toastMessage(category)` 的键是运行期拼的，静态守卫看不见，这里断言由两张查找表派生出的 `TOAST_TITLE_CATEGORIES` 在中英两侧的 `toast` 命名空间都存在 |
 | `check:english-leaks` | 静态扫描 `src` 下非测试 `.ts/.tsx` 的 JSX 文本、14 个文案属性、toast 与 `new *Error`，按 `english-leaks-baseline.json` 棘轮，新增硬编码英文即红。分类与刷新方法见 [ENGLISH-BASELINE.md](ui/litellm-dashboard/docs/i18n/ENGLISH-BASELINE.md) |
-| `check:zh-coverage` | 摊平两份目录查两个方向：`zh-CN.json` 里不含汉字的叶子与 `en.json` 里含汉字的叶子，按 `zh-coverage-baseline.json`（215 条与 0 条）棘轮，新增即红 |
+| `check:zh-coverage` | 摊平两份目录查两个方向：`zh-CN.json` 里不含汉字的叶子与 `en.json` 里含汉字的叶子，按 `zh-coverage-baseline.json`（246 条与 0 条）棘轮，新增即红 |
 
 目录健康度还有两道：`npm run check:dead-keys` 抓"目录里有但代码没人用"的键（基线是空集，新增即红），`npm run knip:ci` 抓没有任何引用的死文件。代码形态由仓库自有的 lint 规则把关，`local/filename-pascal-case` 管 `.tsx` 文件名，`local/no-large-inline-object-arg` 与 `local/no-long-condition-chain` 进预算棘轮，`local/no-ad-hoc-z-index` 管层叠上下文
 
-## 进度（2026-10-25 实测）
+## 进度（2026-11-07 实测）
 
 | 项目 | 状态 |
 |---|---|
 | 批次 | 批次 0 到 14 是核心管理页，15 到 24 是长尾收尾。`PLAN.md` 的状态列写于各批次推进时点，已被第 513 到 524 簇的收口轮覆盖，当前进度一律以 `PROGRESS.md` 的逐簇账为准 |
-| 组件接入 | 2026-10-26 复跑，非测试 `.tsx` 955 个中 739 个接入翻译器，77.4%。未接入的 216 个已逐文件取证：199 个六个口径零命中（`src/app` 路由文件 88，其中 `page.tsx` 40、shadcn 原语 40、共享容器 23，其余 48 个散在 58 个目录），17 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md`；vendor 侧 lens-ui 包另经 `lens-localize` 批量接入 `lens` 命名空间（166 个源文件加 10 处手工位点，第 533 簇） |
-| 目录规模 | 中英各 13355 个叶子（`dead-keys.py` 的 `flat` 口径，数组算一片；展开数组则 13363），键树无差集；中英同值 185 个，两法一致，按五档判定（缩写单位、格式示例、品牌、协议枚举、含插值混排，见 `GLOSSARY.md` 的保留英文一节；lens 簇新增 52 条均为机读面与代码语料）；死键 0（死键判定器已补扫 vendor 树，0 是下限） |
-| 测试 | 全量测试数只取 CI `ui-unit` 实录，最近一次是 run 40249622617（#400，main@4d02d8fd）：973 个文件、13076 例，其中 9 例是仓库既有的预期失败，真红 0，`Type Errors` 报 no errors；该轮 `ui-unit` 的静态英文与中文取值两道门禁步骤均 success。2026-10-26 本地复跑 i18n 守卫 6 个文件 59 例与三道门禁的库单测 3 个文件 15 例通过 |
+| 组件接入 | 2026-11-07 复跑，非测试 `.tsx` 990 个中 771 个接入翻译器，77.9%。未接入的 219 个已逐文件取证：201 个七口径零命中（shadcn 原语 40、`page.tsx` 39、其余 122 散在 102 个目录），18 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md`；vendor 侧 lens-ui 包另经 `lens-localize` 批量接入 `lens` 命名空间（166 个源文件加 10 处手工位点，第 533 簇） |
+| 目录规模 | 中英各 13806 个叶子（`dead-keys.py` 的 `flat` 口径，数组算一片；展开数组则 13816），键树无差集；中英同值 214 个，两法一致，按五档判定（缩写单位、格式示例、品牌、协议枚举、含插值混排，见 `GLOSSARY.md` 的保留英文一节；lens 簇新增 52 条均为机读面与代码语料）；死键 0（死键判定器已补扫 vendor 树，0 是下限） |
+| 测试 | 全量测试数只取 CI `ui-unit` 实录，最近一次是 run 42341632295（`unit` workflow，main@96ebd2ae）：997 个文件、13630 例通过、9 例仓库既有的预期失败，真红 0，`Type Errors` 报 no errors；同轮 `ui-unit` 的静态英文与中文取值两道门禁步骤均 success。本地要跑只跑改动触及的文件，不要裸跑全量 |
 | 类型与构建 | `npm run typecheck` 0 错，`npm run build` 退出 0 |
-| Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件，2026-10-25 全量复核仍 0 error）；预算九条全过，`no-console` 11/11 与 `no-long-condition-chain` 200/200 顶格无余量，`no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各剩 1 条余量，`testing-library/prefer-screen-queries` 0/0 |
-| 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0），`npm run check:english-leaks` 通过（基线 284 条 / 162 文件），`npm run check:zh-coverage` 通过（zh 无汉字 215 条、en 夹汉字 0 条） |
+| Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件）；预算九条全过，`no-console` 11/11 与 `local/no-large-inline-object-arg` 477/477 顶格无余量，`local/no-long-condition-chain` 198/200 与 `complexity` 139/140 分别剩 2 条与 1 条余量，`max-depth` 55/70、`testing-library/no-container` 123/133、`testing-library/no-node-access` 639/707、`@typescript-eslint/no-explicit-any` 1441/2040、`testing-library/prefer-screen-queries` 0/0 |
+| 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0），`npm run check:english-leaks` 通过（基线 532 条 / 196 文件），`npm run check:zh-coverage` 通过（zh 无汉字 246 条、en 夹汉字 0 条） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors；另三门目录门禁的判定库单测 3 个文件 15 例 |
-| 实机 | `npm run scan:rendered` 在 38 个主路由页面 0 渲染错误、0 条新发现（2026-10-25 复跑）；英文残留基线 60 条全部判定归册：api-reference 31（代码语料）、transform-request 20（curl 示例）、lens 8（入门页示例追踪的 span 标识符）、model-insights 1（`session_id` API 字段词） |
+| 实机 | `npm run scan:rendered` 的基线是 286 条（正文 58、属性 228），最近一次完整复跑在第 574 簇；第 576 簇改了预算重置说明与解析失败提示的可见文案后尚未复跑，本机没有 Chrome 与 Playwright 浏览器。基线条目全部判定归册：机读面、代码语料与数据展示，逐页明细在 `rendered-ui-baseline.json` |
 | CI | 跑在 GitHub Actions 官方托管 runner（公开仓库，`ubuntu-latest` 4 核）：UI 门禁由 `test-linting.yml`（prettier/eslint/预算/knip/API 类型同步）、`test-litellm-ui-lint.yml`（死键）、`test-unit.yml` 的 `ui-unit`（typecheck/静态英文基线/中文取值/类型测试/全量 Vitest）与 `test-litellm-ui-build.yml`（Docker 构建）承担；lint、死键、build 与 API 类型仅 PR 触发，`ui-unit` 另在 push main 全量跑 |
 | 安全分析 | `codeql.yml` 扫 actions、javascript-typescript、python 三种语言（`build-mode: none`），PR 触发加每周一 04:00 UTC 定时；`scorecard.yml` 每周四 12:27 UTC，`publish_results` 已关闭，不外发结果；`image-scan.yml` 维持停用，6 个 job 各自全量 `docker build` 在免费 runner 上不划算 |
 | 镜像发布 | 手动触发 `release-docker-image.yml`，版本号默认取最新的 `litellm_sync_v*` 分支（所以这些同步分支不能删），构建根 `Dockerfile` 的 `runtime` 阶段，`docker save` 成 tar.gz 作为本仓 Release 附件，详见 `docs/docker-image-release.md` |
@@ -107,7 +107,7 @@ npm run knip:ci
 npm run build
 ```
 
-几条口径要记住。不要裸跑全量 `npx vitest run`，那是 970 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键与英文基线门禁取文件都走 `git ls-files`，新建文件要先 `git add` 再跑。统计口径固定四条，复测照此执行：接入率用 `node scripts/i18n-file-inventory.mjs`，枚举 `src` 下 `.tsx` 并排除文件名含 `.test.` 的，接入判据是源码出现 `useTranslations(` 或 `getTranslations(`；目录叶子与同值按 `scripts/dead-keys.py` 的 `flat` 口径，数组算一片得 13355，展开数组得 13363，同值 185 两法一致；守卫与门禁单测数分别取 `npx vitest run src/lib/i18n src/lib/toast.test.ts` 与 `npx vitest run tests/english-scan-lib.test.ts tests/english-leaks-lib.test.ts tests/zh-coverage-lib.test.ts` 的用例数；全量文件与用例数只认 CI `ui-unit` 实录，不在本地现跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
+几条口径要记住。不要裸跑全量 `npx vitest run`，那是 997 个文件、会把机器占满十几分钟，CI 本来就会跑；只跑本次改动触及的文件加上可能解释其失败的文件，改组件时把 import 它的测试一并跑（认证类型那批红灯就是这么漏的）。`--reporter=dot` 是唯一可用的点状报告，本项目没有 `basic`。多 project 合跑要把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则临时目录被回收会报成文件级失败而实际 0 例失败。死键与英文基线门禁取文件都走 `git ls-files`，新建文件要先 `git add` 再跑。统计口径固定四条，复测照此执行：接入率用 `node scripts/i18n-file-inventory.mjs`，枚举 `src` 下 `.tsx` 并排除文件名含 `.test.` 的，接入判据是源码出现 `useTranslations(` 或 `getTranslations(`；目录叶子与同值按 `scripts/dead-keys.py` 的 `flat` 口径，数组算一片得 13806，展开数组得 13816，同值 214 两法一致；守卫与门禁单测数分别取 `npx vitest run src/lib/i18n src/lib/toast.test.ts` 与 `npx vitest run tests/english-scan-lib.test.ts tests/english-leaks-lib.test.ts tests/zh-coverage-lib.test.ts` 的用例数；全量文件与用例数只认 CI `ui-unit` 实录，不在本地现跑。要看某文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`
 
 分 project 的入口是 `npm run test:unit`（node 环境）、`test:component`、`test:integration`（jsdom）、`test:types`。渲染扫描要先起 `npm run dev`（端口 3000），再跑 `npm run scan:rendered`，只有加 `--update-baseline` 才写基线。改了后端路由或响应模型，跑 `npm run gen:api` 重新生成 `src/lib/http/schema.d.ts`，那个文件不要手改
 
@@ -119,11 +119,11 @@ npm run build
 
 ## 剩余工作
 
-- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉。第 534 簇把残留冻结成 `english-leaks-baseline.json`（284 条 / 162 文件），本地 `check:english-leaks` 已接，并已挂进 `unit/ui-unit`（push 与 PR 都跑）
+- **口径本身要定期拿新形态去撞**。第 525 簇那 11 处真漏不是漏读代码，是 `scan-english.mjs` 为了挡 className 碎片把"纯小写单词"一律丢弃、连 JSX 文本分支也套用，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年不可见。过滤改正后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token，11 条已接。今后每开一个新维度，先问旧过滤条件会不会把它吃掉。第 534 簇把残留冻结成 `english-leaks-baseline.json`（当前 532 条 / 196 文件），第 575 簇又把复合属性名与无插值模板字面量纳入口径，本地 `check:english-leaks` 已接，并已挂进 `unit/ui-unit`（push 与 PR 都跑）
 - **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
-- **唯一在案的活项是上游同步（按决定暂缓）**。这是英文重新进面的唯一通道：每一次 release 同步都会带回新的界面文案与结构，届时按 UPSTREAM-SYNC.md 的三件事重接（重测 lint 棘轮、`eslint . --prune-suppressions`、复跑死键门禁与渲染扫描）。除同步外，四条静态口径与渲染扫描的命中已全部接键或判定归册，逐页明细在 `rendered-ui-baseline.json`，没有未甄别的账
+- **在案活项三条**（详见 `PROGRESS.md` 的"下一步优先级"）。一是 zh 未译 246 条，中文值与英文同形，按命名空间成簇补译、用 `--write` 下调基线；二是渲染扫描复跑，基线 286 条仍是第 574 簇的证据，第 576 簇改了可见文案后尚未复跑；三是 `Notifications alt` 待查，属性口径里 grep 不到字面量，需沿渲染路径定位后决定接键还是进 `ALLOWED_ENGLISH`。上游同步按决定暂缓，是英文重新进面的唯一通道，届时按 UPSTREAM-SYNC.md 的三件事重接（重测 lint 棘轮、`eslint . --prune-suppressions`、复跑死键门禁与渲染扫描）
 - **17 个上游巨型文件保留 `max-lines` 豁免（第 529 簇的判定账）**。实测它们在上游 `v1.107.0` 树上就已全部超线，拆分的收益只有消一条 lint 豁免，代价是每次上游同步都要在这些文件上重新对齐结构。我们自己的批次撑过线的 4 个已在第 523/524 簇拆完退线，第 529 簇又把超线幅度最小的 `old-usage/usage.tsx` 拆到 752 行退线。日后因功能改动打开哪个文件，顺手拆出内联单元即可
-- **lint 棘轮纪律**。`no-long-condition-chain` 200/200 与 `no-large-inline-object-arg` 476/477 仍顶格，新增写法会把门禁改红；收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限。`no-console` 11/11 与 `prefer-screen-queries` 0/0 的余量已在第 528 簇腾出并锁死
+- **lint 棘轮纪律**。`local/no-large-inline-object-arg` 477/477 与 `no-console` 11/11 仍顶格，新增写法会把门禁改红；`local/no-long-condition-chain` 198/200 与 `complexity` 139/140 只剩 2 条与 1 条余量。收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限。`prefer-screen-queries` 0/0 的余量已在第 528 簇锁死
 
 ## 相关文档
 
@@ -136,6 +136,6 @@ npm run build
 | [`ui/litellm-dashboard/docs/i18n/WORKFLOW.md`](ui/litellm-dashboard/docs/i18n/WORKFLOW.md) | 单批执行的七步流程、验证清单、编码约定与文件拆分口径 |
 | [`ui/litellm-dashboard/docs/i18n/FIXES.md`](ui/litellm-dashboard/docs/i18n/FIXES.md) | 缺陷八类的分类表、定位手段与踩坑记录 |
 | [`ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md`](ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md) | 渲染扫描的用法与判据 |
-| [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md) | 未接入翻译器的 216 个文件逐文件判定账，兼记扫描口径盲区、11 处真漏与 lens 簇尾账 |
+| [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md) | 未接入翻译器的 219 个文件逐文件判定账，兼记静态英文基线的逐文件 `prop:` 命中与扫描口径盲区 |
 | [`ui/litellm-dashboard/AGENTS.md`](ui/litellm-dashboard/AGENTS.md) | 该子项目的测试分层、断言约定与门禁说明 |
 | [`ui/litellm-dashboard/TRANSLATION_PLAN.md`](ui/litellm-dashboard/TRANSLATION_PLAN.md) | 历史计划与一手踩坑日志，进度部分已过期 |
