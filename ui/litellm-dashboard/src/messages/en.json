@@ -1,5 +1,6 @@
 {
   "common": {
+    "notifications": "Notifications",
     "configValueUpdated": "Successfully updated value!",
     "configFieldReset": "Field reset on proxy",
     "helpIcon": "Help",

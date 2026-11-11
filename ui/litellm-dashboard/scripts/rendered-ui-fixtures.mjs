@@ -73,6 +73,8 @@ export const ALLOWED_ENGLISH = new Set([
   "CloudZero",
   "CSV",
   "Ctrl K",
+  // sonner toast 区域标签里的快捷键按键名（alt+T），与 Ctrl K、Enter 同类
+  "alt",
   "DeepSeek",
   "Docker",
   "Enter",
