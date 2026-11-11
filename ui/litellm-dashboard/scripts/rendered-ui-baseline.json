@@ -17,11 +17,6 @@
     },
     {
       "page": "home",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "home",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -39,11 +34,6 @@
       "page": "keys",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "keys",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "keys",
@@ -56,11 +46,6 @@
       "text": "Slack"
     },
     {
-      "page": "models",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
       "page": "teams",
       "kind": "attr:aria-label",
       "text": "unknown"
@@ -74,11 +59,6 @@
       "page": "teams",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "teams",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "teams",
@@ -102,11 +82,6 @@
     },
     {
       "page": "logs",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "logs",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -124,11 +99,6 @@
       "page": "usage",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "usage",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "usage",
@@ -152,11 +122,6 @@
     },
     {
       "page": "guardrails",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "guardrails",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -174,11 +139,6 @@
       "page": "policies",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "policies",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "policies",
@@ -199,11 +159,6 @@
       "page": "agents",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "agents",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "agents",
@@ -224,11 +179,6 @@
       "page": "prompts",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "prompts",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "prompts",
@@ -249,11 +199,6 @@
       "page": "budgets",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "budgets",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "budgets",
@@ -274,11 +219,6 @@
       "page": "users",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "users",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "users",
@@ -299,11 +239,6 @@
       "page": "search-tools",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "search-tools",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "search-tools",
@@ -324,11 +259,6 @@
       "page": "roi-calculator",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "roi-calculator",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "roi-calculator",
@@ -349,11 +279,6 @@
       "page": "model-health",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "model-health",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "model-health",
@@ -374,11 +299,6 @@
       "page": "mcp-servers",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "mcp-servers",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "mcp-servers",
@@ -399,11 +319,6 @@
       "page": "vector-stores",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "vector-stores",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "vector-stores",
@@ -424,11 +339,6 @@
       "page": "memory",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "memory",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "memory",
@@ -449,11 +359,6 @@
       "page": "workflows",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "workflows",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "workflows",
@@ -474,11 +379,6 @@
       "page": "projects",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "projects",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "projects",
@@ -499,11 +399,6 @@
       "page": "skills",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "skills",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "skills",
@@ -524,11 +419,6 @@
       "page": "tool-policies",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "tool-policies",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "tool-policies",
@@ -549,11 +439,6 @@
       "page": "organizations",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "organizations",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "organizations",
@@ -574,11 +459,6 @@
       "page": "access-groups",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "access-groups",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "access-groups",
@@ -599,11 +479,6 @@
       "page": "telemetry",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "telemetry",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "telemetry",
@@ -624,11 +499,6 @@
       "page": "caching",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "caching",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "caching",
@@ -672,11 +542,6 @@
     },
     {
       "page": "router-settings",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "router-settings",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -702,11 +567,6 @@
     },
     {
       "page": "cost-optimization",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "cost-optimization",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -727,11 +587,6 @@
     },
     {
       "page": "cost-tracking",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "cost-tracking",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -749,11 +604,6 @@
       "page": "guardrails-monitor",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "guardrails-monitor",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "guardrails-monitor",
@@ -779,11 +629,6 @@
       "page": "model-insights",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "model-insights",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "model-insights",
@@ -867,11 +712,6 @@
     },
     {
       "page": "lens",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "lens",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -932,11 +772,6 @@
     },
     {
       "page": "admin-panel",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "admin-panel",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -954,11 +789,6 @@
       "page": "tag-management",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "tag-management",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "tag-management",
@@ -1072,11 +902,6 @@
     },
     {
       "page": "transform-request",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "transform-request",
       "kind": "attr:placeholder",
       "text": "Cmd"
     },
@@ -1104,11 +929,6 @@
       "page": "ui-theme",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "ui-theme",
@@ -1149,11 +969,6 @@
       "page": "logging-and-alerts",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "logging-and-alerts",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "logging-and-alerts",
@@ -1332,11 +1147,6 @@
     },
     {
       "page": "api-reference",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "api-reference",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -1359,11 +1169,6 @@
       "page": "playground",
       "kind": "attr:aria-label",
       "text": "PDF"
-    },
-    {
-      "page": "playground",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "playground",
@@ -1397,11 +1202,6 @@
     },
     {
       "page": "old-usage",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
-    },
-    {
-      "page": "old-usage",
       "kind": "attr:title",
       "text": "beta"
     },
@@ -1419,11 +1219,6 @@
       "page": "change-password",
       "kind": "attr:aria-label",
       "text": "beta"
-    },
-    {
-      "page": "change-password",
-      "kind": "attr:aria-label",
-      "text": "Notifications alt"
     },
     {
       "page": "change-password",

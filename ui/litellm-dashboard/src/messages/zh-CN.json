@@ -1,5 +1,6 @@
 {
   "common": {
+    "notifications": "通知",
     "configValueUpdated": "值更新成功！",
     "configFieldReset": "字段已在代理端重置",
     "helpIcon": "帮助",

@@ -1,17 +1,20 @@
 "use client";
 
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 function Toaster({ ...props }: ToasterProps) {
   const { resolvedTheme } = useTheme();
+  const t = useTranslations("common");
 
   return (
     <Sonner
       theme={resolvedTheme === "dark" ? "dark" : "light"}
       position="top-right"
       closeButton
+      containerAriaLabel={t("notifications")}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

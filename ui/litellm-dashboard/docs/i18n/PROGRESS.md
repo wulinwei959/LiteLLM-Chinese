@@ -4262,7 +4262,11 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 2026-10-24 更新：本节往后的段落是各簇逐次追加的执行记录，新旧混杂，读优先级以下面这份只列活项的清单为准。上游同步按维护者决定暂缓，不在清单内
 
-2026-11-07 第 576 簇重新立账。第 530 簇那两条已收口，lens 在 533 簇批量接入后撤到 8 条，小页零头逐页判定归册，正文 58 条全部有判定归属。待接列在 576 簇清零，当前活项三条
+2026-11-11 第 577 簇重新立账。渲染扫描复跑与 `Notifications alt` 待查两条已收口：本机 Chrome 41 页 0 渲染错误、0 条新发现，576 簇的文案改动在空桩页面不渲染，574 基线逐条仍在；`Notifications alt` 用 DOM 探针定位为 sonner Toaster 通知区域的外壳标签（`containerAriaLabel` 默认 "Notifications" 拼快捷键 alt+T），接新键 `common.notifications` 后 41 条退场，基线 286 撤到 245。当前活项一条
+
+1. **zh 未译 246 条**。按 `check:zh-coverage` 的基线，这些键的中文值与英文同形，属翻译欠账不是漏接。补译按命名空间成簇推进，改完用 `--write` 下调基线
+
+2026-11-07 第 576 簇重新立账。第 530 簇那两条已收口，lens 在 533 簇批量接入后撤到 8 条，小页零头逐页判定归册，正文 58 条全部有判定归属。待接列在 576 簇清零，当时活项三条（后两条已在 577 簇收口）
 
 1. **zh 未译 246 条**。按 `check:zh-coverage` 的基线，这些键的中文值与英文同形，属翻译欠账不是漏接。补译按命名空间成簇推进，改完用 `--write` 下调基线
 2. **渲染扫描复跑**。基线 286 条（正文 58、属性 228）仍是第 574 簇的证据，第 576 簇改了预算重置说明与解析失败提示的可见文案，按 WORKFLOW 第六步这份结论已失效，下次跑渲染面的簇时一并复跑
@@ -5753,3 +5757,13 @@ A 桶与 `errorsData` 纠缠至此全部清零
 验证：`npm run typecheck` 通过；`budgetUtils.test.ts` 34 例全绿；死键 0/0；静态英文 532/532；zh 246/0；`uv lock --check` 通过。渲染扫描本轮没有复跑，本机没有 Chrome 与 Playwright 浏览器，基线仍是 574 簇的 286 条，这条已记进「下一步优先级」的活项
 
 文档同步：本簇账补记在此。目录规模（叶子 13816、命名空间 126、同值 214）、文件覆盖率（990 接入 771、77.9%）、按路由表与 FILE-INVENTORY 的待接列由 2026-11-07 的文档节点（分支 `litellm_docs_576`）补齐，代码 PR #46 合并时这几处还停在上一节点
+
+## 2026-11-11 第 577 簇：渲染扫描复跑，Notifications alt 定位为 sonner 外壳标签
+
+第 576 簇留下的两条活项同簇收口。本机 Chrome 复跑 41 页，0 渲染错误、0 条新发现，574 基线 286 条逐条仍在（576 改的预算重置说明与解析失败提示在空桩页面上不渲染），正文 58 条按页仍是 api-reference 31、transform-request 18、lens 8、model-insights 1
+
+`Notifications alt` 的定位走 DOM 探针：`/home` 渲染后遍历 `[aria-label]`，抓到 `<section aria-label="Notifications alt+T" data-react-aria-top-layer="true">`，祖先链只到 body，是 sonner `<Toaster>` 的通知区域。sonner 内部 `containerAriaLabel` 默认 "Notifications"，拼上 `hotkeyLabel`（默认快捷键 altKey+KeyT 去掉 Key 后缀）成 "Notifications alt+T"，字面量在 node_modules 不在 src，所以静态 grep 与 git log -S 都落空。修法：`ui/sonner.tsx` 传 `containerAriaLabel={t("notifications")}`，新键 `common.notifications`（en "Notifications"、zh "通知"），两侧叶子 13816 到 13817（flat 13806 到 13807），同值 214 不动。快捷键后缀是按键名，`alt` 进 `ALLOWED_ENGLISH`（与 Ctrl K、Enter 同类）。复跑刷新基线，41 条 `Notifications alt` 退场，286 到 245（正文 58、属性 187），属性去重串 31 到 26，基线 diff 逐条核对只删这 41 条
+
+接键的连带修复：LiteAdmin 集成测试把 `<Toaster />` 摆在 `NextIntlClientProvider` 外，Toaster 接 `useTranslations` 后 76 例全崩（missing context），挪进 provider 与生产 layout 对齐后全绿。生产 layout 的 Toaster 本就在 LocaleProvider 内，无此问题
+
+验证：`npm run typecheck` 通过；i18n 守卫 39 例、LiteAdmin 集成 76 例全绿；死键 0/0；静态英文 532/532；zh 246/0；触及文件 prettier 与 eslint 干净。渲染扫描两轮（对比轮 0 新增、刷新轮写基线 245 条）。文档同步：RENDERED-SCAN 的最近复跑段换成本轮、574 段降为沿革，局限一节删掉已被属性口径覆盖的 placeholder；两份 README 的目录叶子、实机基线与活项清单同步，活项三条收剩一条

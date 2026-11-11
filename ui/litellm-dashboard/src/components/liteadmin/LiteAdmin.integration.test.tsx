@@ -110,9 +110,9 @@ function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome =
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   const tree = (home = showHome, usage = showUsage) => (
     <QueryClientProvider client={client}>
-      <Toaster />
       <LocaleProvider locale="zh-CN">
         <NextIntlClientProvider locale="zh-CN" messages={zhMessages}>
+          <Toaster />
           <AuthProvider>
             <SessionReady />
             {Menu && <Menu onLogout={() => undefined} />}

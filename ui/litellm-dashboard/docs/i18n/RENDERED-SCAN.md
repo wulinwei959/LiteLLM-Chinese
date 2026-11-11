@@ -2,7 +2,9 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-11-05 第 574 簇，口径同时扩到属性文案。`scanObjectProperty` 让静态门禁看见 `.ts` 表值之后，运行期这一侧的同类盲区也补上了：扫描除 `innerText()` 外还读 `COPY_ATTRIBUTES`（`alt`、`aria-label`、`placeholder`、`title`），按 `attr:<属性名>` 记发现。41 页复跑 0 渲染错误，正文英文仍是 58 条基线项、0 新增，属性口径新增 228 条，去重后只有 31 个不同串，其中 `beta`(80 页次)、`Slack`(41)、`Notifications alt`(41)、`unknown`(40) 四条是页面外壳与数据值在每个页面重复计入，其余是 `config.yaml`、`agent`/`research`/`plan`/`docs`/`search`/`benchmark`/`run`/`answer` 这类工具与步骤名、以及 `Valkey`/`redis`/`host`/`password`/`Cmd`/`Ctrl`/`Shift`/`logo.png` 这类输入示例，本轮没有撞出新的产品文案漏翻。`Notifications alt` 在 `src` 里 grep 不到字面量，是运行期拼出来的外壳标签，记待查。基线因此 58 涨到 286 条，涨的是新口径第一次被看见，不是门禁变松
+最近一次复跑：2026-11-11 第 577 簇，本机 Chrome，41 页 0 渲染错误、0 条新发现。第 576 簇改的预算重置说明与解析失败提示在空桩页面上不渲染，574 基线 286 条逐条仍在，正文英文仍是 58 条基线项（api-reference 31、transform-request 18、lens 8、model-insights 1）。本轮把待查的 `Notifications alt` 定了位：DOM 探针在 `/home` 抓到 `<section aria-label="Notifications alt+T" data-react-aria-top-layer="true">`，祖先链只到 body，是 sonner `<Toaster>` 的通知区域，`containerAriaLabel` 默认 "Notifications" 拼上快捷键 `hotkeyLabel`（alt+T），字面量在 node_modules 不在 src，静态 grep 与 git log -S 自然落空。`ui/sonner.tsx` 传 `containerAriaLabel={t("notifications")}`（新键 `common.notifications`，zh "通知"），快捷键后缀是按键名不翻，`alt` 进 `ALLOWED_ENGLISH`（与 Ctrl K、Enter 同类）。41 条 `Notifications alt` 随之退场，基线 286 撤到 245（正文 58、属性 187），属性去重串 31 到 26，基线 diff 逐条核对只删这 41 条。连带修复：LiteAdmin 集成测试的树把 Toaster 摆在 NextIntlClientProvider 外，接键后 76 例全崩，挪进 provider 与生产 layout 对齐后全绿
+
+（沿革）2026-11-05 第 574 簇，口径同时扩到属性文案。`scanObjectProperty` 让静态门禁看见 `.ts` 表值之后，运行期这一侧的同类盲区也补上了：扫描除 `innerText()` 外还读 `COPY_ATTRIBUTES`（`alt`、`aria-label`、`placeholder`、`title`），按 `attr:<属性名>` 记发现。41 页复跑 0 渲染错误，正文英文仍是 58 条基线项、0 新增，属性口径新增 228 条，去重后只有 31 个不同串，其中 `beta`(80 页次)、`Slack`(41)、`Notifications alt`(41)、`unknown`(40) 四条是页面外壳与数据值在每个页面重复计入，其余是 `config.yaml`、`agent`/`research`/`plan`/`docs`/`search`/`benchmark`/`run`/`answer` 这类工具与步骤名、以及 `Valkey`/`redis`/`host`/`password`/`Cmd`/`Ctrl`/`Shift`/`logo.png` 这类输入示例，本轮没有撞出新的产品文案漏翻。`Notifications alt` 在 `src` 里 grep 不到字面量，是运行期拼出来的外壳标签，记待查。基线因此 58 涨到 286 条，涨的是新口径第一次被看见，不是门禁变松
 
 （沿革）2026-11-04 第 561 复跑：`PAGES` 从 38 扩到 41，补上从未进过扫描面的 `playground`、`old-usage`、`change-password`（`/` 与 `/home` 是同一个组件，不必单列）。扩面撞出 7 条新发现，6 处英文加 1 条运行期错误，逐条溯源后全部接掉或判归。`change-password` 的面包屑渲染出 `Change Password`，走的是 `getBreadcrumb` 的 `prettify` 回落，新开 `nav.changePassword` 并把它列进 `UNLISTED_TITLES`。playground 空会话的三条示例提示词是英文，同一张能力表由 2026-10-20 的上游合并带入、从没进过汉化批次。`chat` 与 `completions` 是端点下拉里展示的 `/v1/chat/completions` 路径段，判机读面进 `ALLOWED_ENGLISH`。`CompliancePromptLibrary.tsx` 把框架行的"全选/清除"按钮嵌在整行可点的展开按钮里，React 直接报 `<button>` 不能是 `<button>` 的后代，拆成同一行的兄弟按钮，`stopPropagation` 随之删掉。那张能力表里还躺着八条输入占位符和三条附件提示，扫描一条也看不见，`rendered-ui-scan.mjs` 取的是 `innerText()`，属性文案不在它的口径里，只能读代码捞，一并改成常量存键名、渲染处 `t()`，示例提示词复用既有的 `playground.chat.suggestions.default` 与 `.a2a`，代码解释器三条另开 `.codeInterpreter`。白名单那一条顺带让 `transform-request` 的两条基线项消失，基线从 60 降到 58。桩表补 `/v1/mcp/toolset` 后 0 条 stub-miss。复跑 41 页 0 渲染错误、0 条新发现，剩余 58 条按页是 api-reference 31、transform-request 18、lens 8、model-insights 1
 
@@ -81,7 +83,7 @@ npm run scan:rendered -- --proxy-url http://localhost:4000
 
 ## 局限
 
-- 扫的是正文，扫不到 canvas、图表里的图例文字、输入框的 placeholder
+- 扫的是正文与四类文案属性，扫不到 canvas 与图表里的图例文字
 - 桩里的数据是空的，所以带数据的交互路径（展开行、打开抽屉、翻页）扫不到
 - 页面清单在 `PAGES` 里，手动维护；上游加了新页面要补
 
