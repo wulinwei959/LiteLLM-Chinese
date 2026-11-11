@@ -77,11 +77,11 @@ node scripts/i18n-file-inventory.mjs --include-ts
 ### C 命中但不渲染，无消费点、属死代码或是机读与协议值（其余 53 个文件 110 条）
 
 - `src/app/(dashboard)/hooks/**` 与 `src/hooks/**` 里 38 个文件各 1 条，是 `throw new Error("Access token is required")` 一类的守卫串（30 条同文），另有 `liteadmin/agent.ts` 2 条、`dataUtils.ts` 与 `keyExpiryUtils.ts` 各 1 条。它们本身不进 DOM，但调用方普遍写 `toast.fromError(error.message)`（如 `AccessGroupCreateDialog.tsx:80`），守卫一旦触发就原文贴进 toast。算低优先：正常会话取不到空 access token，真要接得先把 hook 改成抛带键的类型化错误再由调用方映射，而不是逐条翻字符串
-- `src/components/shared/timeRange/timeRange.ts` 5 条 `label` 是孤儿，`RANGE_PRESETS`/`presetLabel` 只被同目录 `timeRange.test.ts` 引用，活的等价物在 `components/logs/constants.ts:86` 已经用 `labelKey`
+- `src/components/shared/timeRange/timeRange.ts` 5 条 `label` 是孤儿，`RANGE_PRESETS`/`presetLabel` 只被同目录 `timeRange.test.ts` 引用，活的等价物在 `components/logs/constants.ts:86` 已经用 `labelKey`（第 576 簇已把 5 条换成 `labelKey` 并接线，此条按 2026-11-04 的判定读）
 - `src/components/UsagePage/keyActivityData.ts:11` 的 `label` 只用于搜索匹配（`modelActivityFilter.ts:11`），`KeyActivityPanel.tsx` 不读它
 - `errorsData.ts` 的 `ERROR_RATE_VIEW_OPTIONS`、`ERROR_ENTITY_LABEL`、`StatusCodeRow.label` 无人 import，`ErrorsTab.tsx:96` 已用 `t("viewTotal")`/`t("viewStatus")` 自建
 - `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts` 47 条是差分测试用例，不渲染，文件名不含 `.test.` 所以进了枚举
-- `prompts/.../utils.ts` 的 dotprompt 线格式串、`networking/core.ts` 的 `headerName: "Authorization"`、`useUrlTab.ts` 的 `key: "tab"`、`jev_classifier_config.ts` 的 `provider: "jev"`、`validatePayload.ts` 的 `endpoint`、`budgetUtils.ts:96` 的 `Never resets`（`describeBudgetResetSchedule` 只被自身测试引用）
+- `prompts/.../utils.ts` 的 dotprompt 线格式串、`networking/core.ts` 的 `headerName: "Authorization"`、`useUrlTab.ts` 的 `key: "tab"`、`jev_classifier_config.ts` 的 `provider: "jev"`、`validatePayload.ts` 的 `endpoint`、`budgetUtils.ts:96` 的 `Never resets`（`describeBudgetResetSchedule` 第 576 簇已加首参 `BudgetsTranslator`，两条串改走 `budgets` 命名空间）
 
 `anthropic_federation.ts` 的 `fdrl_`/`svac_`/`wrkspc_` 前缀和路径、URL、secret 引用示例是输入值提示，`client_secret_basic`/`client_secret_post` 是协议枚举。`src/data/compliancePrompts.ts`、`financialCompliancePrompts.ts`、`insultsCompliancePrompts.ts` 的 `content` 是发给模型的提示词正文。`agentCatalog.ts` 的产品名（`Claude Desktop`、`GitHub Copilot`）与 `provider_auth_types.ts` 的 `id`/`fieldKeys` 同名同值，属专名与配置字段
 
@@ -677,7 +677,7 @@ lens 主体落地后本文件的角色变了：`vendor/lens-ui/src` 166 个源�
 
 ## 静态英文基线（2026-10-26 第 534 簇）
 
-默认四口径扫 `src` 下非测试 `.ts/.tsx` 得到 286 条命中，逐条分类后 1 条真漏已接，284 条判定保留冻结进 `english-leaks-baseline.json`（162 个文件）。本文件原有的 216 个未接入文件判定账不变；静态残留的机读冻结清单、五档判定与刷新方法见 [ENGLISH-BASELINE.md](./ENGLISH-BASELINE.md)
+默认四口径扫 `src` 下非测试 `.ts/.tsx` 得到 286 条命中，逐条分类后 1 条真漏已接，284 条判定保留冻结进 `english-leaks-baseline.json`（162 个文件）。本文件当时的 216 个未接入文件判定账不变（当前口径见文首，532 条 / 196 文件、219 个未接入）；静态残留的机读冻结清单、五档判定与刷新方法见 [ENGLISH-BASELINE.md](./ENGLISH-BASELINE.md)
 
 ## 第 566 簇（2026-11-05）：client usage 错误通道与区间说明
 
@@ -752,83 +752,90 @@ A 桶 7 个 `.ts` 里命中最多的一个接完。`FAMILIES` 表 22 个品牌�
 
 第 574 簇把 `agent_config.ts` 的 45 条表值改成正向键引用：`FieldConfig.label`/`tooltip`/`helpText` 与 `SectionConfig.title` 换成 `labelKey`/`tooltipKey`/`helpTextKey`/`titleKey`，`SKILL_FIELD_CONFIG` 同形，消费点直接 `t(field.labelKey)`，placeholder 走新的 `fieldPlaceholderText(t, field)`。反向查找表 `FIELD_TEXT_KEYS` 与 `configText` 只剩后端下发的凭据字段还在用（`credential_fields` 的 label/tooltip/placeholder 来自网关，不是本地表），因此改名 `serverFieldText` 说明它翻译的是服务端英文。纯数字与版本号占位符（`0.0`、`1.0.0`）保持字面量，本就不含字母、不进口径。基线 529 到 484，`prop:` 命中 330 到 285，待接 54 到 9
 
-下表按当前 484 条基线里的 285 条 `prop:` 命中重排，判定列区分两类：判定保留是长期留在基线的账（语料、品牌与缩写、格式示例），不是待办；待接才是下一簇的活。一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除，resolved 触红即门禁生效，新增英文串不再能静默进表
+下表按当前 532 条基线里的 333 条 `prop:` 命中重排（78 个文件），判定列区分两类：判定保留是长期留在基线的账（语料、品牌与缩写、格式示例），不是待办；待接才是下一簇的活。一簇把某文件的表值改成键引用（或删死串）后，该文件的基线条目随命中消失而移除，resolved 触红即门禁生效，新增英文串不再能静默进表
 
-| 条数 | 文件                                                                                          | 判定                             |
-| ---- | --------------------------------------------------------------------------------------------- | -------------------------------- |
-| 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         | 判定保留：第三方网关语料         |
-| 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         | 判定保留：差分用例语料           |
-| 17   | `src/components/callback_info_helpers.tsx`                                                    | 判定保留：集成商产品名           |
-| 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          | 判定保留：API 路径               |
-| 8    | `src/data/compliancePrompts.ts`                                                               | 判定保留：合规提示语料           |
-| 6    | `src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
-| 6    | `src/components/model_add/anthropic_federation.ts`                                            | 判定保留：URL/JSON/正则格式示例  |
-| 6    | `src/components/model_dashboard/HealthCheckComponent.tsx`                                     | 判定保留：异常类名               |
-| 5    | `src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx`                  | 判定保留：示例工具语料           |
-| 5    | `src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
-| 5    | `src/app/(dashboard)/skills/_components/add_plugin_form.tsx`                                  | 判定保留：URL/JSON/正则格式示例  |
-| 5    | `src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx`            | 判定保留：URL/JSON/正则格式示例  |
-| 5    | `src/components/shared/timeRange/timeRange.ts`                                                | 待接：无生产消费者，接线时一并翻 |
-| 4    | `src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx`    | 判定保留：URL/JSON/正则格式示例  |
-| 4    | `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                        | 判定保留：示例负载语料           |
-| 4    | `src/components/shared/CreatedKeyDisplay.tsx`                                                 | 判定保留：品牌名                 |
-| 3    | `src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx`                            | 判定保留：URL/JSON/正则格式示例  |
-| 3    | `src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx` | 判定保留：URL/JSON/正则格式示例  |
-| 3    | `src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx`                     | 判定保留：URL/JSON/正则格式示例  |
-| 3    | `src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`                                            | 判定保留：URL/JSON/正则格式示例  |
-| 3    | `src/components/liteadmin/operations.ts`                                                      | 判定保留：模型侧工具说明         |
-| 3    | `src/components/user_agent_activity.tsx`                                                      | 判定保留：缩写                   |
-| 3    | `src/utils/budgetUtils.ts`                                                                    | 待接：无生产消费者，接线时一并翻 |
-| 2    | `src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx`            | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx`                 | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx`                             | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx`                   | 判定保留：SDK 名                 |
-| 2    | `src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx`           | 判定保留：SDK 名                 |
-| 2    | `src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx`                      | 判定保留：品牌名                 |
-| 2    | `src/app/layout.tsx`                                                                          | 判定保留：产品名（文档标题）     |
-| 2    | `src/components/TeamsPage/teamTableColumns.tsx`                                               | 判定保留：缩写 RPM/TPM           |
-| 2    | `src/components/add_model/ReminderMarkers.tsx`                                                | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/components/add_model/advanced_settings.tsx`                                              | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/components/key_team_helpers/key_sorting.ts`                                              | 判定保留：缩写 RPM/TPM           |
-| 2    | `src/components/pass_through_info.tsx`                                                        | 判定保留：URL/JSON/正则格式示例  |
-| 2    | `src/components/routing_groups/RoutingGroupUsagePanel.tsx`                                    | 判定保留：SDK 名                 |
-| 2    | `src/components/team/TeamEditSettingsForm.tsx`                                                | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                  | 判定保留：缩写 ID                |
-| 1    | `src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx`                              | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx`                        | 判定保留：预置技能种子           |
-| 1    | `src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx`                  | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx`                           | 判定保留：API 路径               |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx`                          | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx`                    | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/memory/_components/MemoryEditModal.tsx`                                  | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx`        | 判定保留：缩写 ID                |
-| 1    | `src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx`                           | 判定保留：缩写 ID                |
-| 1    | `src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx`                      | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx`                           | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx`                         | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/app/(dashboard)/workflows/WorkflowRuns.tsx`                                              | 判定保留：元数据键名             |
-| 1    | `src/components/AIHub/UsefulLinksManagement.tsx`                                              | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/Navbar/ViewSwitcher.tsx`                                                      | 判定保留：品牌名                 |
-| 1    | `src/components/Teams.tsx`                                                                    | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/UsagePage/keyActivityData.ts`                                                 | 判定保留：度量集名，渲染侧另有键 |
-| 1    | `src/components/add_pass_through.tsx`                                                         | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/cloudzero_export_modal.tsx`                                                   | 判定保留：品牌名                 |
-| 1    | `src/components/leftnav.tsx`                                                                  | 判定保留：品牌名                 |
-| 1    | `src/components/model_add/openai_federation.ts`                                               | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/networking.tsx`                                                               | 待接：解析失败的返回值           |
-| 1    | `src/components/routing_groups/RoutingGroupModal.tsx`                                         | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/team/EditMembership.tsx`                                                      | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/components/templates/KeyEditViewControls.tsx`                                            | 判定保留：URL/JSON/正则格式示例  |
-| 1    | `src/data/financialCompliancePrompts.ts`                                                      | 判定保留：合规提示语料           |
-| 1    | `src/data/insultsCompliancePrompts.ts`                                                        | 判定保留：合规提示语料           |
+| 条数 | 文件                                                                                          | 判定                                         |
+| ---- | --------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 58   | `src/app/(dashboard)/guardrails/_components/guardrail_garden_data.ts`                         | 判定保留：第三方网关语料                     |
+| 50   | `src/app/(dashboard)/mcp-servers/_components/editServerPayload.differential.cases.ts`         | 判定保留：差分用例语料                       |
+| 33   | `src/data/compliancePrompts.ts`                                                               | 判定保留：合规提示语料                       |
+| 17   | `src/components/callback_info_helpers.tsx`                                                    | 判定保留：集成商产品名                       |
+| 12   | `src/app/(dashboard)/playground/components/chat_ui/chatConstants.ts`                          | 判定保留：API 路径                           |
+| 10   | `src/data/canadianPiiCompliancePrompts.ts`                                                    | 判定保留：合规提示语料                       |
+| 6    | `src/app/(dashboard)/mcp-servers/_components/IdJagFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例              |
+| 6    | `src/app/(dashboard)/mcp-servers/_components/OAuthFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例              |
+| 6    | `src/components/model_add/anthropic_federation.ts`                                            | 判定保留：URL/JSON/正则格式示例              |
+| 6    | `src/components/model_dashboard/HealthCheckComponent.tsx`                                     | 判定保留：异常类名                           |
+| 5    | `src/app/(dashboard)/guardrails/_components/custom_code/CustomCodeModal.tsx`                  | 判定保留：示例工具语料                       |
+| 5    | `src/app/(dashboard)/skills/_components/add_plugin_form.tsx`                                  | 判定保留：URL/JSON/正则格式示例              |
+| 5    | `src/components/LeftnavMenuGroups.tsx`                                                        | 判定保留：侧栏分组段名                       |
+| 5    | `src/components/Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm.tsx`            | 判定保留：URL/JSON/正则格式示例              |
+| 4    | `src/app/(dashboard)/guardrails/_components/tool_permission/ToolPermissionRulesEditor.tsx`    | 判定保留：URL/JSON/正则格式示例              |
+| 4    | `src/app/(dashboard)/playground/components/systemOneUI/lib/example.ts`                        | 判定保留：示例负载语料                       |
+| 4    | `src/components/shared/CreatedKeyDisplay.tsx`                                                 | 判定保留：品牌名                             |
+| 3    | `src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx` | 判定保留：URL/JSON/正则格式示例              |
+| 3    | `src/app/(dashboard)/guardrails/_components/TeamGuardrailsTab.tsx`                            | 判定保留：URL/JSON/正则格式示例              |
+| 3    | `src/app/(dashboard)/mcp-servers/_components/mcp_server_edit.tsx`                             | 判定保留：URL/JSON/正则格式示例              |
+| 3    | `src/app/(dashboard)/mcp-servers/_components/TokenExchangeFormFields.tsx`                     | 判定保留：URL/JSON/正则格式示例              |
+| 3    | `src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`                                            | 判定保留：URL/JSON/正则格式示例              |
+| 3    | `src/components/CommandPalette/CommandPalette.tsx`                                            | 判定保留：类型判别                           |
+| 3    | `src/components/liteadmin/operations.ts`                                                      | 判定保留：模型侧工具说明                     |
+| 3    | `src/components/user_agent_activity.tsx`                                                      | 判定保留：缩写                               |
+| 2    | `src/app/(dashboard)/agents/_components/KillSwitchFormFields.tsx`                             | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/app/(dashboard)/guardrails/_components/content_filter/CustomPatternModal.tsx`            | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/CreateMCPServer.tsx`                             | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/app/(dashboard)/mcp-servers/_components/PassthroughAuthorizeSection.tsx`                 | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/app/(dashboard)/playground/components/chat_ui/GeneratedCodeDialog.tsx`                   | 判定保留：SDK 名                             |
+| 2    | `src/app/(dashboard)/prompts/_components/prompt_editor_view/PromptCodeSnippets.tsx`           | 判定保留：SDK 名                             |
+| 2    | `src/app/(dashboard)/usage/_components/components/ClientUsageSelect.tsx`                      | 判定保留：品牌名                             |
+| 2    | `src/app/(dashboard)/usage/_components/components/overview/TopAgents.tsx`                     | 判定保留：缩写                               |
+| 2    | `src/app/layout.tsx`                                                                          | 判定保留：产品名（文档标题）                 |
+| 2    | `src/components/add_model/advanced_settings.tsx`                                              | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/components/add_model/ReminderMarkers.tsx`                                                | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/components/key_team_helpers/key_sorting.ts`                                              | 判定保留：缩写 RPM/TPM                       |
+| 2    | `src/components/ModelInfoEditForm.tsx`                                                        | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/components/pass_through_info.tsx`                                                        | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/components/routing_groups/RoutingGroupUsagePanel.tsx`                                    | 判定保留：SDK 名                             |
+| 2    | `src/components/shared/date_range_presets.ts`                                                 | 判定保留：缩写                               |
+| 2    | `src/components/team/TeamEditSettingsForm.tsx`                                                | 判定保留：URL/JSON/正则格式示例              |
+| 2    | `src/components/TeamsPage/teamTableColumns.tsx`                                               | 判定保留：缩写 RPM/TPM                       |
+| 2    | `src/data/financialCompliancePrompts.ts`                                                      | 判定保留：合规提示语料                       |
+| 2    | `src/data/insultsCompliancePrompts.ts`                                                        | 判定保留：合规提示语料                       |
+| 1    | `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                  | 判定保留：缩写 ID                            |
+| 1    | `src/app/(dashboard)/agents/_components/AgentIdentityFields.tsx`                              | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/agents/_components/dynamic_agent_form_fields.tsx`                        | 判定保留：预置技能种子                       |
+| 1    | `src/app/(dashboard)/cost-optimization/_components/PromptCompressionTab.tsx`                  | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/cost-tracking/_components/add_provider_form.tsx`                         | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/guardrails/_components/add_guardrail_form.tsx`                           | 判定保留：API 路径                           |
+| 1    | `src/app/(dashboard)/guardrails/_components/GuardrailTestPanel.tsx`                           | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenApiByokFields.tsx`                           | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/OpenAPIFormSection.tsx`                          | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/mcp-servers/_components/UpstreamTokenHeaderField.tsx`                    | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/memory/_components/MemoryEditModal.tsx`                                  | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/autoRouterRows.ts`           | 判定保留：类型判别                           |
+| 1    | `src/app/(dashboard)/models-and-endpoints/components/AutoRouters/AutoRoutersPanel.tsx`        | 判定保留：缩写 ID                            |
+| 1    | `src/app/(dashboard)/projects/_components/ProjectsTableColumns.tsx`                           | 判定保留：缩写 ID                            |
+| 1    | `src/app/(dashboard)/roi-calculator/_components/ROISettingsPanel.tsx`                         | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx`                      | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/vector-stores/_components/vector_store_info.tsx`                         | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/vector-stores/_components/VectorStoreForm.tsx`                           | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/app/(dashboard)/workflows/WorkflowRuns.tsx`                                              | 判定保留：元数据键名                         |
+| 1    | `src/components/add_pass_through.tsx`                                                         | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/AIHub/UsefulLinksManagement.tsx`                                              | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/cloudzero_export_modal.tsx`                                                   | 判定保留：品牌名                             |
+| 1    | `src/components/leftnav.tsx`                                                                  | 判定保留：品牌名                             |
+| 1    | `src/components/model_add/openai_federation.ts`                                               | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/Navbar/ViewSwitcher.tsx`                                                      | 判定保留：品牌名                             |
+| 1    | `src/components/networking.tsx`                                                               | 判定保留：解析失败返回值被消费点吞掉，不渲染 |
+| 1    | `src/components/public_hub/modelDialogHelpers.ts`                                             | 判定保留：代码示例入参                       |
+| 1    | `src/components/routing_groups/RoutingGroupModal.tsx`                                         | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/Settings/AdminSettings/MCPToolSearchSettings/MCPToolSearchSettings.tsx`       | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/team/EditMembership.tsx`                                                      | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/Teams.tsx`                                                                    | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/templates/KeyEditViewControls.tsx`                                            | 判定保留：URL/JSON/正则格式示例              |
+| 1    | `src/components/UsagePage/keyActivityData.ts`                                                 | 判定保留：度量集名，渲染侧另有键             |
 
-剩在待接列的 9 条分三型：`timeRange.ts` 5 条与 `budgetUtils.ts` 3 条所在模块暂无生产消费者（`RANGE_PRESETS`/`presetLabel` 与 `describeBudgetResetSchedule` 只有测试引用），接线时一并翻，现在造键等于翻译没人看的串；`networking.tsx` 1 条是解析失败的返回值，与同函数 `console.error` 成对
+待接列已在第 576 簇清零。`timeRange.ts` 的 5 条 `label` 换成 `labelKey`，`budgetUtils.ts` 的 `describeBudgetResetSchedule` 加首参 `BudgetsTranslator`，重置说明改走 `budgets` 命名空间，两文件的基线条目随字面量消失而移除；`networking.tsx` 的 1 条 `prop:message` 复核后改判判定账，`listMCPTools` 的生产消费点 `mcp-servers/_components/MCPToolsetsTab.tsx:69` 只读 `result.tools`，`parse_error` 分支返回的 `message` 被吞、不渲染。第 575 簇新开的复合属性名口径把 `categoryDescription` 等 56 条纳入本表，`compliancePrompts.ts` 从 8 条涨到 33 条，另补 8 个文件
 
 第六条口径已开（2026-11-05 第 575 簇）。`COPY_PROPS` 原先按属性名精确匹配，`alertMessage`、`resourceInformationTitle`、`searchPlaceholder`、`tooltipText`、`copyLabel` 这类以文案词结尾的复合属性名看不见，`title={`...`}` 这类无插值模板字面量也看不见。库改成按 camel 末词判定（`COPY_TAILS`：label、title、description、placeholder、tooltip、hint、message、text、alt、sublabel、subtitle、error、empty、helper），`copyValue` 同时收字符串字面量与无插值模板字面量，CSS 自定义属性名（`--normal-text`）排除
 
